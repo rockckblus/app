@@ -1,0 +1,36 @@
+{//登录block 15-3-15}
+<div class="clearThis" id="loginDiv">
+    <div class="pure-form">
+        <div class="clearThis ml20" style="font-size: 18px;color: #000;">用户登录</div>
+
+        {//手机号 15-3-15}
+        <div class="clearThis mt20">
+            <div class="left" style="color: red;width: 10px">*</div>
+            <div class="left ml10">
+                <input id="loginTel" name="tel" type="tel" ng-focus="login.fun.focusInput()" placeholder="手机号/用户名">
+            </div>
+        </div>
+
+        {//密码 15-3-15}
+        <div class="clearThis mt20">
+            <div class="left" style="color: red;width: 10px">*</div>
+            <div class="left ml10">
+                <input id="loginPass" name="tel" type="password" ng-focus="login.fun.focusInput()"   placeholder="密码">
+            </div>
+        </div>
+
+        {//注册 15-3-15}
+        <div class="clearThis linkMouse mt20 ml20">
+            <span class="button" ng-click="login.fun.loginInClick()">登录</span>
+            <span class="linkMouse" style="color: #D4E1F2" ng-click="forgetPass()">忘记密码</span>
+        </div>
+
+        {//关闭按钮 15-3-15}
+       <div class="colseSdiv linkMouse" ng-click="colseLoginDiv()" ></div>
+
+
+        {//提示信息div 15-3-22}
+        <div class="alertDiv"></div>
+
+    </div>
+</div>

@@ -1,0 +1,33 @@
+<div class="pageContent">
+    <form method="post" action="__URL__/addAllIn/navTabId/key/" class="pageForm ">
+        <div class="clearThis line">
+            <div class="line clearThis">
+                <div class="left">所属分类Id：
+                    <input name="categoryCid" value=""/>
+                </div>
+
+                <div class="left">
+                    关键词级别：
+                    <input name="level" value=""/>
+                </div>
+                <div class="left">
+                    所属关键词id，留空就为level1，返回add的自身id：
+                    <input name="parentKeyId" value=""/>
+                </div>
+
+
+
+            </div>
+
+            <for start="1" end="20">
+
+            <div class="clearThis">
+                <div class="title left">名称：<input name="name[]" type="text" size="30" value=""/></div>
+            </div>
+</for>
+
+
+        </div>
+        <input type="submit" value="sub"/>
+    </form>
+</div>

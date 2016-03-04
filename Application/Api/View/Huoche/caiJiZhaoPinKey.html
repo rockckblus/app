@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head><title></title>
+</head>
+<body>
+
+<volist name="list" id="vo">
+    <div class="listItem" _id="{$vo._id}" name="{$vo.name}" url="{$vo.caiJiUrl}" type="{$vo.type}" pid="{$vo.pid}">
+        <a href="http://tj.ganji.com{$vo.caiJiUrl}">{$vo.name}</a>
+    </div>
+</volist>
+
+<div id="key">
+
+
+    <div><p class='url'>zpdonghuasheji</p>
+
+        <p class='key'>天津多媒体/动画设计招聘,天津招聘多媒体/动画设计</p></div>
+
+
+    <div><p class='url'>zpzhubaosheji</p>
+
+        <p class='key'>天津工艺品/珠宝设计招聘,天津招聘工艺品/珠宝设计</p></div>
+
+    <div><p class='url'>zpyinshuazhiban</p>
+
+        <p class='key'>天津印刷排版/制版招聘,天津招聘印刷排版/制版</p></div>
+
+    <div><p class='url'>zpshejiguanli</p>
+
+        <p class='key'>天津设计管理人员招聘,天津招聘设计管理人员</p></div>
+
+    <div><p class='url'>zpcadzhitu</p>
+
+        <p class='key'>天津CAD设计/制图招聘,天津招聘CAD设计/制图</p></div>
+
+    <div><p class='url'>zpchuangyizongjian</p>
+
+        <p class='key'>天津创意指导/总监招聘,天津招聘创意指导/总监</p></div>
+
+</div>
+<script type="text/javascript" src="http://113.31.17.175:8080/publicIndex/javascripts/jquery-1.11.0.min.js"></script>
+<script>
+
+    $(function () {
+        return false;
+        var count = 0;
+
+        /**入库分类对象*/
+//        function getKey(count, postData, fun) {
+//            var apiUrl = '/Api/Huoche/getCaiJiKey';
+//            setTimeout(function () {
+//                $.get(apiUrl, postData, function (re) {
+//                    fun(re);
+//                })
+//            }, count * 20000)
+//        }
+
+        /**获取关键词*/
+        var getKeyList = function (count, postData, re) {
+            
+            var postUrl = postData.url;
+            $('#key').find('div').each(function () {
+                var _this = $(this);
+                if ('/' + _this.find('.url').text() + '/' == postUrl) {
+                    var keyStr = _this.find('.key').text();
+                    keyStr = keyStr.split(',');
+                    setTimeout(function () {
+                        re(keyStr);
+                    }, count * 50);
+                }
+            });
+
+        }
+
+        $('.listItem').each(function () {
+            var _id = $(this).attr('_id');
+            var name = $(this).attr('name');
+            var url = $(this).attr('url');
+            var type = $(this).attr('type');
+            var pid = $(this).attr('pid');
+            count++;
+            var postData = {};
+            postData.categoryCid = _id;
+            postData.name = name;
+            postData.type = type;
+            postData.pid = pid;
+            postData.url = url;
+            getKeyList(count, postData, function (re) {
+                var postUrl = '/Dwz/Key/addAllIn/';
+                var key = re;
+                if (key[0]) {
+                    var postKey = {};
+                    postKey.name = key;
+                    postKey.categoryCid = postData.categoryCid;
+                    postKey.state = 1;
+                    console.log(postKey);
+                    $.post(postUrl, postKey, function (re) {
+                        if (re) {
+                            console.log('postKey', re);
+                        } else {
+                            console.log('errKey', key);
+                        }
+
+                    })
+                }
+            })
+        })
+    })
+</script>
+
+</body>
+</html>

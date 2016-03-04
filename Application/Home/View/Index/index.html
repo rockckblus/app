@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$seoTitle}</title>
+</head>
+<style>
+    a {
+        color: #ffffff
+    }
+    li{
+        list-style: none;
+    }
+    .left 		{float:left;}
+    .right 		{float:right;}
+    .mt10{margin-top: 10px;}.mt20{margin-top: 20px;}.mt30{margin-top: 30px;}.mt40{margin-top: 40px;}.mt50{margin-top: 50px;}.mt3{margin-top: 3px;}.mt7{margin-top: 7px;}
+    .ml10{margin-left: 10px;}.ml20{margin-left: 20px;}.ml30{margin-left: 30px;}.ml40{margin-left: 40px;}.ml50{margin-left: 50px;}.ml3{margin-left: 3px;}.ml65{margin-left: 65px;}
+    .mb10{margin-bottom: 10px;}.mb20{margin-bottom: 20px;}.mb30{margin-bottom: 30px;}.mb40{margin-bottom: 40px;}.mb50{margin-bottom: 50px;}
+    .pl10{padding-left:  10px;}.pl20{padding-left: 20px;}.pl30{padding-left: 30px;}.pl40{padding-left: 40px;}.pl50{padding-left: 50px;}
+    .pr10{padding-right:  10px;}.pr20{padding-right: 20px;}.pr30{padding-right: 30px;}.pr40{padding-right: 40px;}.pr50{padding-right: 50px;}
+    .pb10{padding-bottom:  10px;}.pb20{padding-bottom: 20px;}.pb30{padding-bottom: 30px;}.pb40{padding-bottom: 40px;}.pb50{padding-bottom: 50px;}.pb3{padding-bottom: 3px;}
+    .centext{text-align: center;}
+    .linkMouse{cursor: pointer;}
+    .clearThis:before, .clearThis:after { content: ""; display: table; }
+    .clearThis:after { clear: both; }
+    .clearThis { zoom: 1; }
+    .hide {display:none;}
+    .font20{font-size: 20px}
+
+</style>
+
+
+<body style="background-color: #000;color: #99f19e;font-size: 12px;font-weight: normal">
+{//如果关键词存在}
+<notempty  name="_SESSION['key']['parentKey']['name']">
+
+{//thiscity+this关键词}
+<h1>
+    <a href="http://{$_SESSION['place']['thisCityInfo']['py']}.dipan.so/{$_SESSION['key']['catAndThisKey']['thisKey']['py']}">{$first}</a>--{:date('Y跨年m皓月-d裤日',time())}
+</h1>
+
+<div class="mt10 clearThis">
+    {//thiscity + 主关键词}
+    <li class="left ml10">
+
+    <a href="http://{$_SESSION['place']['thisCityInfo']['py']}.dipan.so/{$_SESSION['key']['parentKey']['py']}">{$_SESSION['place']['thisCityInfo']['name']}{$_SESSION['key']['parentKey']['name']}</a>
+    </li>
+    <li class="left ml10">
+        |</li>
+
+    {//thiscity + 主关键词volist}
+    <volist name="_SESSION['key']['level1List']" id="vo">
+        <li class="left ml10">
+
+        <a href="http://{$_SESSION['place']['thisCityInfo']['py']}.dipan.so/{$vo.py}">{$_SESSION['place']['thisCityInfo']['name']}{$vo.name}</a>
+        </li>
+    </volist>
+
+    <li class="left ml10">
+        ||</li>
+
+    {//thiscity + 子关键词volist}
+    <volist name="_SESSION['key']['level2List']" id="vo">
+        <li class="left ml10">
+
+        <a href="http://{$_SESSION['place']['thisCityInfo']['py']}.dipan.so/{$vo.py}">{$_SESSION['place']['thisCityInfo']['name']}{$vo.name}</a>
+        </li>
+    </volist>
+</div>
+
+<div  class="mt10 clearThis">
+    {//thiscity + 按分类关键词1}
+    <li class="left ml10">
+
+    <a href="http://{$_SESSION['place']['thisCityInfo']['py']}.dipan.so/{$_SESSION['key']['catAndThisKey']['cat']['oneCat']['py']}">{$_SESSION['place']['thisCityInfo']['name']}{$_SESSION['key']['catAndThisKey']['cat']['oneCat']['name']}</a>
+    </li>
+    <li class="left ml10">
+        |</li>
+    {//thiscity + 按分类关键词2volist}
+    <volist name="_SESSION['key']['catAndThisKey']['cat']['twoCat']" id="vo">
+        <li class="left ml10">
+
+        <a href="http://{$_SESSION['place']['thisCityInfo']['py']}.dipan.so/{$vo.py}">
+                {$_SESSION['place']['thisCityInfo']['name']}{$vo.name}</a>
+        </li>
+    </volist>
+
+    {//thiscity + 按分类关键词3volist}
+        <volist name="_SESSION['key']['catAndThisKey']['cat']['threeCat']" id="vo1">
+            <li class="left ml10">
+                ||</li>
+            <volist name="vo1" id="vo">
+                <li class="left ml10">
+                <a href="http://{$_SESSION['place']['thisCityInfo']['py']}.dipan.so/{$vo.py}">
+                        {$_SESSION['place']['thisCityInfo']['name']}{$vo.name}</a>
+                </li>
+            </volist>
+        </volist>
+</div>
+
+{//按地区关键词}
+<div class="mt10 clearThis">
+    <volist name="twoList" id="vo">
+        <li class="left ml10"><a href="http://{$vo.py}.dipan.so/{$_SESSION['key']['catAndThisKey']['thisKey']['py']}">{$vo.name}{$_SESSION['key']['catAndThisKey']['thisKey']['name']}</a></li>
+    </volist>
+</div>
+<div class="mt10 clearThis" >
+    <volist name="listSonCity" id="vo">
+        <li class="left ml10"><a href="http://{$vo.py}.dipan.so/{$_SESSION['key']['catAndThisKey']['thisKey']['py']}">{$vo.name}{$_SESSION['key']['catAndThisKey']['thisKey']['name']}</a></li>
+    </volist>
+</div>
+
+<div class="mt10 clearThis" >
+    {//thiscity + 按周边城市关键词volist}
+    <volist name="_SESSION['place']['otherCity']" id="vo">
+        <li class="left ml10">
+            <a href="http://{$vo['py']}.dipan.so/{$_SESSION['key']['catAndThisKey']['thisKey']['py']}">{$vo.name}{$_SESSION['key']['catAndThisKey']['thisKey']['name']}</a>
+        </li>
+    </volist>
+</div>
+
+<else/>
+    {//如果关键词不存在，就只分配分类}
+    {//按地区服务器频道分类}
+    <volist name="catOneList" id="catOneList">
+        <div class="mt10 clearThis">
+
+            <empty name="_SESSION['place']['thisCityInfo']['py']" >
+           <li class="left"> <a href="http://www.dipan.so/{$catOneList.py}">{$_SESSION['place']['thisCityInfo']['name']}{$catOneList.name}</a></li>
+                <else/>
+                <li class="left"> <a href="http://{$_SESSION['place']['thisCityInfo']['py']}.dipan.so/{$catOneList.py}">{$_SESSION['place']['thisCityInfo']['name']}{$catOneList.name}</a></li>
+            </empty>
+        </div>
+    <div class="mt10 clearThis">
+        <volist name="twoList" id="vo">
+            <li class="left ml10"><a href="http://{$vo.py}.dipan.so/{$catOneList['py']}">{$vo.name}{$catOneList['name']}</a></li>
+        </volist>
+    </div>
+    <div class="mt10 clearThis" >
+        <volist name="listSonCity" id="vo">
+            <li class="left ml10"><a href="http://{$vo.py}.dipan.so/{$catOneList['py']}">{$vo.name}{$catOneList['name']}</a></li>
+        </volist>
+    </div>
+    </volist>
+
+    {//按地区招聘频道分类}
+    <volist name="catOneList2" id="catOneList2">
+        <div class="mt10 clearThis">
+
+            <empty name="_SESSION['place']['thisCityInfo']['py']">
+           <li class="left"> <a href="http://www.dipan.so/{$catOneList2.py}">{$_SESSION['place']['thisCityInfo']['name']}{$catOneList2.name}</a></li>
+                <else/>
+                <li class="left"> <a href="http://{$_SESSION['place']['thisCityInfo']['py']}.dipan.so/{$catOneList2.py}">{$_SESSION['place']['thisCityInfo']['name']}{$catOneList2.name}</a></li>
+            </empty>
+        </div>
+    <div class="mt10 clearThis">
+        <volist name="twoList" id="vo">
+            <li class="left ml10"><a href="http://{$vo.py}.dipan.so/{$catOneList2['py']}">{$vo.name}{$catOneList2['name']}</a></li>
+        </volist>
+    </div>
+    <div class="mt10 clearThis" >
+        <volist name="listSonCity" id="vo">
+            <li class="left ml10"><a href="http://{$vo.py}.dipan.so/{$catOneList2['py']}">{$vo.name}{$catOneList2['name']}</a></li>
+        </volist>
+    </div>
+    </volist>
+
+</notempty>
+<h1>
+    <empty name="_SESSION['place']['thisCityInfo']['py']">
+       <a href="http://www.dipan.so" >地盘网</a>
+        <else/>
+        <a href="http://{$_SESSION['place']['thisCityInfo']['py']}.dipan.so/">{$_SESSION['place']['thisCityInfo']['name']}地盘网</a>
+    </empty>
+</h1>
+
+</body>
+</html>

@@ -1,0 +1,254 @@
+<extend name="./Application/Admin/View/layout.html"/>
+
+<block name="content">
+<div class="ui grid">
+
+<!--include 左侧操作div-->
+<include file="./Application/Admin/View/leftButton.html"/>
+<div class=" eleven column wide ">
+<div class="ui section divider"></div>
+
+<!--添加面板-->
+<!--list-->
+
+<div class="ui six column divided grid">
+
+    <volist name="list" id="vo" mod="5">
+        <eq name="mod" value="6"></eq>
+        <div class="row">
+            <div class="column">
+                <h4 class="ui header">name
+                </h4>
+                <div class="ui label" style="font-size: 12px">介绍介绍</div>
+
+            </div>
+        </div>
+    </volist>
+
+</div>
+
+
+<!--endlist-->
+<div class="ui two column grid showPan" id="uiAdd" ng-controller="adminTopNav">
+    <div class="column ">
+        <div class="ui fluid form segment " id="firstCategory">
+            <h3 class="ui header">添加一级分类</h3>
+
+            <div class="field">
+                <label>图标(<a target="_blank" class="noLine"
+                             href="http://www.semantic-ui.com.cn/elements/icon.html">图标列表</a>)</label>
+                <input type="text" placeholder="icon" name="icon" ng-model='firstCategory.icon'>
+            </div>
+            <div class="field">
+                <label>分类名</label>
+                <input placeholder="分类名" type="text" name="name" ng-model='firstCategory.name'>
+
+
+            </div>
+            <div class="field">
+                <label>链接(一般子菜单第一项)</label>
+                <input placeholder="链接" type="text" name="path" ng-model='firstCategory.path'>
+
+
+            </div>
+
+            <div class="ui  orange submit  tiny  button">{{firstAdd}}</div>
+            <div class="ui green message hide" id="firstCategoryReturn">
+
+                <div class="ui list">
+                    <a class="item" style="font-size: 12px" ng-repeat="vo in firstCategoryReturn">
+                        <i class="right triangle icon"></i>
+                        {{vo.name}}
+                    </a>
+                </div>
+            </div>
+            <div class="ui list">
+                <a class="item" style="font-size: 12px" ng-repeat="vo in topNavList">
+                    <i class="right triangle icon"></i>
+                    {{vo.name}}-{{vo.path}}
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!--edit面板-->
+<div id="uiEdit" class="ui showPan hide">
+    <volist name="allData['listTopNav']" id="vo1">
+        <eq name="vo1.pid" value="0">
+            <h2>{$vo1.name}</h2>
+            <table class="ui table segment inverted ">
+                <thead>
+                <tr>
+                    <th style="text-align: center">标题</th>
+                    <th style="text-align: center">图标</th>
+                    <th style="text-align: center">路径</th>
+                    <th style="text-align: center">排序</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <div class="ui left small  icon input">
+                            <input class="outFocus" type="text" name="name" _id="{$vo1._id}" placeholder="{$vo1.name}"
+                                   value="{$vo1.name}">
+                            <i class="legal icon"></i>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="ui left small  icon input">
+                            <input _id="{$vo1._id}" class="outFocus" type="text" name="icon" placeholder="{$vo1.icon}"
+                                   value="{$vo1.icon}">
+                            <i class="star icon"></i>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="ui left small  icon input">
+                            <input type="text" _id="{$vo1._id}" class="outFocus" name="path" placeholder="{$vo1.path}"
+                                   value="{$vo1.path}">
+                            <i class="url icon"></i>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="ui left small  icon input">
+                            <input type="text" name="order" _id="{$vo1._id}" class="outFocus" placeholder="{$vo1.order}"
+                                   value="{$vo1.order}">
+                            <i class="sort order descending icon"></i>
+                        </div>
+                    </td>
+                </tr>
+
+                </tbody>
+
+            </table>
+
+
+            <div class="clearThis"></div>
+            <div class="">
+                <table class="ui table segment ">
+                    <thead>
+                    <tr>
+                        <th style="text-align: center">标题</th>
+                        <th style="text-align: center">上级分类</th>
+                        <th style="text-align: center">路径</th>
+                        <th style="text-align: center">排序</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="allData['listTopNav']" id="vo2">
+                        <eq name="vo2.pid" value="$vo1._id">
+                            <tr>
+                                <td>
+                                    <div class="ui left small  icon input">
+                                        <input type="text" name="name" placeholder="{$vo2.name}" value="{$vo2.name}"
+                                               _id="{$vo2._id}" class="outFocus">
+                                        <i class="legal icon"></i>
+                                    </div>
+                                </td>
+                                <td style="width: 150px">
+                                    <div class="ui selection dropdown">
+                                        <input type="hidden" name="pid">
+
+                                        <div class="text">{$vo1.name}</div>
+                                        <i class="dropdown icon"></i>
+
+                                        <div class="menu">
+                                            <volist name="allData['listTopNav']" id="vo3">
+                                                <eq name="vo3.pid" value="0">
+                                                    <div class="item" data-value="{$vo3._id}">{$vo3.name}</div>
+                                                </eq>
+                                            </volist>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="ui left small  icon input">
+                                        <input type="text" name="path" placeholder="{$vo2.path}" value="{$vo2.path}"
+                                               _id="{$vo2._id}" class="outFocus">
+                                        <i class="url icon"></i>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="ui left small  icon input">
+                                        <input type="text" name="order" placeholder="{$vo2.order}" value="{$vo2.order}"
+                                               _id="{$vo2._id}" class="outFocus">
+                                        <i class="sort order descending icon"></i>
+                                    </div>
+                                </td>
+                            </tr>
+
+
+                        </eq>
+
+                    </volist>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+
+            <div class="ui divider"></div>
+        </eq>
+    </volist>
+</div>
+
+
+<!--删除操作面板-->
+
+<div id="uiDel" class="ui showPan hide ">
+    <div class="ui ordered list">
+        <volist name="allData['listTopNav']" id="vo1">
+            <eq name="vo1.pid" value="0">
+                <div class="item left">
+                    <div class="left" style="width: 100px">{$vo1.name}</div>
+
+                    <volist name="allData['listTopNav']" id="sub">
+                        <eq name="sub.pid" value="$vo1._id">
+                            <!--判断是否有下级-->
+                            <assign name="haveSub" value="1"/>
+                        </eq>
+                    </volist>
+                    <neq name="haveSub" value="1">
+                        <i class="trash icon hrefRed delNav linkMouse left" navId='{$vo1._id}'></i>
+                    </neq>
+                    <div class="list">
+                        <volist name="allData['listTopNav']" id="vo2">
+                            <eq name="vo2.pid" value="$vo1._id">
+                                <div class="item left description">
+                                    <div class="left " style="width: 100px">{$vo2.name}</div>
+                                    <i class="trash icon delNav mt10 hrefRed linkMouse left" navId='{$vo2._id}'></i>
+                                </div>
+
+                                <div class="clearThis"></div>
+
+                            </eq>
+                        </volist>
+                    </div>
+                </div>
+                <div class="clearThis"></div>
+
+            </eq>
+        </volist>
+
+    </div>
+</div>
+
+
+</div>
+</div>
+<div style="height: 300px"></div>
+</block>
+<block name="otherJs">
+    <script>
+        seajs.use(["/Public/itemJs/seajs/app/main.js", "/Public/itemJs/seajs/app/oeoeAdminModule/adminTopNav.js"], function () {
+            angular.element(document).ready(function () {
+                angular.bootstrap(window.document, ["myOeoeApp"]);
+                $('.ui.dropdown').dropdown();//声明下拉菜单
+                $('.ui.radio.checkbox').checkbox();//声明单选
+            })
+        });
+    </script>
+</block>

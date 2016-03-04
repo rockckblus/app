@@ -1,0 +1,18 @@
+#Subitem3{
+    margin-left: 194px;
+}
+#Subitem2{
+    margin-left: 106px;
+}
+#tiShiDiv{
+    position: fixed;
+    top: 20px;
+    z-index: 300;
+    margin: 0 auto;
+    left: 50%;
+    width: 800px;
+    margin-left: -400px;
+}
+.hrefRed:hover{
+    color: red;
+}

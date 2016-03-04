@@ -1,0 +1,33 @@
+
+<div class="pageContent">
+    <form method="post" action="__URL__/editIn/navTabId/{$navTabId}" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+        <div class="pageFormContent" layoutH="56">
+            <div class="clearThis line">
+                <p>
+                    <label>名称：</label>
+                    <input name="name" type="text" size="30" value="{$find.name}"/>
+                    <input type="hidden" name="dataName" type="text" size="30" value="proType"/>
+                    <input type="hidden" name="id" type="text" size="30" value="{$find._id}" />
+
+                </p>
+                <p>
+                    <label>排序：</label>
+                    <input name="sort" type="text" size="30" value="{$find.sort}"/>
+                </p>
+                <p>
+                    <label>状态：</label>
+                    <input name="state" type="text" size="30" value="{$find.state}"/>
+                </p>
+            </div>
+
+        </div>
+        <div class="formBar">
+            <ul>
+                <li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+                <li>
+                    <div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+                </li>
+            </ul>
+        </div>
+    </form>
+</div>

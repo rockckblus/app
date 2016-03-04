@@ -1,0 +1,290 @@
+[ 2016-02-29T09:21:13+08:00 ] 127.0.0.1 /
+INFO: [ app_init ] --START--
+INFO: Run Behavior\BuildLiteBehavior [ RunTime:0.000006s ]
+INFO: [ app_init ] --END-- [ RunTime:0.000148s ]
+INFO: [ app_begin ] --START--
+INFO: Run Behavior\ReadHtmlCacheBehavior [ RunTime:0.000187s ]
+INFO: [ app_begin ] --END-- [ RunTime:0.000211s ]
+SQL: oeoe.getCollection(city_pin_yin) [ RunTime:0.000520s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.city_pin_yin.findOne({"name":"localhost"}) [ RunTime:0.028440s ]
+NOTIC: [8] Undefined index: categoryChannel /work/dipanResCreate/dipanResCreate/app/Application/Home/Controller/IndexController.class.php 第 22 行.
+SQL: oeoe.getCollection(category_service) [ RunTime:0.000009s ]
+SQL: oeoe.getCollection(categoryzhaopin) [ RunTime:0.000007s ]
+SQL: oeoe.getCollection(category_service) [ RunTime:0.000004s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 365 行.
+NOTIC: [8] Undefined index: order /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 376 行.
+SQL: oeoe.category_service.find({"pid":0}) [ RunTime:0.000015s ]
+SQL: oeoe.getCollection(categoryzhaopin) [ RunTime:0.000012s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 365 行.
+NOTIC: [8] Undefined index: order /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 376 行.
+SQL: oeoe.categoryzhaopin.find({"pid":0}) [ RunTime:0.000020s ]
+SQL: oeoe.getCollection(category_service) [ RunTime:0.000013s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.category_service.findOne({"_id":{"$id":"54dc7101a1cfe95d428b4664"}}) [ RunTime:0.020752s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54dc7101a1cfe95d428b4664","level":1}) [ RunTime:0.007722s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000005s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":3}) [ RunTime:0.030693s ]
+SQL: oeoe.getCollection(category_service) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.category_service.findOne({"_id":{"$id":"54dc71cea1cfe999418b4678"}}) [ RunTime:0.008596s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54dc71cea1cfe999418b4678","level":1}) [ RunTime:0.007842s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":997}) [ RunTime:0.007835s ]
+SQL: oeoe.getCollection(category_service) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.category_service.findOne({"_id":{"$id":"54dc71f9a1cfe978418b4674"}}) [ RunTime:0.008971s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54dc71f9a1cfe978418b4674","level":1}) [ RunTime:0.007374s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":998}) [ RunTime:0.016037s ]
+SQL: oeoe.getCollection(category_service) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.category_service.findOne({"_id":{"$id":"54dc7245a1cfe978418b467b"}}) [ RunTime:0.551546s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54dc7245a1cfe978418b467b","level":1}) [ RunTime:0.028674s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":999}) [ RunTime:0.010387s ]
+SQL: oeoe.getCollection(category_service) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.category_service.findOne({"_id":{"$id":"54dc7272a1cfe9dd418b4679"}}) [ RunTime:0.015990s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54dc7272a1cfe9dd418b4679","level":1}) [ RunTime:0.009218s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":1000}) [ RunTime:0.007211s ]
+SQL: oeoe.getCollection(category_service) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.category_service.findOne({"_id":{"$id":"54dc7296a1cfe9dd418b467c"}}) [ RunTime:0.014115s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000012s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54dc7296a1cfe9dd418b467c","level":1}) [ RunTime:0.044369s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000010s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":1001}) [ RunTime:0.018446s ]
+SQL: oeoe.getCollection(category_service) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.category_service.findOne({"_id":{"$id":"54dc731ba1cfe9b6418b468d"}}) [ RunTime:0.007415s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54dc731ba1cfe9b6418b468d","level":1}) [ RunTime:0.007390s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":1002}) [ RunTime:0.007775s ]
+SQL: oeoe.getCollection(categoryzhaopin) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.categoryzhaopin.findOne({"_id":{"$id":"54fa153da1cfe9b4668b4571"}}) [ RunTime:0.011823s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54fa153da1cfe9b4668b4571","level":1}) [ RunTime:0.007856s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":2008}) [ RunTime:0.007312s ]
+SQL: oeoe.getCollection(categoryzhaopin) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.categoryzhaopin.findOne({"_id":{"$id":"54fa153da1cfe93b298b459c"}}) [ RunTime:0.007754s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54fa153da1cfe93b298b459c","level":1}) [ RunTime:0.007058s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":2009}) [ RunTime:0.008783s ]
+SQL: oeoe.getCollection(categoryzhaopin) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.categoryzhaopin.findOne({"_id":{"$id":"54fa153da1cfe92b6b8b4569"}}) [ RunTime:0.008963s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54fa153da1cfe92b6b8b4569","level":1}) [ RunTime:0.009716s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000018s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":2010}) [ RunTime:0.007635s ]
+SQL: oeoe.getCollection(categoryzhaopin) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.categoryzhaopin.findOne({"_id":{"$id":"54fa153da1cfe99a418b4599"}}) [ RunTime:0.007266s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54fa153da1cfe99a418b4599","level":1}) [ RunTime:0.007596s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":2012}) [ RunTime:0.006985s ]
+SQL: oeoe.getCollection(categoryzhaopin) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.categoryzhaopin.findOne({"_id":{"$id":"54fa153da1cfe958088b459d"}}) [ RunTime:0.079429s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54fa153da1cfe958088b459d","level":1}) [ RunTime:0.008366s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":2013}) [ RunTime:0.006890s ]
+SQL: oeoe.getCollection(categoryzhaopin) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.categoryzhaopin.findOne({"_id":{"$id":"54fa153da1cfe956338b4599"}}) [ RunTime:0.007352s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54fa153da1cfe956338b4599","level":1}) [ RunTime:0.007924s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":2014}) [ RunTime:0.009815s ]
+SQL: oeoe.getCollection(categoryzhaopin) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.categoryzhaopin.findOne({"_id":{"$id":"54fa153da1cfe9b4668b4572"}}) [ RunTime:0.008215s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000007s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54fa153da1cfe9b4668b4572","level":1}) [ RunTime:0.007725s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000018s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":2015}) [ RunTime:0.007522s ]
+SQL: oeoe.getCollection(categoryzhaopin) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.categoryzhaopin.findOne({"_id":{"$id":"54fa153da1cfe93b298b459d"}}) [ RunTime:0.008018s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54fa153da1cfe93b298b459d","level":1}) [ RunTime:0.007607s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":2016}) [ RunTime:0.010944s ]
+SQL: oeoe.getCollection(categoryzhaopin) [ RunTime:0.000007s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.categoryzhaopin.findOne({"_id":{"$id":"54fa153da1cfe92b6b8b456a"}}) [ RunTime:0.015878s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54fa153da1cfe92b6b8b456a","level":1}) [ RunTime:0.011832s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":2017}) [ RunTime:0.021418s ]
+SQL: oeoe.getCollection(categoryzhaopin) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.categoryzhaopin.findOne({"_id":{"$id":"54fa153da1cfe99a418b459a"}}) [ RunTime:0.011334s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000009s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54fa153da1cfe99a418b459a","level":1}) [ RunTime:0.012815s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":2018}) [ RunTime:0.007294s ]
+SQL: oeoe.getCollection(categoryzhaopin) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.categoryzhaopin.findOne({"_id":{"$id":"54fa153da1cfe958088b459e"}}) [ RunTime:0.007540s ]
+SQL: oeoe.getCollection(key) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key.findOne({"categoryCid":"54fa153da1cfe958088b459e","level":1}) [ RunTime:0.015841s ]
+SQL: oeoe.getCollection(key_pin_yin) [ RunTime:0.000008s ]
+NOTIC: [8] Undefined index: field /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 441 行.
+NOTIC: [8] Undefined offset: 0 /work/dipanResCreate/dipanResCreate/app/ThinkPHP/Library/Think/Db/Driver/Mongo.class.php 第 446 行.
+SQL: oeoe.key_pin_yin.findOne({"linkId":2019}) [ RunTime:0.007470s ]
+SQL: oeoe.getCollection(city) [ RunTime:0.000011s ]
+NOTIC: [2] Illegal string offset 'one' /work/dipanResCreate/dipanResCreate/app/Application/Home/Controller/IndexController.class.php 第 66 行.
+NOTIC: [8] Uninitialized string offset: 0 /work/dipanResCreate/dipanResCreate/app/Application/Home/Controller/IndexController.class.php 第 66 行.
+INFO: [ view_parse ] --START--
+INFO: [ template_filter ] --START--
+INFO: Run Behavior\ContentReplaceBehavior [ RunTime:0.000036s ]
+INFO: [ template_filter ] --END-- [ RunTime:0.000057s ]
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 113 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 116 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 113 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 116 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 113 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 116 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 113 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 116 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 113 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 116 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 113 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 116 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 113 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 116 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 127 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 130 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 127 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 130 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 127 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 130 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 127 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 130 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 127 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 130 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 127 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 130 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 127 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 130 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 127 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 130 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 127 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 130 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 127 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 130 行.
+NOTIC: [8] Undefined variable: twoList /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 127 行.
+NOTIC: [8] Undefined variable: listSonCity /work/dipanResCreate/dipanResCreate/app/Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php 第 130 行.
+INFO: Run Behavior\ParseTemplateBehavior [ RunTime:0.011112s ]
+INFO: [ view_parse ] --END-- [ RunTime:0.011138s ]
+INFO: [ view_filter ] --START--
+INFO: Run Behavior\WriteHtmlCacheBehavior [ RunTime:0.000070s ]
+INFO: [ view_filter ] --END-- [ RunTime:0.000086s ]
+INFO: [ app_end ] --START--
+INFO: Run Behavior\ShowPageTraceBehavior [ RunTime:0.000205s ]
+INFO: [ app_end ] --END-- [ RunTime:0.000223s ]
+

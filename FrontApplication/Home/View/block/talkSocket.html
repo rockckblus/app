@@ -1,0 +1,33 @@
+{//当前分类id + 城市id。创建聊天室房间}
+
+<div class="message_item_big" style="width: 263px">
+    <div id="talkRoomId" class="hide"
+         roomId="{$_SESSION['key']['catAndThisKey']['thisKey']['categoryCid']}{$_SESSION['place']['thisCityInfo']['_id']}"></div>
+    {//聊天室Div}
+    <div class="clearThis" ng-controller="talkSocket">
+        <div class="message_title">
+            <div class="left message_img_bg message_talk">
+                <div class="message_img message_img_talk little_icon"></div>
+            </div>
+            <div class="left ml10 message_title_font">实时广播</div>
+        </div>
+        <div class="message_content_big clearThis">
+            <div id='incomingChatMessages' class="clearThis mt10">
+                <li class="clearThis" style="background-color: #257FF0;color: #fff">
+                    <div class="channelBg little_icon left"></div>
+                    <div class="clearThis" style="line-height: 20px">{$pinDao}频道</div>
+                </li>
+                <div class="clearThis newList">
+                    <li ng-repeat="vo in sk.newList">{{vo.hello}}</li>
+                </div>
+                <div class="clearThis oldList">
+                    <li ng-repeat="vo in sk.oldList">{{vo.hello}}</li>
+                </div>
+            </div>
+            <div class="clearThis">
+                <input id="inputTalk" placeholder="发布即时广播"/>
+            </div>
+        </div>
+    </div>
+</div>
+{//聊天室结速}

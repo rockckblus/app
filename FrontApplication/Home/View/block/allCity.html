@@ -1,0 +1,11 @@
+
+<div class="closeAllDiv linkMouse" ng-click="colseAllCityDiv()"></div>
+<div style="font-size:12px" class="cutCity mapCity clearThis allCity angularEnd">
+    <div ng-repeat="vo in allCityData" style="margin-top:1px;padding-bottom:10px;padding-top:10px" class="backCity clearThis allCityHover">
+        <div class="cityLeftTitle left">{{vo['header']}}</div>
+        <ul style="width:80%;height: inherit;" class="left ">
+            <li ng-repeat="vo2 in vo" class="left ml3"><span ng-click="allCitytwoCityClick($event.target)" city="{{vo2.py2}}" id="{{vo2._id}}" name="{{vo2.name}}" class="hackHover linkMouse">{{vo2.name}}</span></li>
+        </ul>
+    </div>
+    <div class="loadIngIcon"></div>
+</div>

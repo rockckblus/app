@@ -1,0 +1,51 @@
+<extend name="./Application/Admin/View/layout.html"/>
+<block name="header">
+    <div class="ui grid mt0">
+        <div class="two wide column mt0"></div>
+        <div class="twelve wide column mt0">
+            <div class="ui tiered menu inverted">
+                <div class="menu" id="headerNav">
+                    <a class="active item" itemCount = '1'>
+                        <i class="users icon"></i>
+                        登录
+                    </a>
+                    <a href="http://www.oeoe.cc" class=" right item">地盘网</a>
+
+
+                </div>
+
+
+            </div>
+        </div>
+        <div class="two wide column mt0"></div>
+    </div>
+
+
+</block>
+
+<block name="content">
+    <div class="ui grid">
+        <div class="four column wide  ">
+            </div>
+        <div class="eight column wide">
+                <div class="ui form segment" id="formLogin">
+                    <div class="two fields">
+                        <div class="field">
+                            <label>用户名：</label>
+                            <input placeholder="用户名/手机/邮箱" type="text" name="name" id="name"/>
+                        </div>
+                        <div class="field">
+                            <label>密码：</label>
+                            <input placeholder="密码" type="password" name="password" id="password"/>
+                        </div>
+                    </div>
+                    <div class="ui blue submit button">登录</div>
+                    <div class="ui success message  hidden" id="successMess"></div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+</block>
+
+

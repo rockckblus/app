@@ -1,0 +1,58 @@
+.allCity {
+    width: 960px;
+    min-height: 400px;
+    height: 90%;
+    background-color: #FFFBE8;
+    position: fixed;
+    left: 50%;
+    margin-left: -480px;
+    z-index: 800;
+    border: 3px solid #000;
+    overflow-y: scroll;
+    display: none;
+}
+
+.allCity ul {
+    margin: 0 auto;
+}
+
+/*allCityDiv*/
+.cityLeftTitle {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0000ff;
+}
+
+.backCity {
+    width: 80%;
+    margin: 0 auto;
+}
+.backCity li{
+	color: #000;
+}
+
+.hackHover:hover {
+    font-weight: bold;
+    color: #0000ff;
+}
+
+.closeAllDiv {
+    width: 30px;
+    height: 30px;
+    background-image: url('http://www.dipan.so:8080/Public/publicDefault/close.png');
+    position: fixed;
+    top: 41px;
+    right: 17%;
+    z-index: 900;
+    display: none;
+}
+.colseSdiv {
+    width: 30px;
+    height: 30px;
+    background-image: url('http://www.dipan.so:8080/Public/publicDefault/close.png');
+    position: absolute;
+    top: 7px;
+    right: 10px;
+    z-index: 900;
+    display: block;
+}

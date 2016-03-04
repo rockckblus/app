@@ -1,0 +1,112 @@
+<div class="pageContent">
+    <form method="post" action="__URL__/editIn/navTabId/categoryZhaopindex" class="pageForm required-validate"
+          onsubmit="return validateCallback(this, dialogAjaxDone);">
+        <div class="pageFormContent" layoutH="56">
+            <div class="clearThis line">
+                <p>
+                    <label>名称：</label>
+                    <input name="name" type="text" size="30" value="{$find.name}"/>
+                    <input type="hidden" name="dataName" type="text" size="30" value="categoryzhaopin"/>
+                    <input type="hidden" name="id" type="text" size="30" value="{$find._id}"/>
+
+                </p>
+
+                <p>
+                    <label>拼音：</label>
+                    <input name="caiJiUrl" type="text" size="30" value="{$find.caiJiUrl}"/>
+                </p>
+
+                <p>
+                    <label>类型：</label>
+                    <select name="type" id="proGroupId">
+                        <option value="1"
+                        <eq name="find.type" value="1">selected</eq>
+                        >1级分类</option>
+                        <option value="2"
+                        <eq name="find.type" value="2">selected</eq>
+                        >2级分类</option>
+                        <option value="3"
+                        <eq name="find.type" value="3">selected</eq>
+                        >3级分类</option>
+                    </select>
+
+                </p>
+                <p>
+                    <label>父id：</label>
+                    <select name="pid">
+                        <option value="0">祖级</option>
+                        <volist name="oneCateList" id="vo1">
+                            <option value="{$vo1._id}"
+                            <eq name="find.pid" value="$vo1._id">selected</eq>
+                            >{$vo1.name}</option>
+                            <volist name="twoCateList" id="vo2">
+                                <eq name="vo2.pid" value="$vo1._id">
+                                    <option value="{$vo2._id}"
+                                    <eq name="find.pid" value="$vo2._id">selected</eq>
+                                    >&nbsp;&nbsp;├&nbsp;&nbsp;{$vo2.name}</option>
+                                </eq>
+                            </volist>
+                        </volist>
+                    </select>
+                </p>
+            </div>
+            <div class="clearThis line">
+                <label style="background-color: #f4f4f4">属性组：
+                    <span class="<neq name='find.type' value='2'>hide</neq>" id="showTwoGropy">
+                    <input name="addAllSon"
+                           type="checkbox">应用到整个所属下级(仅限2级同步)
+                </span>
+                    <script>
+                        //                        选择type的时候，2级分类事件
+                        $('#proGroupId').change(function () {
+                            var val = $(this).val();
+                            if (val == 2) {
+                                $('#showTwoGropy').show();
+                            } else {
+                                $('#showTwoGropy').hide();
+                            }
+                        });
+
+                    </script>
+
+                </label>
+
+                <div class="left">
+                    <volist name="listTypeGroup" id="vo">
+                        <li class="left ml10">
+                            <if condition="in_array($vo['_id'],$find['proGroupId'])">
+                                <input name="proGroupId[]" value="{$vo._id}" type="checkbox" checked='true'/>{$vo.name}
+                                <else/>
+                                <input name="proGroupId[]" value="{$vo._id}" type="checkbox"/>{$vo.name}
+                            </if>
+                        </li>
+                    </volist>
+                </div>
+            </div>
+            <div class="clearThis line">
+                状态：<input name="state"  size="30" value="{$find.state}"/>
+               排序： <input name="sort"  size="30" value="{$find.sort}"/>
+            </div>
+
+
+        </div>
+        <div class="formBar">
+            <ul>
+                <li>
+                    <div class="buttonActive">
+                        <div class="buttonContent">
+                            <button type="submit">保存</button>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="button">
+                        <div class="buttonContent">
+                            <button type="button" class="close">取消</button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </form>
+</div>

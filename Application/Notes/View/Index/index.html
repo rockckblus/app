@@ -1,0 +1,27 @@
+<h1>
+    Loaol简易留言本
+</h1>
+<h3>tp3.22加mongodb数据库编写，<br/>
+    涵盖了基本操作：数据增加、数据修改、数据删除。<br/>
+    <span style="color: red"> AD：公众号-<a href="http://web.loaol.com/index.php?s=/home/index/leaflets/token/5363611050378.html">loaol</a></span>
+</h3>
+<div>
+    <form name="write" action="__URL__/add" method="POST" enctype="multipart/form-data">
+        <neq name="Think.request.id" value="">回复：{$Think.request.id}<input type="text" style="display: none" name="replay" value="{$Think.request.id}"/><br/></neq>
+        <neq name="Think.request.m" value="">修改：{$Think.request.m}<input type="text" style="display: none" name="m" value="{$Think.request.m}"/><br/></neq>
+<neq name="Think.request.i" value="">-{$Think.request.i}<input type="text" style="display: none" name="i" value="{$Think.request.i}"/><br/></neq>        
+        <label>标题：</label><input type="text" name="title" value="{$title}"/><br/>
+        <label>内容：</label>
+        <textarea name="content" style="width: 250px;height: 100px">{$content}</textarea><br/>
+        <input type="submit" value="提交" />
+    </form>
+</div>
+<div>
+    <volist name="data" id="vo">
+        <li><span style="width: 120px">{$vo.title}</span>[<a href="__URL__/mydel/id/{$vo._id}">X</a>][<a href="__URL__/index/m/{$vo._id}">M</a>][<a href="__URL__/index/id/{$vo._id}">R</a>]</li>
+        <volist name='vo.replay' id='vo1'>
+            <li><span style="width: 120px">┝{$vo1.title}</span>[<a href="__URL__/mydel/id/{$vo._id}/i/{$i-1}">X</a>][<a href="__URL__/index/m/{$vo._id}/i/{$i-1}">M</a>]</li>
+            <eq name='max' value='$i'>111</eq>
+        </volist>
+    </volist>
+</div>

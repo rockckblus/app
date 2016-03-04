@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$_SESSION['key']['catAndThisKey']['thisKey']['name']} 地盘网|免费发布信息广告的网站</title>
+</head>
+<style>
+    a {
+        color: #ffffff
+    }
+
+    li {
+        list-style: none;
+    }
+
+    .left {
+        float: left;
+    }
+
+    .right {
+        float: right;
+    }
+
+    .mt10 {
+        margin-top: 10px;
+    }
+
+    .mt20 {
+        margin-top: 20px;
+    }
+
+    .mt30 {
+        margin-top: 30px;
+    }
+
+    .mt40 {
+        margin-top: 40px;
+    }
+
+    .mt50 {
+        margin-top: 50px;
+    }
+
+    .mt3 {
+        margin-top: 3px;
+    }
+
+    .mt7 {
+        margin-top: 7px;
+    }
+
+    .ml10 {
+        margin-left: 10px;
+    }
+
+    .ml20 {
+        margin-left: 20px;
+    }
+
+    .ml30 {
+        margin-left: 30px;
+    }
+
+    .ml40 {
+        margin-left: 40px;
+    }
+
+    .ml50 {
+        margin-left: 50px;
+    }
+
+    .ml3 {
+        margin-left: 3px;
+    }
+
+    .ml65 {
+        margin-left: 65px;
+    }
+
+    .mb10 {
+        margin-bottom: 10px;
+    }
+
+    .mb20 {
+        margin-bottom: 20px;
+    }
+
+    .mb30 {
+        margin-bottom: 30px;
+    }
+
+    .mb40 {
+        margin-bottom: 40px;
+    }
+
+    .mb50 {
+        margin-bottom: 50px;
+    }
+
+    .pl10 {
+        padding-left: 10px;
+    }
+
+    .pl20 {
+        padding-left: 20px;
+    }
+
+    .pl30 {
+        padding-left: 30px;
+    }
+
+    .pl40 {
+        padding-left: 40px;
+    }
+
+    .pl50 {
+        padding-left: 50px;
+    }
+
+    .pr10 {
+        padding-right: 10px;
+    }
+
+    .pr20 {
+        padding-right: 20px;
+    }
+
+    .pr30 {
+        padding-right: 30px;
+    }
+
+    .pr40 {
+        padding-right: 40px;
+    }
+
+    .pr50 {
+        padding-right: 50px;
+    }
+
+    .pb10 {
+        padding-bottom: 10px;
+    }
+
+    .pb20 {
+        padding-bottom: 20px;
+    }
+
+    .pb30 {
+        padding-bottom: 30px;
+    }
+
+    .pb40 {
+        padding-bottom: 40px;
+    }
+
+    .pb50 {
+        padding-bottom: 50px;
+    }
+
+    .pb3 {
+        padding-bottom: 3px;
+    }
+
+    .centext {
+        text-align: center;
+    }
+
+    .linkMouse {
+        cursor: pointer;
+    }
+
+    .clearThis:before, .clearThis:after {
+        content: "";
+        display: table;
+    }
+
+    .clearThis:after {
+        clear: both;
+    }
+
+    .clearThis {
+        zoom: 1;
+    }
+
+    .hide {
+        display: none;
+    }
+
+    .font20 {
+        font-size: 20px
+    }
+
+</style>
+
+
+<body style="background-color: midnightblue;color: #99f19e;font-size: 12px;font-weight: normal">
+<h1>{:date('Y跨年m皓月-d裤日',time())}</h1>
+{//www页面入口 全国地区地盘网，或者全国地区+关键词}
+{//如果关键词不存在，就只分配分类}
+{//按地区关键词}
+<notempty name="_SESSION['key']['catAndThisKey']['thisKey']['name']">
+    <volist name="allCity" id="vo">
+        <li class="ml10 left">
+            <a href="http://{$vo.py}.dipan.so/{$_SESSION['key']['catAndThisKey']['thisKey']['py']}">{$vo.name}{$_SESSION['key']['catAndThisKey']['thisKey']['name']}</a>
+        </li>
+    </volist>
+    <else/>
+    {//无关键词，就显示一级分类}
+    <volist name="allCity" id="vo">
+        <div class="mt10 clearThis">
+            <volist name="catOneList" id="vo2">
+                <li class="left ml10">
+                    <a href="http://{$vo.py}.dipan.so/{$vo2['py']}">{$vo.name}{$vo2['name']}</a>
+                </li>
+            </volist>
+            <li class="clearThis line"></li>
+            <volist name="catOneList2" id="vo22">
+                <li class="left ml10">
+                    <a href="http://{$vo.py}.dipan.so/{$vo22['py']}">{$vo.name}{$vo22['name']}</a>
+                </li>
+            </volist>
+        </div>
+    </volist>
+
+</notempty>
+
+
+</body>
+</html>

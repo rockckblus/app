@@ -1,0 +1,170 @@
+body{
+    background-color: #F2F5E9;
+}
+
+.allDiv{
+}
+.header{
+    text-align: center;
+}
+.headerTop{
+    /*width: 960px;*/
+    margin: 0 auto;
+}
+.logo{
+    color: #6A8B82;
+}
+.logo:hover{
+    color: #83A098;
+
+}
+#logoText{
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.tL{
+    text-align: left;
+}
+.tR{
+    text-align: right;
+}
+.tC{
+    text-align: center;
+}
+.map{
+    -moz-box-shadow: 0px 0px 5px #94b384;
+    -webkit-box-shadow: 0px 0px 5px #94b384;
+    box-shadow: 0px 0px 5px #94b384;
+    /*IE 7 AND 8 DO NOT SUPPORT BLUR PROPERTY OF SHADOWS*/
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#fff7f5', endColorstr = '#f5ffeb');
+    /*INNER ELEMENTS MUST NOT BREAK THIS ELEMENTS BOUNDARIES*/
+    /*Element must have a height (not auto)*/
+    /*All filters must be placed together*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr = '#fff7f5', endColorstr = '#f5ffeb')";
+    /*Element must have a height (not auto)*/
+    /*All filters must be placed together*/
+    background-image: -moz-linear-gradient(top, #fff7f5, #f5ffeb);
+    background-image: -ms-linear-gradient(top, #fff7f5, #f5ffeb);
+    background-image: -o-linear-gradient(top, #fff7f5, #f5ffeb);
+    background-image: -webkit-gradient(linear, center top, center bottom, from(#fff7f5), to(#f5ffeb));
+    background-image: -webkit-linear-gradient(top, #fff7f5, #f5ffeb);
+    background-image: linear-gradient(top, #fff7f5, #f5ffeb);
+    /*--IE9 DOES NOT SUPPORT CSS3 GRADIENT BACKGROUNDS--*/
+    opacity: 0.81;
+    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity = 81);
+    /*-ms-filter must come before filter*/
+    filter: alpha(opacity = 81);
+    /*INNER ELEMENTS MUST NOT BREAK THIS ELEMENTS BOUNDARIES*/
+    /*All filters must be placed together*/
+
+}
+
+.foot a{
+    text-decoration: none;
+    color: #6A8B82;
+    font-size: 12px;
+}.foot{
+    color: #6A8B82;
+    font-size: 12px;
+}
+.foot:hover{
+    text-decoration:underline;
+}
+#banQian:hover{
+    text-decoration: none;
+}
+.help{
+
+    display: block;
+    padding: 10px 8px 10px 6px;
+    border-radius: 0px 2px 2px 0px;
+    color: #FFF;
+    width: 18px;
+    height: 60px;
+    text-align: center;
+    font-size: 12px;
+    background: #6A8B82;
+    position: fixed;
+    left: -3px;
+    top: 175px;
+    line-height: 20px;
+    -webkit-box-shadow: 1px 2px 8px rgba(80, 50, 0, 0.2);
+    -moz-box-shadow: 1px 2px 8px rgba(80,50,0,0.2);
+    box-shadow: 1px 2px 8px rgba(80, 50, 0, 0.2);
+    -webkit-transition: left 100ms ease-in-out;
+    -moz-transition: left 100ms ease-in-out;
+    transition: left 100ms ease-in-out;
+}
+.helpBac{
+    width: 3px;
+    height: 3px;
+    background-color: #6A8B82;
+    position: absolute;
+    z-index: 50;
+    top: 39px;
+    left: 15px;
+}
+.firstHelp{
+    width: 20px;
+    position: absolute;
+    z-index: 100;
+}
+.diqu{
+    padding: .5em .6em;
+    display: inline-block;
+    border: 1px solid #CCC;
+    font-size: .8em;
+    box-shadow: inset 0 1px 3px #DDD;
+    border-radius: 4px;
+    -webkit-transition: .3s linear border;
+    -moz-transition: .3s linear border;
+    -ms-transition: .3s linear border;
+    -o-transition: .3s linear border;
+    transition: .3s linear border;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background-color: #ffffff;
+}
+#defaultSearch{
+    border-radius: 4px 0px 0px 4px;
+}
+.searchButton{
+    padding-top: 7px;
+    padding-bottom: 9px;
+    padding-left: 18px;
+    padding-right: 18px;
+    background-color: #6A8B82;
+    color: #FFF;
+    border-radius: 0px 4px 4px 0px;
+    font-size: 14px;
+}
+.searchButtonmac{
+    padding-top: 6px;
+    padding-bottom: 8px;
+}
+.fa-mail-forward{
+    font-size: 14px;
+    color:#6A8B82 ;
+}
+.xiaLaSelect{
+    letter-spacing: 0px;
+    padding-left:8px;
+}
+.xiaLaSelect:hover{
+    color: #fff;
+    background-color: #004499;
+    cursor: pointer;
+}
+.discBaidu{
+    margin-left: 10px;
+    color:#b7b7b7;
+}
+.cutCity{
+    position: absolute;
+    z-index: 20;
+    background-color: #fff;
+    width: 300px;
+    height: 200px;
+}

@@ -1,0 +1,40 @@
+{//注册block 15-3-15}
+<div class="clearThis" id="regDiv">
+    <form id="regFrom" method="post">
+        <div class="pure-form">
+            <div class="clearThis ml20" style="font-size: 18px;color: #000;">用户注册</div>
+
+            {//手机号 15-3-15}
+            <div class="clearThis mt20">
+                <div class="left" style="color: red;width: 10px">*</div>
+                <div class="left ml10">
+                    <input name="tel" type="tel" id="regTel" ng-focus="reg.input.fun.regTelFocus()"
+                           ng-blur="reg.input.fun.regTelBlur()" placeholder="{{reg.input.telDefaultText}}">
+                </div>
+                <div class="button left ml10 mt3 linkMouse" ng-style="reg.text.defaultStyle"
+                     ng-click="reg.input.fun.clickSendSm();" ng-bind-html="reg.text.defaultSm"></div>
+            </div>
+
+            {//验证码 15-3-15}
+            <div class="clearThis mt20">
+                <div class="left" style="color: red;width: 10px">*</div>
+                <div class="left ml10">
+                    <input name="code" roundCodeId="{$roundCodeId}" id="code" ng-focus="reg.input.fun.regCodeFocus()"
+                           placeholder="{{reg.input.smCodeDefault}}"/>
+                    <input name="roundCodeId" value="{$roundCodeId}" type="hidden"/>
+                </div>
+            </div>
+
+            {//注册 15-3-15}
+            <div class="clearThis linkMouse mt20 ml20">
+                <span class="button" ng-click="reg.input.fun.regSub()">注册</span>
+            </div>
+
+            {//关闭按钮 15-3-15}
+            <div class="colseSdiv linkMouse" ng-click='closeRegDiv()'></div>
+
+            {//提示信息div 15-3-22}
+            <div class="alertDiv"></div>
+        </div>
+    </form>
+</div>

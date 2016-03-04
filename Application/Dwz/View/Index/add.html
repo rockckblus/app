@@ -1,0 +1,29 @@
+
+<div class="pageContent">
+    <form method="post" action="__URL__/addIn" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+        <div class="pageFormContent" layoutH="56">
+            <p>
+                <label>标题：</label>
+                <input name="name" type="text" size="30" value="" />
+                <input type="hidden" name="dataName" type="text" size="30" value="leftNav" />
+            </p>
+            <p>
+                <label>url：([get 过去 数据库名称]/dataName/abc)</label>
+                <input name="url" type="text" size="30" value="" />
+            </p>
+            <p>
+                <label>：pid（共3级）</label>
+                <input name="pid" type="text" size="30" value="0" />
+            </p>
+
+        </div>
+        <div class="formBar">
+            <ul>
+                <li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+                <li>
+                    <div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+                </li>
+            </ul>
+        </div>
+    </form>
+</div>

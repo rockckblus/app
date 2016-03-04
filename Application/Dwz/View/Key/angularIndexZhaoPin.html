@@ -1,0 +1,150 @@
+<extend name="./Application/Dwz/View/angularIndex.html"/>
+<block name="content">
+    <div class="clearThis" ng-controller="key">
+        <div class="topHead clearThis mt10 ml10">
+            <div class="clearThis"><input ng-model="searchKey">
+                <button id="searchBtn" class="linkMouse" ng-click="searchClick('categoryzhaopin')">搜索</button>
+                <span class="ml10" style="color: red">{{searchKey}}</span></div>
+            <div class="clearThis  mt30"></div>
+            <div class="leftTitle left" style="color: blue">一级分类:</div>
+            <volist name="category" id="vo1">
+                <eq name="vo1.type" value="1">
+                    <div class="left navTopItem ml10 linkMouse " ng-click="clickItem($event.target,'categoryzhaopin')"
+                         ng-mouseenter="showSonDiv($event.target)" vid="{$vo1._id}">{$vo1.name}
+                        <div class="sonDiv">
+                            <div class="left " style="color: blue">二级分类：</div>
+                            <volist name="category" id="vo2">
+                                <eq name="vo2.pid" value="$vo1['_id']">
+                                    <div class="left ml10 navTopItem linkMouse">
+                                        <div class="left ml10 " ng-mouseenter="sonHover($event.target)"
+                                             vid="{$vo2._id}">{$vo2.name}
+                                            <div class="sonSonDiv">
+                                                <div class="clearThis" style="color: #0000ff">三级分类：</div>
+                                                <volist name="category" id="vo3">
+                                                    <eq name="vo3.pid" value="$vo2._id">
+                                                        <div class="clearThis mt3 navTopItem" vid="{$vo3._id}">
+                                                            {$vo3.name}
+                                                        </div>
+                                                    </eq>
+
+                                                </volist>
+
+
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </eq>
+                            </volist>
+
+
+                        </div>
+
+                    </div>
+                </eq>
+            </volist>
+
+        </div>
+        <div class="clearThis line"></div>
+        <div class="keyList clearThis line mt50">
+            <div class="title left">关键词</div>
+            <div class="left ml10" style="font-size: 12px">
+                <span class="left ml10">id:<i> {{key.id}}<input name="id" value="{{key.id}}" type="hidden"
+                                                                id="keyId"></i></span>
+                <span class="left ml10">拼音：<i>{{key.py}}</i></span>
+                <span class="left ml10 " style="margin-top: -5px">名称:<i><input ng-model="key.name" name="name"
+                                                                               id="keyName"></i></span>
+                <span class="left ml10">级别:<i>{{key.level}}</i></span>
+                <span class="left ml10">所属关键词:<i>{{key.parentKeyId }}</i>
+                </span>
+                <span class="left ml10">分类:<i>{{key.categoryCid}}</i></span>
+                <span class="left ml10 linkMouse" style="color: blue" ng-click="editKey()">[修改]</span><span
+                    class="left ml10 linkMouse" style="color: red" ng-click="delKey()">[删除]</span>
+            </div>
+            <div class="clearThis"></div>
+            <div class="clearThis"><h6>按分类</h6></div>
+            <div class="clearThis line " ng-repeat="vo in keyList['levelOne']">
+                <span class="left ml10" style="font-size: 12px;width: 310px">所属分类:{{catName}}|{{catId}}</span>
+
+                <div class="left keyItem parentLevel ml10"><span class="left linkMouse keyItem" vId="{{vo.id}}"
+                                                                 ng-click="getKey($event.target,'categoryzhaopin')">{{vo.name}}</span>
+                </div>
+                <div class="left ml10 keyItem linkMouse sonLevel" ng-repeat="vo2 in keyList['levelTwo']"
+                     ng-if="vo2.parentKeyId == vo.id" vId="{{vo2.id}}" ng-click="getKey($event.target,'categoryzhaopin')">{{vo2.name}}
+                </div>
+            </div>
+            <div class="clearThis"></div>
+            <div class="clearThis"><h6>按搜索</h6></div>
+            <div class="left" style="color: red">主：</div>
+            <div class="left line " ng-repeat="vo in keyListSearch['levelOne']">
+
+
+                <div class="left keyItem parentLevel ml10"><span class="left linkMouse keyItem" vId="{{vo.id}}"
+                                                                 ng-click="getKey($event.target,'categoryzhaopin')">{{vo.name}}</span>
+                </div>
+
+            </div>
+            <div class="clearThis"></div>
+            <div class="clearThis line">
+                <div class="left" style="color: red">长尾：</div>
+                <div class="left ml10 keyItem linkMouse sonLevel" ng-repeat="vo2 in keyListSearch['levelTwo']"
+                     vId="{{vo2.id}}" ng-click="getKey($event.target,'categoryzhaopin')">{{vo2.name}}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="clearThis">
+            <h3>添加关键词</h3>
+
+            <div class="line">
+                <div class="pageContent">
+                    <form method="post" action="__URL__/addAllIn/navTabId/key/" class="pageForm ">
+                        <div class="clearThis line">
+                            <div class="line clearThis">
+                                <div class="left">所属分类Id：
+                                    <input name="categoryCid" value="{{clickCatId}}"/>
+                                </div>
+
+                                <div class="left">
+                                    关键词级别：
+                                    <input name="level" value="{{level}}"/>
+                                </div>
+                                <div class="left">
+                                    所属关键词id，(留空就为level1，)：
+                                    <input name="parentKeyId" value="{{key.id}}"/>
+                                </div>
+
+
+                            </div>
+
+                            <for start="1" end="20">
+                                <div class="clearThis">
+                                    <div class="title left">名称：<input name="name[]" type="text" size="30" value=""/>
+                                    </div>
+                                </div>
+                            </for>
+
+
+                        </div>
+                        <input type="submit" value="sub"/>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</block>
+<block name="otherJs">
+    <script>
+        seajs.config({
+            debug: false
+        });
+        seajs.use(["/Public/itemJs/seajs/app/dwzMain.js", '/Public/itemJs/seajs/app/Dwz/key/index.js'], function () {
+            angular.bootstrap(window.document, ["dwz"]);
+        });
+    </script>
+
+</block>

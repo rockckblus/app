@@ -1,0 +1,6 @@
+logCode:201 path:b_Api/SemSubGetCode/delOldTempCode|||删除过期短信成功 time:2015-03-27 05:48:10
+logCode:201 path:b_Api/SemSubGetCode/delOldTempCode|||删除过期短信成功 time:2015-03-27 06:14:18
+logCode:202 path:b_Api/SemSubGetCode/delOldTempCode|||删除过期短信失败，或者无过期短信 time:2015-03-27 06:17:17
+logCode:201 path:b_Api/SemSubGetCode/delOldTempCode|||删除过期短信成功 time:2015-03-31 08:13:07
+logCode:202 path:b_Api/SemSubGetCode/delOldTempCode|||删除过期短信失败，或者无过期短信 time:2015-03-31 08:23:59
+logCode:201 path:b_Api/SemSubGetCode/delOldTempCode|||删除过期短信成功 time:2015-04-03 11:27:51

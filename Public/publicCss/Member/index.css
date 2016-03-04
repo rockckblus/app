@@ -1,0 +1,72 @@
+.close_icon{
+    background-position: -70px -173px;
+    width: 12px;
+    height: 12px;
+    margin: 9px 0 0 2px;
+}
+
+.member_logo{
+    font-size: 20px;
+    line-height: 52px;
+    color: #34B16C;
+    font-weight: bolder;
+}
+.member_logo_line{
+    height: 20px;
+    width: 1px;
+    border-left: 2px solid #34B16C;
+    margin: 16px 10px;
+}
+.width_nav{
+    height: 30px;
+    background: #efefef;
+    border-bottom: 2px solid #34B16C;
+}
+.content_right,.content_left{
+    border: 1px solid #E0E0E0;
+}
+.content_left{
+    border-left: 0;
+}
+.nav_block{
+    height: 30px;
+    width: 120px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 3px 3px 0 0;
+    cursor: pointer;
+}
+.nav_line{
+    width: 1px;
+    height: 20px;
+    border-right: 1px solid #E0E0E0;
+    margin-top: 5px;
+    margin-left: -1px;
+}
+.nav_block:hover{
+    background: #34B16C;
+    color: #ffffff;
+}
+.footer{
+    margin-top: 10px;
+}
+.side_nav{
+    width: 200px;
+    margin: 10px auto;
+}
+.nav_item{
+    width: 100%;
+    height: 30px;
+    font-size: 14px;
+    line-height: 30px;
+    border-bottom: 1px dotted #E0E0E0;
+    cursor: pointer;
+}
+.nav_item:hover{
+    color: #2c86ff;
+}
+#memberCenterTitle{
+    display: block;
+}

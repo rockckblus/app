@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html >
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="/Public/publicCss/style.css">
+    <link rel="stylesheet" type="text/css" href="/Public/publicCss/index.css">
+    <link rel="stylesheet" type="text/css"  href="/Public/publicCss/angularIndex.css" />
+
+</head>
+<body ng-controller="body">
+<block name="content">
+
+</block>
+<block name="endDiv">
+    <div id="tiShiDiv">
+
+    </div>
+</block>
+<script type="text/javascript" src="http://dipan.so:8080/Public/publicDefault/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="/Public/itemJs/seajs/dist/sea.js"></script>
+
+
+<block name="otherJs">
+    <script>
+        seajs.config({
+            debug: false
+        });
+        seajs.use("/Public/itemJs/seajs/app/dwzMain.js", function () {
+//            angular.bootstrap(window.document, ["dwz"]);
+        });
+    </script>
+
+</block>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<div class="pageContent">
+    <form method="post" action="__URL__/addIn/navTabId/categoryServiceIndex/" class="pageForm required-validate"
+          onsubmit="return validateCallback(this, dialogAjaxDone);">
+        <div class="pageFormContent" layoutH="56">
+            <div class="clearThis line">
+                <p>
+                    <label>名称：</label>
+                    <input name="name" type="text" size="30" value=""/>
+                    <input type="hidden" name="dataName" type="text" size="30" value="categoryService"/>
+                    <input type="hidden" name="inPinYin" type="text" size="30" value="true"/>
+                </p>
+
+                <p>
+                    <label>拼音：</label>
+                    <input name="pinYin" type="text" size="30" value=""/>
+                </p>
+
+                <p>
+                    <label>类型：</label>
+                    <select name="type" id="proGroupId">
+                        <option value="1">1级分类</option>
+                        <option value="2">2级分类</option>
+                        <option value="3">3级分类</option>
+                    </select>
+
+                </p>
+                <p>
+                    <label>父id：</label>
+                    <select name="pid">
+                        <option value="0">祖级</option>
+                        <volist name="oneCateList" id="vo1">
+                            <option value="{$vo1._id}">{$vo1.name}</option>
+                            <volist name="twoCateList" id="vo2">
+                                <eq name="vo2.pid" value="$vo1._id">
+                                    <option value="{$vo2._id}">&nbsp;&nbsp;├&nbsp;&nbsp;{$vo2.name}</option>
+                                </eq>
+                            </volist>
+                        </volist>
+                    </select>
+                </p>
+            </div>
+            <div class="clearThis line">
+                <label style="background-color: #f4f4f4">属性组：
+                    <span class="hide" id="showTwoGropy">
+
+                    <input name="addAllSon"
+                           type="checkbox">应用到整个所属下级(仅限2级同步)
+                </span>
+                    <script>
+                        //                        选择type的时候，2级分类事件
+                        $('#proGroupId').change(function () {
+                            var val = $(this).val();
+                            if (val == 2) {
+                                $('#showTwoGropy').show();
+                            } else {
+                                $('#showTwoGropy').hide();
+
+                            }
+                        });
+
+                    </script>
+
+                </label>
+
+                <div class="left">
+
+                    <volist name="listTypeGroup" id="vo">
+                        <li class="left ml10">
+                            <input name="proGroupId[]" value="{$vo._id}" type="checkbox"/>{$vo.name}
+                        </li>
+                    </volist>
+
+
+                </div>
+
+
+            </div>
+            <div class="clearThis line">
+                <input name="state" type="hidden" size="30" value="1"/>
+                <input name="sort" type="hidden" size="30" value="1"/>
+            </div>
+
+
+
+        </div>
+        <div class="formBar">
+            <ul>
+                <li>
+                    <div class="buttonActive">
+                        <div class="buttonContent">
+                            <button type="submit">保存</button>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="button">
+                        <div class="buttonContent">
+                            <button type="button" class="close">取消</button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </form>
+</div>

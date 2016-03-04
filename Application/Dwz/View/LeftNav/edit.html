@@ -1,0 +1,61 @@
+
+<div class="pageContent">
+    <form method="post" action="__URL__/editIn/navTabId/{$navTabId}" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+        <div class="pageFormContent" layoutH="56">
+            <p>
+                <label>标题：</label>
+                <input name="name" type="text" size="30" value="{$find.name}" />
+                <input type="hidden" name="dataName" type="text" size="30" value="leftNav" />
+                <input type="hidden" name="id" type="text" size="30" value="{$find._id}" />
+            </p>
+            <p>
+                <label>url</label>
+                <input name="url" type="text" size="30" value="{$find.url}" />
+            </p>
+            <p>
+                <label>排序</label>
+                <input name="sort" type="text" size="30" value="{$find.sortl}" />
+            </p>
+            <p>：([get 过去 数据库名称]/dataName/abc)</p>
+            <p class="line"> </p>
+
+            <p>
+                <label>：pid（共3级）</label>
+
+
+                <select class="combox" name="pid" value="0">
+                    <option value="0" <eq name="find.pid" value="0">selected='true'</eq> >顶级分类</option>
+                    <volist name="leftNav" id="vo">
+                        <eq name="vo.pid" value="0">
+                            <option value="{$vo._id}" <eq name="find.pid" value="$vo._id">selected='true'</eq>>{$vo.name}</option>
+                            <volist name="leftNav" id="vo2">
+                                <eq name="vo2.pid" value="$vo._id">
+                                    <option value="{$vo2._id}" <eq name="find.pid" value="$vo2._id">selected='true'</eq> >&nbsp;&nbsp;├&nbsp;&nbsp;{$vo2.name}</option>
+
+                                </eq>
+                            </volist>
+                        </eq>
+
+                    </volist>
+
+                </select>
+
+
+            </p>
+            <p>
+                <label>navTabId</label>
+                <input name="rel" type="text" size="30" value="{$find.rel}" />
+            </p>
+
+
+        </div>
+        <div class="formBar">
+            <ul>
+                <li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+                <li>
+                    <div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+                </li>
+            </ul>
+        </div>
+    </form>
+</div>

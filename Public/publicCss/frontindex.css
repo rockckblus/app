@@ -1,0 +1,578 @@
+body {
+    background-color: #FFFBE8;
+    color: #333333;
+}
+a{
+    color: inherit;
+    text-decoration: none;
+}
+
+.all_width {
+    width: 100%;
+    height: 100%;
+}
+
+.header_height {
+    height: 98px;
+}
+
+.content_width {
+    width: 950px;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.top {
+    height: 30px;
+    background: #000;
+    color: #ddd;
+    border-bottom: 1px solid #eeeeee;
+    line-height: 30px;
+    font-size: 12px;
+}
+
+.little_icon {
+    background-image: url("/Public/images/little_icon.png");
+}
+
+.setting_icon {
+    width: 12px;
+    height: 12px;
+    background-position: -75px -14px;
+    margin: 9px 2px 0 0;
+}
+
+.latest_news {
+    height: 90px;
+    width: 950px;
+    margin: 0 auto 15px auto;
+    background: #ddd;
+}
+
+.content_white {
+    background: #FFFBE8;
+}
+
+.content_gray {
+    background: #FFFBE8;
+}
+
+.content_left {
+    width: 680px;
+    min-height: 650px;
+}
+
+.content_right {
+    width: 265px;
+    min-height: 650px;
+    margin-left: 5px;
+}
+
+.logo {
+    width: 158px;
+    height: 38px;
+    margin: 29px 0 29px 0;
+}
+
+.logo a {
+    width: 100%;
+    height: 100%;
+}
+
+.search_block {
+    margin: 29px 0 29px 0;
+}
+
+.search_block input {
+    width: 266px;
+    border: 1px solid #ED7222;
+    border-right: 0;
+}
+
+.search_button {
+    height: 38px;
+    width: 80px;
+    line-height: 38px;
+    border: 1px solid #FFAD17;
+    border-left: 0;
+}
+
+.createLand, .sendMessage {
+    width: 120px;
+    height: 38px;
+    margin: 29px 0 29px 10px;
+    line-height: 38px;
+}
+
+.btn-green {
+    border: 1px solid #00c4ac;
+    background: #00c4ac;
+    color: #ffffff;
+    border-radius: 2px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.btn-green:hover {
+    background: #00cccc;
+}
+
+.btn_red {
+    border: 1px solid #ED7222;
+    background: #ED7222;
+    color: #ffffff;
+    border-radius: 2px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.btn_red:hover {
+    background: #ED7666;
+}
+
+.btn_orange {
+    color: #ffffff;
+    border-radius: 2px;
+    background: #FFB70A;
+    border: 1px solid #FFB70A;
+    text-align: center;
+    cursor: pointer;
+}
+
+.btn_orange:hover {
+    background: #F9C445;
+}
+
+.login input {
+    margin: 16px 0 0 0;
+}
+
+.input_block {
+    border: 1px solid #EAEAEA;
+    padding-left: 6px;
+    color: #D0D0D0;
+    height: 36px;
+}
+
+.login input[type=text] {
+    width: 220px;
+}
+
+.login input[type=submit] {
+    height: 38px;
+    width: 100px;
+    color: #ffffff;
+    text-align: center;
+    line-height: 33px;
+    background: #00c4ac;
+    border: 1px solid #00c4ac;
+    border-radius: 1px;
+}
+
+.login input[type=submit]:hover {
+    background: #00cccc;
+}
+
+.about_password {
+    font-size: 12px;
+}
+
+.about_password input {
+    margin-top: 8px;
+}
+
+.forgetPassword {
+    margin: 8px 180px;
+    color: #0066BB;
+}
+
+.message_item_right {
+    width: 129px;
+}
+
+.message_item {
+    width: 165px;
+}
+
+.message_item_big {
+    width: 335px;
+}
+
+.message_item, .message_item_right, .message_item_big {
+    height: 300px;
+    border: 1px solid #ddd;
+    float: left;
+    background: #FFFBE8;
+}
+
+.message_title {
+    height: 36px;
+    background: #ddd;
+}
+
+.message_title_font {
+    line-height: 36px;
+}
+
+.message_content_right {
+    width: 118px;
+    margin-left: 6px;
+}
+
+.message_content {
+    width: 152px;
+    margin-left: 6px;
+}
+
+.message_content_item {
+    border-bottom: 1px dashed #eeeeee;
+    line-height: 36px;
+    padding-left: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.message_content_more {
+    font-size: 14px;
+    color: #0066bb;
+    padding-left: 6px;
+    cursor: pointer;
+}
+
+.font_link:hover {
+    text-decoration: underline;
+}
+
+.message_content_big_block {
+    width: 165px;
+}
+
+.center_line {
+    border-left: 1px dashed #F1F1F1;
+    height: 250px;
+    margin-top: 7px;
+}
+
+.content_class {
+    line-height: 36px;
+    padding-left: 6px;
+    font-size: 14px;
+}
+
+.content_item {
+    font-size: 12px;
+    margin-left: 6px;
+    color: #9EA4AB;
+    border-bottom: 1px dashed #F1F1F1;
+    height: 15px;
+    width: 155px;
+}
+
+.gaoliang1 {
+    color: #0A85FC;
+}
+
+.gaoliang2 {
+    color: red;
+}
+
+/**分类信息图标位置**/
+.message_img_bg {
+    width: 36px;
+    height: 36px;
+}
+
+.message_img {
+    width: 30px;
+    height: 36px;
+    margin-left: 6px;
+}
+
+.message_talk {
+    background: #93BC49;
+}
+
+.message_0 {
+    background: #FA6D53;
+}
+
+.message_1 {
+    background-color: #00c4ac;
+}
+
+.message_2 {
+    background-color: #FFB70A;
+}
+
+.message_3 {
+    background-color: #43CBEC;
+}
+
+.message_4 {
+    background-color: #FC66AA;
+}
+
+.message_img_talk {
+    background-position: -126px 2px;
+}
+
+.message_img_0 {
+    background-position: 0 -374px;
+}
+
+.message_img_1 {
+    background-position: 0 -5px;
+}
+
+.message_img_2 {
+    background-position: 0 -42px;
+}
+
+.message_img_3 {
+    background-position: 0 114px;
+}
+
+.message_img_4 {
+    background-position: -1px 78px;
+}
+
+#incomingChatMessages {
+    padding-left: 6px;
+    padding-right: 6px;
+    line-height: 20px;
+    font-size: 12px;
+    height: 220px;
+    overflow-y: auto;
+}
+
+#incomingChatMessages img {
+    width: 12px;
+    height: 12px;
+    border: 1px solid #F1F1F1;
+    margin-right: 3px;
+}
+
+#inputTalk {
+    width: 254px;
+    height: 30px;
+    border: 1px solid #93BC49;
+    color: #aaaaaa;
+    font-size: 12px;
+    padding-left: 6px;
+}
+
+.footer {
+    text-align: center;
+    border-top: 1px dotted #EEEEEE;
+    background: #333;
+}
+
+.footer a {
+    text-decoration: none;
+    font-size: 12px;
+    line-height: 36px;
+    color: #ddd;
+}
+
+.classTitle {
+    font-size:25px;
+    font-weight: bolder;
+    letter-spacing: 2px;
+}
+.chooseItem{
+    font: 12px Helvetica,Arial,sans-serif;
+}
+
+.classContent a{
+    padding: 5px 2px 2px 2px;
+    margin-left: 10px;
+    color: #37a;
+    text-decoration: none;
+}
+.chooseItem{
+    line-height: 20px;
+}
+.unselectedTab a:hover{
+    background: #37a;
+    color: #ffffff;
+    padding: 5px 2px 2px 2px;
+    border-radius: 2px;
+}
+.classTab{
+    background: #f4f4f4;
+    border-radius: 4px;
+    padding: 8px;
+}
+.selectedTab a{
+    background: #46c1cf;
+    color: #fff;
+    padding: 5px 2px 2px 2px;
+    border-radius: 2px;
+}
+.classContent{
+    width: 915px;
+}
+.itemClass{
+    width: 35px;
+    font-weight: bolder;
+}
+.information{
+    font: 12px Helvetica,Arial,sans-serif;
+}
+.informationItem{
+    margin-top: 10px;
+    border-bottom: 1px dotted #E6E6E6;
+    padding-bottom: 10px;
+}
+.informationTop{
+    border-bottom: 1px solid #E6E6E6;
+    padding-bottom: 10px;
+}
+.informationPic img{
+    width: 160px;
+    height: 120px;
+}
+.informationTitle{
+    color: #37a;
+    font-size: 14px;
+}
+.areaShow,.areaShow a{
+    color: #ED7222;
+}
+.othrerCityAlertDiv {
+
+	width:400px;
+	min-height: 100px;
+	background-color: #f4f4f4;
+	padding: 3px;
+	border: solid #777777 1px;
+	position: absolute;
+	z-index: 500;
+	display: none;
+}
+.othrerCityAlertDiv a{
+	color: #000000;
+	margin-left: 0px;
+}
+.othrerCityAlertDiv a:hover{
+	color: #fff;
+	background-color:#ED7222 ;
+}
+.chooseAre_jt{
+    width: 16px;
+    height: 16px;
+    background-position: -72px -68px;
+    cursor: pointer;
+}
+.chooseAre_jt:hover{
+    background-position: -72px -55px;
+}
+.oldList{
+    position: relative;
+}
+.newList{
+    position: relative;
+}
+
+/*遮罩*/
+#gai{
+    background-image: url("http://www.dipan.so:8080/Public/publicDefault/mapShade.png");
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 799;
+    top: 0px;
+    left: 0px;
+    display: none;
+}
+.loadIngIcon{
+    width: 37px;
+    height: 37px;
+    background-image: url('/Public/images/indicator.gif');
+    margin: 0 auto;
+    margin-top: 20%;
+}
+#regDiv,#loginDiv,#forgetPassDiv{
+    background-color: #FFFBE8;
+    position: fixed;
+    left: 50%;
+    width: 367px;
+    margin-left: -150px;
+    z-index: 800;
+    border: 3px solid #000;
+     display: none;
+    padding: 43px;
+}
+.channelBg{
+    background-position: -70px -133px;
+    height: 20px;
+    width: 20px;
+}
+
+.alertDiv{
+    text-align: center;
+    font-size: 14px;
+    border: 3px solid #DAF9AD;
+    position: absolute;
+    top: -43px;
+    width: 140px;
+    left: 50%;
+    margin-left: -70px;
+    background-color: #1F5F44;
+    color: #FFF;
+    display: none;
+
+}
+
+.jionDiPan:hover{
+    background-color: #0CC;
+}
+
+.jionDiPan{
+    background-color: #46C1CF;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

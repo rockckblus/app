@@ -1,0 +1,62 @@
+<form action="__URL__/editNavIn" method="post">
+    <div class="pageContent">
+        <table class="table" width="100%" layoutH="138">
+            <thead>
+            <tr>
+                <th>名称</th>
+                <th>类型</th>
+                <th>排序</th>
+                <th>是否导航</th>
+            </tr>
+            </thead>
+            <tbody>
+            <volist name="list" id="vo">
+                <eq name="vo.pid" value="0">
+                    <tr>
+                        <td><span style="background-color: #e6c3c7;font-size: 16px">{$vo.name}</span></td>
+                        <td>{$vo.type}</td>
+                        <td><input name="sort[{$vo._id}]" value="{$vo.sort}"/></td>
+                        <td><input type="checkbox" name="nav[{$vo._id}]"
+                            <eq name="vo.nav" value="1">checked='true'</eq>
+                            "/>
+                        </td>
+                    </tr>
+
+                    <volist name="list" id="vo2">
+                        <eq name="vo2.pid" value="$vo._id">
+                            <tr>
+                                <td style="background-color: #fefacf">&nbsp;&nbsp;&nbsp;&nbsp;├&nbsp;&nbsp;{$vo2.name}
+                                </td>
+                                <td>{$vo2.type}</td>
+                                <td><input name="sort[{$vo2._id}]" value="{$vo2.sort}"/></td>
+                                <td><input type="checkbox" name="nav[{$vo2._id}]"
+                                    <eq name="vo2.nav" value="1">checked='true'</eq>
+                                    "/>
+                                </td>
+                                </td>
+                            </tr>
+
+                            <volist name="list" id="vo3">
+                                <eq name="vo3.pid" value="$vo2._id">
+                                    <tr>
+                                        <td style="background-color: #FFFAFA">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├&nbsp;&nbsp;{$vo3.name}</td>
+                                        <td>{$vo3.type}</td>
+                                        <td><input name="sort[{$vo3._id}]" value="{$vo3.sort}"/></td>
+                                        <td><input type="checkbox" name="nav[{$vo3._id}]"
+                                            <eq name="vo3.nav" value="1">checked='true'</eq>
+                                            "/>
+                                        </td>
+                                    </tr>
+                                </eq>
+                            </volist>
+                        </eq>
+                    </volist>
+                </eq>
+            </volist>
+            </tbody>
+        </table>
+    </div>
+    <div class="panelbar">
+        <input type="submit" value="sub" class="mt20 ml30"/>
+    </div>
+</form>

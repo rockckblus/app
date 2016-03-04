@@ -1,0 +1,40 @@
+{//忘记密码block 15-3-15}
+<div class="clearThis" id="forgetPassDiv">
+    <form id="forgetFrom" method="post">
+        <div class="pure-form">
+            <div class="clearThis ml20" style="font-size: 18px;color: #000;">忘记密码</div>
+
+            {//手机号 15-3-15}
+            <div class="clearThis mt20">
+                <div class="left" style="color: red;width: 10px">*</div>
+                <div class="left ml10">
+                    <input name="tel" type="tel" id="forgetRegTel" ng-focus="forget.input.fun.regTelFocus()"
+                           ng-blur="forget.input.fun.regTelBlur()" placeholder="{{forget.input.telDefaultText}}">
+                </div>
+                <div class="button left ml10 mt3 linkMouse" ng-style="forget.text.defaultStyle"
+                     ng-click="forget.input.fun.clickSendSm();" ng-bind-html="forget.text.defaultSm"></div>
+            </div>
+
+            {//验证码 15-3-15}
+            <div class="clearThis mt20">
+                <div class="left" style="color: red;width: 10px">*</div>
+                <div class="left ml10">
+                    <input name="code" roundCodeId="{$roundCodeId}" id="forgetCode" ng-focus="forget.input.fun.regCodeFocus()"
+                           placeholder="{{forget.input.smCodeDefault}}"/>
+                    <input name="roundCodeId" value="{$roundCodeId}" type="hidden"/>
+                </div>
+            </div>
+
+            {//登录 15-3-15}
+            <div class="clearThis linkMouse mt20 ml20">
+                <span class="button" ng-click="forget.input.fun.loginInClick()">登录</span>
+            </div>
+
+            {//关闭按钮 15-3-15}
+            <div class="colseSdiv linkMouse" ng-click='closeForgetDiv()'></div>
+
+            {//提示信息div 15-3-22}
+            <div class="alertDiv"></div>
+        </div>
+    </form>
+</div>

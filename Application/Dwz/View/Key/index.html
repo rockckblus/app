@@ -1,0 +1,101 @@
+<div class="pageHeader">
+</div>
+<div class="pageContent">
+    <div class="panelBar">
+        <ul class="toolBar">
+            <li><a class="add" href="__URL__/addAll/navTabId/key" target="navTab" rel="addAll" width="645"
+                   height="370"><span>批量添加</span></a>
+            </li>
+            <li><a class="delete" href="__URL__/del/dataName/key/id/{voId}" target="ajaxTodo"
+                   title="确定要删除吗?"><span>删除</span></a>
+            </li>
+            <li><a class="edit" href="__URL__/edit/dataName/key/id/{voId}/navTabId/key"
+                   target="dialog"><span>修改</span></a></li>
+            <li class="line">line</li>
+        </ul>
+    </div>
+    <table class="table" width="100%" layoutH="138">
+        <thead>
+        <tr>
+            <th class="hide">id</th>
+            <th>名称</th>
+            <th>所属分类</th>
+            <th>所属关键词</th>
+            <th>关键词级别</th>
+            <th>状态(1开启，0关闭)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" id="vo">
+            <eq name="vo.pid" value="0">
+                <tr target="voId" rel="{$vo._id}" >
+                    <td class="hide">{$vo._id}</td>
+                    <td><span  style="background-color: #e6c3c7;font-size: 16px">{$vo.name}</span></td>
+                    <td>{$vo.pinYin}</td>
+                    <td>{$vo.type}</td>
+                    <eq name="vo.pid" value="0">
+                        <td>祖级</td>
+                        <else/>
+                        <td>{$vo.pid|getAttrById='categoryService',###,'name'}</td>
+                    </eq>
+                    <td>
+                        <volist name="vo.proGroupId" id="voProGid">
+                            {$voProGid|getAttrById='proGroup',###,'name'},
+                        </volist>
+                    </td>
+                    <td>{$vo.sort}</td>
+                    <td>{$vo.state}</td>
+                </tr>
+
+
+                <volist name="list" id="vo2">
+                    <eq name="vo2.pid" value="$vo._id">
+                        <tr target="voId" rel="{$vo2._id}" >
+                            <td class="hide">{$vo2._id}</td>
+                            <td style="background-color: #fefacf">&nbsp;&nbsp;&nbsp;&nbsp;├&nbsp;&nbsp;{$vo2.name}</td>
+                            <td>{$vo2.pinYin}</td>
+                            <td>{$vo2.type}</td>
+                            <td>{$vo2.pid|getAttrById='categoryService',###,'name'}</td>
+                            <td>
+                                <volist name="vo2.proGroupId" id="voProGid2">
+                                    {$voProGid2|getAttrById='proGroup',###,'name'},
+                                </volist>
+                            </td>
+                            <td>{$vo2.sort}</td>
+                            <td>{$vo2.state}</td>
+                        </tr>
+
+                        <volist name="list" id="vo3">
+                            <eq name="vo3.pid" value="$vo2._id">
+                                <tr target="voId" rel="{$vo3._id}">
+                                    <td class="hide">{$vo3._id}</td>
+                                    <td style="background-color: #FFFAFA">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├&nbsp;&nbsp;{$vo3.name}</td>
+                                    <td>{$vo3.pinYin}</td>
+                                    <td>{$vo3.type}</td>
+                                    <td>{$vo3.pid|getAttrById='categoryService',###,'name'}</td>
+                                    <td>
+                                        <volist name="vo3.proGroupId" id="voProGid3">
+                                            {$voProGid3|getAttrById='proGroup',###,'name'},
+                                        </volist>
+                                    </td>
+                                    <td>{$vo3.sort}</td>
+                                    <td>{$vo3.state}</td>
+                                </tr>
+                            </eq>
+                        </volist>
+
+
+                    </eq>
+
+                </volist>
+
+            </eq>
+        </volist>
+
+        </tbody>
+    </table>
+    <div class="panelBar">
+
+
+    </div>
+</div>

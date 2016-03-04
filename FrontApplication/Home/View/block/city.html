@@ -1,0 +1,16 @@
+<div ng-controller="topTagNav" class="clearThis">
+    <div style="background-color: #FFF7F5;font-size:12px" class="pure-menu pure-menu-open pure-menu-horizontal backCity tL clearThis">
+        <div class="left pure-u-1-12">
+            <div href="#" class="cityLeftTitle">区域:</div>
+        </div>
+        <div style="height: inherit;" class="clearThis hackUl pure-u-11-12">
+            <li ng-repeat="vo in cityTwo" class="{{vo.thisClass}}"><a href="#" ng-click="towCityClick($event.target)" id="{{vo._id}}" pid="{{vo.pid}}">{{vo.name}}</a></li>
+        </div>
+        <div id="threeCityDiv" class="clearThis pure-g hide">
+            <div class="pure-u-1-12"></div>
+            <div style="width: 85.6667%;" class="pure-u-7-12 mt10 ml10 threeCity hackUl">
+                <li ng-repeat="vo in cityThree"><a ng-click="cityThreeClick($event.target)">{{vo.name}}</a></li>
+            </div>
+        </div>
+    </div>
+</div>
