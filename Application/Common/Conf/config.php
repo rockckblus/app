@@ -1,8 +1,8 @@
 <?php
 return array(
     'db_type' => 'mongo',
-//    'db_host' => '182.92.170.127',
-    'db_host' => '127.0.0.1',
+    'db_host' => '182.92.170.127',
+//    'db_host' => '127.0.0.1',
     'db_port' => '27017',
     'db_Name' => 'oeoe',
     'DB_USER'   => 'rockblus', // 用户名
