@@ -3,6 +3,7 @@
 .project
 diguo/*
 FrontApplication/Runtime/*
+Application/Runtime/*
 phpDoc/*
 phpmyadmin/*
 rockmongo/*
