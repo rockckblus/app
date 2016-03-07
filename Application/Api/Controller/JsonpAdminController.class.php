@@ -120,7 +120,6 @@ class JsonpAdminController extends CommonController
     {
         $d = D($_GET['model']);
         $find = $d->field($_GET['field'])->find((int)$_GET['id']);
-//        echo $d->getLastSql();
         $this->ajaxReturn($find[$_GET['field']], 'JSONP');
     }
 
