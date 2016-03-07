@@ -1,8 +1,9 @@
 var express = require('express');
-var mongoose = require('mongoose');
 var router = express.Router();
-mongoose.connect('mongodb://182.92.170.127/oeoe');
-var db = mongoose.connection;
+//mongoose.connect('mongodb://127.0.0.1/dipan');
+//var db = mongoose.connection;
+
+var cityCtrl = require('../db/controller/city.g.controller');//城市Ctrl
 
 //var oeoeSchema = new mongoose.Schema(
 ////    _id:mongoose.Schema.ObjectId,
@@ -12,14 +13,14 @@ var db = mongoose.connection;
 ////    url: String,
 ////    rel: String
 //);
-var oeoeSchema = {
+//var oeoeSchema = {
 //    name:String,
 //    pid: {
 //        type: mongoose.Schema.ObjectId,
 //        ref: 'key'
 //    }
-}
-var oeoeLeftNavModel = mongoose.model('', oeoeSchema, 'city');
+//}
+//var oeoeLeftNavModel = mongoose.model('', oeoeSchema, 'city');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -36,16 +37,18 @@ router.get('/', function (req, res, next) {
 //    });
 //    saveStudet.save();
 
-    oeoeLeftNavModel.find().
-        where('name').ne('天津').
-        where('type').equals('2').
-        where('pid').equals('54630d5cd6c08bb9138b4638').
-        select('name').
-        populate('pid').
-        limit(10).
-        exec(function (err, doc) {
-            res.json(doc);
-        });
+
+//    oeoeLeftNavModel.find().
+//        where('name').ne('天津').
+//        where('type').equals('2').
+//        where('pid').equals('54630d5cd6c08bb9138b4638').
+//        select('name').
+//        populate('pid').
+//        limit(10).
+//        exec(function (err, doc) {
+//            res.json(doc);
+//            res.json(111);
+//        });
 //    oeoeLeftNavModel.find(function (err, doc) {
 //        console.log('doc', doc);
 //        res.json(doc);
@@ -55,5 +58,12 @@ router.get('/', function (req, res, next) {
 //            console.log('err', err);
 //            console.log('doc', doc);
 //        });
+
+
+    cityCtrl.getAllOneCity(function (err,doc) {
+        res.json(doc);
+    })
+
+
 });
 module.exports = router;
