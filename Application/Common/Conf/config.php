@@ -4,7 +4,7 @@ return array(
 //    'db_host' => '182.92.170.127',
     'db_host' => '127.0.0.1',
     'db_port' => '27017',
-    'db_Name' => 'dipan',
+    'db_Name' => 'oeoe',
     'DB_USER'   => 'rockblus', // 用户名
     'DB_PWD'    => 'HDZrockblus8', // 密码
     'MODULE_ALLOW_LIST' => array(
