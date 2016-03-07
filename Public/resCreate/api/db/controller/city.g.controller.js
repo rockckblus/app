@@ -25,9 +25,11 @@ var fun = {
  * 查询全部 1级城市
  * 16/3/7 */
 function getAllOneCity(callBack) {
-    cityModel.findOne().
+    cityModel.find().
+        where('pid').equals('0').
+        select('name').
         exec(function (err, doc) {
-            console.log('err',err);
+            console.log('err', err);
             console.log('doc', doc);
             if (err) {
                 g.alert.err(err);//输出错误信息
