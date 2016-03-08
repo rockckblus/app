@@ -28,6 +28,7 @@ var citySchema = new g.Schema({
     pid: String//父Id;
 });
 
+
 /**
  * cityModel
  * 16/3/7 */

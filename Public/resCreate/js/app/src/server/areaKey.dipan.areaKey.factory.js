@@ -8,10 +8,14 @@
     angular.module('dipan').factory('areaKey', areaKey);
 
 
-    areaKey.$inject = ['$http'];
+    areaKey.$inject = ['$http', '$q', 'config'];
 
-    function areaKey($http) {
+    function areaKey($http, $q, config) {
         var re;
+        var url = config.host.nodeHost + '/city/getAllOneCity';
+        $http.post(url, {}, function (re) {
+           console.log('re',re);
+        });
 
         re = {};
         return re;

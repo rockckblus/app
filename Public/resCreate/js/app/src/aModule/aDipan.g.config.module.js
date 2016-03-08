@@ -27,6 +27,13 @@
     angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'uiBlock.dipan.uiGroup.module'], hackPost).config(uiRouter).config(secProvider);
 
     /**
+     * config 定义 全局变量
+     * 16/3/8 */
+    angular.module('dipan').factory('config', function () {
+        return config();
+    });
+
+    /**
      * 手动注入
      * 16/2/1 */
     hackPost.$inject = ['$httpProvider'];
@@ -103,11 +110,25 @@
             return angular.isObject(data) && String(data) !== '[object File]' ? param(data) : data;
         }];
     }
+
     /**
      * 使angular兼容ie7
      * 16/2/1 */
     function secProvider($sceProvider) {
         $sceProvider.enabled(false);
+    }
+
+
+    /**
+     * 定义系统常量config
+     * 16/3/8 */
+
+    function config() {
+        return  {
+            host: {//host 配置
+                nodeHost: 'http://localhost:3008'//nodejsApi hostUrl
+            }
+        };
     }
 
 

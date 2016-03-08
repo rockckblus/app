@@ -18,6 +18,9 @@
         "define": false,
         "plus": false,
         "mui": false,
-        "angular": false
+        "angular": false,
+        "require": false,
+        "module": false,
+        "__dirname": false
     }
 }
