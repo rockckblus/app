@@ -22,29 +22,16 @@ var cityCtrl = require('../db/controller/city.g.controller');//城市Ctrl
 //}
 //var oeoeLeftNavModel = mongoose.model('', oeoeSchema, 'city');
 
-/**
- * get *,所有get访问之前的动作
- * 16/3/8 */
-router.get('*', function (req, res, next) {
-    if (!g.mongoConnect) {//如果mongo连接失败,首次启动node的时候
-        res.json('mongo数据库连接失败');
-    } else {
-        next();
-    }
-});
 
 /**
  * post 跨域请求
  * 16/3/8 */
-router.post('*', function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
-    res.header('Access-Control-Allow-Methods', 'POST');
-    next();
+router.all('*', function (req, res, next) {
+    all(req, res, next);
 });
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.post('/', function (req, res, next) {
 
     /** 存班级  */
 //    var saveClass = new classModel({
@@ -82,22 +69,54 @@ router.get('/', function (req, res, next) {
 
 });
 
+/**
+ * post City:fun 城市相关api
+ * 16/3/8 */
 router.post('/city/:fun', function (req, res) {
-    console.log('req', req.params.fun);
+    postCity(req, res);
+});
+
+
+/**
+ * function 详情 ****************************************************
+ * 16/3/8 */
+
+/**
+ * router All post get
+ * 16/3/8 */
+function all(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
+    res.header('Access-Control-Allow-Methods', 'POST,GET');
+//    if (!checkIpPost(req.ip)) {//验证ip攻击
+//        res.json('您的请求过于频繁,请稍后再试试');
+//    }
+    if (!g.mongoConnect) {//如果mongo连接失败,首次启动node的时候
+        res.json('mongo数据库连接失败');
+    } else {
+        next();
+    }
+
+}
+
+/**
+ * post City Aip 城市方法相关
+ * 16/3/8 */
+function postCity(req, res) {
     var fun = req.params.fun;
     switch (fun) {
         case 'getAllOneCity' ://获取全部1级城市
-            getAllOneCity();
+            _getAllOneCity();
             break;
         case 'getTwoCityFromOneId' ://根据1级地址返回2级
-            getTwoCityFromOneId();
+            _getTwoCityFromOneId();
             break;
     }
 
     /**
      * getAllOneCity
      * 16/3/8 */
-    function getAllOneCity() {
+    function _getAllOneCity() {
         cityCtrl.getAllOneCity(req.body, function (err, doc) {
             res.json(doc);
         })
@@ -106,10 +125,11 @@ router.post('/city/:fun', function (req, res) {
     /**
      * getAllOneCity
      * 16/3/8 */
-    function getTwoCityFromOneId() {
+    function _getTwoCityFromOneId() {
         cityCtrl.getTwoCityFromOneId(req.body.oneId, function (err, doc) {
             res.json(doc);
         })
     }
-});
+}
+
 module.exports = router;
