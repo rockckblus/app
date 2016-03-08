@@ -80,11 +80,10 @@ router.post('/city/:fun', function (req, res) {
 /**
  * function 详情 ****************************************************
  * 16/3/8 */
-
 /**
  * router All post get
  * 16/3/8 */
-function all(req, res, next) {
+ function all(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
     res.header('Access-Control-Allow-Methods', 'POST,GET');

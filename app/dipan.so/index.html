@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/dist/app.css"/>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+    </script>
+</head>
+
+<body class="angularEnd">
+<div class="allDiv">
+    <div class="topHeader">
+        <div id="leftLogo">
+            <div class="topDiZhu left">
+                <div class="name">
+                    <div style="font-weight: bold">
+                        <span class="left">地主:</span>
+
+                        <div class="left">
+                            &nbsp;[&nbsp;空缺中&nbsp;]
+                        </div>
+                        <div class=" left">
+                            <span style="padding: 1px;margin-left: 10px;color: #026b1f" class=" ">抢地盘</span>
+                        </div>
+                        <div class="wenHao left"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="clear"></div>
+        <!-- areaKey directive -->
+        <div area-key></div>
+        <div id="getDiPan" class="left" style="margin-top: 7px;margin-left: 12px"
+             click-router-ui-block="alertDiv.alertInfo" item="2">
+            <span class=" btn btn-success btn-xs">发告示</span>
+        </div>
+        <div class="contentDiv" id="contentDiv">
+            <div id="block1">
+
+            </div>
+            <div id="block2">
+                {$d2}kdkd
+            </div>
+            <div id="block3">
+                {$d3}
+            </div>
+        </div>
+    </div>
+
+    <div class="otherDiv">
+        <div alert-info></div>
+        <div alert-warn="2"></div>
+    </div>
+
+</div>
+<script>
+//    var dist = false;
+//    if (dist) {
+        document.write('<script src="js/dist/app.js"><\/script>');
+//    }
+//    else {
+//        document.write('<script src="/Public/resCreate/js/app/dist/appDev.js"><\/script>');
+//    }
+</script>
+
+</body>
+
+</html>

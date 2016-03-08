@@ -1,0 +1,17 @@
+<div id='areaKey'  class="left" style="font-weight: bold;margin-left: 12px">
+    <div class="linkMouse left" ng-mouseleave="areaLeave()" ng-mousemove="areaHover()" ng-class="area.hoverLine" style="font-size: 24px;margin-right: 10px">
+        <div class="clear">岳阳华容北景港</div>
+        <div class="clear " ng-class="area.shan">{{area.jianTou}}</div>
+        <div ng-show="area.hoverLineShow"  id="areaAlert">
+
+            <div area-show></div>
+        </div>
+    </div>
+    <div class="linkMouse  left" ng-mouseleave="keyLeave()" ng-mousemove="keyHover()" ng-class="key.hoverLine"  style="font-size: 24px">
+        <div class="clear">技工工人行业招工</div>
+        <div class="clear " ng-class="key.shan" >{{key.jianTou}}</div>
+        <div ng-show="key.hoverLineShow" id="keyAlert">
+           <div key-show></div>
+        </div>
+    </div>
+</div>
