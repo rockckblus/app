@@ -12,6 +12,8 @@ use Think\Controller;
 class CommonController extends Controller
 {
 
+    public $indexAllRe;
+
     /**
      * 分配网站公共数据
      */
@@ -20,6 +22,8 @@ class CommonController extends Controller
         $systemEditData = D('systemEdit');
         $systemEditDataList = $systemEditData->select();
         $allData['getG'] = $this->formartSys($systemEditDataList);//全局变量配置
+
+        $this->indexAllRe['g'] = $allData;//给indexAllRe
         $this->assign('g', $allData);
     }
 
@@ -68,7 +72,11 @@ class CommonController extends Controller
             $path = explode('/', $urlArr['path']);
             $key = $path[1];//关键词或者分类名称
             $place = $this->findPlace($twoDmain);
+
+            $this->indexAllRe['session']['place'] = $place;
             $_SESSION['place'] = $place;//写入session地点
+
+            $this->indexAllRe['session']['key'] = $place;
             $_SESSION['key'] = $this->findKey($key);//写入关键词，或者分类
         } else {
 
@@ -88,7 +96,12 @@ class CommonController extends Controller
                 } else {
                     $path = explode('/', $urlArr['path']);
                     $key = $path[1];//关键词或者分类名称
+
+
+                    $this->indexAllRe['session']['key'] = $this->findKey($key);
                     $_SESSION['key'] = $this->findKey($key);//写入关键词，或者分类
+
+                    $this->indexAllRe['allCity'] = $this->findAllCity();
                     $this->assign('allCity', $this->findAllCity());
                 }
             }
@@ -268,7 +281,7 @@ class CommonController extends Controller
                         $reArr['twoCatList'] = $twoCatList;
 
                         //默认全部高亮
-                        $all = array('keyPy'=>$allKeyPy,'name' => '全部', 'gaoLiang' => 'selectedTab', 'sort' => 1000);
+                        $all = array('keyPy' => $allKeyPy, 'name' => '全部', 'gaoLiang' => 'selectedTab', 'sort' => 1000);
                         array_push($reArr['twoCatList'], $all);
 
                         //默认2级分类高亮是全部的时候，没有三级分类
@@ -295,15 +308,15 @@ class CommonController extends Controller
                             }
                         }
 
-                        foreach($threeList as &$v){
-                           $v['keyPy'] = $this->getCatAsKeyPy($v['_id']) ;
+                        foreach ($threeList as &$v) {
+                            $v['keyPy'] = $this->getCatAsKeyPy($v['_id']);
                         }
 
 
                         $reArr['twoCatList'] = $twoCatList;
 
                         //默认全部 不是高亮
-                        $all = array('keyPy'=>$allKeyPy,'name' => '全部', 'gaoLiang' => false, 'sort' => 1000);
+                        $all = array('keyPy' => $allKeyPy, 'name' => '全部', 'gaoLiang' => false, 'sort' => 1000);
                         array_push($reArr['twoCatList'], $all);
 
                         //默认三级导航 加入全部 高亮
@@ -321,7 +334,7 @@ class CommonController extends Controller
                         /** '全部'的keyPy */
                         $allKeyPy = $this->getCatAsKeyPy($twoCatListFind['_id']);
 
-                        $twoCatList = $this->getSelfCategory($twoCatListFind['_id'],$dataName);
+                        $twoCatList = $this->getSelfCategory($twoCatListFind['_id'], $dataName);
 
                         //select 出 高亮3级  同级分类
                         $threeList = $this->getSelfCategory($id, $dataName);
@@ -350,7 +363,7 @@ class CommonController extends Controller
                         $reArr['threeCatList'] = $threeList;
 
                         //默认全部2级3级 都不是高亮
-                        $all = array('keyPy'=>$allKeyPy,'name' => '全部', 'gaoLiang' => false, 'sort' => 1000);
+                        $all = array('keyPy' => $allKeyPy, 'name' => '全部', 'gaoLiang' => false, 'sort' => 1000);
                         array_push($reArr['twoCatList'], $all);
                         array_push($reArr['threeCatList'], $all);
 
@@ -507,7 +520,10 @@ class CommonController extends Controller
             $v2 = $this->getCategory($v2['_id'], 'categoryzhaopin');//查询出对应分类信息
         }
 
+        $this->indexAllRe ['catOneList'] = $list;
         $this->assign('catOneList', $list);
+
+        $this->indexAllRe ['catOneList2'] = $list;
         $this->assign('catOneList2', $list);
     }
 

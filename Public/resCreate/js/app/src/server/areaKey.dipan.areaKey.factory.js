@@ -13,9 +13,9 @@
     function areaKey($http, $q, config) {
         var re;
         var url = config.host.nodeHost + '/city/getAllOneCity';
-        $http.post(url, {}).success(function (re) {
-            console.log('re', re);
-        });
+//        $http.post(url, {}).success(function (re) {
+//            console.log('re', re);
+//        });
 
         re = {};
         return re;

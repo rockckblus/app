@@ -8,6 +8,7 @@
 namespace Home\Controller;
 
 use Common\CommonController;
+use Api\Controller\FunController as Fun;
 
 class IndexController extends CommonController
 {
@@ -20,7 +21,15 @@ class IndexController extends CommonController
     {
         $url = 'http://' . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
         $this->assignUrl($url);//分配当前城市,周边城市信息
-        $this->assign('roundCodeId', round(1, 9999) . time() . round(1, 9999));//分配注册验证码id,便于定位验证码
+
+        $roundCodeId = round(1, 9999) . time() . round(1, 9999);
+
+        $this->indexAllRe['roundCodeId'] = $roundCodeId;
+        $this->assign('roundCodeId', $roundCodeId);//分配注册验证码id,便于定位验证码
+
+        $fun = new Fun;
+        $userIp = $fun->getUserIp();
+        $this->indexAllRe['userIp'] = $userIp;
     }
 
     /**
@@ -55,21 +64,32 @@ class IndexController extends CommonController
         if (empty($re['two'])) {
             $seoTitle = $_SESSION['place']['thisCityInfo']['name'] . '地盘网|免费发布信息广告的网站';
             $pinDao = $_SESSION['place']['thisCityInfo']['name'];//分类聊天频道字符串
+
+            $this->indexAllRe['pinDao'] = $pinDao;
             $this->assign('pinDao', $pinDao);
 //            $this->giveCat();//只分配频道和频道下一级分类
         } else {
             $seoTitle = '※〓' . $re['one'] . $re['two'] . ' [' . $_SESSION['place']['thisCityInfo']['name'] . '地盘网]';
             $pinDao = $re['pinDao'];//分类聊天频道字符串
+
+            $this->indexAllRe['pinDao'] = $pinDao;
             $this->assign('pinDao', $pinDao);
         }
         //分配当前城市所有地区
         $this->assignSunCity();
+
+        $this->indexAllRe ['first'] = $re['one'];
         $this->assign('first', $re['one']);
+
+        $this->indexAllRe ['seoTitle'] = $seoTitle;
         $this->assign('seoTitle', $seoTitle);
+
         if (empty($_SESSION['key'])) {//如果没有关键词。就显示www主页模板
+            $this->assign('indexAllRe', json_encode($this->indexAllRe));//返回全部 json数组
             $this->display('Index/www');
         } else {
             //分配分类导航数据
+            $this->assign('indexAllRe', trim(json_encode($this->indexAllRe)),'\"');//返回全部 json数组
             $this->assignCategoryOneTwo();
             $this->display();
         }
@@ -80,9 +100,14 @@ class IndexController extends CommonController
     {
         $caiId = $_SESSION['key']['catAndThisKey']['thisKey']['categoryCid'];
         $type = $_SESSION['key']['catAndThisKey']['thisKey']['categoryInfo']['type'];
-        $getCatList = R('Api/Api/getCatList',array($caiId,$type));
-        $this->assign('catTwoList',$getCatList['twoCatList']);
-        $this->assign('catThreeList',$getCatList['threeCatList']);
+        $getCatList = R('Api/Api/getCatList', array($caiId, $type));
+
+        $this->indexAllRe['catTwoList'] = $getCatList['twoCatList'];
+        $this->assign('catTwoList', $getCatList['twoCatList']);
+
+
+        $this->indexAllRe['catThreeList'] = $getCatList['threeCatList'];
+        $this->assign('catThreeList', $getCatList['threeCatList']);
     }
 
     /**
@@ -98,6 +123,7 @@ class IndexController extends CommonController
             $v['url'] = $this->getCatAsKeyPy($v['_id']);
         }
 
+        $this->indexAllRe['category'] = $list;
         $this->assign('category', $list);
     }
 
@@ -212,6 +238,8 @@ class IndexController extends CommonController
         foreach ($listTwo as &$v) {
             $v['py'] = $this->getPlacePy($v['_id']);
         }
+
+        $this->indexAllRe['listSonCity'] = $listTwo;
         $this->assign('listSonCity', $listTwo);
     }
 
@@ -228,6 +256,8 @@ class IndexController extends CommonController
         foreach ($list as &$v) {
             $v['py'] = $this->getPlacePy($v['_id']);
         }
+
+        $this->indexAllRe['twoList'] = $list;
         $this->assign('twoList', $list);
     }
 
@@ -242,6 +272,8 @@ class IndexController extends CommonController
             foreach ($list as &$v) {
                 $v['py'] = $this->getPlacePy($v['_id']);
             }
+
+            $this->indexAllRe['twoListOne'] = $list;
             $this->assign('twoListOne', $list);
         }
     }

@@ -76,6 +76,10 @@ router.post('/city/:fun', function (req, res) {
     postCity(req, res);
 });
 
+router.get('/', function (req, res) {
+    res.json(11);
+});
+
 
 /**
  * function 详情 ****************************************************
@@ -83,7 +87,7 @@ router.post('/city/:fun', function (req, res) {
 /**
  * router All post get
  * 16/3/8 */
- function all(req, res, next) {
+function all(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
     res.header('Access-Control-Allow-Methods', 'POST,GET');
@@ -112,6 +116,7 @@ function postCity(req, res) {
             break;
     }
 
+
     /**
      * getAllOneCity
      * 16/3/8 */
@@ -131,4 +136,7 @@ function postCity(req, res) {
     }
 }
 
+/**
+ *asdfkkkk
+ * 16/3/9 */
 module.exports = router;

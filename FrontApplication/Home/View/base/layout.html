@@ -9,7 +9,7 @@
 
 <body class="angularEnd">
 <div class="allDiv">
-    <div class="topHeader">
+    <div class="topHeader" style="display: none">
         <div id="leftLogo">
             <div class="topDiZhu left">
                 <div class="name">
@@ -37,7 +37,6 @@
         </div>
         <div class="contentDiv" id="contentDiv">
             <div id="block1">
-
             </div>
             <div id="block2">
                 {$d2}
@@ -54,8 +53,19 @@
     </div>
 
 </div>
+<!--数据div-->
+<div id="dataTemp" ip="{$ip}"></div>
+
+<!--调试div-->
+<div class="clear" style="position: fixed;z-index: 3000;background-color: #fff;width: 100%;height: 100%">
+    <!--解析url-->
+    <div url-parse="{$indexAllRe}">{$indexAllRe}</div>
+
+</div>
+
+
 <script>
-    var dist = false;
+    var dist = true;
     if (dist) {
         document.write('<script src="/Public/resCreate/js/app/dist/app.js"><\/script>');
     }
