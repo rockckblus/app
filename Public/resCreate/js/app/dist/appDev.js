@@ -21,6 +21,7 @@ document.write('<script src="/Public/resCreate/js/app/src/directive/clickRouterU
 document.write('<script src="/Public/resCreate/js/app/src/directive/areaKey/areaKey.dipan.topAreaKey.directive.js"><\/script>');
 document.write('<script src="/Public/resCreate/js/app/src/directive/areaKey/areaShow.dipan.areaShowSelect.directive.js"><\/script>');
 document.write('<script src="/Public/resCreate/js/app/src/directive/areaKey/keyShow.dipan.keyShowSelect.directive.js"><\/script>');
+document.write('<script src="/Public/resCreate/js/app/src/directive/urlParse.dipan.firstNginx.directive.js"><\/script>');
 
 document.write('<script src="/Public/resCreate/js/app/src/directive/uiBlock/alertDiv/alertInfo.alertDiv.showInfo.directive.js"><\/script>');
 document.write('<script src="/Public/resCreate/js/app/src/directive/uiBlock/alertDiv/alertWarn.alertDiv.alertWarn.directive.js"><\/script>');
@@ -34,6 +35,7 @@ document.write('<script src="/Public/resCreate/js/app/src/server/alertDiv.uiBloc
 document.write('<script src="/Public/resCreate/js/app/src/server/compile.uiBlock.compile.factory.js"><\/script>');
 document.write('<script src="/Public/resCreate/js/app/src/server/tools.dipan.block.factory.js"><\/script>');
 document.write('<script src="/Public/resCreate/js/app/src/server/areaKey.dipan.areaKey.factory.js"><\/script>');
+document.write('<script src="/Public/resCreate/js/app/src/server/urlParse.dipan.firstData.factory.js"><\/script>');
 
 /** tpl  */
 document.write('<script src="/Public/resCreate/js/app/dist/app.templates.js"><\/script>');

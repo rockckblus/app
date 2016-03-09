@@ -19,6 +19,7 @@ class IndexController extends CommonController
      */
     public function _initialize()
     {
+//        dump(1212);
         $url = 'http://' . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
         $this->assignUrl($url);//分配当前城市,周边城市信息
 
@@ -32,6 +33,11 @@ class IndexController extends CommonController
         $this->indexAllRe['userIp'] = $userIp;
     }
 
+    function aaa()
+    {
+        echo 'aaaa';
+    }
+
     /**
      * index 入口
      * @see assignSunCity
@@ -39,6 +45,7 @@ class IndexController extends CommonController
      */
     public function  index()
     {
+//        echo 'index';
         $this->assignPublicSystem();//分配全局数据
         $this->assignCategory();//分配分类变量
         $re = '';
@@ -69,7 +76,7 @@ class IndexController extends CommonController
             $this->assign('pinDao', $pinDao);
 //            $this->giveCat();//只分配频道和频道下一级分类
         } else {
-            $seoTitle = '※〓' . $re['one'] . $re['two'] . ' [' . $_SESSION['place']['thisCityInfo']['name'] . '地盘网]';
+            $seoTitle = '※〓' . $re['one'] . $re['two'] . '_[' . $_SESSION['place']['thisCityInfo']['name'] . '地盘网]';
             $pinDao = $re['pinDao'];//分类聊天频道字符串
 
             $this->indexAllRe['pinDao'] = $pinDao;
@@ -85,11 +92,13 @@ class IndexController extends CommonController
         $this->assign('seoTitle', $seoTitle);
 
         if (empty($_SESSION['key'])) {//如果没有关键词。就显示www主页模板
-            $this->assign('indexAllRe', json_encode($this->indexAllRe));//返回全部 json数组
+            $jsonCode = json_encode($this->indexAllRe);
+            $this->assign('indexAllRe', $jsonCode);//返回全部 json数组
             $this->display('Index/www');
         } else {
             //分配分类导航数据
-            $this->assign('indexAllRe', trim(json_encode($this->indexAllRe)),'\"');//返回全部 json数组
+            $jsonCode = json_encode($this->indexAllRe);
+            $this->assign('indexAllRe', $jsonCode);//返回全部 json数组
             $this->assignCategoryOneTwo();
             $this->display();
         }

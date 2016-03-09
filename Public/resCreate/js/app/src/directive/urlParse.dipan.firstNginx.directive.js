@@ -12,8 +12,8 @@
             scope: {},
             controller: thisController,
             link: function (scope, element, attrs) {
-//                console.log('attr',JSON.parse(attrs));
-                console.log('attr', attrs.urlParse);
+                console.log('attr', JSON.parse(attrs.urlParse));
+//                console.log('attr', attrs.urlParse);
             }
         };
     }

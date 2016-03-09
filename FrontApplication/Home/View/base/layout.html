@@ -54,18 +54,18 @@
 
 </div>
 <!--数据div-->
-<div id="dataTemp" ip="{$ip}"></div>
+<div url-parse={$indexAllRe}></div>
 
 <!--调试div-->
 <div class="clear" style="position: fixed;z-index: 3000;background-color: #fff;width: 100%;height: 100%">
     <!--解析url-->
-    <div url-parse="{$indexAllRe}">{$indexAllRe}</div>
+
 
 </div>
 
 
 <script>
-    var dist = true;
+    var dist = false;
     if (dist) {
         document.write('<script src="/Public/resCreate/js/app/dist/app.js"><\/script>');
     }
