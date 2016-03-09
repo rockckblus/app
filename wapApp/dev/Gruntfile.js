@@ -32,7 +32,7 @@ module.exports = function (grunt) {
         ngtemplates: {
             dipan: {
                 cwd: '../../',
-                src: 'app/dev/html/src/**/**.html',
+                src: 'webApp/dev/html/src/**/**.html',
                 dest: '../dipan.so/js/dist/app.templates.js'
             }
         },
