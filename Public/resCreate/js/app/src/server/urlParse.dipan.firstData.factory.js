@@ -1,25 +1,43 @@
 /**
  * urlParse.dipan.urlParse.factory.js
- * 命名注释：server简称_urlParse. 父模块 dipan . 功能_解析url服务 根据url 取对应地区 分类 关键词 初始数据. 类型_factory.js
+ * 命名注释：server简称_urlParse. 父模块 dipan . 功能_全局变量 数据 模型. 类型_factory.js
+ * ------------------------------------------------
+ * 监听从模板解析来的 php变量对象 赋值改变事件 urlParseChange
+ * 同时广播 所有 子域, 变量改变事件 urlParseChange
  */
 
 (function () {
     'use strict';
     angular.module('dipan').factory('urlParse', urlParse);
 
-    urlParse.$inject = ['$http', '$q', 'config'];
+    urlParse.$inject = ['$rootScope'];
 
-    function urlParse($http, $q, config) {
-        var re;
+    function urlParse($rootScope) {
+        /**
+         * 监听从模板解析来的 php变量对象 赋值改变事件 urlParseChange
+         * 同时广播 所有 子域, 变量改变事件 urlParseChange
+         * 16/3/10 */
+        onUrlParseChange();
 
-//        var topUrl = window.location.href;
-//        var url = config.host.nodeHost + '/city/getAllOneCity';
-//        $http.post(url, {}).success(function (re) {
-//            console.log('re', re);
-//        });
+        /**
+         * 返回urlParse变量对象
+         * 16/3/10 */
+        return {};
 
-        re = {};
-        return re;
+
+        /*************************
+         * fun 详情
+         * 16/3/10 ***************/
+
+        /**
+         * 监听从模板解析来的 php变量对象 赋值改变事件
+         * 同时广播 所有 子域, 变量改变事件 urlParseChange
+         * 16/3/10 */
+        function onUrlParseChange() {
+            $rootScope.$on('urlParseChange', function () {
+                $rootScope.$broadcast('urlParseChangeSub');
+            });
+        }
     }
 })();
 

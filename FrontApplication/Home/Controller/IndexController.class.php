@@ -19,7 +19,6 @@ class IndexController extends CommonController
      */
     public function _initialize()
     {
-//        dump(1212);
         $url = 'http://' . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
         $this->assignUrl($url);//分配当前城市,周边城市信息
 
@@ -33,10 +32,6 @@ class IndexController extends CommonController
         $this->indexAllRe['userIp'] = $userIp;
     }
 
-    function aaa()
-    {
-        echo 'aaaa';
-    }
 
     /**
      * index 入口
@@ -45,7 +40,6 @@ class IndexController extends CommonController
      */
     public function  index()
     {
-//        echo 'index';
         $this->assignPublicSystem();//分配全局数据
         $this->assignCategory();//分配分类变量
         $re = '';
