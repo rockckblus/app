@@ -34,7 +34,6 @@ document.write('<script src="/Public/resCreate/js/app/src/server/dipan.fun.reBin
 document.write('<script src="/Public/resCreate/js/app/src/server/alertDiv.uiBlock.alertUi.factory.js"><\/script>');
 document.write('<script src="/Public/resCreate/js/app/src/server/compile.uiBlock.compile.factory.js"><\/script>');
 document.write('<script src="/Public/resCreate/js/app/src/server/tools.dipan.block.factory.js"><\/script>');
-document.write('<script src="/Public/resCreate/js/app/src/server/areaKey.dipan.areaKey.factory.js"><\/script>');
 document.write('<script src="/Public/resCreate/js/app/src/server/urlParse.dipan.firstData.factory.js"><\/script>');
 
 /** tpl  */
