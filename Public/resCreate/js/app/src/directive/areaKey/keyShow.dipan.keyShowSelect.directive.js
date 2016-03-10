@@ -25,9 +25,9 @@
         };
     }
 
-    thisController.$inject = ['$scope', 'areaKey'];
+    thisController.$inject = ['$scope'];
 
-    function thisController($scope, areaKey) {
+    function thisController($scope) {
 
         /** 声明 area 模型  */
         $scope.area = {

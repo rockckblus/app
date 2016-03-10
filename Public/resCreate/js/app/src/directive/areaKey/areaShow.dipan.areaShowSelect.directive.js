@@ -20,9 +20,9 @@
         };
     }
 
-    thisController.$inject = ['$scope', 'areaKey'];
+    thisController.$inject = ['$scope'];
 
-    function thisController($scope, areaKey){
+    function thisController($scope){
 
     }
 
