@@ -23,7 +23,7 @@
     thisController.$inject = ['$scope'];
 
     function thisController($scope){
-
+        
     }
 
 

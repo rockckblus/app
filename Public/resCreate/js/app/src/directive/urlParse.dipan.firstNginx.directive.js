@@ -23,6 +23,7 @@
     function thisController($scope,$rootScope,$timeout,  urlParse) {
         $timeout(function () {
             urlParse.data = $scope.data;
+            console.log(urlParse);
             $rootScope.$broadcast('urlParseChange');//通知全局变量更新 urlParse.dipan.firstData.factory.js
         },0);
 

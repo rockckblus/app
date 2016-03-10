@@ -1,36 +1,5 @@
-var express = require('express');
-var router = express.Router();
-var cityCtrl = require('../db/controller/city.g.controller');//城市Ctrl
-var all = require('./default');//公共路由all方法
-//var oeoeSchema = new mongoose.Schema(
-////    _id:mongoose.Schema.ObjectId,
-////    name: String,
-////    pid: String,
-////    sort: String,
-////    url: String,
-////    rel: String
-//);
-//var oeoeSchema = {
-//    name:String,
-//    pid: {
-//        type: mongoose.Schema.ObjectId,
-//        ref: 'key'
-//    }
-//}
-//var oeoeLeftNavModel = mongoose.model('', oeoeSchema, 'city');
 
-
-
-/**
- * post 跨域请求
- * 16/3/8 */
-router.all('*', function (req, res, next) {
-    all(req, res, next);
-});
-
-/**
- * post /
- * 16/3/10 */
+/* GET home page. */
 router.post('/', function (req, res, next) {
 
     /** 存班级  */
@@ -84,6 +53,25 @@ router.get('/', function (req, res) {
 /**
  * function 详情 ****************************************************
  * 16/3/8 */
+
+/**
+ * router All post get
+ * 16/3/8 */
+function all(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
+    res.header('Access-Control-Allow-Methods', 'POST,GET');
+//    if (!checkIpPost(req.ip)) {//验证ip攻击
+//        res.json('您的请求过于频繁,请稍后再试试');
+//    }
+    if (!g.mongoConnect) {//如果mongo连接失败,首次启动node的时候
+        res.json('mongo数据库连接失败');
+    } else {
+        next();
+    }
+
+}
+
 /**
  * post City Aip 城市方法相关
  * 16/3/8 */
@@ -97,6 +85,7 @@ function postCity(req, res) {
             _getTwoCityFromOneId();
             break;
     }
+
 
     /**
      * getAllOneCity
@@ -117,7 +106,4 @@ function postCity(req, res) {
     }
 }
 
-/**
- *asdfkkkk
- * 16/3/9 */
 module.exports = router;
