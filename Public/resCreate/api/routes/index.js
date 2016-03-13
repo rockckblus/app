@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var cityCtrl = require('../db/controller/city.g.controller');//城市Ctrl
+var sessionCtrl = require('../db/controller/session.g.controller');//session Ctrl
 var all = require('./default');//公共路由all方法
 //var oeoeSchema = new mongoose.Schema(
 ////    _id:mongoose.Schema.ObjectId,
@@ -18,7 +19,6 @@ var all = require('./default');//公共路由all方法
 //    }
 //}
 //var oeoeLeftNavModel = mongoose.model('', oeoeSchema, 'city');
-
 
 
 /**
@@ -76,6 +76,14 @@ router.post('/city/:fun', function (req, res) {
     postCity(req, res);
 });
 
+/**
+ * post City:fun 城市相关api
+ * 16/3/8 */
+router.get('/system/:fun', function (req, res) {
+    postSession(req, res);
+});
+
+
 router.get('/', function (req, res) {
     res.json(11);
 });
@@ -114,6 +122,30 @@ function postCity(req, res) {
         cityCtrl.getTwoCityFromOneId(req.body.oneId, function (err, doc) {
             res.json(doc);
         })
+    }
+}
+
+
+/**
+ * function 详情 ****************************************************
+ * 16/3/8 */
+/**
+ * post City Aip 城市方法相关
+ * 16/3/8 */
+function postSession(req, res) {
+    var fun = req.params.fun;
+    switch (fun) {
+        case 'saveSession' ://获取全部1级城市
+            _saveSession();
+            break;
+    }
+
+    /**
+     * saveSession
+     * * 16/3/8 */
+    function _saveSession() {
+        sessionCtrl.saveSession(req.body);
+        res.json('okSession');
     }
 }
 

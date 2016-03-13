@@ -22,7 +22,7 @@ var fun = {
 function saveSession(post) {
     sessionModel.create({
         sessionId: post.sessionid,
-        time: new Date()
+        content: post.content,
     });
     sessionModel.save();
 }

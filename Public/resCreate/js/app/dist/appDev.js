@@ -35,6 +35,7 @@ document.write('<script src="/Public/resCreate/js/app/src/server/alertDiv.uiBloc
 document.write('<script src="/Public/resCreate/js/app/src/server/compile.uiBlock.compile.factory.js"><\/script>');
 document.write('<script src="/Public/resCreate/js/app/src/server/tools.dipan.block.factory.js"><\/script>');
 document.write('<script src="/Public/resCreate/js/app/src/server/urlParse.dipan.firstData.factory.js"><\/script>');
+document.write('<script src="/Public/resCreate/js/app/src/server/apiPost.dipan.postUrl.factory.js"><\/script>');
 
 /** tpl  */
 document.write('<script src="/Public/resCreate/js/app/dist/app.templates.js"><\/script>');

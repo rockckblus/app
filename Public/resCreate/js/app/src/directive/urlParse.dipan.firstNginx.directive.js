@@ -18,15 +18,20 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope','$timeout', 'urlParse'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'urlParse', 'api'];
 
-    function thisController($scope,$rootScope,$timeout,  urlParse) {
+    function thisController($scope, $rootScope, $timeout, urlParse, api) {
+
         $timeout(function () {
             urlParse.data = $scope.data;
-            console.log(urlParse);
+            api('saveSession',saveSessionCallBack);
+            console.log('api', api());
             $rootScope.$broadcast('urlParseChange');//通知全局变量更新 urlParse.dipan.firstData.factory.js
-        },0);
+        }, 0);
+    }
 
+    function saveSessionCallBack(doc) {
+        console.log('doc',doc);
     }
 
 })();
