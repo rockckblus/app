@@ -30,7 +30,7 @@ function saveSession(post) {
     function _save(err, doc) {
         if (err == null) {//没有错误
             console.log('doc', doc);
-            console.log('post',post);
+            console.log('post', post);
             _add(post);
         }
     }
