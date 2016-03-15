@@ -16,11 +16,12 @@
 var g = require('../../g.config');
 
 /**
- * city结构
+ * session结构
  * 16/3/7 */
 var sessionSchema = new g.Schema({
-    sessionId:String,
-    time: new Date()
+    sessionId: String,
+    time: {type: Date, default: Date.now},
+    content: Object
 });
 
 

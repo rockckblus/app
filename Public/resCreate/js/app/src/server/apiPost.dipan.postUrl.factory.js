@@ -19,11 +19,11 @@
     api.$inject = ['$http', '$q', 'config'];
 
     function api($http, $q, config) {
-        var postApi = function (funName, callBack, callBackErr) {
+        var postApi = function (funName, postData, callBack, callBackErr) {
             switch (funName) {
                 case 'saveSession' :
                     var url = apiUrl.nodejs.system.saveSession;
-                    _post(url).then(callBack, callBackErr);
+                    _post(url, postData).then(callBack, callBackErr);
                     break;
             }
         };
@@ -34,8 +34,8 @@
 
         var defer = $q.defer();
 
-        function _post(url) {
-            $http.post(url).success(function (doc) {
+        function _post(url, postData) {
+            $http.post(url,postData).success(function (doc) {
                 defer.resolve(doc);
             }).error(function (err) {
                 defer.reject(err);

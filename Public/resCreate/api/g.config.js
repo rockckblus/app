@@ -35,7 +35,7 @@ var g = {
     /**
      * 错误信息输出
      * 16/3/8 */
-    alert: alert.err
+    alert: alert
 };
 
 (function () {
@@ -60,7 +60,7 @@ function alert(err) {
     /**
      * 错误信息提示，todo，记录到错误日志
      * 16/3/7 */
-    this.err = _err(err);
+    _err(err);
 
     /**
      * --------------------------------alert 具体方法---------------
@@ -71,10 +71,10 @@ function alert(err) {
      * 16/3/7 */
     function _err(err) {
         if (err.constructor == Object) {
-            console.error(JSON.stringify(err));
+            console.error('errJson', JSON.stringify(err));
         }
         if (err.constructor == String) {
-            console.error(err);
+            console.error('errString', err);
         }
     }
 }

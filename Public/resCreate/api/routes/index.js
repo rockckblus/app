@@ -77,9 +77,9 @@ router.post('/city/:fun', function (req, res) {
 });
 
 /**
- * post City:fun 城市相关api
+ * post system:fun system相关api(session,)
  * 16/3/8 */
-router.get('/system/:fun', function (req, res) {
+router.post('/system/:fun', function (req, res) {
     postSession(req, res);
 });
 

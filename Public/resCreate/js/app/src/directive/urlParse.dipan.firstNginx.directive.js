@@ -24,14 +24,14 @@
 
         $timeout(function () {
             urlParse.data = $scope.data;
-            api('saveSession',saveSessionCallBack);
-            console.log('api', api());
+            $scope.data.queryNode = true;//是node Api
+            api('saveSession', $scope.data, saveSessionCallBack);
             $rootScope.$broadcast('urlParseChange');//通知全局变量更新 urlParse.dipan.firstData.factory.js
         }, 0);
     }
 
     function saveSessionCallBack(doc) {
-        console.log('doc',doc);
+        console.log('doc', doc);
     }
 
 })();
