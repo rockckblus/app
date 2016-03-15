@@ -84,7 +84,6 @@ class IndexController extends CommonController
 
         $this->indexAllRe ['seoTitle'] = $seoTitle;
         $this->assign('seoTitle', $seoTitle);
-
         if (empty($_SESSION['key'])) {//如果没有关键词。就显示www主页模板
             $this->indexAllRe['session']['id'] = session_id();
             $jsonCode = json_encode($this->indexAllRe);

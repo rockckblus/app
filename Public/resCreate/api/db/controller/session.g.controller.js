@@ -28,11 +28,9 @@ function saveSession(post) {
     findSession(post.session.id, _save);
 
     function _save(err, doc) {
-        console.log('errrrr', err);
-        console.log('docccc', doc);
-        if (err) {//不存在就新加
-            console.log('err', err);
-
+        if (err == null) {//没有错误
+            console.log('doc', doc);
+            console.log('post',post);
             _add(post);
         }
     }
@@ -55,23 +53,18 @@ function saveSession(post) {
  * @returns callBack(err,doc) 回调错误信息,正确信息
  * 16/3/14 */
 function findSession(sessionId, callBack) {
-
-    sessionModel.findOne({},function(e,doc){
-       console.log('e',e);
-        console.log('d', doc);
-    });
-        //.select('sessionId')
-        //.exec(function (err, doc) {
-        //    console.log('err',err);
-        //    console.log('doc',doc);
-        //    if (err) {
-        //        /**
-        //         *错误就去添加
-        //         * 16/3/15 */
-        //        g.alert(err.message);
-        //    }
-        //    callBack(err, doc);
-        //});
+    sessionModel.find()
+        .where('sessionId').equals(sessionId)
+        .select('sessionId')
+        .exec(function (err, doc) {
+            if (err) {
+                /**
+                 * 错误就输出
+                 * 16/3/15 */
+                g.alert(err.message);
+            }
+            callBack(err, doc);
+        });
 }
 
 
