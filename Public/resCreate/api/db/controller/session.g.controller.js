@@ -19,6 +19,7 @@ var fun = {
 
 /**
  * saveSession 一条
+ * @param {obj} post postSession 对象{'session':{id:"seddionid",content:{obj}}}
  * 16/3/7 */
 function saveSession(post) {
 
@@ -28,10 +29,10 @@ function saveSession(post) {
     findSession(post.session.id, _save);
 
     function _save(err, doc) {
-        if (err == null) {//没有错误
-            console.log('doc', doc);
-            console.log('post', post);
+        if ((err == null) && !doc[0]) {//没有错误,并且没有查到
             _add(post);
+        } else {
+            _update(post);
         }
     }
 
@@ -43,6 +44,18 @@ function saveSession(post) {
             sessionId: post.session.id,
             content: post.session
         });
+    }
+
+    /**
+     * 更新一条记录
+     * 16/3/16 */
+    function _update(post) {
+        var condition = {'seesionId': post.session.id};
+        var up = {$set: {'content': post.session}};
+        sessionModel.update(condition, up, errFunCallBack);
+        function errFunCallBack(err) {
+            g.alert(err);
+        }
     }
 }
 
@@ -67,6 +80,30 @@ function findSession(sessionId, callBack) {
         });
 }
 
+/**
+ * findSessionContent
+ * @param {obj} {postBody} 取id:{postBody.session.id}
+ * @param {function} callBack
+ * @returns callBack(err,doc) 回调错误信息,正确信息
+ * 16/3/14 */
+function findSessionContent(post, callBack) {
+    try {
+        sessionModel.find()
+            .where('sessionId').equals(post.session.id)
+            .select('content')
+            .exec(function (err, doc) {
+                if (err) {
+                    /**
+                     * 错误就输出
+                     * 16/3/15 */
+                    g.alert(err.message);
+                }
+                callBack(err, doc);
+            });
+    } catch (e) {
+        g.alert(e);
+    }
+}
 
 module.exports = fun;
 

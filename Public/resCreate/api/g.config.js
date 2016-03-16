@@ -79,5 +79,4 @@ function alert(err) {
     }
 }
 
-
 module.exports = g;

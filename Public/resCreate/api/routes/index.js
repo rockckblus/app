@@ -80,7 +80,7 @@ router.post('/city/:fun', function (req, res) {
  * post system:fun system相关api(session,)
  * 16/3/8 */
 router.post('/system/:fun', function (req, res) {
-    postSession(req, res);
+    postSystem(req, res);
 });
 
 
@@ -132,11 +132,14 @@ function postCity(req, res) {
 /**
  * post City Aip 城市方法相关
  * 16/3/8 */
-function postSession(req, res) {
+function postSystem(req, res) {
     var fun = req.params.fun;
     switch (fun) {
-        case 'saveSession' ://获取全部1级城市
+        case 'saveSession' ://添加一条session 如果存在就修改,不存在就新加
             _saveSession();
+            break;
+        case 'findSessionContent' ://根据post的sessionId,获取sessionContent
+            _findSessionContent();
             break;
     }
 
@@ -146,6 +149,20 @@ function postSession(req, res) {
     function _saveSession() {
         sessionCtrl.saveSession(req.body);
         res.json('okSession');
+    }
+
+    /**
+     * 根据post的sessionId,获取sessionContent
+     * * 16/3/8 */
+    function _findSessionContent() {
+        sessionCtrl.findSessionContent(req.body, callback);
+        function callback(err, doc) {
+            if (err) {
+                res.json('查询失败');
+            } else if (!doc[0]) {
+                res.json(doc._doc);
+            }
+        }
     }
 }
 
