@@ -7,9 +7,17 @@
     angular.module('dipan').controller('body', body);
 
     angular.module('dipan').controller('header', header);
-    header.$inject = ['$scope'];
-    function header($scope){
-       $scope.title = 'title111' ;
+    header.$inject = ['$scope','urlParse'];
+    function header($scope,urlParse) {
+        $scope.title = '';
+        $scope.$on('urlParseChangeSub',function(){
+            try{
+                $scope.title =  urlParse.data.seoTitle;
+            }catch(e){
+               console.error(e);
+            }
+        });
+        
     }
 
 
@@ -36,7 +44,6 @@
 //            $scope.c = [4, 5, 6];
 ////            repBindOnce('bindonce', $scope);
 //        }, 2000);
-
 
 
     }

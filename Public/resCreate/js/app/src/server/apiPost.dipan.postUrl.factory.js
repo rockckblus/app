@@ -32,7 +32,6 @@
             }
         };
 
-
         //system
         apiUrl.nodejs.system.saveSession = config.host.nodeHost + '/system/saveSession';//save一条session 传reqbody
         apiUrl.nodejs.system.findSessionContent = config.host.nodeHost + '/system/findSessionContent';//根据sessionid find session content
