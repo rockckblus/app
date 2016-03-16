@@ -10,7 +10,8 @@ var g = require('../../g.config');
 
 var fun = {
     saveSession: saveSession,//添加一条session,如果存在,就更新content对象
-    findSession: findSession
+    findSession: findSession,//find 一条 sessionId
+    findSessionContent:findSessionContent,//find sessionContent
 };
 
 /**
@@ -89,7 +90,7 @@ function findSession(sessionId, callBack) {
 function findSessionContent(post, callBack) {
     try {
         sessionModel.find()
-            .where('sessionId').equals(post.session.id)
+            .where('sessionId').equals(post.id)
             .select('content')
             .exec(function (err, doc) {
                 if (err) {

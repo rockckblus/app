@@ -22,16 +22,26 @@
 
     function thisController($scope, $rootScope, $timeout, urlParse, api) {
 
+        console.log('api',api);
         $timeout(function () {
             urlParse.data = $scope.data;
             $scope.data.queryNode = true;//是node Api
             api('saveSession', $scope.data, saveSessionCallBack);
             $rootScope.$broadcast('urlParseChange');//通知全局变量更新 urlParse.dipan.firstData.factory.js
+
+            /**
+             * 测试findSessionContent
+             * 16/3/16 */
+            api('findSessionContent', $scope.data.session, function (re) {
+                console.log('reContent', re);
+            });
         }, 0);
+
+
     }
 
     function saveSessionCallBack(doc) {
-        console.log('doc', doc);
+        console.log('docFront', doc);
     }
 
 })();

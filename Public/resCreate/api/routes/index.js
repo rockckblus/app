@@ -157,11 +157,7 @@ function postSystem(req, res) {
     function _findSessionContent() {
         sessionCtrl.findSessionContent(req.body, callback);
         function callback(err, doc) {
-            if (err) {
-                res.json('查询失败');
-            } else if (!doc[0]) {
-                res.json(doc._doc);
-            }
+            res.json({err: err, doc: doc});
         }
     }
 }

@@ -70,11 +70,15 @@ function alert(err) {
      * 错误信息提示，todo，记录到错误日志
      * 16/3/7 */
     function _err(err) {
-        if (err.constructor == Object) {
-            console.error('errJson', JSON.stringify(err));
-        }
-        if (err.constructor == String) {
-            console.error('errString', err);
+        try{
+            if (err.constructor == Object) {
+                console.error('errJson', JSON.stringify(err));
+            }
+            if (err.constructor == String) {
+                console.error('errString', err);
+            }
+        }catch (e){
+            console.error('错误类型未比较成功', e);
         }
     }
 }
