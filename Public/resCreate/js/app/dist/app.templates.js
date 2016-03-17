@@ -2,21 +2,24 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   'use strict';
 
   $templateCache.put('Public/resCreate/html/src/public/areaKey/areaKey.dipan.topAreaKey.directive.html',
-    "<div id='areaKey'  class=\"left\" style=\"font-weight: bold;margin-left: 12px\">\n" +
-    "    <div class=\"linkMouse left\" ng-mouseleave=\"areaLeave()\" ng-mousemove=\"areaHover()\" ng-class=\"area.hoverLine\" style=\"font-size: 24px;margin-right: 10px\">\n" +
+    "<div id='areaKey' class=\"left\" style=\"font-weight: bold;margin-left: 12px\">\n" +
+    "    <div class=\"linkMouse left\" ng-mouseleave=\"areaLeave()\" ng-mousemove=\"areaHover()\" ng-class=\"area.hoverLine\"\n" +
+    "         style=\"font-size: 24px;margin-right: 10px\">\n" +
     "        <!--bindOnce topArea-->\n" +
-    "        <div class=\"clear\" id=\"topArea\" bindonce bo-text = 'topArea'></div>\n" +
+    "        <div class=\"clear\" id=\"topArea\" bindonce bo-text='topArea'></div>\n" +
     "        <div class=\"clear \" ng-class=\"area.shan\">{{area.jianTou}}</div>\n" +
-    "        <div ng-show=\"area.hoverLineShow\"  id=\"areaAlert\">\n" +
+    "        <div ng-show=\"area.hoverLineShow\" id=\"areaAlert\">\n" +
     "\n" +
     "            <div area-show></div>\n" +
     "        </div>\n" +
     "    </div>\n" +
-    "    <div class=\"linkMouse  left\" ng-mouseleave=\"keyLeave()\" ng-mousemove=\"keyHover()\" ng-class=\"key.hoverLine\"  style=\"font-size: 24px\">\n" +
-    "        <div class=\"clear\">技工工人行业招工</div>\n" +
-    "        <div class=\"clear \" ng-class=\"key.shan\" >{{key.jianTou}}</div>\n" +
+    "    <div class=\"linkMouse  left\" ng-mouseleave=\"keyLeave()\" ng-mousemove=\"keyHover()\" ng-class=\"key.hoverLine\"\n" +
+    "         style=\"font-size: 24px\">\n" +
+    "        <!--bindOnce topKey-->\n" +
+    "        <div class=\"clear\" id=\"topKey\" bindonce bo-text=\"topKey\"></div>\n" +
+    "        <div class=\"clear \" ng-class=\"key.shan\">{{key.jianTou}}</div>\n" +
     "        <div ng-show=\"key.hoverLineShow\" id=\"keyAlert\">\n" +
-    "           <div key-show></div>\n" +
+    "            <div key-show></div>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "</div>\n"

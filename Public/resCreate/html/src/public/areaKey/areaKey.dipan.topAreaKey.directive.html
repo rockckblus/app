@@ -1,18 +1,21 @@
-<div id='areaKey'  class="left" style="font-weight: bold;margin-left: 12px">
-    <div class="linkMouse left" ng-mouseleave="areaLeave()" ng-mousemove="areaHover()" ng-class="area.hoverLine" style="font-size: 24px;margin-right: 10px">
+<div id='areaKey' class="left" style="font-weight: bold;margin-left: 12px">
+    <div class="linkMouse left" ng-mouseleave="areaLeave()" ng-mousemove="areaHover()" ng-class="area.hoverLine"
+         style="font-size: 24px;margin-right: 10px">
         <!--bindOnce topArea-->
-        <div class="clear" id="topArea" bindonce bo-text = 'topArea'></div>
+        <div class="clear" id="topArea" bindonce bo-text='topArea'></div>
         <div class="clear " ng-class="area.shan">{{area.jianTou}}</div>
-        <div ng-show="area.hoverLineShow"  id="areaAlert">
+        <div ng-show="area.hoverLineShow" id="areaAlert">
 
             <div area-show></div>
         </div>
     </div>
-    <div class="linkMouse  left" ng-mouseleave="keyLeave()" ng-mousemove="keyHover()" ng-class="key.hoverLine"  style="font-size: 24px">
-        <div class="clear">技工工人行业招工</div>
-        <div class="clear " ng-class="key.shan" >{{key.jianTou}}</div>
+    <div class="linkMouse  left" ng-mouseleave="keyLeave()" ng-mousemove="keyHover()" ng-class="key.hoverLine"
+         style="font-size: 24px">
+        <!--bindOnce topKey-->
+        <div class="clear" id="topKey" bindonce bo-text="topKey"></div>
+        <div class="clear " ng-class="key.shan">{{key.jianTou}}</div>
         <div ng-show="key.hoverLineShow" id="keyAlert">
-           <div key-show></div>
+            <div key-show></div>
         </div>
     </div>
 </div>

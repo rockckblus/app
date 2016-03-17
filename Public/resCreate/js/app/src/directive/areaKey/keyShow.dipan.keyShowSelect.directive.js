@@ -29,6 +29,7 @@
     function thisController($scope, urlParse, repBindOnce) {
 
         $scope.topArea = '';//top 地区模型
+        $scope.topKey = '';//top 关键词模型
         $scope.$on('urlParseChange', urlParseChange);//监听主变量赋值成功,给地区模型值
 
         /** 声明 area 模型  */
@@ -117,8 +118,8 @@
          * 16/3/17 */
 
         function urlParseChange() {
-            $scope.topArea = _eachPlaceType();
-            repBindOnce('topArea', $scope);//从新bindOnce
+            _eachPlaceType();//给地域
+            _getTopKey();//给关键词
         }
 
         /**
@@ -129,5 +130,19 @@
             $scope.topArea = urlParse.fun.getTopArea(session);
             repBindOnce('topArea', $scope);
         }
+
+        /**
+         * 给关键词 无关键词,就给null
+         * 16/3/17 */
+        function _getTopKey() {
+            try {
+                $scope.topKey = urlParse.data.session.key.catAndThisKey.thisKey.name;
+            } catch (e) {
+                $scope.topKey = '分类'
+            }
+            repBindOnce('topKey', $scope);//从新bindOnce
+        }
+
+
     }
 })();

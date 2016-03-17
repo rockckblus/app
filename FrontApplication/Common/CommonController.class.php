@@ -76,7 +76,7 @@ class CommonController extends Controller
             $this->indexAllRe['session']['place'] = $place;
             $_SESSION['place'] = $place;//写入session地点
 
-            $this->indexAllRe['session']['key'] = $place;
+            $this->indexAllRe['session']['key'] = $this->findKey($key);
             $_SESSION['key'] = $this->findKey($key);//写入关键词，或者分类
         } else {
 
