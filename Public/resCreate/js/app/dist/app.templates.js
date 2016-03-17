@@ -4,7 +4,8 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   $templateCache.put('Public/resCreate/html/src/public/areaKey/areaKey.dipan.topAreaKey.directive.html',
     "<div id='areaKey'  class=\"left\" style=\"font-weight: bold;margin-left: 12px\">\n" +
     "    <div class=\"linkMouse left\" ng-mouseleave=\"areaLeave()\" ng-mousemove=\"areaHover()\" ng-class=\"area.hoverLine\" style=\"font-size: 24px;margin-right: 10px\">\n" +
-    "        <div class=\"clear\" id=\"topArea\"><span bindonce bo-text = 'topArea'></span></div>\n" +
+    "        <!--bindOnce topArea-->\n" +
+    "        <div class=\"clear\" id=\"topArea\" bindonce bo-text = 'topArea'></div>\n" +
     "        <div class=\"clear \" ng-class=\"area.shan\">{{area.jianTou}}</div>\n" +
     "        <div ng-show=\"area.hoverLineShow\"  id=\"areaAlert\">\n" +
     "\n" +

@@ -105,10 +105,50 @@
          * 16/3/17 */
         /**
          * 给地区模型赋值
+         *
+         //     <switch name="s['place']['type']">
+         //     <case value='1'>{//一级 --天津} {$s['place']['thisCityInfo']['name']}
+         //     </case>
+         //     <case value='2'>{//2级 --武清} {$s['place']['oneCityInfo']['name']}{$s['place']['thisCityInfo']['name']}
+         //     </case>
+         //     <case value='3'>{//3级 --河西务} {$s['place']['oneCityInfo']['name']}{$s['place']['twoCityInfo']['name']}{$s['place']['thisCityInfo']['name']}
+         //     </case>
+         //     </switch>
          * 16/3/17 */
+
         function urlParseChange() {
-            $scope.topArea = 'bbbb';
-            repBindOnce('topArea', $scope);
+
+            $scope.topArea = _eachPlaceType();
+
+            repBindOnce('topArea', $scope);//从新bindOnce
+        }
+
+        /**
+         * 遍历place type. ,返回组合字符串
+         * 16/3/17 */
+        function _eachPlaceType() {
+            var session = urlParse.data.session;
+            var re;
+            try {
+                switch (session.place.type) {
+                    case 1:
+                        re = session.place.thisCityInfo.name;//一级天津
+                        break;
+                    case 2:
+                        re = session.place.oneCityInfo.name + session.place.thisCityInfo.name;//2级武清
+                        break;
+                    case 3:
+                        re = session.place.oneCityInfo.name + session.place.twoCityInfo.name + session.place.thisCityInfo.name;//2级武清
+                        break;
+                    default:
+                        re = '';
+                        break;
+                }
+                return re;
+            } catch (e) {
+                console.log(e);
+            }
+
         }
     }
 })();
