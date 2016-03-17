@@ -12,6 +12,8 @@
 
     urlParse.$inject = ['$rootScope'];
 
+    var fun = {};//urlParse 相关方法对象
+    var data = {};//全局变量对象
     function urlParse($rootScope) {
         /**
          * 监听从模板解析来的 php变量对象 赋值改变事件 urlParseChange
@@ -22,12 +24,11 @@
         /**
          * 返回urlParse变量对象
          * 16/3/10 */
-        return {};
+        return {
+            data: data,
+            fun: fun
+        };
 
-
-        /*************************
-         * fun 详情
-         * 16/3/10 ***************/
 
         /**
          * 监听从模板解析来的 php变量对象 赋值改变事件
@@ -39,5 +40,38 @@
             });
         }
     }
+
+    /*************************
+     * fun 详情
+     * 16/3/10 ***************/
+
+    /**
+     * 获取topArea地区 字符串
+     * @param {obj} session 对象
+     * @returns {String}
+     * 16/3/17 */
+    fun.getTopArea = function (session) {
+        var re;
+        try {
+            switch (session.place.type) {
+                case 1:
+                    re = session.place.thisCityInfo.name;//一级天津
+                    break;
+                case 2:
+                    re = session.place.oneCityInfo.name + session.place.thisCityInfo.name;//2级武清
+                    break;
+                case 3:
+                    re = session.place.oneCityInfo.name + session.place.twoCityInfo.name + session.place.thisCityInfo.name;//2级武清
+                    break;
+                default:
+                    re = '地盘网';
+                    break;
+            }
+            return re;
+        } catch (e) {
+            return '地盘网';
+        }
+    };
+
 })();
 

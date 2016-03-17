@@ -117,9 +117,7 @@
          * 16/3/17 */
 
         function urlParseChange() {
-
             $scope.topArea = _eachPlaceType();
-
             repBindOnce('topArea', $scope);//从新bindOnce
         }
 
@@ -128,27 +126,8 @@
          * 16/3/17 */
         function _eachPlaceType() {
             var session = urlParse.data.session;
-            var re;
-            try {
-                switch (session.place.type) {
-                    case 1:
-                        re = session.place.thisCityInfo.name;//一级天津
-                        break;
-                    case 2:
-                        re = session.place.oneCityInfo.name + session.place.thisCityInfo.name;//2级武清
-                        break;
-                    case 3:
-                        re = session.place.oneCityInfo.name + session.place.twoCityInfo.name + session.place.thisCityInfo.name;//2级武清
-                        break;
-                    default:
-                        re = '';
-                        break;
-                }
-                return re;
-            } catch (e) {
-                console.log(e);
-            }
-
+            $scope.topArea = urlParse.fun.getTopArea(session);
+            repBindOnce('topArea', $scope);
         }
     }
 })();

@@ -58,6 +58,14 @@ function saveSession(post) {
             g.alert(err);
         }
     }
+
+    /**
+     * 定时销毁session
+     * 16/3/17 */
+
+
+
+
 }
 
 /**
