@@ -22,7 +22,6 @@
 
     function thisController($scope, $rootScope, $timeout, urlParse, api) {
 
-        console.log('api',api);
         $timeout(function () {
             urlParse.data = $scope.data;
             $scope.data.queryNode = true;//是node Api
@@ -33,7 +32,7 @@
              * 测试findSessionContent
              * 16/3/16 */
             api('findSessionContent', $scope.data.session, function (re) {
-                console.log('reContent', re);
+                //console.log('reContent', re);
             });
         }, 0);
 
@@ -41,7 +40,7 @@
     }
 
     function saveSessionCallBack(doc) {
-        console.log('docFront', doc);
+        //console.log('docFront', doc);
     }
 
 })();

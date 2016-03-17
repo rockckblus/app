@@ -7,7 +7,6 @@
     'use strict';
     angular.module('dipan').factory('areaKey', areaKey);
 
-
     areaKey.$inject = ['$http', '$q', 'config'];
 
     function areaKey($http, $q, config) {
