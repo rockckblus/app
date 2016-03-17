@@ -1,6 +1,6 @@
 <div id='areaKey'  class="left" style="font-weight: bold;margin-left: 12px">
     <div class="linkMouse left" ng-mouseleave="areaLeave()" ng-mousemove="areaHover()" ng-class="area.hoverLine" style="font-size: 24px;margin-right: 10px">
-        <div class="clear">岳阳华容北景港</div>
+        <div class="clear" id="topArea"><span bindonce bo-text = 'topArea'></span></div>
         <div class="clear " ng-class="area.shan">{{area.jianTou}}</div>
         <div ng-show="area.hoverLineShow"  id="areaAlert">
 

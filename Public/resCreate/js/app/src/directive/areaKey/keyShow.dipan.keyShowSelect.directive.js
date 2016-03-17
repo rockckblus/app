@@ -9,7 +9,6 @@
 
     angular.module('dipan').directive('areaKey', areaKey);
 
-
     /**
      * angular 载入完成后。显示modle值
      * 15-12-26 */
@@ -25,9 +24,12 @@
         };
     }
 
-    thisController.$inject = ['$scope'];
+    thisController.$inject = ['$scope', 'urlParse', 'repBindOnce'];
 
-    function thisController($scope) {
+    function thisController($scope, urlParse, repBindOnce) {
+
+        $scope.topArea = '';//top 地区模型
+        $scope.$on('urlParseChange', urlParseChange);//监听主变量赋值成功,给地区模型值
 
         /** 声明 area 模型  */
         $scope.area = {
@@ -96,7 +98,17 @@
             $scope.key.shan = 'jianTou dian';//闪动效果
             $scope.key.jianTou = '.';
         }
+
+
+        /**
+         * 具体fun*****************
+         * 16/3/17 */
+        /**
+         * 给地区模型赋值
+         * 16/3/17 */
+        function urlParseChange() {
+            $scope.topArea = 'bbbb';
+            repBindOnce('topArea', $scope);
+        }
     }
-
-
 })();

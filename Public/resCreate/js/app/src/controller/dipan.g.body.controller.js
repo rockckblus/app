@@ -30,10 +30,10 @@
      * controllerFun
      * 16/2/1 */
     function body($scope, $timeout, repBindOnce) {
-//        $scope.aaabbb = 1;
-//        $timeout(function(){
-//            $scope.aaabbb = 11;
-//        },4000);
+        $scope.aaabbb = 1;
+        $timeout(function(){
+            $scope.aaabbb = 11;
+        },4000);
 //        $scope.b = '';
 //        $scope.c = [1, 2, 3.4];
 

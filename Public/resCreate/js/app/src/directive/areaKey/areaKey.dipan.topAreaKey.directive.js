@@ -25,8 +25,13 @@
     thisController.$inject = ['$scope', 'urlParse'];
 
     function thisController($scope, urlParse) {
+        $scope.topArea = 'ddddd88888';
 
+        /**
+         * 监听php的全局变量对象解析事件,来更新key 并使用bindOne从新绑定
+         * 16/3/17 */
         $scope.$on('urlParseChange', function () {
+            $scope.topArea = 'aaaa';
             console.log('urlParse', urlParse);
         });
 
@@ -42,7 +47,6 @@
          </case>
          </switch>
          * 16/3/17 */
-
 
 
     }
