@@ -10,11 +10,13 @@
     'use strict';
     angular.module('dipan').factory('urlParse', urlParse);
 
-    urlParse.$inject = ['$rootScope'];
+    urlParse.$inject = ['$rootScope', 'api'];
 
     var fun = {};//urlParse 相关方法对象
     var data = {};//全局变量对象
-    function urlParse($rootScope) {
+    var apiPost;//apiPost server
+    function urlParse($rootScope, api) {
+        apiPost = api;
         /**
          * 监听从模板解析来的 php变量对象 赋值改变事件 urlParseChange
          * 同时广播 所有 子域, 变量改变事件 urlParseChange
@@ -71,6 +73,18 @@
         } catch (e) {
             return '地盘网';
         }
+    };
+
+    /**
+     * 获取热门城市
+     * selectHotCity
+     * 16/3/18 */
+    fun.selectHotCity = function (callback) {
+        apiPost('selectHotCity', {}, function (doc) {
+            callback(doc);
+        }, function (err) {
+            console.error(err);
+        });
     };
 
 })();

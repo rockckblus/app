@@ -9,7 +9,8 @@
     /** api接口,nodejs,php  */
     var apiUrl = {
         nodejs: {
-            system: {}
+            system: {},
+            city: {}
         },
         php: {}
     };
@@ -29,6 +30,10 @@
                     var url2 = apiUrl.nodejs.system.findSessionContent;
                     _post(url2, postData).then(callBack, callBackErr);
                     break;
+                case 'selectHotCity' ://根据sessionid 返回sessionContent
+                    var url3 = apiUrl.nodejs.city.selectHotCity;
+                    _post(url3, postData).then(callBack, callBackErr);
+                    break;
             }
         };
 
@@ -36,6 +41,8 @@
         apiUrl.nodejs.system.saveSession = config.host.nodeHost + '/system/saveSession';//save一条session 传reqbody
         apiUrl.nodejs.system.findSessionContent = config.host.nodeHost + '/system/findSessionContent';//根据sessionid find session content
 
+        //city
+        apiUrl.nodejs.city.selectHotCity = config.host.nodeHost + '/city/selectHotCity';//返回热门城市
 
         function _post(url, postData) {
             var defer = $q.defer();

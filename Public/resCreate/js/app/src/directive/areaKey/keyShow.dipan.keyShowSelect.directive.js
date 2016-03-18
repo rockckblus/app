@@ -138,7 +138,7 @@
             try {
                 $scope.topKey = urlParse.data.session.key.catAndThisKey.thisKey.name;
             } catch (e) {
-                $scope.topKey = '分类'
+                $scope.topKey = '分类';
             }
             repBindOnce('topKey', $scope);//从新bindOnce
         }

@@ -104,6 +104,10 @@ function postCity(req, res) {
         case 'getTwoCityFromOneId' ://根据1级地址返回2级
             _getTwoCityFromOneId();
             break;
+        case 'selectHotCity' ://返回热门城市
+            _selectHotCity();
+            break;
+
     }
 
     /**
@@ -120,6 +124,15 @@ function postCity(req, res) {
      * 16/3/8 */
     function _getTwoCityFromOneId() {
         cityCtrl.getTwoCityFromOneId(req.body.oneId, function (err, doc) {
+            res.json(doc);
+        })
+    }
+
+    /**
+     * selectHotCity 查询热门城市
+     * 16/3/18 */
+    function _selectHotCity() {
+        cityCtrl.selectHotCity(function (err, doc) {
             res.json(doc);
         })
     }

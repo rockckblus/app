@@ -29,30 +29,18 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   $templateCache.put('Public/resCreate/html/src/public/areaKey/areaShow.dipan.areaShowSelect.directive.html',
     "<div id=\"areaShow\">\n" +
     "    <div class=\"item clear\">\n" +
-    "        <div class=\"leftArea\">dd</div>\n" +
+    "        <div class=\"leftArea\">\n" +
+    "            <div class=\"clear\">\n" +
+    "\n" +
+    "            </div>\n" +
+    "        </div>\n" +
     "        <div class=\"rightCity\">\n" +
-    "            <div class=\"right allCityBtn btn btn-success btn-xs\" style=\"margin-right: 10px;margin-top: 10px\" ng-mouseover=\"showAllCity = true\" ng-mouseleave=\"showAllCity = false\">&nbsp;&nbsp;岳阳&nbsp;▾\n" +
-    "\n" +
-    "\n" +
+    "            <div class=\"right allCityBtn btn btn-success btn-xs\" style=\"margin-right: 10px;margin-top: 10px\"\n" +
+    "                 ng-mouseover=\"showAllCity = true\" ng-mouseleave=\"showAllCity = false\">\n" +
+    "                &nbsp;&nbsp;<span id=\"oneCityInfoName\" bindonce bo-text=\"oneCityInfoName\"></span>&nbsp;▾\n" +
     "                <div class=\"right allCity\" style=\"\" ng-show=\"showAllCity\">\n" +
-    "                    <li>天津</li>\n" +
-    "                    <li>天津</li>\n" +
-    "                    <li>天津</li>\n" +
-    "                    <li>天津</li>\n" +
-    "                    <li>天津</li>\n" +
-    "                    <li>天津</li>\n" +
-    "                    <li>天津</li>\n" +
-    "                    <li>天津</li>\n" +
-    "                    <li>天津</li>\n" +
-    "                    <li>天津</li>\n" +
-    "                    <li>天津</li>\n" +
-    "                    <li>天津</li>\n" +
-    "                    <li>天津</li>\n" +
-    "                    <li>天津</li>\n" +
-    "                    <li>天津</li>\n" +
+    "                    <!--<li ng-repeat=\"\">tianjin</li>-->\n" +
     "                </div>\n" +
-    "\n" +
-    "\n" +
     "            </div>\n" +
     "        </div>\n" +
     "    </div>\n" +
