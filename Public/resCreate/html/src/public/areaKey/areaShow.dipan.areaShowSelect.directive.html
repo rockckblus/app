@@ -3,6 +3,7 @@
         <div class="leftArea">
             <div class="clear">
 
+
             </div>
         </div>
         <div class="rightCity">
@@ -10,7 +11,7 @@
                  ng-mouseover="showAllCity = true" ng-mouseleave="showAllCity = false">
                 &nbsp;&nbsp;<span id="oneCityInfoName" bindonce bo-text="oneCityInfoName"></span>&nbsp;▾
                 <div class="right allCity" style="" ng-show="showAllCity">
-                    <!--<li ng-repeat="">tianjin</li>-->
+                    <li bindonce ng-repeat="vo in otherCityList" bo-text="vo.name"></li>
                 </div>
             </div>
         </div>

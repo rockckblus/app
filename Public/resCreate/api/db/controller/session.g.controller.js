@@ -11,7 +11,7 @@ var g = require('../../g.config');
 var fun = {
     saveSession: saveSession,//添加一条session,如果存在,就更新content对象
     findSession: findSession,//find 一条 sessionId
-    findSessionContent:findSessionContent,//find sessionContent
+    findSessionContent: findSessionContent,//find sessionContent
 };
 
 /**
@@ -41,10 +41,12 @@ function saveSession(post) {
      * 添加一条新记录
      * 16/3/14 */
     function _add(post) {
+        console.log(111);
         sessionModel.create({
             sessionId: post.session.id,
             content: post.session
         });
+
     }
 
     /**
@@ -62,8 +64,6 @@ function saveSession(post) {
     /**
      * 定时销毁session
      * 16/3/17 */
-
-
 
 
 }

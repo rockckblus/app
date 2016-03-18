@@ -32,6 +32,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "        <div class=\"leftArea\">\n" +
     "            <div class=\"clear\">\n" +
     "\n" +
+    "\n" +
     "            </div>\n" +
     "        </div>\n" +
     "        <div class=\"rightCity\">\n" +
@@ -39,7 +40,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "                 ng-mouseover=\"showAllCity = true\" ng-mouseleave=\"showAllCity = false\">\n" +
     "                &nbsp;&nbsp;<span id=\"oneCityInfoName\" bindonce bo-text=\"oneCityInfoName\"></span>&nbsp;▾\n" +
     "                <div class=\"right allCity\" style=\"\" ng-show=\"showAllCity\">\n" +
-    "                    <!--<li ng-repeat=\"\">tianjin</li>-->\n" +
+    "                    <li bindonce ng-repeat=\"vo in otherCityList\" bo-text=\"vo.name\"></li>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +
@@ -53,6 +54,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <div class=\"category\">\n" +
     "        ggg\n" +
     "    </div>\n" +
+    "    <div class=\"pindao\"></div>\n" +
     "</div>"
   );
 
