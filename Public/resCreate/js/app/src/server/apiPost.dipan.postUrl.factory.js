@@ -34,6 +34,7 @@
                     var url3 = apiUrl.nodejs.city.selectHotCity;
                     _post(url3, postData).then(callBack, callBackErr);
                     break;
+
             }
         };
 

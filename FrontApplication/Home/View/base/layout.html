@@ -9,8 +9,22 @@
 
 <body class="angularEnd">
 <div class="allDiv">
-    <div class="topHeader" style="display: block">
-        <div id="leftLogo">
+    <div class="topHeader" style="display: block;width: 100%;">
+        <div class="leftLogoImg" style="float: left;">
+            <img src="/Public/images/logo.png" style="float: left;
+    width: 55px;
+    margin-top: 10px;
+    margin-left: 20px;" alt=""/>
+
+            <div style="width: 200px;position: absolute;left: 90px;top:10px">
+                <a href="/"> <span id="logoText" class="left" style="font-size: 24px;font-weight: bold">地盘搜搜</span></a>
+                <span class="left" style="margin-left: 10px;margin-top: 10px">diPan.So</span>
+            </div>
+        </div>
+
+        <!-- areaKey directive -->
+        <div area-key style="margin-top: 40px"></div>
+        <div id="leftLogo" class="left">
             <div class="topDiZhu left">
                 <div class="name">
                     <div style="font-weight: bold">
@@ -19,21 +33,14 @@
                         <div class="left">
                             &nbsp;[&nbsp;空缺中&nbsp;]
                         </div>
-                        <div class=" left">
-                            <span style="padding: 1px;margin-left: 10px;color: #026b1f" class=" ">抢地盘</span>
+                        <div class=" left" style="margin-top: -6px">
+                            <span class="btn btn-success btn-xs" style="margin-left: 10px;color: #fff"
+                                  click-router-ui-block="alertDiv.alertInfo" item="2">抢地盘</span>
                         </div>
                         <div class="wenHao left"></div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="clear"></div>
-        <!-- areaKey directive -->
-        <div area-key></div>
-        <div id="getDiPan" class="left" style="margin-top: 7px;margin-left: 12px"
-             click-router-ui-block="alertDiv.alertInfo" item="2">
-            <span class=" btn btn-success btn-xs">发告示</span>
         </div>
         <div class="contentDiv" id="contentDiv">
             <div id="block1">
@@ -58,9 +65,7 @@
 <div url-parse={$indexAllRe}></div>
 
 <!--调试div 浮动 100%-->
-<div class="clear" style="position: fixed;z-index: 3000;background-color: #fff;width: 100%;height: 100%;">
-   ddddd{{aaabbb}}<br/>
-    <span bindonce bo-text="aaabbb"></span>
+<div class="clear" style="position: fixed;z-index: 3000;background-color: #fff;width: 100%;height: 100%;display: none">
 </div>
 
 <script>

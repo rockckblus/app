@@ -1,7 +1,7 @@
 @import "g";
 
 //主背景灰
-@colorBack: #f9fce2;
+@colorBack: #fcfcea;
 //次背景灰亮
 @colorBackTwo:darken(@colorBack,20%);;
 //左侧导航背景
@@ -15,7 +15,7 @@
   background-repeat: no-repeat;
   width: 12px;
   height: 12px;
-  .mt(2);
+  .mt(-7);
   .ml(3);
 }
 
@@ -49,7 +49,6 @@
 
 .allDiv {
   //主div
-
   .all();
   .allHeight();
   .clear();
@@ -66,28 +65,20 @@
     left: 0;
 
     #leftLogo {
-      .all();
-      .mt(15);
-      .ml(15);
+      .mt(4);
+      .ml(25);
       font-size: 12px;
       color: @leftNavBackFont;
       &:hover {
         //        color: @leftNavBackFont + 111;
       }
+      #logoText{
+        color: @leftNavBackFont;
+      }
       .linkMouse;
       .topDiZhu {
         .name {
           .left;
-        }
-        #getDiPan {
-          .left;
-          .all(10, 5);
-          .linkMouse;
-          span {
-
-            color: #fff;
-            font-size: 24px;
-          }
         }
 
       }
