@@ -281,5 +281,4 @@ class IndexController extends CommonController
             $this->assign('twoListOne', $list);
         }
     }
-
 }

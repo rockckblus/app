@@ -60,8 +60,6 @@
         $urlRouterProvider.when('', "/state1");
         $stateProvider.state('state1', state1Obj)
             .state('state2', state2Obj);
-
-
     }
 
     /**

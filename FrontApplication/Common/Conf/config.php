@@ -13,7 +13,7 @@ return array(
 //    'DB_USER'   => 'rockblus', // 用户名
 //    'DB_PWD'    => 'HDZrockblus8', // 密码
     'MODULE_ALLOW_LIST' => array (
-        'Home','Member','Mongod','Api'
+        'Home','Member','Mongod','Api','Admin'
     ),
     'DEFAULT_MODULE' => 'Home',
     'DB_SQL_LOG' => false,
