@@ -28,7 +28,7 @@ var g = {
      * 16/3/7 */
 
     mongo: {
-        url: 'mongodb://localhost:3000/',
+        url: 'mongodb://localhost:27017/',
         master: 'dipan',//主库
     },
 

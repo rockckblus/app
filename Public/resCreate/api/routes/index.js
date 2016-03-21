@@ -88,6 +88,10 @@ router.get('/', function (req, res) {
     res.json(11);
 });
 
+/** curl  */
+//router.get('/curl/:fun', function (req, res) {
+//    curl(req, res);
+//});
 
 /**
  * function 详情 ****************************************************
@@ -173,6 +177,21 @@ function postSystem(req, res) {
             res.json({err: err, doc: doc});
         }
     }
+}
+
+/** curl  */
+function curl(req, res) {
+    var fun = req.params.fun;
+    switch (fun) {
+        case 'text' ://添加一条session 如果存在就修改,不存在就新加
+            _test();
+            break;
+    }
+
+    function _test() {
+        res.json(111);
+    }
+
 }
 
 /**
