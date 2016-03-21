@@ -15,7 +15,7 @@ var tempCountCtrl = require('../db/controller/tempCount.back.controller');
 /**
  * post City:fun 城市相关api
  * 16/3/8 */
-router.get('/caiji/:fun/:val', function (req, res) {
+router.post('/caiji/:fun', function (req, res) {
     admin(req, res);
 });
 
@@ -44,7 +44,7 @@ function admin(req, res) {
      * getUrl
      * 16/3/8 */
     function _geturl() {
-        var url = req.params.val;
+        var url = req.body.url;
         curlCtrl.get(url, function (doc) {
             res.json(doc);
         })
