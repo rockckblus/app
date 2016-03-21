@@ -20,6 +20,9 @@ var all = require('./default');//公共路由all方法
 //}
 //var oeoeLeftNavModel = mongoose.model('', oeoeSchema, 'city');
 
+/**
+ * 采集相关
+ * 16/3/21 */
 
 /**
  * post 跨域请求
@@ -89,9 +92,9 @@ router.get('/', function (req, res) {
 });
 
 /** curl  */
-//router.get('/curl/:fun', function (req, res) {
-//    curl(req, res);
-//});
+router.get('/curl/:fun', function (req, res) {
+    curl(req, res);
+});
 
 /**
  * function 详情 ****************************************************
@@ -142,7 +145,6 @@ function postCity(req, res) {
     }
 }
 
-
 /**
  * function 详情 ****************************************************
  * 16/3/8 */
@@ -179,20 +181,6 @@ function postSystem(req, res) {
     }
 }
 
-/** curl  */
-function curl(req, res) {
-    var fun = req.params.fun;
-    switch (fun) {
-        case 'text' ://添加一条session 如果存在就修改,不存在就新加
-            _test();
-            break;
-    }
-
-    function _test() {
-        res.json(111);
-    }
-
-}
 
 /**
  *asdfkkkk
