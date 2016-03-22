@@ -73,7 +73,7 @@ function curl_post($url = '', $postdata = '', $options = array())
 function curlSem($mtNum, $content)
 {
     if (!empty($mtNum) && !empty($content)) {
-        $content = '【地盘|dipan.so】' . $content;
+        $content = '【地盘 diPan.So】' . $content;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "http://api.weimi.cc/2/sms/send.html");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);

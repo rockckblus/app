@@ -56,10 +56,10 @@ class IndexController extends CommonhomeController
 
         //如果没有关键词
         if (empty($re['two'])) {
-            $seoTitle = $_SESSION['place']['thisCityInfo']['name'] . '地盘|dipan.so';
+            $seoTitle = $_SESSION['place']['thisCityInfo']['name'] . '地盘 diPan.So';
             $this->giveCat();//只分配频道和频道下一级分类
         } else {
-            $seoTitle = '※〓' . $re['one'] . $re['two'] . ' [' . $_SESSION['place']['thisCityInfo']['name'] . '地盘|dipan.so]';
+            $seoTitle = '※〓' . $re['one'] . $re['two'] . ' [' . $_SESSION['place']['thisCityInfo']['name'] . '地盘 diPan.So]';
         }
         //分配当前城市所有地区
         $this->assignSunCity();
