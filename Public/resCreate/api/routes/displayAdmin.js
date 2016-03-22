@@ -29,7 +29,7 @@ router.post('/caiji/:fun', function (req, res) {
 function admin(req, res) {
     var fun = req.params.fun;
     switch (fun) {
-        case 'getUrl' ://添加一条session 如果存在就修改,不存在就新加
+        case 'getUrl' :///curl 一条 url/
             _geturl();
             break;
         case 'addTempCount' ://添加一条临时统计 {name:'功能',value:Number}

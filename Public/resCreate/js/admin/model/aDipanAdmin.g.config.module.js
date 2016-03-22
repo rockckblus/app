@@ -1,9 +1,8 @@
 /**
- 1.启动angular
-
- 4.config 总模型 ： 使angular兼容ie7
-
- 5.config 总模型 ：配置路由信息*
+ * angular.module  admin
+ * factory config {
+ *  host:nodeHost //api url
+ * }
  * */
 (function (window, document) {
     'use strict';
@@ -18,8 +17,25 @@
     body.$inject = ['$scope'];
 
     function body($scope) {
-        $scope.input = '1111';
     }
 
+    /**
+     * config 定义 全局变量
+     * 16/3/8 */
+    angular.module('admin').factory('config', function () {
+        return config();
+    });
+
+    /**
+     * 定义系统常量config
+     * 16/3/8 */
+
+    function config() {
+        return {
+            host: {//host 配置
+                nodeHost: 'http://localhost:3008'//nodejsApi hostUrl
+            }
+        };
+    }
 
 })(window, document);
