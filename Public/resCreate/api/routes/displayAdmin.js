@@ -97,11 +97,13 @@ function admin(req, res) {
     /**
      * 查询三级,传 limit skip 对象 ,callback
      * 16/3/22 */
-    function _getThreeCityArea(callback) {
+    function _getThreeCityArea() {
         cityCtrl.getThreeCityArea({
             limit: req.body.limit,
             skip: req.body.skip
-        }, callback)
+        }, function (doc) {
+            res.json(doc);
+        })
     }
 
 

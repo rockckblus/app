@@ -21,17 +21,25 @@
         };
     }
 
-    controller.$inject = ['$scope', '$timeout', 'pois'];
+    controller.$inject = ['$scope', '$timeout', 'pois','api'];
 
-    function controller($scope, $timeout, pois) {
+    function controller($scope, $timeout, pois,api) {
 
         $scope.fun = {
-            startClick: _startClick//start 点击事件,调用 pois factovry start方法
+            startClick: _startClick,//start 点击事件,调用 pois factovry start方法
+//            addTempCount: _addTempCount// 添加一条临时统计数据 只执行一次 注释掉
         };
 
         /**
          * fun 详情 *********************
          * 16/3/22 */
+
+        /** 添加一条临时统计数据 只执行一次 注释掉  */
+        function _addTempCount() {
+            api('addTempCount', {}, function () {
+            });
+        }
+
 
         /**
          * start 点击事件,调用 pois factovry start方法
@@ -39,7 +47,7 @@
         function _startClick() {
             pois.start(function (re) {
                 console.log('re', re);
-            },6);
+            }, 1);
         }
 
     }

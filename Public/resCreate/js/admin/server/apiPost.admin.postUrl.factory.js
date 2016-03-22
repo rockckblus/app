@@ -22,6 +22,10 @@
                     var url = apiUrl.caiji.getUrl;
                     _post(url, postData).then(callBack, callBackErr);
                     break;
+                case 'addTempCount' ://添加一条 临时统计 功能
+                    var url0 = apiUrl.caiji.addTempCount;
+                    _post(url0, postData).then(callBack, callBackErr);
+                    break;
                 case 'upCountPoisAddOne' ://临时统计加1 ,postData {value:Number}
                     postData.name = '全部处理完成的3级地址数量';
                     var url2 = apiUrl.caiji.upDataTempCount;
@@ -41,10 +45,13 @@
 
         //caiji
         apiUrl.caiji.getUrl = config.host.nodeHost + '/admin/caiji/getUrl';//curl 一条url
+
+        //city
         apiUrl.caiji.getThreeCityArea = config.host.nodeHost + '/admin/caiji/getThreeCityArea';// 查询全部三级 传 {limit:num,skip:num}
 
 
         //临时统计 tempcount
+        apiUrl.caiji.addTempCount = config.host.nodeHost + '/admin/caiji/addTempCount';//添加一条count数据
         apiUrl.caiji.upDataTempCount = config.host.nodeHost + '/admin/caiji/saveTempCount';//更新一条数据
         apiUrl.caiji.getPoisTempCountNubmer = config.host.nodeHost + '/admin/caiji/findOneTempCountVal';//获取pois临时统计 数
 

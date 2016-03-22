@@ -78,14 +78,15 @@ function getTwoCityFromOneId(oneId, callBack) {
  * 16/3/22 */
 function getThreeCityArea(numObj, callBack) {
     cityModel.find()
+        .where('type').equals('3')
         .limit(numObj.limit)
         .skip(numObj.skip)
         .exec(function (err, doc) {
             if (err) {
                 g.alert.err(err);
             }
-            callBack(err, doc);
-        })
+            callBack(doc);
+        });
 }
 
 

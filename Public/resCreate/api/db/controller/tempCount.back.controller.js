@@ -30,7 +30,7 @@ function findOne(name, callback) {
             .select('value')
             .exec(function (err, doc) {
                 callback(doc);
-            })
+            });
     }
 }
 

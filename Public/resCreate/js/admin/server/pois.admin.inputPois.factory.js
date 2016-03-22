@@ -38,7 +38,6 @@
             if (num) {
                 eachNum = num;
             }
-
             for (var i = 0; i < eachNum; i++) {
                 timeCount = timeCount + 1000;//加1秒
                 setTimeout(function () {
@@ -74,10 +73,12 @@
             function s0_findEndNum() {
                 findEndNum(_success);
                 function _success(doc) {
-                    if (doc.value) {
+                    if (angular.isDefined(doc.value)) {
                         endNum = doc.value;
                         defered.resolve(doc);
+                        console.log(1111111);
                     } else {
+                        console.log('11err');
                         defered.reject();
                     }
                 }
@@ -94,12 +95,33 @@
                 api('getThreeCityArea', {
                     limit: 1,
                     skip: endNum
-                }, function (err, doc) {
-                    console.log('errDoc', err, doc);
-                })
+                }, function (doc) {
+                    if (doc) {
+                        console.log(22222);
+                        defered.resolve(doc);
+                    } else {
+                        console.log('22err');
+                        defered.reject();
+                    }
+                });
+
+                return defered.promise;
             }
 
-            s1_findOneThreeAred();
+            /** step2  测试 $q  */
+            function s2_q(a) {
+                if (a) {
+                    console.log('3333', a);
+                    defered.resolve();
+                } else {
+                    defered.reject();
+                }
+            }
+
+            s0_findEndNum().then(s1_findOneThreeAred).then(s2_q, function () {
+                console.log('err');
+            });
+
         }
 
 
