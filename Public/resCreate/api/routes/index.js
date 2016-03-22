@@ -86,15 +86,10 @@ router.post('/system/:fun', function (req, res) {
     postSystem(req, res);
 });
 
-
 router.get('/', function (req, res) {
     res.json(11);
 });
 
-/** curl  */
-router.get('/curl/:fun', function (req, res) {
-    curl(req, res);
-});
 
 /**
  * function 详情 ****************************************************
