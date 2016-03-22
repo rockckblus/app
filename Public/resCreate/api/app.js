@@ -6,7 +6,6 @@ var path = require('path');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
-var adminRoutes = require('./routes/displayAdmin');
 
 var app = express();
 
@@ -23,7 +22,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/admin', adminRoutes);//amdin 操作相关路由
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
