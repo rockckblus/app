@@ -16,14 +16,63 @@
     'use strict';
 
     angular.module('admin').factory('pois', pois);
-    pois.$inject = ['api'];
+    pois.$inject = ['api', '$timeout'];
 
-    function pois(api) {
-        var poisRe;
+    function pois(api, $timeout) {
+        var eachNum = 1;//循环采集条数,默认1
+        var poisRe = {}; //return 方法对象
 
-        api.
-            poisRe = 1;
+        poisRe.start = _start;//起始动作,传入 循环采集条数
+
+
         return poisRe;
+
+
+        /**
+         * 开始动作,
+         * @prame Number  循环采集多少条 pois
+         * 16/3/22 */
+        function _start(callback, num) {
+            var timeCount = 0;//间隔时间循环
+            var settimeI = 0;
+            if (num) {
+                eachNum = num;
+            }
+
+            for (var i = 0; i < eachNum; i++) {
+                timeCount = timeCount + 1000;//加1秒
+                setTimeout(function () {
+                    settimeI++;
+                    console.log('settimeI', settimeI);
+                    findOnePois();//执行步骤1-7
+                    if (settimeI == eachNum) {
+                        $timeout(function () {
+                            findEndNum(callback);//callback tempNum
+                        }, 2000);
+                    }
+                }, timeCount);
+            }
+        }
+
+        /**
+         * find tempCount num
+         * 16/3/22 */
+        function findEndNum(callback) {
+            api('getPoisTempCountNumber', {}, callback);
+        }
+
+        /**
+         * step 1 -> 7
+         * 16/3/22 */
+        function findOnePois() {
+            /**
+             * step1  查出一条 三级地址 ,
+             * 先去拿tempCount 数,作为查询的 限制参数
+             * 16/3/22 */
+
+        }
+
+
     }
 
 })();

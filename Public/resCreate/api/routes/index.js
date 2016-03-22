@@ -183,11 +183,9 @@ function curl(req, res) {
             _test();
             break;
     }
-
     function _test() {
         res.json(111);
     }
-
 }
 
 /**

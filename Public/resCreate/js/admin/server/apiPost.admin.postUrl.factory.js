@@ -9,7 +9,6 @@
     /** admin api接口,nodejs  */
     var apiUrl = {
         caiji: {
-            getUrl: ''
         }
     };
 
@@ -24,12 +23,25 @@
                     var url = apiUrl.caiji.getUrl;
                     _post(url, postData).then(callBack, callBackErr);
                     break;
-
+                case 'upCountPoisAddOne' ://临时统计加1 ,postData {value:Number}
+                    postData.name = '全部处理完成的3级地址数量';
+                    var url2 = apiUrl.caiji.upDataTempCount;
+                    _post(url2, postData).then(callBack, callBackErr);
+                    break;
+                case 'getPoisTempCountNumber' ://获取pois临时统计 数 postData{}
+                    postData.name = '全部处理完成的3级地址数量';
+                    var url3 = apiUrl.caiji.getPoisTempCountNubmer;
+                    _post(url3, postData).then(callBack, callBackErr);
+                    break;
             }
         };
 
         //caiji
         apiUrl.caiji.getUrl = config.host.nodeHost + '/admin/caiji/getUrl';//curl 一条url
+
+        //临时统计 tempcount
+        apiUrl.caiji.upDataTempCount = config.host.nodeHost + '/admin/caiji/saveTempCount';//更新一条数据
+        apiUrl.caiji.getPoisTempCountNubmer = config.host.nodeHost + '/admin/caiji/findOneTempCountVal';//获取pois临时统计 数
 
         function _post(url, postData) {
             var defer = $q.defer();

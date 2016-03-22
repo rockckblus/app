@@ -25,8 +25,22 @@
 
     function controller($scope, $timeout, pois) {
 
-        $scope.fun = {};
+        $scope.fun = {
+            startClick: _startClick//start 点击事件,调用 pois factovry start方法
+        };
 
+        /**
+         * fun 详情 *********************
+         * 16/3/22 */
+
+        /**
+         * start 点击事件,调用 pois factovry start方法
+         * 16/3/22 */
+        function _startClick() {
+            pois.start(function (re) {
+                console.log('re', re);
+            },6);
+        }
 
     }
 

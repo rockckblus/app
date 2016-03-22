@@ -32,12 +32,25 @@ function admin(req, res) {
         case 'getUrl' :///curl 一条 url/
             _geturl();
             break;
+        case 'findOneTempCountVal' :///findOne 一条 ,传功能名称,返回val ,
+            _findOneTempCountVal();
+            break;
         case 'addTempCount' ://添加一条临时统计 {name:'功能',value:Number}
             _addTempCount();
             break;
         case 'saveTempCount' ://添加一条临时统计 {name:'功能',value:Number}
             _saveTempCount();
             break;
+    }
+
+    /**
+     * 传入 功能名称,
+     * @return valObj
+     * 16/3/22 */
+    function _findOneTempCountVal() {
+        tempCountCtrl.findOne(req.body.name, function (doc) {
+            res.json(doc);
+        });
     }
 
     /**

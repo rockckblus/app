@@ -1,13 +1,13 @@
 <!--getCurlTest-->
-<div>
-    <h1>
-        getCurlTest curl 一个 网页,可切换成 源码 json格式
+<div style="background-color: #f0f0f0;padding: 10px">
+    <h4>
+        getCurlTest curl can change json
         <span style="color:red">{{mess}}</span>
-    </h1>
+    </h4>
     <hr/>
-    <div style="float:left">url:<input type="text" ng-model="url">(无http)</div>
+    <div style="float:left">url:<input type="text" ng-model="url"></div>
     <button style="float:left;background:red;color:white" ng-click="fun.getCurlUrl()">curl Url</button>
-    <input type="checkbox" ng-model="isJson"/> 显示JSON{{isJson}}
+    <input type="checkbox" ng-model="isJson"/> showJSON  {{isJson}}
     <div ng-hide="isJson" ng-bind-html="doc|toHtml"></div>
     <div ng-show="isJson">{{doc}}</div>
 </div>
