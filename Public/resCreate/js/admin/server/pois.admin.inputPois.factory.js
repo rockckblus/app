@@ -16,9 +16,9 @@
     'use strict';
 
     angular.module('admin').factory('pois', pois);
-    pois.$inject = ['api', '$timeout'];
+    pois.$inject = ['api', '$timeout', '$q'];
 
-    function pois(api, $timeout) {
+    function pois(api, $timeout, $q) {
         var eachNum = 1;//循环采集条数,默认1
         var poisRe = {}; //return 方法对象
 
@@ -65,11 +65,41 @@
          * step 1 -> 7
          * 16/3/22 */
         function findOnePois() {
+            var endNum = 1;//tempCount Number
+            var defered = $q.defer();
+
+            /**
+             * step0 查出当前 tempCount 统计值
+             * 16/3/22 */
+            function s0_findEndNum() {
+                findEndNum(_success);
+                function _success(doc) {
+                    if (doc.value) {
+                        endNum = doc.value;
+                        defered.resolve(doc);
+                    } else {
+                        defered.reject();
+                    }
+                }
+
+                return defered.promise;
+            }
+
+
             /**
              * step1  查出一条 三级地址 ,
              * 先去拿tempCount 数,作为查询的 限制参数
              * 16/3/22 */
+            function s1_findOneThreeAred() {
+                api('getThreeCityArea', {
+                    limit: 1,
+                    skip: endNum
+                }, function (err, doc) {
+                    console.log('errDoc', err, doc);
+                })
+            }
 
+            s1_findOneThreeAred();
         }
 
 

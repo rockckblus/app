@@ -8,8 +8,7 @@
 
     /** admin api接口,nodejs  */
     var apiUrl = {
-        caiji: {
-        }
+        caiji: {}
     };
 
 
@@ -33,11 +32,17 @@
                     var url3 = apiUrl.caiji.getPoisTempCountNubmer;
                     _post(url3, postData).then(callBack, callBackErr);
                     break;
+                case 'getThreeCityArea' ://查询全部三级 传 {limit:num,skip:num}
+                    var url4 = apiUrl.caiji.getThreeCityArea;
+                    _post(url4, postData).then(callBack, callBackErr);
+                    break;
             }
         };
 
         //caiji
         apiUrl.caiji.getUrl = config.host.nodeHost + '/admin/caiji/getUrl';//curl 一条url
+        apiUrl.caiji.getThreeCityArea = config.host.nodeHost + '/admin/caiji/getThreeCityArea';// 查询全部三级 传 {limit:num,skip:num}
+
 
         //临时统计 tempcount
         apiUrl.caiji.upDataTempCount = config.host.nodeHost + '/admin/caiji/saveTempCount';//更新一条数据

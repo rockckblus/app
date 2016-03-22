@@ -23,10 +23,17 @@ var fun = {
     getTwoCityFromOneId: getTwoCityFromOneId,
 
     /**
+     * 查询全部三级
+     * 传 限制数
+     * 16/3/22 */
+    getThreeCityArea: getThreeCityArea,
+
+    /**
      * 查询热门城市
      * 热门 北京 上海 广州 武汉 成都 深圳 杭州 西安 南京 郑州 长沙 温州 福州 沈阳
      * 16/3/18 */
     selectHotCity: selectHotCity
+
 
 };
 
@@ -63,6 +70,24 @@ function getTwoCityFromOneId(oneId, callBack) {
             callBack(err, doc);
         });
 }
+
+
+/**
+ * 查询三级
+ * @parem {obj} {limit:number,skip:number}
+ * 16/3/22 */
+function getThreeCityArea(numObj, callBack) {
+    cityModel.find()
+        .limit(numObj.limit)
+        .skip(numObj.skip)
+        .exec(function (err, doc) {
+            if (err) {
+                g.alert.err(err);
+            }
+            callBack(err, doc);
+        })
+}
+
 
 /**
  * 查询热门城市

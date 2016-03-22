@@ -13,6 +13,11 @@ var curlCtrl = require('../db/controller/curl.back.controller');
 var tempCountCtrl = require('../db/controller/tempCount.back.controller');
 
 /**
+ * 城市city表
+ * 16/3/22 */
+var cityCtrl = require('../db/controller/city.g.controller');
+
+/**
  * post City:fun 城市相关api
  * 16/3/8 */
 router.post('/caiji/:fun', function (req, res) {
@@ -40,6 +45,9 @@ function admin(req, res) {
             break;
         case 'saveTempCount' ://添加一条临时统计 {name:'功能',value:Number}
             _saveTempCount();
+            break;
+        case 'getThreeCityArea' :// 查询三级城市,传 {limit:num,skip:num}
+            _getThreeCityArea();
             break;
     }
 
@@ -85,6 +93,17 @@ function admin(req, res) {
         })
 
     }
+
+    /**
+     * 查询三级,传 limit skip 对象 ,callback
+     * 16/3/22 */
+    function _getThreeCityArea(callback) {
+        cityCtrl.getThreeCityArea({
+            limit: req.body.limit,
+            skip: req.body.skip
+        }, callback)
+    }
+
 
 }
 
