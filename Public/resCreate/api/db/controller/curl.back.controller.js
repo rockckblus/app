@@ -5,10 +5,8 @@
 var g = require('../../g.config');
 var request = require('request'); //curl 控件
 
-
 var fun = {
     get: _get,
-    getJson: _getJson
 };
 
 /**
@@ -19,10 +17,12 @@ var fun = {
  * @parme url {Sting}  'http://baidu.ocm'
  * @return {Sting} '网页内容'
  * 16/3/21 */
-function _get(url, callback) {
+function _get(urlStr, callback) {
     request.get({
-            url: 'http://' + url,
-            encoding: 'utf8'
+            url: 'http://' + urlStr,
+            headers: {
+                'Content-Type': "text/html; charset=utf-8"
+            }
         },
         function (error, response, body) {
             if (response.statusCode == 200) {
@@ -35,21 +35,5 @@ function _get(url, callback) {
     );
 }
 
-/**
- * curl json ,
- * @parme url {Sting}  'http://baidu.ocm'
- * @return {Json}
- * 16/3/21 */
-function _getJson(url, callback) {
-    request.get({
-            url: 'http://' + url,
-            encoding: 'utf8'
-        },
-        function (error, response, body) {
-            callback(body);
-            console.log('200', body);
-        }
-    );
-}
 
 module.exports = fun;

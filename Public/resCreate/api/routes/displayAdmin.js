@@ -37,7 +37,7 @@ function admin(req, res) {
         case 'getUrl' :///curl 一条 url/
             _geturl();
             break;
-        case 'getJson' :///curl 一条 json/
+        case 'getJsonUrl' :///curl 一条 json/
             _getJsonUrl();
             break;
         case 'findOneTempCountVal' :///findOne 一条 ,传功能名称,返回val ,
@@ -83,6 +83,7 @@ function admin(req, res) {
     function _getJsonUrl() {
         var url = req.body.url;
         curlCtrl.getJson(url, function (doc) {
+            console.log('jsonDoc',doc);
             res.json(doc);
         })
     }

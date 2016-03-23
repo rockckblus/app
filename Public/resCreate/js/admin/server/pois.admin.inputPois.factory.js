@@ -106,6 +106,7 @@
                     skip: tempCountNum
                 }, function (doc) {
                     if (doc) {
+                        console.log('s1');
                         defered.resolve(doc);//传3级数据到 s2
                     } else {
                         defered.reject('s1Err');
@@ -117,17 +118,16 @@
             /** step2  接收  edit post 加入 一级城市名称 */
             function s2_findOneAreaByTwoArea(doc) {
                 var defered = $q.defer();
+
                 if (doc) {
                     api('getOneCityArea', {
                         id: doc[0].pid.pid
                     }, function (reDoc) {
-                        console.log('reDoc', reDoc);
                         if (reDoc) {
                             doc.oneArea = reDoc;
                             doc.allStr = _editStr(doc);
                             if (doc.allStr) {
                                 defered.resolve(doc);//传组合123级数据到 s3
-                                console.log('allStr', doc);
                             } else {
                                 defered.reject('组合字符串失败');
                             }
@@ -135,6 +135,8 @@
                             defered.reject('s2Err');
                         }
                     })
+                } else {
+                    defered.reject('s2ErrNODoc');
                 }
 
                 /**
@@ -153,19 +155,19 @@
                 return defered.promise;
             }
 
-
             /**
              * step3 去soso接口查询 gps
              * 16/3/23 */
             function s3_strGetSosoGps(doc) {
                 var defered = $q.defer();
                 if (doc) {
-                    api('getStrGps', {str: doc.allStr}, function (reGpsObj) {
+                    api('getStrGps', {str: encodeURI(doc.allStr)}, function (reGpsObj) {
+                        defered.resolve(reGpsObj);
                         console.log('reGpsObj', reGpsObj);
                     })
                 }
+                return defered.promise;
             }
-
 
             /**
              * s9_temp回调

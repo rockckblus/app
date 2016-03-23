@@ -30,7 +30,7 @@
                     _post(url, postData).then(callBack, callBackErr);
                     break;
                 case 'getCurlJson' ://测试admin Curl
-                    var urlJson = apiUrl.caiji.getJsonUrl;
+                    var urlJson = apiUrl.caiji.getUrl;
                     _post(urlJson, postData).then(callBack, callBackErr);
                     break;
                 case 'addTempCount' ://添加一条 临时统计 功能
@@ -53,6 +53,7 @@
                     break;
                 case 'getOneCityArea' ://根据2级pid 查询 1级
                     var url5 = apiUrl.caiji.getOneCityArea;
+                    console.log('getOneCityArea',postData);
                     _post(url5, postData).then(callBack, callBackErr);
                     break;
                 case 'getStrGps' ://根据地址反查gps 传str
@@ -91,9 +92,11 @@
         }
 
         function _get(url) {
+            
             var defer = $q.defer();
             url = url.replace('http://', '');
-            postApi('getCurlJson', {url: url}, function (doc) {
+            postApi('getCurlTest', {url: url}, function (doc) {
+                console.log('docccc',doc);
                 defer.resolve(doc);
             }, function (err) {
                 defer.reject(err);
