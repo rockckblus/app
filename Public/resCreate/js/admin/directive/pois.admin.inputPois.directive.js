@@ -21,9 +21,10 @@
         };
     }
 
-    controller.$inject = ['$scope', '$timeout', 'pois','api'];
+    controller.$inject = ['$scope', '$timeout', 'pois', 'api'];
 
-    function controller($scope, $timeout, pois,api) {
+    function controller($scope, $timeout, pois, api) {
+        $scope.mess = '';//信息提示
 
         $scope.fun = {
             startClick: _startClick,//start 点击事件,调用 pois factovry start方法
@@ -46,7 +47,9 @@
          * 16/3/22 */
         function _startClick() {
             pois.start(function (re) {
-                console.log('re', re);
+                $timeout(function () {
+                    $scope.mess = re;
+                }, 0)
             }, 1);
         }
 

@@ -6,6 +6,13 @@
 (function () {
     'use strict';
 
+    /**
+     * 配置相关
+     * 16/3/23 */
+    var conf = {
+        sosoAk: 'KFSBZ-RR7H4-5IMUE-X7I67-R6EZS-PWBCK',//sosoak
+    };
+
     /** admin api接口,nodejs  */
     var apiUrl = {
         caiji: {}
@@ -21,6 +28,10 @@
                 case 'getCurlTest' ://测试admin Curl
                     var url = apiUrl.caiji.getUrl;
                     _post(url, postData).then(callBack, callBackErr);
+                    break;
+                case 'getCurlJson' ://测试admin Curl
+                    var urlJson = apiUrl.caiji.getJsonUrl;
+                    _post(urlJson, postData).then(callBack, callBackErr);
                     break;
                 case 'addTempCount' ://添加一条 临时统计 功能
                     var url0 = apiUrl.caiji.addTempCount;
@@ -40,20 +51,34 @@
                     var url4 = apiUrl.caiji.getThreeCityArea;
                     _post(url4, postData).then(callBack, callBackErr);
                     break;
+                case 'getOneCityArea' ://根据2级pid 查询 1级
+                    var url5 = apiUrl.caiji.getOneCityArea;
+                    _post(url5, postData).then(callBack, callBackErr);
+                    break;
+                case 'getStrGps' ://根据地址反查gps 传str
+                    var url6 = apiUrl.caiji.getStrGps + postData.str + "&key=" + conf.sosoAk;
+                    _get(url6).then(callBack, callBackErr);
+                    break;
             }
         };
 
         //caiji
         apiUrl.caiji.getUrl = config.host.nodeHost + '/admin/caiji/getUrl';//curl 一条url
+        apiUrl.caiji.getJsonUrl = config.host.nodeHost + '/admin/caiji/getJsonUrl';//curl 一条url
 
         //city
         apiUrl.caiji.getThreeCityArea = config.host.nodeHost + '/admin/caiji/getThreeCityArea';// 查询全部三级 传 {limit:num,skip:num}
+        apiUrl.caiji.getOneCityArea = config.host.nodeHost + '/admin/caiji/getOneCityArea';// 根据2级pid 查询 1级
 
 
         //临时统计 tempcount
         apiUrl.caiji.addTempCount = config.host.nodeHost + '/admin/caiji/addTempCount';//添加一条count数据
         apiUrl.caiji.upDataTempCount = config.host.nodeHost + '/admin/caiji/saveTempCount';//更新一条数据
         apiUrl.caiji.getPoisTempCountNubmer = config.host.nodeHost + '/admin/caiji/findOneTempCountVal';//获取pois临时统计 数
+
+        //soso 地图接口
+        //apiUrl.caiji.getStrGps = "http://apis.map.qq.com/ws/geocoder/v1/?address=" + conf.str + "&key=" + conf.sosoAk;
+        apiUrl.caiji.getStrGps = "http://apis.map.qq.com/ws/geocoder/v1/?address=";
 
         function _post(url, postData) {
             var defer = $q.defer();
@@ -62,6 +87,18 @@
             }).error(function (err) {
                 defer.reject(err);
             });
+            return defer.promise;
+        }
+
+        function _get(url) {
+            var defer = $q.defer();
+            url = url.replace('http://', '');
+            postApi('getCurlJson', {url: url}, function (doc) {
+                defer.resolve(doc);
+            }, function (err) {
+                defer.reject(err);
+            });
+
             return defer.promise;
         }
 

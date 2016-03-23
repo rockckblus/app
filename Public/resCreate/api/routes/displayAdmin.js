@@ -37,6 +37,9 @@ function admin(req, res) {
         case 'getUrl' :///curl 一条 url/
             _geturl();
             break;
+        case 'getJson' :///curl 一条 json/
+            _getJsonUrl();
+            break;
         case 'findOneTempCountVal' :///findOne 一条 ,传功能名称,返回val ,
             _findOneTempCountVal();
             break;
@@ -48,6 +51,9 @@ function admin(req, res) {
             break;
         case 'getThreeCityArea' :// 查询三级城市,传 {limit:num,skip:num}
             _getThreeCityArea();
+            break;
+        case 'getOneCityArea' :// 根据2级pid 查询 1级
+            _getOneCityArea();
             break;
     }
 
@@ -67,6 +73,16 @@ function admin(req, res) {
     function _geturl() {
         var url = req.body.url;
         curlCtrl.get(url, function (doc) {
+            res.json(doc);
+        })
+    }
+
+    /**
+     * getJsonUrl
+     * 16/3/8 */
+    function _getJsonUrl() {
+        var url = req.body.url;
+        curlCtrl.getJson(url, function (doc) {
             res.json(doc);
         })
     }
@@ -106,6 +122,16 @@ function admin(req, res) {
         })
     }
 
+    /**
+     * 根据2级pid 查询 1级
+     * 16/3/23 */
+    function _getOneCityArea() {
+        cityCtrl.getOneCityFromId({
+            id: req.body.id
+        }, function (doc) {
+            res.json(doc);
+        })
+    }
 
 }
 

@@ -32,8 +32,12 @@ var fun = {
      * 查询热门城市
      * 热门 北京 上海 广州 武汉 成都 深圳 杭州 西安 南京 郑州 长沙 温州 福州 沈阳
      * 16/3/18 */
-    selectHotCity: selectHotCity
+    selectHotCity: selectHotCity,
 
+    /**
+     * 查询1级城市byId
+     * 16/3/18 */
+    getOneCityFromId: getOneCityFromId
 
 };
 
@@ -62,12 +66,28 @@ function getAllOneCity(post, callBack) {
 function getTwoCityFromOneId(oneId, callBack) {
     cityModel.find()
         .where('pid').equals(oneId)
-        .select('name')
+        .select('name pid')
         .exec(function (err, doc) {
             if (err) {
                 g.alert.err(err);
             }
             callBack(err, doc);
+        });
+}
+
+/**
+ * 查询1级城市 对应 _id
+ * 16/3/8 */
+function getOneCityFromId(obj, callBack) {
+    cityModel.findOne()
+        .where('_id').equals(obj.id)
+        .select('name')
+        .exec(function (err, doc) {
+            console.log('doc', doc);
+            if (err) {
+                g.alert.err(err);
+            }
+            callBack(doc, err);
         });
 }
 
@@ -81,6 +101,7 @@ function getThreeCityArea(numObj, callBack) {
         .where('type').equals('3')
         .limit(numObj.limit)
         .skip(numObj.skip)
+        .populate('pid', 'name pid')
         .exec(function (err, doc) {
             if (err) {
                 g.alert.err(err);

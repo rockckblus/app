@@ -7,7 +7,8 @@ var request = require('request'); //curl 控件
 
 
 var fun = {
-    get: _get
+    get: _get,
+    getJson: _getJson
 };
 
 /**
@@ -30,6 +31,23 @@ function _get(url, callback) {
             } else {
                 console.log('responseCode', response.statusCode);
             }
+        }
+    );
+}
+
+/**
+ * curl json ,
+ * @parme url {Sting}  'http://baidu.ocm'
+ * @return {Json}
+ * 16/3/21 */
+function _getJson(url, callback) {
+    request.get({
+            url: 'http://' + url,
+            encoding: 'utf8'
+        },
+        function (error, response, body) {
+            callback(body);
+            console.log('200', body);
         }
     );
 }

@@ -19,7 +19,7 @@
     pois.$inject = ['api', '$timeout', '$q'];
 
     function pois(api, $timeout, $q) {
-        var eachNum = 1;//循环采集条数,默认1
+        var eachNum = 1;
         var poisRe = {}; //return 方法对象
 
         poisRe.start = _start;//起始动作,传入 循环采集条数
@@ -43,7 +43,7 @@
                 setTimeout(function () {
                     settimeI++;
                     console.log('settimeI', settimeI);
-                    findOnePois();//执行步骤1-7
+                    findOnePois(callback);//执行步骤1-7
                     if (settimeI == eachNum) {
                         $timeout(function () {
                             findEndNum(callback);//callback tempNum
@@ -63,24 +63,91 @@
         /**
          * step 1 -> 7
          * 16/3/22 */
-        function findOnePois() {
-            var endNum = 1;//tempCount Number
-            var defered = $q.defer();
+        function findOnePois(callback) {
+
+
+            /**
+             * 逻辑
+             * 16/3/23 */
+            s0_findEndNum()//查出当前 tempCount 统计值
+                .then(s1_findOneThreeAred)//查出一条 三级地址 2 级 接收
+                .then(s2_findOneAreaByTwoArea)// edit post 加入 一级城市名称
+                .then(s3_strGetSosoGps)//去soso接口查询 gps
+                .then(s9_temp, function (err) {//测试过程中回调 显示到模板
+                    console.log(err);
+                });
 
             /**
              * step0 查出当前 tempCount 统计值
              * 16/3/22 */
             function s0_findEndNum() {
+                var defered = $q.defer();
                 findEndNum(_success);
                 function _success(doc) {
                     if (angular.isDefined(doc.value)) {
-                        endNum = doc.value;
-                        defered.resolve(doc);
-                        console.log(1111111);
+                        console.log(11111);
+                        defered.resolve(doc.value);//传 tempCountNum 到s1
                     } else {
-                        console.log('11err');
-                        defered.reject();
+                        defered.reject('s0Err');
                     }
+                }
+
+                return defered.promise;
+            }
+
+            /**
+             * step1  查出一条 三级地址 2 级, 传到step2
+             * 先去拿tempCount 数,作为查询的 限制参数
+             * 16/3/22 */
+            function s1_findOneThreeAred(tempCountNum) {
+                var defered = $q.defer();
+                api('getThreeCityArea', {
+                    limit: 1,
+                    skip: tempCountNum
+                }, function (doc) {
+                    if (doc) {
+                        defered.resolve(doc);//传3级数据到 s2
+                    } else {
+                        defered.reject('s1Err');
+                    }
+                });
+                return defered.promise;
+            }
+
+            /** step2  接收  edit post 加入 一级城市名称 */
+            function s2_findOneAreaByTwoArea(doc) {
+                var defered = $q.defer();
+                if (doc) {
+                    api('getOneCityArea', {
+                        id: doc[0].pid.pid
+                    }, function (reDoc) {
+                        console.log('reDoc', reDoc);
+                        if (reDoc) {
+                            doc.oneArea = reDoc;
+                            doc.allStr = _editStr(doc);
+                            if (doc.allStr) {
+                                defered.resolve(doc);//传组合123级数据到 s3
+                                console.log('allStr', doc);
+                            } else {
+                                defered.reject('组合字符串失败');
+                            }
+                        } else {
+                            defered.reject('s2Err');
+                        }
+                    })
+                }
+
+                /**
+                 * 组合字符串
+                 * 16/3/23 */
+                function _editStr(doc) {
+                    var str = '';
+                    try {
+                        str = doc.oneArea.name + doc[0].pid.name + doc[0].name;
+                    } catch (e) {
+                        str = '';
+                    }
+                    return str;
                 }
 
                 return defered.promise;
@@ -88,39 +155,24 @@
 
 
             /**
-             * step1  查出一条 三级地址 ,
-             * 先去拿tempCount 数,作为查询的 限制参数
-             * 16/3/22 */
-            function s1_findOneThreeAred() {
-                api('getThreeCityArea', {
-                    limit: 1,
-                    skip: endNum
-                }, function (doc) {
-                    if (doc) {
-                        console.log(22222);
-                        defered.resolve(doc);
-                    } else {
-                        console.log('22err');
-                        defered.reject();
-                    }
-                });
-
-                return defered.promise;
-            }
-
-            /** step2  测试 $q  */
-            function s2_q(a) {
-                if (a) {
-                    console.log('3333', a);
-                    defered.resolve();
-                } else {
-                    defered.reject();
+             * step3 去soso接口查询 gps
+             * 16/3/23 */
+            function s3_strGetSosoGps(doc) {
+                var defered = $q.defer();
+                if (doc) {
+                    api('getStrGps', {str: doc.allStr}, function (reGpsObj) {
+                        console.log('reGpsObj', reGpsObj);
+                    })
                 }
             }
 
-            s0_findEndNum().then(s1_findOneThreeAred).then(s2_q, function () {
-                console.log('err');
-            });
+
+            /**
+             * s9_temp回调
+             * 16/3/23 */
+            function s9_temp(data) {
+                callback(data);
+            }
 
         }
 
