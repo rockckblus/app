@@ -63,7 +63,7 @@ class IndexController extends CommonController
         }
         //如果没有关键词
         if (empty($re['two'])) {
-            $seoTitle = $_SESSION['place']['thisCityInfo']['name'] . '地盘 diPan.So';
+            $seoTitle = $_SESSION['place']['thisCityInfo']['name'] . '地盘_diPan.So';
             $pinDao = $_SESSION['place']['thisCityInfo']['name'];//分类聊天频道字符串
 
             $this->indexAllRe['pinDao'] = $pinDao;
