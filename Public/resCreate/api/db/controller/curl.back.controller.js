@@ -6,7 +6,7 @@ var g = require('../../g.config');
 var request = require('request'); //curl 控件
 
 var fun = {
-    get: _get,
+    get: _get
 };
 
 /**
@@ -34,6 +34,5 @@ function _get(urlStr, callback) {
         }
     );
 }
-
 
 module.exports = fun;

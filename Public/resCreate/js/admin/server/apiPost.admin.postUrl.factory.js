@@ -18,7 +18,6 @@
         caiji: {}
     };
 
-
     angular.module('admin').factory('api', api);
     api.$inject = ['$http', '$q', 'config'];
 
@@ -53,24 +52,27 @@
                     break;
                 case 'getOneCityArea' ://根据2级pid 查询 1级
                     var url5 = apiUrl.caiji.getOneCityArea;
-                    console.log('getOneCityArea',postData);
+                    console.log('getOneCityArea', postData);
                     _post(url5, postData).then(callBack, callBackErr);
                     break;
                 case 'getStrGps' ://根据地址反查gps 传str
                     var url6 = apiUrl.caiji.getStrGps + postData.str + "&key=" + conf.sosoAk;
                     _get(url6).then(callBack, callBackErr);
                     break;
+                case 'getGetPost' ://传gpsObj 返回 gps的 pois 显示短地址,半径 5000
+                    var url7 = apiUrl.caiji.getGetPost + postData.lat + ',' + postData.lng + '&get_poi=1&poi_options?address_format=short;radius=5000;' + "&key=" + conf.sosoAk;
+                    _get(url7).then(callBack, callBackErr);
+                    break;
             }
         };
 
         //caiji
         apiUrl.caiji.getUrl = config.host.nodeHost + '/admin/caiji/getUrl';//curl 一条url
-        apiUrl.caiji.getJsonUrl = config.host.nodeHost + '/admin/caiji/getJsonUrl';//curl 一条url
+        apiUrl.caiji.getJsonUrl = config.host.nodeHost + '/admin/caiji/getJsonUrl';// curl一条json
 
         //city
         apiUrl.caiji.getThreeCityArea = config.host.nodeHost + '/admin/caiji/getThreeCityArea';// 查询全部三级 传 {limit:num,skip:num}
         apiUrl.caiji.getOneCityArea = config.host.nodeHost + '/admin/caiji/getOneCityArea';// 根据2级pid 查询 1级
-
 
         //临时统计 tempcount
         apiUrl.caiji.addTempCount = config.host.nodeHost + '/admin/caiji/addTempCount';//添加一条count数据
@@ -79,7 +81,10 @@
 
         //soso 地图接口
         //apiUrl.caiji.getStrGps = "http://apis.map.qq.com/ws/geocoder/v1/?address=" + conf.str + "&key=" + conf.sosoAk;
-        apiUrl.caiji.getStrGps = "http://apis.map.qq.com/ws/geocoder/v1/?address=";
+        apiUrl.caiji.getStrGps = "http://apis.map.qq.com/ws/geocoder/v1/?address=";//get gps
+
+        //http://apis.map.qq.com/ws/geocoder/v1/?location=39.984154,116.307490&key=OB4BZ-D4W3U-B7VVO-4PJWW-6TKDJ-WPB77&get_poi=1
+        apiUrl.caiji.getGetPost = "http://apis.map.qq.com/ws/geocoder/v1/?location=";//get pois
 
         function _post(url, postData) {
             var defer = $q.defer();
@@ -92,20 +97,16 @@
         }
 
         function _get(url) {
-            
             var defer = $q.defer();
             url = url.replace('http://', '');
             postApi('getCurlTest', {url: url}, function (doc) {
-                console.log('docccc',doc);
                 defer.resolve(doc);
             }, function (err) {
                 defer.reject(err);
             });
-
             return defer.promise;
         }
 
         return postApi;
     }
-
 })();

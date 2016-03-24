@@ -73,6 +73,7 @@
                 .then(s1_findOneThreeAred)//查出一条 三级地址 2 级 接收
                 .then(s2_findOneAreaByTwoArea)// edit post 加入 一级城市名称
                 .then(s3_strGetSosoGps)//去soso接口查询 gps
+                .then(s4_gpsGetPois)//去soso 用三级区域中心点周边 5000米的 pois
                 .then(s9_temp, function (err) {//测试过程中回调 显示到模板
                     console.log(err);
                 });
@@ -162,11 +163,45 @@
                 var defered = $q.defer();
                 if (doc) {
                     api('getStrGps', {str: encodeURI(doc.allStr)}, function (reGpsObj) {
-                        defered.resolve(reGpsObj);
-                        console.log('reGpsObj', reGpsObj);
+                        var jsonObj = JSON.parse(JSON.parse(reGpsObj));
+                        if (jsonObj.result && jsonObj.result.location) {
+                            doc.gpsObj = jsonObj.result.location;
+                            defered.resolve(doc);
+                        } else {
+                            defered.reject('s3Err');
+                        }
+                    }, function (err) {
+                        defered.reject('s3ERr', err);
                     })
                 }
                 return defered.promise;
+            }
+
+            /**
+             * step4 去soso接口查询 pois
+             * 16/3/24 */
+            function s4_gpsGetPois(doc) {
+                var q = $q.defer();
+                if (doc) {
+                    api('getGetPost', {lat: doc.gpsObj.lat, lng: doc.gpsObj.lng}, function (rePois) {
+                        doc.jsonPost = JSON.parse(JSON.parse(rePois));
+                        q.resolve(doc);
+                    }, function (err) {
+                        q.reject('s3Err', err);
+                    })
+                }
+                return q.promise;
+            }
+
+            /**
+             * step5 遍历pois入库
+             * 16/3/24 */
+            function s5_eachPoisInDb(doc) {
+                var q = $q.defer();
+                if (doc) {
+
+                }
+                return q.promise;
             }
 
             /**
