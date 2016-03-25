@@ -11,6 +11,7 @@
      * 16/3/23 */
     var conf = {
         sosoAk: 'KFSBZ-RR7H4-5IMUE-X7I67-R6EZS-PWBCK',//sosoak
+        gaoDeAk:'8bc8bb3d13cc9fdab255b1aeb5d1c533'//高德ak
     };
 
     /** admin api接口,nodejs  */
@@ -60,7 +61,8 @@
                     _get(url6).then(callBack, callBackErr);
                     break;
                 case 'getGetPost' ://传gpsObj 返回 gps的 pois 显示短地址,半径 5000
-                    var url7 = apiUrl.caiji.getGetPost + postData.lat + ',' + postData.lng + '&get_poi=1&poi_options?address_format=short;radius=5000;' + "&key=" + conf.sosoAk;
+                    //var url7 = apiUrl.caiji.getGetPost + postData.lat + ',' + postData.lng + '&get_poi=1&poi_options?address_format=short;radius=5000;' + "&key=" + conf.sosoAk;
+                    var url7 = apiUrl.caiji.getGetPost + postData.lat + ',' + postData.lng + '&get_poi=1&poi_options?address_format=short;radius=5000;policy=3;' + "&key=" + conf.sosoAk;
                     _get(url7).then(callBack, callBackErr);
                     break;
             }
