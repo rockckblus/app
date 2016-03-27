@@ -98,7 +98,6 @@ function getOneCityFromId(obj, callBack) {
  * 16/3/22 */
 function getThreeCityArea(numObj, callBack) {
     cityModel.find()
-        .where('name').equals('')
         .where('type').equals('3')
         .limit(numObj.limit)
         .skip(numObj.skip)

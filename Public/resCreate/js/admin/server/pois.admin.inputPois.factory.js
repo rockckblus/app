@@ -107,7 +107,7 @@
                     skip: tempCountNum
                 }, function (doc) {
                     if (doc) {
-                        console.log('s1');
+                        console.log('s1',doc);
                         defered.resolve(doc);//传3级数据到 s2
                     } else {
                         defered.reject('s1Err');
@@ -119,7 +119,6 @@
             /** step2  接收  edit post 加入 一级城市名称 */
             function s2_findOneAreaByTwoArea(doc) {
                 var defered = $q.defer();
-
                 if (doc) {
                     api('getOneCityArea', {
                         id: doc[0].pid.pid
