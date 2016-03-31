@@ -17,6 +17,9 @@ var tempCountCtrl = require('../db/controller/tempCount.back.controller');
  * 16/3/22 */
 var cityCtrl = require('../db/controller/city.g.controller');
 
+/** gpsChina Ctrl  */
+var gpsChianCtro = require('../db/controller/gpsChina.back.controller.js');
+
 /**
  * post City:fun 城市相关api
  * 16/3/8 */
@@ -55,6 +58,9 @@ function admin(req, res) {
         case 'getOneCityArea' :// 根据2级pid 查询 1级
             _getOneCityArea();
             break;
+        case 'eachAdd' :// 遍历gps 写入数据库
+            _eachAdd();
+            break;
     }
 
     /**
@@ -83,7 +89,7 @@ function admin(req, res) {
     function _getJsonUrl() {
         var url = req.body.url;
         curlCtrl.getJson(url, function (doc) {
-            console.log('jsonDoc',doc);
+            console.log('jsonDoc', doc);
             res.json(doc);
         })
     }
@@ -132,6 +138,12 @@ function admin(req, res) {
         }, function (doc) {
             res.json(doc);
         })
+    }
+
+    /** 遍历数据库写入gps  */
+    function eachAdd() {
+
+
     }
 
 }
