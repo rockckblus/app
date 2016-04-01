@@ -141,7 +141,7 @@ function admin(req, res) {
     }
 
     /** 遍历数据库写入gps  */
-    function eachAdd() {
+    function _eachAdd() {
 
 
     }
