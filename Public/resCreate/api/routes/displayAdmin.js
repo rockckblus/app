@@ -18,12 +18,16 @@ var tempCountCtrl = require('../db/controller/tempCount.back.controller');
 var cityCtrl = require('../db/controller/city.g.controller');
 
 /** gpsChina Ctrl  */
-var gpsChianCtro = require('../db/controller/gpsChina.back.controller.js');
-
+var gpsChinaCtrl = require('../db/controller/gpsChina.back.controller');
 /**
  * post City:fun 城市相关api
  * 16/3/8 */
 router.post('/caiji/:fun', function (req, res) {
+    admin(req, res)
+});
+
+//get eachAdd
+router.get('/caiji/:fun', function (req, res) {
     admin(req, res);
 });
 
@@ -141,9 +145,11 @@ function admin(req, res) {
     }
 
     /** 遍历数据库写入gps  */
-    function eachAdd() {
+    function _eachAdd() {
+        gpsChinaCtrl.eachAdd(function(doc){
+            res.json(doc)
 
-
+        });
     }
 
 }

@@ -11,7 +11,7 @@
      * 16/3/23 */
     var conf = {
         sosoAk: 'KFSBZ-RR7H4-5IMUE-X7I67-R6EZS-PWBCK',//sosoak
-        gaoDeAk:'8bc8bb3d13cc9fdab255b1aeb5d1c533'//高德ak
+        gaoDeAk: '8bc8bb3d13cc9fdab255b1aeb5d1c533'//高德ak
     };
 
     /** admin api接口,nodejs  */
@@ -64,6 +64,10 @@
                     //var url7 = apiUrl.caiji.getGetPost + postData.lat + ',' + postData.lng + '&get_poi=1&poi_options?address_format=short;radius=5000;' + "&key=" + conf.sosoAk;
                     var url7 = apiUrl.caiji.getGetPost + postData.lat + ',' + postData.lng + '&get_poi=1&poi_options?address_format=short;radius=5000;policy=3;' + "&key=" + conf.sosoAk;
                     _get(url7).then(callBack, callBackErr);
+                    break;
+                case 'getStrGps' ://根据地址反查gps 传str
+                    var url6 = apiUrl.caiji.getStrGps + postData.str + "&key=" + conf.sosoAk;
+                    _get(url6).then(callBack, callBackErr);
                     break;
             }
         };
