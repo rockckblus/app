@@ -142,5 +142,4 @@ function eachAdd() {
 
 }
 
-
 module.exports = fun;
