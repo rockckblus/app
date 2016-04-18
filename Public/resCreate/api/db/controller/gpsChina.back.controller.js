@@ -17,9 +17,11 @@ var tempCountCtrl = require('../controller/tempCount.back.controller');
 /** 临时gps表  */
 var tempGpsCtrl = require('../controller/tempGps.back.controller');
 
+
 var fun = {
     addOne: addOne,//添加一条
     eachAdd: eachAdd,//循环添加
+    eachGpsInChina: eachGpsInChina//遍历临时gps表，提交到soso判断是不是中国的gps
 };
 
 /**
@@ -107,21 +109,16 @@ function eachAdd() {
                     console.log('over');
                     _endOver();
                 }
+            }
+            function __add(latFloat, lngFloat, tempCount) {
+                setTimeout(function () {
+                    tempGpsCtrl.add({
+                        lat: latFloat,
+                        lng: lngFloat
+                    });
+                    console.log(latFloat, lngFloat);
 
-
-                function __add(latFloat, lngFloat, tempCount) {
-                    setTimeout(function () {
-                        tempGpsCtrl.add({
-                            lat: latFloat,
-                            lng: lngFloat
-                        });
-                        console.log(latFloat, lngFloat);
-
-                    }, tempCount);
-
-
-                }
-
+                }, tempCount);
             }
 
             function _endOver() {
@@ -136,10 +133,11 @@ function eachAdd() {
         setTimeout(function () {
             _forLat();
         }, 0);
-
-
     }
-
 }
 
+/** eahcGpsInChina  遍历临时gps表，提交到soso判断是不是中国的gps*/
+function eachGpsInChina() {
+    tempCountCtrl.select();
+}
 module.exports = fun;

@@ -29,7 +29,7 @@
         $scope.fun = {
             startClick: _startClick,//start 点击事件,调用 pois factovry start方法
 //            addTempCount: _addTempCount// 添加一条临时统计数据 只执行一次 注释掉
-            startTempGpsInDb:_startTempGpsInDb//入库全国临时gps表点击事件
+//            startTempGpsInDb:_startTempGpsInDb//入库全国临时gps表点击事件
         };
 
         /**

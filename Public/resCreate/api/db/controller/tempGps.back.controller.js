@@ -10,6 +10,7 @@ var g = require('../../g.config');
 
 var fun = {
     add: add,//添加一条功能统计
+    select: select//select 10条，传入skip(Number)
 };
 
 /**
@@ -34,6 +35,23 @@ function add(obj) {
             console.log('smaill', small);
         });
     }
+
+}
+
+/** select 10条  */
+function select(startNum) {
+    console.log('select');
+
+    var skip = 0;
+    if (!startNum) {
+        skip = startNum;
+    }
+    tempGpsModel.find()
+        .limit(10)
+        .skip(skip)
+        .exec(function (err, doc) {
+            console.log('errDoc', err, doc);
+        })
 }
 
 module.exports = fun;

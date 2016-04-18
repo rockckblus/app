@@ -65,6 +65,9 @@ function admin(req, res) {
         case 'eachAdd' :// 遍历gps 写入数据库
             _eachAdd();
             break;
+        case '' :// 遍历gps 写入数据库
+            _eachAdd();
+            break;
     }
 
     /**
@@ -152,6 +155,7 @@ function admin(req, res) {
         });
     }
 
+    /** 查询是否  */
 }
 
 

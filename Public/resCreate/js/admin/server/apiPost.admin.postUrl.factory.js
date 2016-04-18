@@ -85,6 +85,7 @@
         apiUrl.caiji.upDataTempCount = config.host.nodeHost + '/admin/caiji/saveTempCount';//更新一条数据
         apiUrl.caiji.getPoisTempCountNubmer = config.host.nodeHost + '/admin/caiji/findOneTempCountVal';//获取pois临时统计 数
 
+
         //soso 地图接口
         //apiUrl.caiji.getStrGps = "http://apis.map.qq.com/ws/geocoder/v1/?address=" + conf.str + "&key=" + conf.sosoAk;
         apiUrl.caiji.getStrGps = "http://apis.map.qq.com/ws/geocoder/v1/?address=";//get gps
