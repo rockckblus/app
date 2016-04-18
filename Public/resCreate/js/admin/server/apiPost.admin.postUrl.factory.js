@@ -11,7 +11,7 @@
      * 16/3/23 */
     var conf = {
         sosoAk: 'KFSBZ-RR7H4-5IMUE-X7I67-R6EZS-PWBCK',//sosoak
-        gaoDeAk:'8bc8bb3d13cc9fdab255b1aeb5d1c533'//高德ak
+        gaoDeAk: '8bc8bb3d13cc9fdab255b1aeb5d1c533'//高德ak
     };
 
     /** admin api接口,nodejs  */
@@ -65,6 +65,10 @@
                     var url7 = apiUrl.caiji.getGetPost + postData.lat + ',' + postData.lng + '&get_poi=1&poi_options?address_format=short;radius=5000;policy=3;' + "&key=" + conf.sosoAk;
                     _get(url7).then(callBack, callBackErr);
                     break;
+                case 'getStrGps' ://根据地址反查gps 传str
+                    var url6 = apiUrl.caiji.getStrGps + postData.str + "&key=" + conf.sosoAk;
+                    _get(url6).then(callBack, callBackErr);
+                    break;
             }
         };
 
@@ -80,6 +84,7 @@
         apiUrl.caiji.addTempCount = config.host.nodeHost + '/admin/caiji/addTempCount';//添加一条count数据
         apiUrl.caiji.upDataTempCount = config.host.nodeHost + '/admin/caiji/saveTempCount';//更新一条数据
         apiUrl.caiji.getPoisTempCountNubmer = config.host.nodeHost + '/admin/caiji/findOneTempCountVal';//获取pois临时统计 数
+
 
         //soso 地图接口
         //apiUrl.caiji.getStrGps = "http://apis.map.qq.com/ws/geocoder/v1/?address=" + conf.str + "&key=" + conf.sosoAk;
