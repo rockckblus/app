@@ -14,6 +14,7 @@ Public/resCreate/js/lib
 Public/resCreate/node_modules
 Public/resCreate/api/node_modules
 Public/resCreate/api/model/bakRef/*
+app/dev/*
 
 
 Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php
@@ -23,3 +24,4 @@ Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php
 Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php
 
 Application/Runtime/Cache/Home/2a94b8bda04ff446dcedd42276fc99ee.php
+
