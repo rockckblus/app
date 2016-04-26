@@ -11,7 +11,7 @@ var g = require('../../g.config');
 var fun = {
     add: add,//添加一条功能统计
     upData: upData,//修改一条功能统计
-    findOne: findOne//find 一条tempCount值
+    findOne: findOne,//find 一条tempCount值
 };
 
 /**
@@ -70,5 +70,6 @@ function upData(obj, callBack) {
         }
     }
 }
+
 
 module.exports = fun;

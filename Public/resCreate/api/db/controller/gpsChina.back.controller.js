@@ -138,6 +138,12 @@ function eachAdd() {
 
 /** eahcGpsInChina  遍历临时gps表，提交到soso判断是不是中国的gps*/
 function eachGpsInChina() {
-    tempCountCtrl.select();
+    tempCountCtrl.findOne({
+
+    },_select);
+
+    function _select(re){
+        tempGpsCtrl.select(startNumber);
+    }
 }
 module.exports = fun;

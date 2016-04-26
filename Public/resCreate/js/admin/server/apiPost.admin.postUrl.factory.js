@@ -65,9 +65,9 @@
                     var url7 = apiUrl.caiji.getGetPost + postData.lat + ',' + postData.lng + '&get_poi=1&poi_options?address_format=short;radius=5000;policy=3;' + "&key=" + conf.sosoAk;
                     _get(url7).then(callBack, callBackErr);
                     break;
-                case 'getStrGps' ://根据地址反查gps 传str
-                    var url6 = apiUrl.caiji.getStrGps + postData.str + "&key=" + conf.sosoAk;
-                    _get(url6).then(callBack, callBackErr);
+                case 'eachGpsInChina' ://判断soso接口, 判断 临时 gps表,是否属于中国
+                    var url8 = apiUrl.caiji.eachGpsInChina;
+                    _post(url8, {}).then(callBack, callBackErr);
                     break;
             }
         };
@@ -75,6 +75,7 @@
         //caiji
         apiUrl.caiji.getUrl = config.host.nodeHost + '/admin/caiji/getUrl';//curl 一条url
         apiUrl.caiji.getJsonUrl = config.host.nodeHost + '/admin/caiji/getJsonUrl';// curl一条json
+        apiUrl.caiji.eachGpsInChina = config.host.nodeHost + '/admin/caiji/eachGpsInChina';//去soso接口,判断 临时gps表再不在中国
 
         //city
         apiUrl.caiji.getThreeCityArea = config.host.nodeHost + '/admin/caiji/getThreeCityArea';// 查询全部三级 传 {limit:num,skip:num}

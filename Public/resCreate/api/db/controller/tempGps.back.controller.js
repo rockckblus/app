@@ -51,7 +51,7 @@ function select(startNum) {
         .skip(skip)
         .exec(function (err, doc) {
             console.log('errDoc', err, doc);
-        })
+        });
 }
 
 module.exports = fun;

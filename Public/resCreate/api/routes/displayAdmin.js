@@ -65,8 +65,8 @@ function admin(req, res) {
         case 'eachAdd' :// 遍历gps 写入数据库
             _eachAdd();
             break;
-        case '' :// 遍历gps 写入数据库
-            _eachAdd();
+        case 'eachGpsInChina' :// 去soso接口,判断 临时gps表再不在中国
+            _eachGpsInChina();
             break;
     }
 
@@ -149,17 +149,15 @@ function admin(req, res) {
 
     /** 遍历数据库写入gps  */
     function _eachAdd() {
-<<<<<<< HEAD
-
-=======
-        gpsChinaCtrl.eachAdd(function(doc){
+        gpsChinaCtrl.eachAdd(function (doc) {
             res.json(doc)
->>>>>>> origin/本地开发分支
-
         });
     }
 
-    /** 查询是否  */
+    /** 去soso接口,判断 临时gps表再不在中国  */
+    function _eachGpsInChina() {
+        console.log('eachGpsInChina');
+    }
 }
 
 

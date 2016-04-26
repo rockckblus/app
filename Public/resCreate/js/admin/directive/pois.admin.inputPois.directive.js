@@ -30,6 +30,7 @@
             startClick: _startClick,//start 点击事件,调用 pois factovry start方法
 //            addTempCount: _addTempCount// 添加一条临时统计数据 只执行一次 注释掉
 //            startTempGpsInDb:_startTempGpsInDb//入库全国临时gps表点击事件
+            eachGpsInChina: _eachGpsInChina //遍历临时gps表判断 在中国
         };
 
         /**
@@ -39,6 +40,12 @@
         /** 添加一条临时统计数据 只执行一次 注释掉  */
         function _addTempCount() {
             api('addTempCount', {}, function () {
+            });
+        }
+
+        function _eachGpsInChina() {
+            api('eachGpsInChina', {}, function () {
+
             });
         }
 
@@ -56,7 +63,7 @@
 
 
         /** startTempGpsInDb 入库全国tempGps表  */
-        function startTempGpsInDb(){
+        function startTempGpsInDb() {
 
         }
 
