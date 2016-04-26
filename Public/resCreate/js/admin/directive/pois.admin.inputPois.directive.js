@@ -25,7 +25,6 @@
 
     function controller($scope, $timeout, pois, api) {
         $scope.mess = '';//信息提示
-
         $scope.fun = {
             startClick: _startClick,//start 点击事件,调用 pois factovry start方法
 //            addTempCount: _addTempCount// 添加一条临时统计数据 只执行一次 注释掉
@@ -49,7 +48,6 @@
             });
         }
 
-
         /**
          * start 点击事件,调用 pois factovry start方法
          * 16/3/22 */
@@ -60,7 +58,6 @@
                 }, 0)
             }, 1);
         }
-
 
         /** startTempGpsInDb 入库全国tempGps表  */
         function startTempGpsInDb() {
