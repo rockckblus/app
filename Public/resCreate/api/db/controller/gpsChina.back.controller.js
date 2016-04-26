@@ -17,7 +17,6 @@ var tempCountCtrl = require('../controller/tempCount.back.controller');
 /** 临时gps表  */
 var tempGpsCtrl = require('../controller/tempGps.back.controller');
 
-
 var fun = {
     addOne: addOne,//添加一条
     eachAdd: eachAdd,//循环添加
