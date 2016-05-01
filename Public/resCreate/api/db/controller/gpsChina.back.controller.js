@@ -136,10 +136,14 @@ function eachAdd() {
 }
 
 /** eahcGpsInChina  遍历临时gps表，提交到soso判断是不是中国的gps*/
-function eachGpsInChina() {
+function eachGpsInChina(callBack, startNumber) {
+    var num = 0;
+    if (startNumber) {
+        num = startNumber;
+    }
     tempCountCtrl.findOne({}, _select);
-    function _select(re) {
-        tempGpsCtrl.select(startNumber);
+    function _select() {
+        tempGpsCtrl.select(num, callBack);
     }
 }
 module.exports = fun;

@@ -43,8 +43,10 @@
         }
 
         function _eachGpsInChina() {
-            api('eachGpsInChina', {}, function () {
-
+            api('eachGpsInChina', {}, function (doc) {
+                $timeout(function () {
+                    $scope.mess = doc;
+                }, 0)
             });
         }
 

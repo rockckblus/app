@@ -35,11 +35,10 @@ function add(obj) {
             console.log('smaill', small);
         });
     }
-
 }
 
 /** select 10条  */
-function select(startNum) {
+function select(startNum, callBack) {
     console.log('select');
 
     var skip = 0;
@@ -50,6 +49,7 @@ function select(startNum) {
         .limit(10)
         .skip(skip)
         .exec(function (err, doc) {
+            callBack(doc);
             console.log('errDoc', err, doc);
         });
 }

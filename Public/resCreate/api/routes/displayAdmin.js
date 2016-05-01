@@ -156,7 +156,9 @@ function admin(req, res) {
 
     /** 去soso接口,判断 临时gps表再不在中国  */
     function _eachGpsInChina() {
-        console.log('eachGpsInChina');
+        gpsChinaCtrl.eachGpsInChina(function (doc) {
+            res.json(doc);
+        })
     }
 }
 
