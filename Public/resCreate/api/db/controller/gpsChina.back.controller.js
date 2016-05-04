@@ -28,7 +28,7 @@ var fun = {
  * 16/3/7 */
 
 /**
- * 添加一条gps
+ * 添加一条
  * @parem {lat:Number,lng:Number}
  * */
 function addOne(obj) {
