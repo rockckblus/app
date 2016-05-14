@@ -23,7 +23,8 @@ module.exports = function (grunt) {
                 tasks: ['jshint', 'ngtemplates', 'concat', 'uglify', 'cssmin','clean' ],//dist 配置
 //                tasks: ['jshint', 'ngtemplates' ],//dev 配置
                 options: {
-                    spawn: false
+                    spawn: false,
+                    livereload: true
                 }
             }
         },

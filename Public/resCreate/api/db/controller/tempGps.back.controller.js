@@ -39,8 +39,6 @@ function add(obj) {
 
 /** select 10条  */
 function select(startNum, callBack) {
-    console.log('select');
-
     var skip = 0;
     if (!startNum) {
         skip = startNum;
@@ -50,7 +48,6 @@ function select(startNum, callBack) {
         .skip(skip)
         .exec(function (err, doc) {
             callBack(doc);
-            console.log('errDoc', err, doc);
         });
 }
 

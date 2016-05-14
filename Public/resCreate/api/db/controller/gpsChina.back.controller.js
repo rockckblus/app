@@ -141,7 +141,14 @@ function eachGpsInChina(callBack, startNumber) {
     if (startNumber) {
         num = startNumber;
     }
-    tempCountCtrl.findOne({}, _select);
+    //判断allGps执行的指针
+    tempCountCtrl.findOne('判断allGps执行的指针', _findTempCount);
+
+    function _findTempCount(re) {
+        startNumber = re.value;
+    }
+
+
     function _select() {
         tempGpsCtrl.select(num, callBack);
     }

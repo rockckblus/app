@@ -50,7 +50,7 @@
          *  弹出div，显示 内容
          *  data 为alertInfo re.type=2 时候 传来的 attr 的 其他值,可以带到 新作用域
          * */
-        function listenAlertDivAlertInfo(e,data) {
+        function listenAlertDivAlertInfo(e, data) {
 
             alertDiv.getItem(alertDiv.item, reCount);
 
@@ -91,8 +91,8 @@
 
         /** 监听关闭按钮  */
         function listenClose() {
-            var coloseBut = angular.element(document.getElementById('alertInfoCloseButton')) ;
-            var backDiv =  angular.element(document.getElementById('backPositon'));
+            var coloseBut = angular.element(document.getElementById('alertInfoCloseButton'));
+            var backDiv = angular.element(document.getElementById('backPositon'));
             coloseBut.bind('click', function () {
                 closeAlertDiv();
             });
@@ -108,7 +108,6 @@
                 alertDiv.showAlertInfo = false;
             }, 0);
         }
-
     }
 
 
