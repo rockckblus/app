@@ -65,7 +65,7 @@
             function _forGpsObj(doc) {
                 var time = 0;
                 angular.forEach(doc, function (vo, index) {
-                    time = time + 400;//间隔400hao秒
+                    time = time + 600;//间隔400hao秒
                     setTimeout(function () {
                         count++;
                         _getTrueSosoGps(vo.gps);

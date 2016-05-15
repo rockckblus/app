@@ -10,7 +10,10 @@
      * 配置相关
      * 16/3/23 */
     var conf = {
-        sosoAk: 'KFSBZ-RR7H4-5IMUE-X7I67-R6EZS-PWBCK',//sosoak
+        //sosoAk: 'KFSBZ-RR7H4-5IMUE-X7I67-R6EZS-PWBCK',//sosoak
+        //sosoAk: 'AXNBZ-VOS2P-NB5DC-LWNCN-4UBME-P7F23',//sosoak
+        //sosoAk: 'ZVTBZ-ENYA6-E35S4-M47JC-3FI6Q-HEBSY',//sosoak
+        sosoAk: '7YBBZ-P6FAF-N77JZ-J6U4X-XJZD2-AXF5J',//sosoak
         gaoDeAk: '8bc8bb3d13cc9fdab255b1aeb5d1c533'//高德ak
     };
 
