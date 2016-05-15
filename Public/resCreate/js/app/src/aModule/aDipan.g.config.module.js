@@ -26,7 +26,7 @@
      *
      * 此处是hackpost 到 node 转 对象格式问题, 如果是 请求node ,post的 需要传入 queryType = true; todo 默认不hackpost格式
      * 16/2/1 */
-    //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'uiBlock.dipan.uiGroup.module'], hackPost).config(uiRouter).config(secProvider);
+        //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'uiBlock.dipan.uiGroup.module'], hackPost).config(uiRouter).config(secProvider);
     angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'uiBlock.dipan.uiGroup.module']).config(uiRouter).config(secProvider);
 
 

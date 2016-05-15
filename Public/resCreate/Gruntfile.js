@@ -7,7 +7,7 @@ module.exports = function (grunt) {
         /** 检查代码  */
         jshint: {
             //此处是 需要 测试 的文件路径，可自己修改
-            build: ['js/app/src/**/*.js','api/*.js','api/db/**/*.js','api/routes/js'],
+            build: ['js/app/src/**/*.js', 'api/*.js', 'api/db/**/*.js', 'api/routes/js'],
             options: {
                 //此处是 验证规则配置文件
                 jshintrc: '.jshintrc'
@@ -19,9 +19,9 @@ module.exports = function (grunt) {
          * 16/1/22 */
         watch: {
             build: {
-                files: ['Gruntfile.js', '../../FrontApplication/Home/View/base/layout.html','js/app/src/**/*.js','js/app/src/**/**/*.js', 'js/app/src/**/**/**/*.js','css/src/*.css','html/src/**/**/**/*.html','html/src/**/**/html','html/src/**/*.html','api/*.js','api/db/**/*.js','api/routes/*.js'],
-                tasks: ['jshint', 'ngtemplates', 'concat', 'uglify', 'cssmin','clean' ],//dist 配置
-//                tasks: ['jshint', 'ngtemplates' ],//dev 配置
+                files: ['Gruntfile.js', '../../FrontApplication/Home/View/base/layout.html', 'js/app/src/**/*.js', 'js/app/src/**/**/*.js', 'js/app/src/**/**/**/*.js', 'css/src/*.css', 'html/src/**/**/**/*.html', 'html/src/**/**/html', 'html/src/**/*.html', 'api/*.js', 'api/db/**/*.js', 'api/routes/*.js'],
+                //tasks: ['jshint', 'ngtemplates', 'concat', 'uglify', 'cssmin', 'clean'],//dist 配置
+                tasks: ['jshint', 'ngtemplates'],//dev 配置
                 options: {
                     spawn: false,
                     livereload: true
@@ -70,7 +70,7 @@ module.exports = function (grunt) {
         /** 删除app.templates.js  */
         clean: {
 //            js: ['js/app/dist/app.templates.js'],
-            css:['css/dist/*.min.css']
+            css: ['css/dist/*.min.css']
         },
 
         /**
@@ -98,7 +98,6 @@ module.exports = function (grunt) {
                 }
             }
         }
-
 
 
     });

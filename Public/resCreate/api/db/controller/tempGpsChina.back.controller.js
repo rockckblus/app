@@ -1,16 +1,15 @@
 /**
- * tempGps表 contrller 全局
+ * tempGpsChina表 contrller 全局
  */
 
 /**
  * gpsModel
  * 16/3/7 */
-var tempGpsModel = require('../model/tempGps.back.model');
+var tempGpsChinaModel = require('../model/tempGpsChina.back.model');
 var g = require('../../g.config');
 
 var fun = {
     add: add,//添加一条功能统计
-    select: select//select 10条，传入skip(Number)
 };
 
 /**
@@ -28,7 +27,7 @@ function add(obj) {
      * 添加一条新记录
      * 16/3/14 */
     function _add(obj) {
-        tempGpsModel.create({
+        tempGpsChinaModel.create({
             gps: obj
         }, function (err, small) {
             console.log('err', err);
@@ -37,19 +36,5 @@ function add(obj) {
     }
 }
 
-/** select 10条  */
-function select(startNum, callBack) {
-    var skip = 0;
-    if (startNum) {
-        skip = startNum;
-    }
-
-    tempGpsModel.find()
-        .limit(10)
-        .skip(skip)
-        .exec(function (err, doc) {
-            callBack(doc);
-        });
-}
 
 module.exports = fun;

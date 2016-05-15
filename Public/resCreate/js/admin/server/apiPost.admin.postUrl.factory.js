@@ -69,6 +69,11 @@
                     var url8 = apiUrl.caiji.eachGpsInChina;
                     _post(url8, {}).then(callBack, callBackErr);
                     break;
+                case 'addTempGpsChina' ://添加一条 中国gps数据
+                    var url9 = apiUrl.caiji.addTempGpsChina;
+                    _post(url9, postData).then(callBack, callBackErr);
+                    break;
+
             }
         };
 
@@ -76,6 +81,7 @@
         apiUrl.caiji.getUrl = config.host.nodeHost + '/admin/caiji/getUrl';//curl 一条url
         apiUrl.caiji.getJsonUrl = config.host.nodeHost + '/admin/caiji/getJsonUrl';// curl一条json
         apiUrl.caiji.eachGpsInChina = config.host.nodeHost + '/admin/caiji/eachGpsInChina';//去soso接口,判断 临时gps表再不在中国
+        apiUrl.caiji.addTempGpsChina = config.host.nodeHost + '/admin/caiji/addTempGpsChina';//添加一条 中国gps数据
 
         //city
         apiUrl.caiji.getThreeCityArea = config.host.nodeHost + '/admin/caiji/getThreeCityArea';// 查询全部三级 传 {limit:num,skip:num}

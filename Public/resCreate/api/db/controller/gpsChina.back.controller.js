@@ -136,33 +136,53 @@ function eachAdd() {
 }
 
 /** eahcGpsInChina  遍历临时gps表，提交到soso判断是不是中国的gps*/
-function eachGpsInChina(callBack, startNumber) {
-<<<<<<< Updated upstream
-    var num = 0;
-    if (startNumber) {
-        num = startNumber;
-    }
-    //判断allGps执行的指针
+function eachGpsInChina(callBack) {
+    var startNumber;
+
     tempCountCtrl.findOne('判断allGps执行的指针', _findTempCount);
-
     function _findTempCount(re) {
-        startNumber = re.value;
+        try {
+            /*************************
+             * 查出allGps old 指针,然后 指针 加10, 完成后,再去从临时gps表 查出,old指针的10条数据
+             * 16/5/14 ByRockBlus
+             *************************/
+            startNumber = re.value;
+            _allGpsAddTen(startNumber, _select);
+        } catch (e) {
+            console.error('error', e);
+        }
     }
 
-
-    function _select() {
-        tempGpsCtrl.select(num, callBack);
+    /*************************
+     *  每请求一次, allGps 指针就  就自增 10条
+     *  16/5/14 ByRockBlus
+     *************************/
+    function _allGpsAddTen(startOldNum, funCall) {
+        var addTen = startOldNum + 10;
+        tempCountCtrl.upData({'name': '判断allGps执行的指针', 'value': addTen}, function () {
+            funCall(startOldNum);
+        });
     }
-=======
-    console.log(111111111111111111);
-    //var num = 0;
-    //if (startNumber) {
-    //    num = startNumber;
-    //}
-    //tempCountCtrl.findOne({}, _select);
-    //function _select() {
-    //    tempGpsCtrl.select(num, callBack);
-    //}
->>>>>>> Stashed changes
+
+    /*************************
+     * 去临时gps表查出10条数据,并callBack
+     *  16/5/14 ByRockBlus
+     *************************/
+    function _select(num) {
+        tempGpsCtrl.select(num, _callBack);
+
+        /*************************
+         * 返回条件加入num tempCount
+         * 16/5/14 下午5:23 ByRockBlus
+         *************************/
+        function _callBack(re) {
+            var reData = {
+                tempCount: num,
+                data: re
+            };
+            console.log('ree', reData);
+            callBack(reData);
+        }
+    }
 }
 module.exports = fun;

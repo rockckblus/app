@@ -19,6 +19,10 @@ var cityCtrl = require('../db/controller/city.g.controller');
 
 /** gpsChina Ctrl  */
 var gpsChinaCtrl = require('../db/controller/gpsChina.back.controller');
+
+/** tempGpsChina 筛选后中国gps表  Ctrl  */
+var tempGpsChina = require('../db/controller/tempGpsChina.back.controller');
+
 /**
  * post City:fun 城市相关api
  * 16/3/8 */
@@ -67,6 +71,9 @@ function admin(req, res) {
             break;
         case 'eachGpsInChina' :// 去soso接口,判断 临时gps表再不在中国
             _eachGpsInChina();
+            break;
+        case 'addTempGpsChina' :// 写入tempGpsChina表 一条 中国数据
+            _addTempGpsChina();
             break;
     }
 
@@ -121,7 +128,6 @@ function admin(req, res) {
                 res.json('ok');
             }
         })
-
     }
 
     /**
@@ -159,6 +165,17 @@ function admin(req, res) {
         gpsChinaCtrl.eachGpsInChina(function (doc) {
             res.json(doc);
         })
+    }
+
+    /*************************
+     * _addTempGpsChina
+     * 16/5/14 下午8:03 ByRockBlus
+     *************************/
+    function _addTempGpsChina() {
+        var obj = req.body.gps;
+        console.log('obj',obj);
+        tempGpsChina.add(obj);
+        res.json(1);
     }
 }
 

@@ -65,7 +65,6 @@
          * 16/3/22 */
         function findOnePois(callback) {
 
-
             /**
              * 逻辑
              * 16/3/23 */
@@ -107,7 +106,7 @@
                     skip: tempCountNum
                 }, function (doc) {
                     if (doc) {
-                        console.log('s1',doc);
+                        console.log('s1', doc);
                         defered.resolve(doc);//传3级数据到 s2
                     } else {
                         defered.reject('s1Err');

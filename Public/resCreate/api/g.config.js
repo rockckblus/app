@@ -33,13 +33,13 @@ var g = {
     },
 
 
-   system:{
-       /**
-        * 定时销毁session,时间设置
-        * 16/3/17 */
-        sessionTime:3600 * 24 //1天超时 需要在session表中设置 超时时间,自动删除,此处只是记录超时时间
+    system: {
+        /**
+         * 定时销毁session,时间设置
+         * 16/3/17 */
+        sessionTime: 3600 * 24 //1天超时 需要在session表中设置 超时时间,自动删除,此处只是记录超时时间
 
-   } ,
+    },
 
 
     /**
@@ -88,7 +88,7 @@ function alert(err) {
                 console.error('errString', err);
             }
         } else {
-            console.error('错误类型未比较成功,null');
+            console.error('错误类型未比较成功 错误为空');
         }
     }
 }
