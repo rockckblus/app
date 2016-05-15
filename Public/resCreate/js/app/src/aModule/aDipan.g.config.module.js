@@ -137,7 +137,7 @@
     function config() {
         return {
             host: {//host 配置
-                nodeHost: 'http://169.254.67.106:3008'//nodejsApi hostUrl
+                nodeHost: 'http://www.dipan.so:3008'//nodejsApi hostUrl
             }
         };
     }
