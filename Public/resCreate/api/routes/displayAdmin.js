@@ -172,8 +172,12 @@ function admin(req, res) {
      * 16/5/14 下午8:03 ByRockBlus
      *************************/
     function _addTempGpsChina() {
-        var obj = req.body.gps;
-        console.log('obj',obj);
+        var obj = {
+            gps: req.body.gps,
+            address: req.body.address,
+            pois: req.body.pois,
+        }
+        console.log('obj', obj);
         tempGpsChina.add(obj);
         res.json(1);
     }

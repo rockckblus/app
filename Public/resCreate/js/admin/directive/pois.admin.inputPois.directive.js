@@ -99,7 +99,12 @@
                 function __inTempGpsChina(jsonPost) {
                     try {
                         if (jsonPost.result.address_component.nation == '中国') {
-                            api('addTempGpsChina', {gps: jsonPost.result.location});
+                            var inObj = {
+                                gps: jsonPost.result.location,
+                                address: jsonPost.result.address_component,//地址信息
+                                pois: jsonPost.result.pois//周边数组
+                            }
+                            api('addTempGpsChina', inObj);
                             $timeout(function () {
                                 $scope.mess = '中国' + jsonPost.result.address_component.province + jsonPost.result.address_component.street;
                             }, 0)

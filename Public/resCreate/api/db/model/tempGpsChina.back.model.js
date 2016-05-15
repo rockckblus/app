@@ -15,7 +15,8 @@ var g = require('../../g.config');
  * 16/3/7 */
 var tempGpsSchema = new g.Schema({
     gps: {lat: Number, lng: Number},
-    pois: []
+    pois: [],
+    address: {}
 });
 
 

@@ -27,8 +27,11 @@ function add(obj) {
      * 添加一条新记录
      * 16/3/14 */
     function _add(obj) {
+        console.log('tempadd', obj);
         tempGpsChinaModel.create({
-            gps: obj
+            gps: obj.gps,
+            address: obj.address,//地址信息
+            pois: obj.pois//周边数组
         }, function (err, small) {
             console.log('err', err);
             console.log('smaill', small);

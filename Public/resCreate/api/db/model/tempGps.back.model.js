@@ -22,7 +22,7 @@ var tempGpsSchema = new g.Schema({
  * cityModel
  * 16/3/7 */
 //var tempGpsModel = g.mongoose.model('tempgps', tempGpsSchema, 'tempgps'); //到A 23.99  count 2473800
-var tempGpsModel = g.mongoose.model('tempgps', tempGpsSchema, 'tempgps');//24.00 开始
+var tempGpsModel = g.mongoose.model('tempgps4', tempGpsSchema, 'tempgps4');//24.00 开始
 
 module.exports = tempGpsModel;
 
