@@ -24,6 +24,7 @@
     controller.$inject = ['$scope', '$timeout', 'pois', 'api'];
 
     function controller($scope, $timeout, pois, api) {
+        var sosoAk = _getPort();//判断url 分配 不同 的sosoAk
         var stopGetGpsInChina;//停止去soso查 是否 再中国
         $scope.mess = '';//信息提示
         $scope.fun = {
@@ -37,6 +38,52 @@
         /**
          * fun 详情 *********************
          * 16/3/22 */
+
+        /**************************
+         * 获取当前url端口号
+         * 16-5-17 上午8:43 ByRockBlus
+         **************************/
+        function _getPort() {
+            var url = window.location.href;
+            var ak;
+            url = url.split(':');
+            url = url[2];
+            url = url.split('/');
+            url = url[0];
+
+
+            switch (url) {
+                case '8082':
+                    ak = 'WGKBZ-YIYRU-3IOVL-B6A3J-HYANJ-BWFUC';//sosoak 3008 4
+                    break;
+                case '8083':
+                    ak = '4RMBZ-AS2R5-6JQIN-QHTBT-NDU25-Y7FTD';//soso ak 3008 5
+                    break;
+                case '8084':
+                    ak = 'E63BZ-HJPRQ-L6Y5L-GA6Q5-XXWQV-T2BXQ';//soso ak 3008 6
+                    break;
+                case '8085':
+                    ak = 'I26BZ-CUUW5-25AIJ-QXZRI-A5N46-YSBEZ';//soso ak 3008 7
+                    break;
+                case '8086':
+                    ak = 'ZBMBZ-CFCA5-INFIM-QH7EC-XOW2K-WCBPU';//soso ak 3008 8
+                    break;
+                case '8087':
+                    ak = 'KM4BZ-KIJRU-6UMVZ-BYRS4-4R2J5-KXBYQ';//soso ak 3008 9
+                    break;
+                case '8088':
+                    ak = 'ZVTBZ-ENYA6-E35S4-M47JC-3FI6Q-HEBSY';//sosoak 3008 1
+                    break;
+                case '8089':
+                    ak = 'AXNBZ-VOS2P-NB5DC-LWNCN-4UBME-P7F23';//soso ak 3008 2
+                    break;
+                case '8090':
+                    ak = 'WPWBZ-VI63R-XM3WG-WEDEB-ZTQ3V-XXBT4';//soso ak 3008 2
+                    break;
+            }
+            return ak;
+        }
+
 
         /** 添加一条临时统计数据 只执行一次 注释掉  */
         function _addTempCount() {
@@ -83,8 +130,9 @@
              * 16/5/14 下午6:29 ByRockBlus
              *************************/
             function _getTrueSosoGps(gpsObj) {
+                console.log('sosoAk', sosoAk);
                 if (gpsObj) {
-                    api('getGetPost', {lat: gpsObj.lat, lng: gpsObj.lng}, function (rePois) {
+                    api('getGetPost', {lat: gpsObj.lat, lng: gpsObj.lng, sosoAk: sosoAk}, function (rePois) {
                         var jsonPost = JSON.parse(JSON.parse(rePois));
                         __inTempGpsChina(jsonPost);//判断中国入库
                     }, function (err) {

@@ -3,6 +3,8 @@
 /**
  * Module dependencies.
  */
+var cluster = require('cluster');
+var numCPUs = require('os').cpus().length;
 
 var app = require('../app');
 var debug = require('debug')('bak:server');
@@ -24,8 +26,29 @@ var server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
+if (cluster.isMaster) {//多cpu线程
+//    console.log('masgter start');
+    //Fork workers;
+    for (var i = 0; i < numCPUs; i++) {
+        cluster.fork();
+    }
 
-server.listen(port);
+    cluster.on('listening', function (worker, address) {
+        //console.log('listening:worker' + worker.process.pid + ', Addresss: ' + address.address + ':' + address.port);
+    });
+
+    cluster.on('exit', function (worker, code, signal) {
+//        console.log('worker' + worker.process.pid + 'died');
+    })
+
+} else if (cluster.isWorker) {
+    server.listen(port);
+////    console.log('[worker]'+ cluster.worker.id)
+//    http.createServer(app).listen(app.get('port'), function () {
+//
+////        console.log('Express server listening on port ' + app.get('port'));
+//    });
+}
 server.on('error', onError);
 server.on('listening', onListening);
 
@@ -88,3 +111,9 @@ function onListening() {
         : 'port ' + addr.port;
     debug('Listening on ' + bind);
 }
+
+
+
+
+
+
