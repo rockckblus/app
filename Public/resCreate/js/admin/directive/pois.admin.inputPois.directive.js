@@ -78,7 +78,10 @@
                     ak = 'AXNBZ-VOS2P-NB5DC-LWNCN-4UBME-P7F23';//soso ak 3008 2
                     break;
                 case '8090':
-                    ak = 'WPWBZ-VI63R-XM3WG-WEDEB-ZTQ3V-XXBT4';//soso ak 3008 2
+                    ak = 'WPWBZ-VI63R-XM3WG-WEDEB-ZTQ3V-XXBT4';//soso ak 3008 10
+                    break;
+                case '8091':
+                    ak = 'FJPBZ-ABHHF-D77JS-JXS25-JBVD6-CHFEK';//soso ak 3008 3
                     break;
             }
             return ak;
@@ -99,7 +102,6 @@
             var count = 0;
             api('eachGpsInChina', {}, function (doc) {
                 $timeout(function () {
-                    console.log('doc', doc);
                     $scope.mess = doc.tempCount;
                     _forGpsObj(doc.data);//循环遍历
                 }, 0)
@@ -110,33 +112,36 @@
              * 16/5/14 下午6:33 ByRockBlus
              *************************/
             function _forGpsObj(doc) {
-                var time = 0;
                 angular.forEach(doc, function (vo, index) {
-                    time = time + 600;//间隔400hao秒
                     setTimeout(function () {
-                        count++;
-                        _getTrueSosoGps(vo.gps);
-                        if (count == 10 && !stopGetGpsInChina) {
-                            $timeout(function () {
-                                _eachGpsInChina();//重复执行 下个10条
-                            }, 1000);
-                        }
-                    }, time);
+                        _getTrueSosoGps(vo.gps, __callBack);
+                    }, 1000);
                 })
+
+                function __callBack() {
+                    if (!stopGetGpsInChina) {
+                        _eachGpsInChina();//重复执行 下个1条
+                    }
+                }
+
+
             }
 
             /*************************
              * 遍历 返回的 gps 去搜搜 查 判断 是不是 在中国,如果 在中国就去  addTempGpsChina 添加一条数据 {gps:{lat:num,lng:num}}
              * 16/5/14 下午6:29 ByRockBlus
              *************************/
-            function _getTrueSosoGps(gpsObj) {
-                console.log('sosoAk', sosoAk);
+            function _getTrueSosoGps(gpsObj, call) {
                 if (gpsObj) {
                     api('getGetPost', {lat: gpsObj.lat, lng: gpsObj.lng, sosoAk: sosoAk}, function (rePois) {
                         var jsonPost = JSON.parse(JSON.parse(rePois));
                         __inTempGpsChina(jsonPost);//判断中国入库
-                    }, function (err) {
-                        console.log('s3Err', err);
+                        call();
+                    }, function (err) {//如果错误,就3秒后 再去 重复请求
+                        $timeout(function () {
+                            console.log('s3Err', err);
+                            call();
+                        }, 3000);
                     })
                 }
 

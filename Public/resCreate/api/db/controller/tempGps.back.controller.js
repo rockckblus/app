@@ -45,7 +45,7 @@ function select(startNum, callBack) {
     }
 
     tempGpsModel.find()
-        .limit(10)
+        .limit(1)
         .skip(skip)
         .exec(function (err, doc) {
             callBack(doc);

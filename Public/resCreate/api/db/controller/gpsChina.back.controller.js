@@ -158,7 +158,7 @@ function eachGpsInChina(callBack) {
      *  16/5/14 ByRockBlus
      *************************/
     function _allGpsAddTen(startOldNum, funCall) {
-        var addTen = startOldNum + 10;
+        var addTen = startOldNum + 1;
         tempCountCtrl.upData({'name': '判断allGps执行的指针', 'value': addTen}, function () {
             funCall(startOldNum);
         });

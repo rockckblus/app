@@ -34,7 +34,7 @@ if (cluster.isMaster) {//多cpu线程
     }
 
     cluster.on('listening', function (worker, address) {
-        //console.log('listening:worker' + worker.process.pid + ', Addresss: ' + address.address + ':' + address.port);
+        console.log('listening:worker' + worker.process.pid + ', Addresss: ' + address.address + ':' + address.port);
     });
 
     cluster.on('exit', function (worker, code, signal) {

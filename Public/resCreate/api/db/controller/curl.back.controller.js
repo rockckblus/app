@@ -25,11 +25,15 @@ function _get(urlStr, callback) {
             }
         },
         function (error, response, body) {
-            if (response.statusCode == 200) {
-                callback(body);
-                console.log('200', body);
-            } else {
-                console.log('responseCode', response.statusCode);
+            try {
+                if (response.statusCode == 200) {
+                    callback(body);
+                    console.log('200', body);
+                } else {
+                    console.log('responseCode', response.statusCode);
+                }
+            } catch (e) {
+                console.log('e', e);
             }
         }
     );

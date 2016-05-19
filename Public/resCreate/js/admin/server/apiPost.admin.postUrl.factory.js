@@ -10,12 +10,37 @@
      * 配置相关
      * 16/3/23 */
     var conf = {
+        //sosoAk: 'KM4BZ-KIJRU-6UMVZ-BYRS4-4R2J5-KXBYQ',//sosoak 3008 3
         //sosoAk: 'KFSBZ-RR7H4-5IMUE-X7I67-R6EZS-PWBCK',//sosoak
-        //sosoAk: 'AXNBZ-VOS2P-NB5DC-LWNCN-4UBME-P7F23',//sosoak
-        //sosoAk: 'ZVTBZ-ENYA6-E35S4-M47JC-3FI6Q-HEBSY',//sosoak
-        sosoAk: '7YBBZ-P6FAF-N77JZ-J6U4X-XJZD2-AXF5J',//sosoak
+        //sosoAk: '7YBBZ-P6FAF-N77JZ-J6U4X-XJZD2-AXF5J',//sosoak
+        sosoAk: _getPort(),
         gaoDeAk: '8bc8bb3d13cc9fdab255b1aeb5d1c533'//高德ak
-    };
+    }
+
+    /**************************
+     * 获取当前url端口号
+     * 16-5-17 上午8:43 ByRockBlus
+     **************************/
+    function _getPort() {
+        var url = window.location.href;
+        console.log('url', url);
+        var ak;
+        url = url.split(':');
+        url = url[2];
+        url = url.split('/');
+        url = url[0];
+
+
+        switch (url) {
+            case '3008':
+                ak = 'ZVTBZ-ENYA6-E35S4-M47JC-3FI6Q-HEBSY';//sosoak 3008 1
+                break;
+            case '3009':
+                ak = 'AXNBZ-VOS2P-NB5DC-LWNCN-4UBME-P7F23';//soso ak 3008 2
+                break;
+        }
+        return ak;
+    }
 
     /** admin api接口,nodejs  */
     var apiUrl = {
@@ -65,7 +90,8 @@
                     break;
                 case 'getGetPost' ://传gpsObj 返回 gps的 pois 显示短地址,半径 5000
                     //var url7 = apiUrl.caiji.getGetPost + postData.lat + ',' + postData.lng + '&get_poi=1&poi_options?address_format=short;radius=5000;' + "&key=" + conf.sosoAk;
-                    var url7 = apiUrl.caiji.getGetPost + postData.lat + ',' + postData.lng + '&get_poi=1&poi_options?address_format=short;radius=5000;policy=3;' + "&key=" + conf.sosoAk;
+                    console.log('postData',postData);
+                    var url7 = apiUrl.caiji.getGetPost + postData.lat + ',' + postData.lng + '&get_poi=1&poi_options?address_format=short;radius=5000;policy=3;' + "&key=" + postData.sosoAk;
                     _get(url7).then(callBack, callBackErr);
                     break;
                 case 'eachGpsInChina' ://判断soso接口, 判断 临时 gps表,是否属于中国
