@@ -35,7 +35,7 @@
             stopGetGpsInChina: _stopGetGpsInChina//停止去soso查 是否 再中国 点击事件
         };
 
-        //$scope.fun.eachGpsInChina();//默认 就去 自动开始
+        $scope.fun.eachGpsInChina();//默认 就去 自动开始
 
         /**
          * fun 详情 *********************
