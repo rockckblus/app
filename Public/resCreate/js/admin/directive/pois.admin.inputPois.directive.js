@@ -27,6 +27,8 @@
         var sosoAk = _getPort();//判断url 分配 不同 的sosoAk
         var stopGetGpsInChina;//停止去soso查 是否 再中国
         $scope.mess = '';//信息提示
+        $scope.overCount = 0;//统计执行了多少次
+        $scope.sosoAk = sosoAk; // 是哪个 sosoAk  账号 + id
         $scope.fun = {
             startClick: _startClick,//start 点击事件,调用 pois factovry start方法
 //            addTempCount: _addTempCount// 添加一条临时统计数据 只执行一次 注释掉
@@ -165,6 +167,9 @@
              * 16/5/14 下午6:29 ByRockBlus
              *************************/
             function _getTrueSosoGps(gpsObj, call) {
+                $timeout(function () {
+                    $scope.overCount++;//统计 自增
+                }, 0);
                 if (gpsObj) {
                     api('getGetPost', {lat: gpsObj.lat, lng: gpsObj.lng, sosoAk: sosoAk}, function (rePois) {
                         var jsonPost = JSON.parse(JSON.parse(rePois));
