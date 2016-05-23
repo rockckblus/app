@@ -116,7 +116,6 @@
                 case '8101':
                     ak = '6JMBZ-V7B3X-3FM4L-TTQXL-SWIVZ-S7FUH';//sosoak2 3008 10
                     break;
-                
             }
             return ak;
         }
