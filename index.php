@@ -13,7 +13,6 @@
 /** 设置跨域Session 生产环境打开 */
 //ini_set('session.cookie_path', '/');
 //ini_set('session.cookie_domain', '.dipan.so');
-
 // 检测PHP环境
 if(version_compare(PHP_VERSION,'5.3.0','<'))  die('require PHP > 5.3.0 !');
 
