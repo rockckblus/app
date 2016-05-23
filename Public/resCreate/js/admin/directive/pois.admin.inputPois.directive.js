@@ -83,6 +83,38 @@
                 case '8091':
                     ak = 'FJPBZ-ABHHF-D77JS-JXS25-JBVD6-CHFEK';//soso ak 3008 3
                     break;
+
+                case '8092':
+                    ak = 'M5SBZ-LWL3X-BOI4K-TNVQ7-TECL7-IHB5G';//sosoak2 3008 1
+                    break;
+                case '8093':
+                    ak = 'RYOBZ-AKH3U-TC2VZ-4QRXE-DUEFZ-65BDB';//sosoak2 3008 2
+                    break;
+                case '8094':
+                    ak = '73YBZ-HCBWI-IDAGO-5HRRE-ZQHIQ-BJBKX';//sosoak2 3008 3
+                    break;
+                case '8095':
+                    ak = '4YHBZ-N6433-KLQ3B-3W7GI-EH5RO-57F7M';//sosoak2 3008 4
+                    break;
+                case '8096':
+                    ak = 'SW2BZ-FLMW5-R5FIJ-QOYYN-WN643-VFFY4';//sosoak2 3008 5
+                    break;
+                case '8097':
+                    ak = 'MDDBZ-YE7WR-SMJWT-WUWFV-LWL3Z-BXFYT';//sosoak2 3008 6
+                    break;
+                case '8098':
+                    ak = 'XNLBZ-3YHKU-PUWVI-BMZZ6-2Q6J3-C2BQN';//sosoak2 3008 7
+                    break;
+                case '8099':
+                    ak = '2FXBZ-VOQR3-6Q23J-3YK67-KRSOH-VZBFS';//sosoak2 3008 8
+                    break;
+                case '8100':
+                    ak = 'WQDBZ-6NT3I-FXGGB-5GDZT-TMCI5-OEB7W';//sosoak2 3008 9
+                    break;
+                case '8101':
+                    ak = '6JMBZ-V7B3X-3FM4L-TTQXL-SWIVZ-S7FUH';//sosoak2 3008 10
+                    break;
+                
             }
             return ak;
         }
