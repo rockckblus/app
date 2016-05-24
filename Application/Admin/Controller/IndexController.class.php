@@ -7,21 +7,16 @@ use Common\CommonController;
 class IndexController extends CommonController
 {
 
-
     public function index()
     {
-
         $m = D('News');
         $list = $m->select();
         $this->assign('list', $list);
         $this->display();
-
     }
-
 
     function login()
     {
-
         $this->display();
     }
 
@@ -78,10 +73,11 @@ class IndexController extends CommonController
     }
 
 
-    function getJspGoldData(){// getjsonp 全局数据
+    function getJspGoldData()
+    {// getjsonp 全局数据
 
-        $data =  $this->getGoldData();
-        $this->ajaxReturn($data,'JSONP');
+        $data = $this->getGoldData();
+        $this->ajaxReturn($data, 'JSONP');
 
     }
 
@@ -97,10 +93,10 @@ class IndexController extends CommonController
         //左侧导航
         $leftNav = D('leftNav');
         $listLeftNav = $leftNav->order('sort desc')->select();
-        foreach($listLeftNav as &$v){
-            $temp = explode('_',$v['rel']);
+        foreach ($listLeftNav as &$v) {
+            $temp = explode('_', $v['rel']);
             $temp = $temp[0];
-            if($temp == 'page'){
+            if ($temp == 'page') {
                 $v['linkOut'] = 1;
             }
 
@@ -109,7 +105,6 @@ class IndexController extends CommonController
         return $reAllData;
 
     }
-
 
 
 }

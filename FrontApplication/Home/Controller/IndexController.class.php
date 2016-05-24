@@ -125,7 +125,6 @@ class IndexController extends CommonController
         foreach ($list as &$v) {
             $v['url'] = $this->getCatAsKeyPy($v['_id']);
         }
-
         $this->indexAllRe['category'] = $list;
         $this->assign('category', $list);
     }
