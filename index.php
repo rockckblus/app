@@ -14,16 +14,17 @@
 //ini_set('session.cookie_path', '/');
 //ini_set('session.cookie_domain', '.dipan.so');
 // 检测PHP环境
-if(version_compare(PHP_VERSION,'5.3.0','<'))  die('require PHP > 5.3.0 !');
+if (version_compare(PHP_VERSION, '5.3.0', '<')) die('require PHP > 5.3.0 !');
 
 // 开启调试模式 建议开发阶段开启 部署阶段注释或者设为false
-define('APP_DEBUG',true);
-define ( "GZIP_ENABLE", function_exists ( 'ob_gzhandler' ) );
-ob_start ( GZIP_ENABLE ? 'ob_gzhandler' : null );
+define('APP_DEBUG', true);
+define("GZIP_ENABLE", function_exists('ob_gzhandler'));
+ob_start(GZIP_ENABLE ? 'ob_gzhandler' : null);
 
 
 //判断爬虫
-function is_crawler() {
+function is_crawler()
+{
     $userAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
     $spiders = array(
         'Googlebot', // Google 爬虫
@@ -43,12 +44,12 @@ function is_crawler() {
     return false;
 }
 
-if(is_crawler()  || ($_SERVER["SERVER_PORT"]=='8080')){
+if (is_crawler() || ($_SERVER["SERVER_PORT"] == '8080')) {
     // 定义应用目录
-    define('APP_PATH','./Application/');
-}else{
+    define('APP_PATH', './Application/');
+} else {
     // 定义应用目录
-    define('APP_PATH','./FrontApplication/');
+    define('APP_PATH', './FrontApplication/');
 //    define('APP_PATH','./Application/');
 }
 

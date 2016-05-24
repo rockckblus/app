@@ -1,6 +1,5 @@
 #! /bin/bash
 nohup node ./Public/resCreate/api/bin/www.js &
-nohup node ./Public/resCreate/api/bin/www1.js &
 nohup node ./Public/resCreate/api/bin/www2.js &
 nohup node ./Public/resCreate/api/bin/www3.js &
 nohup node ./Public/resCreate/api/bin/www4.js &
@@ -10,3 +9,13 @@ nohup node ./Public/resCreate/api/bin/www7.js &
 nohup node ./Public/resCreate/api/bin/www8.js &
 nohup node ./Public/resCreate/api/bin/www9.js &
 nohup node ./Public/resCreate/api/bin/www10.js &
+nohup node ./Public/resCreate/api/bin/www11.js &
+nohup node ./Public/resCreate/api/bin/www12.js &
+nohup node ./Public/resCreate/api/bin/www13.js &
+nohup node ./Public/resCreate/api/bin/www14.js &
+nohup node ./Public/resCreate/api/bin/www15.js &
+nohup node ./Public/resCreate/api/bin/www16.js &
+nohup node ./Public/resCreate/api/bin/www17.js &
+nohup node ./Public/resCreate/api/bin/www18.js &
+nohup node ./Public/resCreate/api/bin/www19.js &
+nohup node ./Public/resCreate/api/bin/www20.js &

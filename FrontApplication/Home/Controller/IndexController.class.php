@@ -32,7 +32,6 @@ class IndexController extends CommonController
         $this->indexAllRe['userIp'] = $userIp;
     }
 
-
     /**
      * index 入口
      * @see assignSunCity
