@@ -90,7 +90,7 @@
                     break;
                 case 'getGetPost' ://传gpsObj 返回 gps的 pois 显示短地址,半径 5000
                     //var url7 = apiUrl.caiji.getGetPost + postData.lat + ',' + postData.lng + '&get_poi=1&poi_options?address_format=short;radius=5000;' + "&key=" + conf.sosoAk;
-                    console.log('postData',postData);
+                    console.log('postData', postData);
                     var url7 = apiUrl.caiji.getGetPost + postData.lat + ',' + postData.lng + '&get_poi=1&poi_options?address_format=short;radius=5000;policy=3;' + "&key=" + postData.sosoAk;
                     _get(url7).then(callBack, callBackErr);
                     break;

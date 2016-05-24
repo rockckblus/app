@@ -167,7 +167,7 @@
              * 16/5/14 下午6:29 ByRockBlus
              *************************/
             function _getTrueSosoGps(gpsObj, call) {
-                if ($scope.overCount < 4500) {//设置 多少次请求 停止
+                if ($scope.overCount > 9000) {//设置 多少次请求 停止
                     _stopGetGpsInChina();
                 }
                 $timeout(function () {
