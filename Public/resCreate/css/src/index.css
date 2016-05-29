@@ -752,25 +752,38 @@ body {
   display: table;
 }
 #leftNav .pinDaoItem .pinDaoName {
+  zoom: 1;
   padding: 10px;
   color: #e0d6ad;
+}
+#leftNav .pinDaoItem .pinDaoName:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+#leftNav .pinDaoItem .pinDaoName:before {
+  content: "";
+  display: table;
 }
 #leftNav .pinDaoItem .pinDaoName:hover {
   background-color: #fff;
   color: #026b1f;
 }
 #leftNav .pinDaoItem .pinDaoName #listCategory {
-  width: 300px;
+  width: 600px;
   min-height: 360px;
   background-color: #fff;
   border-bottom: 1px solid #026b1f;
   border-right: 1px solid #026b1f;
 }
 #leftNav .pinDaoItem .pinDaoName .listCategory {
+  font-size: 12px;
+  padding: 10px;
+  padding-left: 40px;
   background-color: #fff;
   position: absolute;
   margin-left: 139px;
-  margin-top: -30px;
+  margin-top: -10px;
   color: #026b1f;
 }
 #leftNav .pinDaoItem .pinDaoName .listCategory .onceCateAllDiv {
@@ -785,4 +798,32 @@ body {
 #leftNav .pinDaoItem .pinDaoName .listCategory .onceCateAllDiv:before {
   content: "";
   display: table;
+}
+#leftNav .pinDaoItem .pinDaoName .rightJianTou {
+  margin-top: 0px;
+  font-size: 12px;
+}
+#leftNav .pinDaoItem .pinDaoName .oneTwoCatDiv {
+  margin-bottom: 10px;
+}
+#leftNav .pinDaoItem .pinDaoName .oneTwoCatDiv .oneCateTitle {
+  width: 70px;
+  color: #777;
+  font-weight: bold;
+}
+#leftNav .pinDaoItem .pinDaoName .oneTwoCatDiv .oneCateTitle .jiantouTwo {
+  margin-left: 20px;
+  font-size: 11px;
+  font-weight: normal;
+}
+#leftNav .pinDaoItem .pinDaoName .oneTwoCatDiv .twoCateTitleDiv {
+  width: 400px;
+  margin-left: 10px;
+  border-left: 1px solid #eeeeee;
+  padding-left: 10px;
+}
+#leftNav .pinDaoItem .pinDaoName .oneTwoCatDiv .titleLine {
+  margin-left: 83px;
+  margin-top: 10px;
+  margin-right: 20px;
 }

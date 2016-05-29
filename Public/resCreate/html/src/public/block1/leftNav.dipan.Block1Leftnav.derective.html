@@ -3,18 +3,25 @@
     <div class="pinDaoItem ">
         <div class="pinDaoName">
             <div class="itemTopName linkMouse">
-                <div ng-mouseover="fun.category.hoverThis('item1');">生活服务</div>
-                <div class="rightJianTou">></div>
+                <div class="left" ng-mouseover="fun.category.hoverThis('item1');">生活服务</div>
+                <div class="rightJianTou right">></div>
                 <div id="listCategory" ng-show="ui.category.item1" class="listCategory">
                     <div bindonce ng-repeat="vo in categoryService" class="oneCateAllDiv">
-                        <div class="clear mt10">
+                        <div class="clear oneTwoCatDiv mt10">
                             <!--一级标题 -->
-                            <div class="left" style="color:red" bo-text="vo.name"></div>
+                            <div class="left oneCateTitle">
+                                <span class="left" bo-text="vo.name"></span>
+                                <span class="left" class="jiantouTwo">></span>
+                            </div>
 
                             <!--循环2级-->
-                            <div class="left" ng-repeat="vo2 in vo.twoCat">
-                                <div class="left" bo-text="vo2.name"></div>
+                            <div class="left twoCateTitleDiv">
+                                <div class="left" ng-repeat="vo2 in vo.twoCat">
+                                    <div class="left" bo-text="vo2.name"></div>
+                                </div>
                             </div>
+                            <div class="clear "></div>
+                            <div class="line titleLine"></div>
                         </div>
                     </div>
                 </div>

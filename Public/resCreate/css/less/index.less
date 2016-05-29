@@ -298,11 +298,14 @@
 
   .pinDaoItem {
     width: 150px;
+    width: 150px;
+    width: 150px;
     background-color: @leftNavBackFont;
     border-left: solid 1px @leftNavBackFont;
     .clear();
     font-size: 14px;
     .pinDaoName {
+      .clear;
       &:hover {
         background-color: #fff;
         color: @leftNavBackFont;
@@ -310,23 +313,57 @@
       padding: 10px;
       color: @colorBackTwo;
       #listCategory {
-        width: 300px;
+        width: 600px;
         min-height: 360px;
         background-color: #fff;
         border-bottom: 1px solid @leftNavBackFont;
         border-right: 1px solid @leftNavBackFont;
       }
       .listCategory {
+        font-size: 12px;
+        padding: 10px;
+        padding-left: 40px;
         background-color: #fff;
         position: absolute;
         margin-left: 139px;
-        margin-top: -30px;
+        margin-top: -10px;
         color: @leftNavBackFont;
         .onceCateAllDiv {
           .clear;
           .line;
         }
       }
+      .rightJianTou {
+        margin-top: 0px;
+        font-size: 12px;
+      }
+
+      .oneTwoCatDiv {
+        margin-bottom: 10px;
+        .oneCateTitle {
+          width: 70px;
+          color: #777;
+          font-weight: bold;
+          .jiantouTwo {
+            .ml(20);
+            font-size: 11px;
+            font-weight: normal;
+          }
+        }
+        .twoCateTitleDiv {
+          width: 400px;
+          .ml(10);
+          border-left: 1px solid @lineColor;
+          padding-left: 10px;
+        }
+        .titleLine {
+          .ml(83);
+          .mt(10);
+          margin-right: 20px;
+        }
+
+      }
+
     }
   }
 }
