@@ -1,9 +1,10 @@
 @import "g";
 
 //主背景灰
-@colorBack: #fcfcea;
+@colorBack: #fcfbf7;
 //次背景灰亮
-@colorBackTwo:darken(@colorBack,20%);;
+@colorBackTwo: darken(@colorBack, 20%);
+
 //左侧导航背景
 @leftNavBack: #f4f4f4;
 //左侧导航字体颜色深
@@ -20,10 +21,11 @@
 }
 
 .hoverLine {
-//  background-color: darken(@colorBack,20%);
+  //  background-color: darken(@colorBack,20%);
   margin-top: -1px;
 }
-.shan{
+
+.shan {
   .fadeIn();
   .animation(fadeIn 0.5s ease-in-out infinite);
 }
@@ -59,6 +61,7 @@
     height: 120px;
     background-color: @colorBack;
     .line;
+    border-bottom: solid 2px @leftNavBackFont;
     position: fixed;
     z-index: 10;
     top: 0;
@@ -72,7 +75,7 @@
       &:hover {
         //        color: @leftNavBackFont + 111;
       }
-      #logoText{
+      #logoText {
         color: @leftNavBackFont;
       }
       .linkMouse;
@@ -81,6 +84,15 @@
           .left;
         }
 
+      }
+    }
+    .leftLogoImg {
+      margin-left: 10%;
+      #topText {
+        width: 222px;
+        position: absolute;
+        left: 10%;
+        top: 10px
       }
     }
     #rightHeader {
@@ -132,18 +144,18 @@
     .allHeight();
     position: fixed;
     z-index: 0;
-    margin-top: 87px;
+    margin-top: 80px;
     #block1 {
       .allHeight();
-      .all(10, 2);
+      .all(10, 1);
       text-align: left;
-      border-right: 1px solid @lineColor;
     }
     #block2 {
       .allHeight();
-      .all(10, 3);
-      border-right: 1px solid @lineColor;
-      .line;
+      margin-left: 10%;
+      width: 150px;
+      //border-right: 1px solid @lineColor;
+      //.line;
       margin-bottom: -3rem;
       ul {
         .ml(20)
@@ -152,7 +164,7 @@
     #block3 {
       .allHeight();
       .all(10, 5);
-//      background-color: darken(@colorBack,10%);
+      //      background-color: darken(@colorBack,10%);
       .line;
     }
   }
@@ -236,16 +248,17 @@
     }
   }
 }
+
 //direictive
 #areaKey {
-  color: darken(@leftNavBackFont,5%);;
+  color: darken(@leftNavBackFont, 5%);;
   #areaAlert {
     .block2;
     height: 100px;
     width: 600px;
     position: absolute;
     left: 12px;
-    background-color: darken(@colorBack,20%);
+    background-color: darken(@colorBack, 20%);
     z-index: 5000;
     .fadeIn(-1000px; 0; fadeInA);
     .animation(fadeInA 0.2s linear);
@@ -253,19 +266,69 @@
   #keyAlert {
     #areaAlert;
   }
-  .jianTou{
+  .jianTou {
     font-size: 14px;
     text-align: center;
     line-height: 8px;
   }
-  .jianTouXia{
-    color: darken(@colorBack,20%);
+  .jianTouXia {
+    color: darken(@colorBack, 20%);
   }
-  .dian{
+  .dian {
     margin-top: 3px;
     font-size: 12px;
-    color:@leftNavBackFont ;
+    color: @leftNavBackFont;
   }
-  
+
 }
+
+//directive
+#leftNav {
+  #allCateTitle {
+    position: absolute;
+    text-align: left;
+    margin-top: -37px;
+    background-color: #025E1B;
+    width: 150px;
+    height: 35px;
+    padding-top: 10px;
+    padding-left: 10px;
+    color: #88C17A;
+  }
+
+  .pinDaoItem {
+    width: 150px;
+    background-color: @leftNavBackFont;
+    border-left: solid 1px @leftNavBackFont;
+    .clear();
+    font-size: 14px;
+    .pinDaoName {
+      &:hover {
+        background-color: #fff;
+        color: @leftNavBackFont;
+      }
+      padding: 10px;
+      color: @colorBackTwo;
+      #listCategory {
+        width: 300px;
+        min-height: 360px;
+        background-color: #fff;
+        border-bottom: 1px solid @leftNavBackFont;
+        border-right: 1px solid @leftNavBackFont;
+      }
+      .listCategory {
+        background-color: #fff;
+        position: absolute;
+        margin-left: 139px;
+        margin-top: -30px;
+        color: @leftNavBackFont;
+        .onceCateAllDiv {
+          .clear;
+          .line;
+        }
+      }
+    }
+  }
+}
+
 

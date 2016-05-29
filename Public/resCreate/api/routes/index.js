@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var cityCtrl = require('../db/controller/city.g.controller');//城市Ctrl
 var sessionCtrl = require('../db/controller/session.g.controller');//session Ctrl
+var categoryServiceCtrl = require('../db/controller/category_service.g.controller');//category_service Ctrl
 var all = require('./default');//公共路由all方法
 //var oeoeSchema = new mongoose.Schema(
 ////    _id:mongoose.Schema.ObjectId,
@@ -83,6 +84,12 @@ router.post('/system/:fun', function (req, res) {
     postSystem(req, res);
 });
 
+/**
+ * post category:fun category相关api
+ * 16/3/8 */
+router.post('/category/:fun', function (req, res) {
+    postCategory(req, res);
+});
 
 router.get('/', function (req, res) {
     res.json(11);
@@ -156,6 +163,7 @@ function postSystem(req, res) {
             break;
     }
 
+
     /**
      * saveSession
      * * 16/3/8 */
@@ -174,6 +182,26 @@ function postSystem(req, res) {
         }
     }
 }
+
+/**
+ * post City Aip 城市方法相关
+ * 16/3/8 */
+function postCategory(req, res) {
+    var fun = req.params.fun;
+    switch (fun) {
+        case 'selectCategoryServiceOneTwo' ://添加一条session 如果存在就修改,不存在就新加
+            _selectCategoryServiceOneTwo();
+            break;
+    }
+
+    function _selectCategoryServiceOneTwo() {
+        categoryServiceCtrl.selectAllOneTwo({}, _callback);
+        function _callback(err, doc) {
+            res.json({err: err, doc: doc});
+        }
+    }
+}
+
 
 /** curl  */
 function curl(req, res) {

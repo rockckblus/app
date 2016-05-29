@@ -7,17 +7,18 @@
     angular.module('dipan').controller('body', body);
 
     angular.module('dipan').controller('header', header);
-    header.$inject = ['$scope','urlParse'];
-    function header($scope,urlParse) {
+    header.$inject = ['$scope', 'urlParse', 'api'];
+    function header($scope, urlParse, api) {
         $scope.title = '';
-        $scope.$on('urlParseChangeSub',function(){
-            try{
-                $scope.title =  urlParse.data.seoTitle;
-            }catch(e){
-               console.error(e);
+        $scope.$on('urlParseChangeSub', function () {
+            try {
+                $scope.title = urlParse.data.seoTitle;
+            } catch (e) {
+                console.error(e);
             }
         });
-        
+
+
     }
 
 
@@ -30,21 +31,6 @@
      * controllerFun
      * 16/2/1 */
     function body($scope, $timeout, repBindOnce) {
-        $scope.aaabbb = 1;
-        $timeout(function(){
-            $scope.aaabbb = 11;
-        },4000);
-//        $scope.b = '';
-//        $scope.c = [1, 2, 3.4];
-
-//        var content = angualr.element('bindonce');
-
-//        $timeout(function () {
-//            $scope.b = 2222;
-//            $scope.c = [4, 5, 6];
-////            repBindOnce('bindonce', $scope);
-//        }, 2000);
-
 
     }
 

@@ -51,7 +51,6 @@
 
             function _giveHotCity(re) {//赋值热门城市
                 $scope.otherCityList = re;
-                console.log('otherCityList', $scope.otherCityList);
             }
         }
 

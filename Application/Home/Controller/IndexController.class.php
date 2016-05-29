@@ -65,6 +65,7 @@ class IndexController extends CommonhomeController
         $this->assignSunCity();
         $this->assign('first', $re['one']);
         $this->assign('seoTitle', $seoTitle);
+
         $this->display();
 
     }

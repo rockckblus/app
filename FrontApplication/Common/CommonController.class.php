@@ -24,6 +24,8 @@ class CommonController extends Controller
         $allData['getG'] = $this->formartSys($systemEditDataList);//全局变量配置
 
         $this->indexAllRe['g'] = $allData;//给indexAllRe
+        //给js 不缓存 变量,默认是 给个 日期,
+        $this->assign('jsDate',time());
         $this->assign('g', $allData);
     }
 

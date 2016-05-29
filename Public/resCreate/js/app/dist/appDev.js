@@ -18,16 +18,18 @@ document.write('<script src="/Public/resCreate/js/app/src/controller/dipan.g.bod
 /** directive  */
 document.write('<script src="/Public/resCreate/js/app/src/directive/angularEnd.dipan.angularEnd.directive.js"><\/script>');
 document.write('<script src="/Public/resCreate/js/app/src/directive/clickRouterUiBlock.uiBlock.router.directive.js"><\/script>');
+document.write('<script src="/Public/resCreate/js/app/src/directive/urlParse.dipan.firstNginx.directive.js"><\/script>');
 document.write('<script src="/Public/resCreate/js/app/src/directive/areaKey/areaKey.dipan.topAreaKey.directive.js"><\/script>');
 document.write('<script src="/Public/resCreate/js/app/src/directive/areaKey/areaShow.dipan.areaShowSelect.directive.js"><\/script>');
 document.write('<script src="/Public/resCreate/js/app/src/directive/areaKey/keyShow.dipan.keyShowSelect.directive.js"><\/script>');
-document.write('<script src="/Public/resCreate/js/app/src/directive/urlParse.dipan.firstNginx.directive.js"><\/script>');
+document.write('<script src="/Public/resCreate/js/app/src/directive/block1/leftNav.dipan.Block1LeftNav.directive.js"><\/script>');
 
 document.write('<script src="/Public/resCreate/js/app/src/directive/uiBlock/alertDiv/alertInfo.alertDiv.showInfo.directive.js"><\/script>');
 document.write('<script src="/Public/resCreate/js/app/src/directive/uiBlock/alertDiv/alertWarn.alertDiv.alertWarn.directive.js"><\/script>');
 
 /** filter  */
 document.write('<script src="/Public/resCreate/js/app/src/filter/toHtml.dipan.toHtml.filter.js"><\/script>');
+document.write('<script src="/Public/resCreate/js/app/src/filter/editCategoryServiceNav.dipan.editCategoryServiceNav.filter.js"><\/script>');
 
 /** server  */
 document.write('<script src="/Public/resCreate/js/app/src/server/dipan.fun.reBindOnce.factory.js"><\/script>');

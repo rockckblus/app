@@ -10,7 +10,8 @@
     var apiUrl = {
         nodejs: {
             system: {},
-            city: {}
+            city: {},
+            category: {}
         },
         php: {}
     };
@@ -22,6 +23,10 @@
     function api($http, $q, config) {
         var postApi = function (funName, postData, callBack, callBackErr) {
             switch (funName) {
+            /*************************
+             * session system
+             * 16/5/25 下午1:04 ByRockBlus
+             *************************/
                 case 'saveSession' ://添加一条session 没有就更新
                     var url = apiUrl.nodejs.system.saveSession;
                     _post(url, postData).then(callBack, callBackErr);
@@ -30,11 +35,24 @@
                     var url2 = apiUrl.nodejs.system.findSessionContent;
                     _post(url2, postData).then(callBack, callBackErr);
                     break;
-                case 'selectHotCity' ://根据sessionid 返回sessionContent
+
+            /*************************
+             * city
+             * 16/5/25 下午1:04 ByRockBlus
+             *************************/
+                case 'selectHotCity' ://返回热门城市
                     var url3 = apiUrl.nodejs.city.selectHotCity;
                     _post(url3, postData).then(callBack, callBackErr);
                     break;
 
+            /*************************
+             * category
+             * 16/5/25 下午1:07 ByRockBlus
+             *************************/
+                case 'selectCategoryServiceOneTwo'://返回服务频道下面的1,2级分类
+                    var url4 = apiUrl.nodejs.category.selectCategoryServiceOneTwo;
+                    _post(url4).then(callBack, callBackErr);
+                    break;
             }
         };
 
@@ -44,6 +62,9 @@
 
         //city
         apiUrl.nodejs.city.selectHotCity = config.host.nodeHost + '/city/selectHotCity';//返回热门城市
+
+        //category_serivce 服务频道
+        apiUrl.nodejs.category.selectCategoryServiceOneTwo = config.host.nodeHost + '/category/selectCategoryServiceOneTwo';//返回服务频道下面的1,2级分类
 
         function _post(url, postData) {
             var defer = $q.defer();

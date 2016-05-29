@@ -31,7 +31,6 @@
             fun: fun
         };
 
-
         /**
          * 监听从模板解析来的 php变量对象 赋值改变事件
          * 同时广播 所有 子域, 变量改变事件 urlParseChange
@@ -86,6 +85,6 @@
             console.error(err);
         });
     };
-
 })();
+
 

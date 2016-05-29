@@ -1,0 +1,73 @@
+<div id="leftNav" style="overflow-y: scroll;height:100%">
+    <div id="allCateTitle">全部分类</div>
+    <div class="pinDaoItem ">
+        <div class="pinDaoName">
+            <div class="itemTopName linkMouse">
+                <div ng-mouseover="fun.category.hoverThis('item1');">生活服务</div>
+                <div class="rightJianTou">></div>
+                <div id="listCategory" ng-show="ui.category.item1" class="listCategory">
+                    <div bindonce ng-repeat="vo in categoryService" class="oneCateAllDiv">
+                        <div class="clear mt10">
+                            <!--一级标题 -->
+                            <div class="left" style="color:red" bo-text="vo.name"></div>
+
+                            <!--循环2级-->
+                            <div class="left" ng-repeat="vo2 in vo.twoCat">
+                                <div class="left" bo-text="vo2.name"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pinDaoItem">
+        <div class="pinDaoName">
+            <div class="itemTopName linkMouse">
+                <div ng-mouseover="fun.category.hoverThis('item2');">招聘求职</div>
+            </div>
+        </div>
+    </div>
+    <div class="pinDaoItem">
+        <div class="pinDaoName">
+            <div class="itemTopName linkMouse">二手市场
+            </div>
+        </div>
+    </div>
+    <div class="pinDaoItem">
+        <div class="pinDaoName">
+            <div class="itemTopName linkMouse">二手车
+            </div>
+        </div>
+    </div>
+    <div class="pinDaoItem">
+        <div class="pinDaoName">
+            <div class="itemTopName linkMouse">旅游酒店
+            </div>
+        </div>
+    </div>
+    <div class="pinDaoItem">
+        <div class="pinDaoName">
+            <div class="itemTopName linkMouse">宠物/宠物用品
+            </div>
+        </div>
+    </div>
+    <div class="pinDaoItem">
+        <div class="pinDaoName">
+            <div class="itemTopName linkMouse">同城交友
+            </div>
+        </div>
+    </div>
+    <div class="pinDaoItem">
+        <div class="pinDaoName">
+            <div class="itemTopName linkMouse">行业信息
+            </div>
+        </div>
+    </div>
+    <div class="pinDaoItem">
+        <div class="pinDaoName">
+            <div class="itemTopName linkMouse">房屋信息
+            </div>
+        </div>
+    </div>
+</div>

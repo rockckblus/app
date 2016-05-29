@@ -14,10 +14,11 @@
             <img src="/Public/images/logo.png" style="float: left;
     width: 55px;
     margin-top: 10px;
-    margin-left: 20px;" alt=""/>
+    margin-left: 0px;" alt=""/>
 
-            <div style="width: 200px;position: absolute;left: 90px;top:10px">
-                <a href="/"> <span id="logoText" class="left" style="font-size: 24px;font-weight: bold">地盘</span></a>
+            <div id="topText" style="">
+                <a href="/"> <span id="logoText" class="left"
+                                   style="font-size: 24px;font-weight: bold;margin-left: 70px">地盘</span></a>
                 <span class="left" style="margin-left: 10px;margin-top: 10px">diPan.So</span>
             </div>
         </div>
@@ -34,8 +35,8 @@
                             &nbsp;[&nbsp;空缺中&nbsp;]
                         </div>
                         <div class=" left" style="margin-top: -6px">
-                            <span class="btn btn-success btn-xs" style="margin-left: 10px;color: #fff"
-                                  click-router-ui-block="alertDiv.alertInfo" item="2">抢地盘</span>
+        <span class="btn btn-success btn-xs" style="margin-left: 10px;color: #fff"
+              click-router-ui-block="alertDiv.alertInfo" item="2">抢地盘</span>
                         </div>
                         <div class="wenHao left"></div>
                     </div>
@@ -43,9 +44,10 @@
             </div>
         </div>
         <div class="contentDiv" id="contentDiv">
+            <!--左侧导航-->
             <div id="block1">
             </div>
-            <div id="block2">
+            <div id="block2" left-nav>
                 {$d2}
             </div>
             <div id="block3">
@@ -67,17 +69,15 @@
 <!--调试div 浮动 100%-->
 <div class="clear" style="position: fixed;z-index: 3000;background-color: #fff;width: 100%;height: 100%;display: none">
 </div>
-
 <script>
     var dist = false;
     if (dist) {
-        document.write('<script src="/Public/resCreate/js/app/dist/app.js"><\/script>');
+        document.write('<script src="/Public/resCreate/js/app/dist/app.js?{$jsDate}"><\/script>');
     }
     else {
-        document.write('<script src="/Public/resCreate/js/app/dist/appDev.js"><\/script>');
+        document.write('<script src="/Public/resCreate/js/app/dist/appDev.js?{$jsDate}"><\/script>');
+        document.write('<link rel="stylesheet" href="/Public/resCreate/css/dist/app.css?{$jsDate}"\/>');
     }
 </script>
-
 </body>
-
 </html>
