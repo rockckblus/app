@@ -76,18 +76,18 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "                        <div class=\"clear oneTwoCatDiv mt10\">\n" +
     "                            <!--一级标题 -->\n" +
     "                            <div class=\"left oneCateTitle\">\n" +
-    "                                <span class=\"left\" bo-text=\"vo.name\"></span>\n" +
-    "                                <span class=\"left\" class=\"jiantouTwo\">></span>\n" +
+    "                                <div class=\"left\" bo-text=\"vo.name\"></div>\n" +
+    "                                <div class=\"right jiantouTwo\">></div>\n" +
     "                            </div>\n" +
     "\n" +
     "                            <!--循环2级-->\n" +
     "                            <div class=\"left twoCateTitleDiv\">\n" +
     "                                <div class=\"left\" ng-repeat=\"vo2 in vo.twoCat\">\n" +
-    "                                    <div class=\"left\" bo-text=\"vo2.name\"></div>\n" +
+    "                                    <div class=\"left twoCateTitle\" bo-text=\"vo2.name\"></div>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
     "                            <div class=\"clear \"></div>\n" +
-    "                            <div class=\"line titleLine\"></div>\n" +
+    "                            <div class=\"line titleLine \"></div>\n" +
     "                        </div>\n" +
     "                    </div>\n" +
     "                </div>\n" +

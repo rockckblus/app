@@ -10,18 +10,18 @@
                         <div class="clear oneTwoCatDiv mt10">
                             <!--一级标题 -->
                             <div class="left oneCateTitle">
-                                <span class="left" bo-text="vo.name"></span>
-                                <span class="left" class="jiantouTwo">></span>
+                                <div class="left" bo-text="vo.name"></div>
+                                <div class="right jiantouTwo">></div>
                             </div>
 
                             <!--循环2级-->
                             <div class="left twoCateTitleDiv">
                                 <div class="left" ng-repeat="vo2 in vo.twoCat">
-                                    <div class="left" bo-text="vo2.name"></div>
+                                    <div class="left twoCateTitle" bo-text="vo2.name"></div>
                                 </div>
                             </div>
                             <div class="clear "></div>
-                            <div class="line titleLine"></div>
+                            <div class="line titleLine "></div>
                         </div>
                     </div>
                 </div>
