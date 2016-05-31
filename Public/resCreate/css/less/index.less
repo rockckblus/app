@@ -284,6 +284,9 @@
 
 //directive
 #leftNav {
+  height: 281px;
+  border-bottom: solid 1px @leftNavBackFont;
+
   #allCateTitle {
     position: absolute;
     text-align: left;
@@ -307,8 +310,8 @@
     .pinDaoName {
       .clear;
       &:hover {
-        background-color: #fff;
-        color: @leftNavBackFont;
+        //background-color: #fff;
+        //color: @leftNavBackFont;
       }
       padding: 10px;
       color: @colorBackTwo;
@@ -377,8 +380,22 @@
 
       }
 
+      //导航 项目位置
+      .catItem2 {
+        top: 10px;
+      }
+      .catItem3 {
+        top: 10px;
+      }
+
+    }
+    //高亮 pinDaoName
+    .thisCatItem {
+      background-color: #fff;
+      color: @leftNavBackFont;
     }
   }
+
 }
 
 

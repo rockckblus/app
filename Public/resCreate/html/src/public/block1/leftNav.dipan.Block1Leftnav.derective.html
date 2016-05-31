@@ -1,11 +1,14 @@
-<div id="leftNav" style="overflow-y: scroll;height:100%">
+<div id="leftNav" style="overflow-y: scroll;">
     <div id="allCateTitle">全部分类</div>
-    <div class="pinDaoItem ">
-        <div class="pinDaoName">
-            <div class="itemTopName linkMouse">
-                <div class="left" ng-mouseover="fun.category.hoverThis('item1');">生活服务</div>
+
+
+    <!--生活服务-->
+    <div class="pinDaoItem linkMouse  " ng-mouseover="fun.category.hoverThis('item1');">
+        <div class="pinDaoName" ng-class="ui.category.item1" ng-mouseleave="fun.category.leaveThis('item1')">
+            <div class="itemTopName ">
+                <div class="left">生活服务</div>
                 <div class="rightJianTou right">></div>
-                <div id="listCategory" ng-show="ui.category.item1" class="listCategory">
+                <div id="listCategory" ng-show="ui.category.item1" class="listCategory catItem1">
                     <div bindonce ng-repeat="vo in categoryService" class="oneCateAllDiv">
                         <div class="clear oneTwoCatDiv mt10">
                             <!--一级标题 -->
@@ -28,53 +31,194 @@
             </div>
         </div>
     </div>
-    <div class="pinDaoItem">
-        <div class="pinDaoName">
-            <div class="itemTopName linkMouse">
-                <div ng-mouseover="fun.category.hoverThis('item2');">招聘求职</div>
+
+
+    <!--生活服务1-->
+    <div class="pinDaoItem linkMouse"  ng-mouseover="fun.category.hoverThis('item2');" >
+        <div class="pinDaoName" ng-class="ui.category.item2">
+            <div class="itemTopName linkMouse ">
+                <div class="left">生活服务</div>
+                <div class="rightJianTou right">></div>
+                <div id="listCategory" ng-show="ui.category.item2" class="listCategory catItem2"
+                     style="background-color:red">
+                    <div bindonce ng-repeat="vo in categoryService" class="oneCateAllDiv">
+                        <div class="clear oneTwoCatDiv mt10">
+                            <!--一级标题 -->
+                            <div class="left oneCateTitle">
+                                <div class="left" bo-text="vo.name"></div>
+                                <div class="right jiantouTwo">></div>
+                            </div>
+
+                            <!--循环2级-->
+                            <div class="left twoCateTitleDiv">
+                                <div class="left" ng-repeat="vo2 in vo.twoCat">
+                                    <div class="left twoCateTitle" bo-text="vo2.name"></div>
+                                </div>
+                            </div>
+                            <div class="clear "></div>
+                            <div class="line titleLine "></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="pinDaoItem">
+
+
+    <!--生活服务2-->
+    <div class="pinDaoItem " ng-mouseover="fun.category.hoverThis('item3');">
         <div class="pinDaoName">
-            <div class="itemTopName linkMouse">二手市场
+            <div class="itemTopName linkMouse ">
+                <div class="left">生活服务</div>
+                <div class="rightJianTou right">></div>
+                <div id="listCategory" ng-show="ui.category.item3" class="listCategory catItem2 catItem3 "
+                     style="background-color:yellow">
+                    <div bindonce ng-repeat="vo in categoryService" class="oneCateAllDiv">
+                        <div class="clear oneTwoCatDiv mt10">
+                            <!--一级标题 -->
+                            <div class="left oneCateTitle">
+                                <div class="left" bo-text="vo.name"></div>
+                                <div class="right jiantouTwo">></div>
+                            </div>
+
+                            <!--循环2级-->
+                            <div class="left twoCateTitleDiv">
+                                <div class="left" ng-repeat="vo2 in vo.twoCat">
+                                    <div class="left twoCateTitle" bo-text="vo2.name"></div>
+                                </div>
+                            </div>
+                            <div class="clear "></div>
+                            <div class="line titleLine "></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="pinDaoItem">
+
+
+    <!--生活服务3-->
+    <div class="pinDaoItem " ng-mouseover="fun.category.hoverThis('item4');">
         <div class="pinDaoName">
-            <div class="itemTopName linkMouse">二手车
+            <div class="itemTopName linkMouse ">
+                <div class="left">生活服务</div>
+                <div class="rightJianTou right">></div>
+                <div id="listCategory" ng-show="ui.category.item4" class="listCategory catItem2  catItem4">
+                    <div bindonce ng-repeat="vo in categoryService" class="oneCateAllDiv">
+                        <div class="clear oneTwoCatDiv mt10">
+                            <!--一级标题 -->
+                            <div class="left oneCateTitle">
+                                <div class="left" bo-text="vo.name"></div>
+                                <div class="right jiantouTwo">></div>
+                            </div>
+
+                            <!--循环2级-->
+                            <div class="left twoCateTitleDiv">
+                                <div class="left" ng-repeat="vo2 in vo.twoCat">
+                                    <div class="left twoCateTitle" bo-text="vo2.name"></div>
+                                </div>
+                            </div>
+                            <div class="clear "></div>
+                            <div class="line titleLine "></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="pinDaoItem">
+
+
+    <!--生活服务4-->
+    <div class="pinDaoItem " ng-mouseover="fun.category.hoverThis('item5');">
         <div class="pinDaoName">
-            <div class="itemTopName linkMouse">旅游酒店
+            <div class="itemTopName linkMouse ">
+                <div class="left">生活服务</div>
+                <div class="rightJianTou right">></div>
+                <div id="listCategory" ng-show="ui.category.item5" class="listCategory catItem2  catItem5">
+                    <div bindonce ng-repeat="vo in categoryService" class="oneCateAllDiv">
+                        <div class="clear oneTwoCatDiv mt10">
+                            <!--一级标题 -->
+                            <div class="left oneCateTitle">
+                                <div class="left" bo-text="vo.name"></div>
+                                <div class="right jiantouTwo">></div>
+                            </div>
+
+                            <!--循环2级-->
+                            <div class="left twoCateTitleDiv">
+                                <div class="left" ng-repeat="vo2 in vo.twoCat">
+                                    <div class="left twoCateTitle" bo-text="vo2.name"></div>
+                                </div>
+                            </div>
+                            <div class="clear "></div>
+                            <div class="line titleLine "></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="pinDaoItem">
+
+
+    <!--生活服务5-->
+    <div class="pinDaoItem " ng-mouseover="fun.category.hoverThis('item6');">
         <div class="pinDaoName">
-            <div class="itemTopName linkMouse">宠物/宠物用品
+            <div class="itemTopName linkMouse ">
+                <div class="left">生活服务</div>
+                <div class="rightJianTou right">></div>
+                <div id="listCategory" ng-show="ui.category.item6" class="listCategory catItem2  catItem6">
+                    <div bindonce ng-repeat="vo in categoryService" class="oneCateAllDiv">
+                        <div class="clear oneTwoCatDiv mt10">
+                            <!--一级标题 -->
+                            <div class="left oneCateTitle">
+                                <div class="left" bo-text="vo.name"></div>
+                                <div class="right jiantouTwo">></div>
+                            </div>
+
+                            <!--循环2级-->
+                            <div class="left twoCateTitleDiv">
+                                <div class="left" ng-repeat="vo2 in vo.twoCat">
+                                    <div class="left twoCateTitle" bo-text="vo2.name"></div>
+                                </div>
+                            </div>
+                            <div class="clear "></div>
+                            <div class="line titleLine "></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="pinDaoItem">
+
+
+    <!--生活服务6-->
+    <div class="pinDaoItem " ng-mouseover="fun.category.hoverThis('item7');">
         <div class="pinDaoName">
-            <div class="itemTopName linkMouse">同城交友
+            <div class="itemTopName linkMouse ">
+                <div class="left">生活服务</div>
+                <div class="rightJianTou right">></div>
+                <div id="listCategory" ng-show="ui.category.item7" class="listCategory catItem2  catITem7">
+                    <div bindonce ng-repeat="vo in categoryService" class="oneCateAllDiv">
+                        <div class="clear oneTwoCatDiv mt10">
+                            <!--一级标题 -->
+                            <div class="left oneCateTitle">
+                                <div class="left" bo-text="vo.name"></div>
+                                <div class="right jiantouTwo">></div>
+                            </div>
+
+                            <!--循环2级-->
+                            <div class="left twoCateTitleDiv">
+                                <div class="left" ng-repeat="vo2 in vo.twoCat">
+                                    <div class="left twoCateTitle" bo-text="vo2.name"></div>
+                                </div>
+                            </div>
+                            <div class="clear "></div>
+                            <div class="line titleLine "></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="pinDaoItem">
-        <div class="pinDaoName">
-            <div class="itemTopName linkMouse">行业信息
-            </div>
-        </div>
-    </div>
-    <div class="pinDaoItem">
-        <div class="pinDaoName">
-            <div class="itemTopName linkMouse">房屋信息
-            </div>
-        </div>
-    </div>
+
+
 </div>

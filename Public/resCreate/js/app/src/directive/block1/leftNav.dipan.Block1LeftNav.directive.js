@@ -25,6 +25,10 @@
     thisController.$inject = ['$scope', '$filter', '$timeout', 'api', 'repBindOnce'];
 
     function thisController($scope, $filter, $timeout, api, repBindOnce) {
+        var isChange = true;//是否需要切换分类导航显示状态 到另一分类
+        var mousePos; //鼠标位置 全局变量
+        var thisItemCat ;//当前划过的 频道name
+        document.onmousemove = mousePosition;//给鼠标位置变量
         $scope.categoryService = '';//服务频道导航模型
         $scope.ui = {
             category: {//展开导航包裹div
@@ -40,6 +44,7 @@
         $scope.fun = {
             category: {
                 hoverThis: _categoryHoverThis,//全部分类hoverFun
+                leaveThis: _categoryLeaveThis,//鼠标离开分类,去计算鼠标位置,判断 是否隐藏当前 的 分类显示状态
             }
         };
 
@@ -67,21 +72,54 @@
          * 16/5/28 下午9:23 ByRockBlus
          *************************/
         function _categoryHoverThis(itemStr) {
-            var list = $scope.ui.category;
-            console.log('list1', list);
-
-
-            angular.forEach(list, function (vo) {
-                vo = false;
-                list[itemStr] = true;
-            });
-
-            console.log('indexlist', list);
-            //$timeout(function () {
-            //    $scope.ui.category = list;
-            //}, 0);
+            thisItemCat = itemStr;
+            $timeout(function () {
+                if (!isChange) {//判断鼠标动作 如果 不需要切换分类,
+                    console.log(1111111111111);
+                    return false;
+                }
+                console.log(22222222222);
+                var list = $scope.ui.category;
+                angular.forEach(list, function (vo, index) {
+                    list[index] = false;
+                    list[itemStr] = 'thisCatItem';
+                });
+            }, 60);
         }
 
 
+        /*************************
+         * _categoryLeaveThis 鼠标离开分类,去计算鼠标位置,判断 是否隐藏当前 的 分类显示状态
+         * 16/5/31 上午10:07 ByRockBlus
+         *************************/
+        function _categoryLeaveThis(itemStr) {
+            var levePos = mousePos;
+            $timeout(function () {
+                if (mousePos.x > levePos.x) {
+                    isChange = false;//阻止切换
+                    console.log('阻止切换');
+                    $timeout(function () {
+                        isChange = true;//允许切换
+                        _categoryHoverThis(thisItemCat);
+                    }, 500);
+                } else {
+                    isChange = true;//允许切换
+                    console.log(444444444444, itemStr);
+                }
+            }, 50, false);
+        }
+
+// 说明：获取鼠标位置
+        function mousePosition(ev) {
+            if (ev.pageX || ev.pageY) {
+                mousePos = {x: ev.pageX, y: ev.pageY};
+                return;
+            }
+            mousePos = {
+                x: ev.clientX + document.body.scrollLeft - document.body.clientLeft,
+                y: ev.clientY + document.body.scrollTop - document.body.clientTop
+            };
+            return;
+        }
     }
 })();
