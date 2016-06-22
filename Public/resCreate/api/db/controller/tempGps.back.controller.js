@@ -10,7 +10,8 @@ var g = require('../../g.config');
 
 var fun = {
     add: add,//添加一条功能统计
-    select: select//select 10条，传入skip(Number)
+    select: select,//select 10条，传入skip(Number)
+    findNextObj: findNextObj//查出当前的 下一条 obj
 };
 
 /**
@@ -50,6 +51,20 @@ function select(startNum, callBack) {
         .exec(function (err, doc) {
             callBack(doc);
         });
+}
+
+/*************************
+ * find next 查出当前 的 下一条数据
+ * 16/6/22 上午8:49 ByRockBlus
+ *************************/
+function findNextObj(thisObjId, callBack) {
+    tempGpsModel.find()
+        .gt({_id: thisObjId})
+        .limit(1)
+        .exec(function (err, doc) {
+            callBack(doc);
+        });
+
 }
 
 module.exports = fun;

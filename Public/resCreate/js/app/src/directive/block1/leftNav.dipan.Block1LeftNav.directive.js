@@ -27,7 +27,7 @@
     function thisController($scope, $filter, $timeout, api, repBindOnce) {
         var isChange = true;//是否需要切换分类导航显示状态 到另一分类
         var mousePos; //鼠标位置 全局变量
-        var thisItemCat ;//当前划过的 频道name
+        var thisItemCat;//当前划过的 频道name
         document.onmousemove = mousePosition;//给鼠标位置变量
         $scope.categoryService = '';//服务频道导航模型
         $scope.ui = {
