@@ -138,6 +138,7 @@ function eachAdd() {
 /** eahcGpsInChina  遍历临时gps表，提交到soso判断是不是中国的gps*/
 function eachGpsInChina(callBack) {
 
+    console.log('findTempCountReTrue');
     tempCountCtrl.findOne('判断allGps执行的指针', _findTempCount);
     function _findTempCount(re) {
         console.log('findTempCountRe', re);
