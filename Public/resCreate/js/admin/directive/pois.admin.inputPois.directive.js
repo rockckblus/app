@@ -147,19 +147,26 @@
              * 16/5/14 下午6:33 ByRockBlus
              *************************/
             function _forGpsObj(doc) {
-                angular.forEach(doc, function (vo, index) {
-                    setTimeout(function () {
-                        _getTrueSosoGps(vo.gps, __callBack);
-                    }, 1000);
-                })
+
+                /**************************
+                 * old 取10条,废弃,只取1条,不需要 foreach
+                 * 16/6/26 下午6:38 ByRockBlus
+                 **************************/
+                    //angular.forEach(doc, function (vo, index) {
+                    //    setTimeout(function () {
+                    //        _getTrueSosoGps(vo.gps, __callBack);
+                    //    }, 1000);
+                    //})
+
+                setTimeout(function () {
+                    _getTrueSosoGps(doc.gps, __callBack);
+                }, 1000);
 
                 function __callBack() {
                     if (!stopGetGpsInChina) {
                         _eachGpsInChina();//重复执行 下个1条
                     }
                 }
-
-
             }
 
             /*************************
@@ -180,7 +187,6 @@
                         call();
                     }, function (err) {//如果错误,就3秒后 再去 重复请求
                         $timeout(function () {
-                            console.log('s3Err', err);
                             call();
                         }, 3000);
                     })

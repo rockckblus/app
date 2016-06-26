@@ -59,12 +59,11 @@ function select(startNum, callBack) {
  *************************/
 function findNextObj(thisObjId, callBack) {
     tempGpsModel.find()
-        .gt({_id: thisObjId})
+        .where('_id').gt(thisObjId)
         .limit(1)
         .exec(function (err, doc) {
-            callBack(doc);
+            callBack(doc[0]);
         });
-
 }
 
 module.exports = fun;

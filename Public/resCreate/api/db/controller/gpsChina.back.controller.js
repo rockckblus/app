@@ -62,7 +62,6 @@ function eachAdd() {
                 var nextCount = doc.value + 10;
                 tempCountCtrl.upData({name: 'tempCountGpsInDb', value: nextCount}, function () {
                 });
-                console.log('doc', doc);
             } else {
                 return 'over';
             }
@@ -138,10 +137,8 @@ function eachAdd() {
 /** eahcGpsInChina  遍历临时gps表，提交到soso判断是不是中国的gps*/
 function eachGpsInChina(callBack) {
 
-    console.log('findTempCountReTrue');
     tempCountCtrl.findOne('判断allGps执行的指针', _findTempCount);
     function _findTempCount(re) {
-        console.log('findTempCountRe', re);
         //try {
         //    /*************************
         //     * 查出allGps old 指针,然后 指针 加10, 完成后,再去从临时gps表 查出,old指针的10条数据 //废弃
@@ -160,17 +157,39 @@ function eachGpsInChina(callBack) {
         //    console.error('error', e);
         //}
 
-        //upTempCountObjId()
+
+        tempGpsCtrl.findNextObj(re.value, _callBack);
+
+        /**************************
+         * 回调 去修改tempCount 的 id
+         * 16/6/24 下午6:57 ByRockBlus
+         **************************/
+        function _callBack(nextObj) {
+
+            upTempCountObjId(nextObj, _callBack);
+
+            function _callBack() {
+                var reData = {
+                    tempCount: nextObj._id,
+                    data: nextObj
+                };
+                callBack(reData);
+            }
+
+            //function _errCall(err) {
+            //    g.alert(err);
+            //}
+        }
+
+
     }
 
     /*************************
      * 每请求一次,就 记录 判断allGps执行的指针 当前执行过的 id
      * 16/6/22 上午9:03 ByRockBlus
      *************************/
-    function upTempCountObjId(thisObjId, funCall) {
-        tempCountCtrl.upData({'name': '判断allGps执行的指针', 'value': thisObjId}, function () {
-            funCall(thisObjId);
-        });
+    function upTempCountObjId(thisObjId, _call) {
+        tempCountCtrl.upData({'name': '判断allGps执行的指针', 'value': thisObjId._id}, _call);
     }
 
 
@@ -203,7 +222,6 @@ function eachGpsInChina(callBack) {
                 tempCount: num,
                 data: re
             };
-            console.log('ree', reData);
             callBack(reData);
         }
     }
@@ -212,6 +230,10 @@ function eachGpsInChina(callBack) {
      * find next
      * 16/6/22 上午9:08 ByRockBlus
      *************************/
+    function findNext(_id) {
+
+
+    }
 
 
 }

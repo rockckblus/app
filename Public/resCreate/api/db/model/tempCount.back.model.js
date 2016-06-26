@@ -16,7 +16,7 @@ var g = require('../../g.config');
  * 16/3/7 */
 var typeCountSchema = new g.Schema({
     name: {type: String},//功能名称
-    value: {type: Number}
+    value: {type: String}
 });
 
 
