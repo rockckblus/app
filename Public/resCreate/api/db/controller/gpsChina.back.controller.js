@@ -158,7 +158,11 @@ function eachGpsInChina(callBack) {
         //}
 
 
-        tempGpsCtrl.findNextObj(re.value, _callBack);
+        try {
+            tempGpsCtrl.findNextObj(re.value, _callBack);
+        } catch (e) {
+            console.log('error', '没有re.value');
+        }
 
         /**************************
          * 回调 去修改tempCount 的 id

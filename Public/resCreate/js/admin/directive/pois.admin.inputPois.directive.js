@@ -136,6 +136,7 @@
         function _eachGpsInChina() {
             var count = 0;
             api('eachGpsInChina', {}, function (doc) {
+                console.log('doc', doc);
                 $timeout(function () {
                     $scope.mess = doc.tempCount;
                     _forGpsObj(doc.data);//循环遍历
@@ -160,7 +161,7 @@
 
                 setTimeout(function () {
                     _getTrueSosoGps(doc.gps, __callBack);
-                }, 1000);
+                }, 300);
 
                 function __callBack() {
                     if (!stopGetGpsInChina) {
@@ -198,6 +199,16 @@
                  *************************/
                 function __inTempGpsChina(jsonPost) {
                     try {
+                        console.log('sosoReturn', jsonPost);
+                        /**************************
+                         * soso key 到达上限
+                         * 16/6/27 下午8:28 ByRockBlus
+                         **************************/
+                        if (jsonPost.status == 121) {
+                            stopGetGpsInChina = true;
+                            return false;
+                        }
+
                         if (jsonPost.result.address_component.nation == '中国') {
                             var inObj = {
                                 gps: jsonPost.result.location,
