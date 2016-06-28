@@ -118,6 +118,71 @@
                 case '8101':
                     ak = '6JMBZ-V7B3X-3FM4L-TTQXL-SWIVZ-S7FUH';//sosoak2 3008 10
                     break;
+
+            /*************************
+             * next20
+             * 16/6/28 下午4:45 ByRockBlus
+             *************************/
+                case '8201':
+                    ak = 'CFABZ-BYTKX-O2S43-TDL3W-XKOVT-LVBI2';//sosoak2 3008 10
+                    break;
+                case '8202':
+                    ak = 'NLXBZ-TO7RX-5AX4Z-TC2ZG-EO5LV-YVB5U';//sosoak2 3008 10
+                    break;
+                case '8203':
+                    ak = 'QVJBZ-6NP35-46PIR-QH4T5-36B4E-ZRFOT';//sosoak2 3008 10
+                    break;
+                case '8204':
+                    ak = '7NWBZ-J7L3K-AMUJ6-ADLR7-OUTCS-3JB7L';//sosoak2 3008 10
+                    break;
+                case '8205':
+                    ak = 'PKNBZ-2DMW3-GNY37-3BV5L-VFARJ-GPFWU';//sosoak2 3008 10
+                    break;
+                case '8206':
+                    ak = 'C3GBZ-S5P3I-5G7GY-5AGWU-WQDIQ-SMFBE';//sosoak2 3008 10
+                    break;
+                case '8207':
+                    ak = '7L2BZ-YGFW3-Q7Z3A-3XP5Z-GX3OV-NBBOV';//sosoak2 3008 10
+                    break;
+                case '8208':
+                    ak = '4UKBZ-3ZDWK-4MPJ5-A6TFS-727CQ-ZNB4C';//sosoak2 3008 10
+                    break;
+                case '8209':
+                    ak = 'PY5BZ-3XOK3-ZNL36-3AWAK-3DKR3-CSBSE';//sosoak2 3008 10
+                    break;
+                case '8210':
+                    ak = '2XMBZ-BV53R-EYWWY-WD7WB-2UJYQ-7LBLY';//sosoak2 3008 10
+                    break;
+                case '8211':
+                    ak = 'GZLBZ-LURCQ-D5R5O-GBVCS-XXMQO-UAFYO';//sosoak2 3008 10
+                    break;
+                case '8212':
+                    ak = 'M5KBZ-KBR33-77M3U-37A6J-XDFOK-QSFWV';//sosoak2 3008 10
+                    break;
+                case '8213':
+                    ak = 'S7XBZ-3TP3F-2STJS-J6LIJ-6BWXT-JIFQX';//sosoak2 3008 10
+                    break;
+                case '8214':
+                    ak = '2CIBZ-XPPWF-LQSJZ-JBCZS-TNPDJ-C2B7T';//sosoak2 3008 10
+                    break;
+                case '8215':
+                    ak = 'H35BZ-22Z33-D733K-3EYFH-H2OOZ-DKF4A';//sosoak2 3008 10
+                    break;
+                case '8216':
+                    ak = 'A2QBZ-KATWP-DRIDM-LVJQU-P5REF-LTBCG';//sosoak2 3008 10
+                    break;
+                case '8217':
+                    ak = 'A2JBZ-JHLWF-DQ2JS-JQWQD-J2YDT-SDBK7';//sosoak2 3008 10
+                    break;
+                case '8218':
+                    ak = '7JSBZ-DRWKX-S2K4I-TPKNC-WNXVZ-FDBWC';//sosoak2 3008 10
+                    break;
+                case '8219':
+                    ak = 'XLXBZ-YWWWP-GKJDI-LIF5H-7CZMQ-JVBVT';//sosoak2 3008 10
+                    break;
+                case '8220':
+                    ak = 'KNBBZ-GKNW3-BNG3M-3XXTP-NV4RK-XQFE7';//sosoak2 3008 10
+                    break;
             }
             return ak;
         }
