@@ -113,6 +113,74 @@
             case '8101':
                 port = '3101';
                 break;
+
+        /*************************
+         * next 20
+         * 16/6/28 下午6:58 ByRockBlus
+         *************************/
+            case '8201':
+                port = '3201';
+                break;
+            case '8202':
+                port = '3202';
+                break;
+            case '8203':
+                port = '3203';
+                break;
+            case '8204':
+                port = '3204';
+                break;
+            case '8205':
+                port = '3205';
+                break;
+            case '8206':
+                port = '3206';
+                break;
+            case '8207':
+                port = '3207';
+                break;
+            case '8208':
+                port = '3208';
+                break;
+            case '8209':
+                port = '3209';
+                break;
+            case '8210':
+                port = '3210';
+                break;
+            case '8211':
+                port = '3211';
+                break;
+            case '8212':
+                port = '3212';
+                break;
+            case '8213':
+                port = '3213';
+                break;
+            case '8214':
+                port = '3214';
+                break;
+            case '8215':
+                port = '3215';
+                break;
+            case '8216':
+                port = '3216';
+                break;
+            case '8217':
+                port = '3217';
+                break;
+            case '8218':
+                port = '3218';
+                break;
+            case '8219':
+                port = '3219';
+                break;
+            case '8220':
+                port = '3220';
+                break;
+
+
+
         }
         return port;
     }
