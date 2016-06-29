@@ -26,12 +26,25 @@ var server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-if (cluster.isMaster) {//多cpu线程
+if (cluster.isMaster222) {//多cpu线程
 //    console.log('masgter start');
     //Fork workers;
-    for (var i = 0; i < numCPUs; i++) {
-        cluster.fork();
-    }
+
+
+    /*************************
+     * 单cup
+     * 16/6/30 上午6:15 ByRockBlus
+     *************************/
+    server.listen(port);
+
+
+    /*************************
+     * 多cup
+     * 16/6/30 上午6:15 ByRockBlus
+     *************************/
+    //for (var i = 0; i < numCPUs; i++) {
+    //    cluster.fork();
+    //}
 
     cluster.on('listening', function (worker, address) {
         //console.log('listening:worker' + worker.process.pid + ', Addresss: ' + address.address + ':' + address.port);
