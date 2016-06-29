@@ -28,7 +28,7 @@ var g = {
      * 16/3/7 */
 
     mongo: {
-        url: 'mongodb://169.254.67.107:27017/',//分片路由
+        url: 'mongodb://localhost:27017/',//分片路由
         master: 'dipan',//主库
     },
 
