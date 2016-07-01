@@ -31,3 +31,5 @@ node_modules/*
 nohup.out
 
 Application/diguo/*
+
+Public/resCreate/api/g.config.js
