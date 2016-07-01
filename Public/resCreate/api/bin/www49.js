@@ -14,7 +14,7 @@ var http = require('http');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3086');
+var port = normalizePort(process.env.PORT || '3309');
 app.set('port', port);
 
 /**
@@ -29,19 +29,12 @@ var server = http.createServer(app);
 if (cluster.isMaster) {//多cpu线程
 //    console.log('masgter start');
     //Fork workers;
-<<<<<<< HEAD
-     server.listen(port);
-=======
         server.listen(port);
->>>>>>> 15pro本地开发分支
 
     // for (var i = 0; i < numCPUs; i++) {
     //     cluster.fork();
     // }
-<<<<<<< HEAD
-=======
 
->>>>>>> 15pro本地开发分支
 
     cluster.on('listening', function (worker, address) {
         //console.log('listening:worker' + worker.process.pid + ', Addresss: ' + address.address + ':' + address.port);

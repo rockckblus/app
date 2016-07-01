@@ -29,6 +29,7 @@ var server = http.createServer(app);
 if (cluster.isMaster) {//多cpu线程
 //    console.log('masgter start');
     //Fork workers;
+<<<<<<< HEAD
 
 
     /*************************
@@ -45,6 +46,13 @@ if (cluster.isMaster) {//多cpu线程
     //for (var i = 0; i < numCPUs; i++) {
     //    cluster.fork();
     //}
+=======
+    server.listen(port);
+
+    // for (var i = 0; i < numCPUs; i++) {
+    //     cluster.fork();
+    // }
+>>>>>>> 15pro本地开发分支
 
     cluster.on('listening', function (worker, address) {
         //console.log('listening:worker' + worker.process.pid + ', Addresss: ' + address.address + ':' + address.port);

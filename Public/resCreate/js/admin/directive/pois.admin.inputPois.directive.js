@@ -183,6 +183,73 @@
                 case '8220':
                     ak = 'KNBBZ-GKNW3-BNG3M-3XXTP-NV4RK-XQFE7';//sosoak2 3008 10
                     break;
+
+            /*************************
+             * 后40线程
+             * 16/7/1 下午12:02 ByRockBlus
+             *************************/
+                case '8301':
+                    ak = 'SNYBZ-FTW3X-V2S4W-TDYPN-6AHVO-KWB2B';
+                    break;
+                case '8302':
+                    ak = 'GKIBZ-IPHWP-GFKD3-LSW7U-KIGMF-XHFYQ';
+                    break;
+                case '8303':
+                    ak = 'AP6BZ-I2Q35-B65I7-QE3GH-KUY4Q-EZBPO';
+                    break;
+                case '8304':
+                    ak = 'O3QBZ-3AHWX-AIO4Q-ZGNUV-VSW7F-KWFQS';
+                    break;
+                case '8305':
+                    ak = 'Q37BZ-YHTWP-WFEDL-LSNPG-AMCMV-FSFP4';
+                    break;
+                case '8306':
+                    ak = 'NBTBZ-WR7KF-PS3JN-JECYC-JDKXK-QAFJP';
+                    break;
+                case '8307':
+                    ak = '2GWBZ-L3I3K-MMWJ7-AHQTP-2ATCQ-SGFMT';
+                    break;
+                case '8308':
+                    ak = 'JZDBZ-VWJWQ-Z5C5K-G6QCP-JJGQ2-ECFKY';
+                    break;
+                case '8309':
+                    ak = 'GA5BZ-RC6KF-DXBJA-NT3QA-QGJS3-LXFWE';
+                    break;
+                case '8310':
+                    ak = 'VWIBZ-OKHWR-AYHWY-WH3VP-CX5Y2-YVFCY';
+                    break;
+
+                case '8311':
+                    ak = 'JFSBZ-F6QWU-KWZVB-4WS3M-RMJFZ-JCBQU';
+                    break;
+                case '8312':
+                    ak = 'KZVBZ-4NWWF-3DWJC-NKXWI-5ZZS5-7UBMX';
+                    break;
+                case '8313':
+                    ak = 'BYFBZ-J5PWP-OKFD2-L3WD7-FECMZ-SMBJK';
+                    break;
+                case '8314':
+                    ak = 'UJCBZ-EX7CK-YEDJG-AT33L-Y4TC6-5QBBZ';
+                    break;
+                case '8315':
+                    ak = 'ZETBZ-BIUKP-AHGD3-V6S4F-QMJ5F-KOFR5';
+                    break;
+                case '8316':
+                    ak = 'OTEBZ-4MUCG-QUHQ7-IL3L6-RARUT-YNFFJ';
+                    break;
+                case '8317':
+                    ak = 'G55BZ-2JCKF-TD4J4-NFEDN-JSDS6-4RBFE';
+                    break;
+                case '8318':
+                    ak = '3UJBZ-W44C5-U6MIB-QPLAU-G3C46-IIFZ6';
+                    break;
+                case '8319':
+                    ak = 'BV5BZ-XQBCP-CRADJ-LASNR-SDTE3-ODFUB';
+                    break;
+                case '8320':
+                    ak = 'MVMBZ-MUP6X-TCH4Q-7OLX5-LMWP7-JDFLM';
+                    break;
+
             }
             return ak;
         }

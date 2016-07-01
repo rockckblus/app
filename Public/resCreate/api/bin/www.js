@@ -27,9 +27,13 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 if (cluster.isMaster) {//多cpu线程
+    server.listen(port);
 //    console.log('masgter start');
     //Fork workers;
+<<<<<<< HEAD
     server.listen(port);
+=======
+>>>>>>> 15pro本地开发分支
     //for (var i = 0; i < numCPUs; i++) {
     //    cluster.fork();
     //}
