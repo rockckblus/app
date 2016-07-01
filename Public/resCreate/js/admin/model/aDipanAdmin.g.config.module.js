@@ -179,7 +179,71 @@
                 port = '3220';
                 break;
 
+        /*************************
+         * next40
+         * 16/7/1 下午1:10 ByRockBlus
+         *************************/
+            case '8301':
+                port = '3301';
+                break;
+            case '8302':
+                port = '3302';
+                break;
+            case '8303':
+                port = '3303';
+                break;
+            case '8304':
+                port = '3304';
+                break;
+            case '8305':
+                port = '3305';
+                break;
+            case '8306':
+                port = '3306';
+                break;
+            case '8307':
+                port = '3307';
+                break;
+            case '8308':
+                port = '3308';
+                break;
+            case '8309':
+                port = '3309';
+                break;
+            case '8310':
+                port = '3310';
+                break;
 
+            case '8311':
+                port = '3311';
+                break;
+            case '8312':
+                port = '3312';
+                break;
+            case '8313':
+                port = '3313';
+                break;
+            case '8314':
+                port = '3314';
+                break;
+            case '8315':
+                port = '3315';
+                break;
+            case '8316':
+                port = '3316';
+                break;
+            case '8317':
+                port = '3317';
+                break;
+            case '8318':
+                port = '3318';
+                break;
+            case '8319':
+                port = '3319';
+                break;
+            case '8320':
+                port = '3320';
+                break;
 
         }
         return port;
