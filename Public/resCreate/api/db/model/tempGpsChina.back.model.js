@@ -23,7 +23,7 @@ var tempGpsSchema = new g.Schema({
 /**
  * Model
  * 16/3/7 */
-var tempGpsModel = g.mongoose.model('tempgpsChina', tempGpsSchema, 'tempgpsChina');
+var tempGpsModel = g.mongoose.model('tempgpsChina1', tempGpsSchema, 'tempgpsChina1');
 
 module.exports = tempGpsModel;
 
