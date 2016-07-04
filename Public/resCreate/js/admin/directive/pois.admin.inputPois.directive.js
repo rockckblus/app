@@ -337,6 +337,9 @@
                          * 16/6/27 下午8:28 ByRockBlus
                          **************************/
                         if (jsonPost.status == 121) {
+                            $timeout(function () {
+                                $scope.mess = '上限';
+                            }, 0);
                             stopGetGpsInChina = true;
                             return false;
                         }
