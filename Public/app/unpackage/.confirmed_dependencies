@@ -1,6 +1,16 @@
 {
   "src/html/index.html": {
     "href": "src/html/index.html",
-    "priority": 0
+    "priority": 0,
+    "resources": [
+      "src/css/app.css",
+      "src/fonts/fontawesome-webfont.woff",
+      "src/css/responsive.css",
+      "dist/js/res/angular.min.js",
+      "dist/js/res/angular-ui-router.min.js",
+      "dist/js/appDev.js",
+      "dist/js/res/bindonce.min.js"
+    ],
+    "refer": []
   }
 }

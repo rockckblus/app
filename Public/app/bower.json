@@ -1,0 +1,13 @@
+{
+  "name": "dipan",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "angular": "1.2.16",
+    "angular-bindonce":"0.3.3",
+    "angular-ui-router":"0.2.10",
+    "mobile-angular-ui": "1.2.x",
+    "font-awesome": "4.2",
+    "bootstrap": "3.x"
+  }
+}

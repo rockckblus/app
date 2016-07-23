@@ -6,24 +6,21 @@
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="yes"/>
-    <!--<link rel="stylesheet" href="css/app.min.css"/>-->
-    <!--<link rel="stylesheet" href="css/responsive.min.css"/>-->
     <!--<script src="js/app.min.js"></script>-->
-        <script type="text/javascript">
-    	
-   		document.addEventListener('plusready', function(){
-   			//console.log("所有plus api都应该在此事件发生后调用，否则会出现plus is undefined。"
-   			
-   			
-   		});
-   		
+    <script type="text/javascript">
+
+        document.addEventListener('plusready', function () {
+            //console.log("所有plus api都应该在此事件发生后调用，否则会出现plus is undefined。"
+
+
+        });
+
     </script>
 </head>
 
 
 <body>
-index
-<!--<body ng-app="MyApp" id="MyApp" class="angularEnd" ng-controller="MainController">-->
+<!--<body ng-app="dipan" class="angularEnd" ng-controller="body">-->
 
 <!--&lt;!&ndash; Sidebars &ndash;&gt;-->
 <!--<div ng-include="'sidebar.html'"-->
@@ -52,10 +49,10 @@ index
 
     <!--<div class="navbar navbar-app navbar-absolute-bottom">-->
         <!--<div class="btn-group justified">-->
-            <!--<a href="http://mobileangularui.com/" class="btn btn-navbar"><i class="fa fa-home fa-navbar"></i> Docs</a>-->
-            <!--<a href="https://github.com/mcasimir/mobile-angular-ui" class="btn btn-navbar"><i-->
+            <!--<a href="#" class="btn btn-navbar"><i class="fa fa-home fa-navbar"></i> Docs</a>-->
+            <!--<a href="#" class="btn btn-navbar"><i-->
                     <!--class="fa fa-github fa-navbar"></i> Sources</a>-->
-            <!--<a href="https://github.com/mcasimir/mobile-angular-ui/issues" class="btn btn-navbar"><i-->
+            <!--<a href="#" class="btn btn-navbar"><i-->
                     <!--class="fa fa-exclamation-circle fa-navbar"></i> Issues</a>-->
         <!--</div>-->
     <!--</div>-->
@@ -76,13 +73,21 @@ index
 
 
 <script>
+    console.log('url',window.location.href);
     var dist = false;
+    var isWeb = true;
+    var basePath = 'Public/app';
     if (dist) {
         document.write('<script src="/Public/resCreate/js/app/dist/app.js?{$jsDate}"><\/script>');
     }
     else {
-        document.write('<script src="/Public/resCreate/js/app/dist/appDev.js?{$jsDate}"><\/script>');
-        document.write('<link rel="stylesheet" href="/Public/resCreate/css/dist/app.css?{$jsDate}"\/>');
+        if (isWeb) {
+            document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
+            document.write('<link rel="stylesheet" href="' + basePath + '/src/css/responsive.css"/>');
+
+//            document.write('<script src="' + basePath + '/dist/js/appDev.js?{$jsDate}"><\/script>');
+//            document.write('<link rel="stylesheet" href="/Public/resCreate/css/dist/app.css?{$jsDate}"\/>');
+        }
     }
 </script>
 </body>
