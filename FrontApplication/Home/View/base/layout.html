@@ -1,73 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta charset="utf-8"/>
     <title ng-controller="header">{{title}}</title>
-    <link rel="stylesheet" href="/Public/resCreate/css/dist/app.css"/>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="yes"/>
+    <link rel="stylesheet" href="css/app.min.css"/>
+    <link rel="stylesheet" href="css/responsive.min.css"/>
+    <script src="js/app.min.js"></script>
+
 </head>
 
-<body class="angularEnd">
-<div class="allDiv">
-    <div class="topHeader" style="display: block;width: 100%;">
-        <div class="leftLogoImg" style="float: left;">
-            <img src="/Public/images/logo.png" style="float: left;
-    width: 55px;
-    margin-top: 10px;
-    margin-left: 0px;" alt=""/>
 
-            <div id="topText" style="">
-                <a href="/"> <span id="logoText" class="left"
-                                   style="font-size: 24px;font-weight: bold;margin-left: 70px">地盘</span></a>
-                <span class="left" style="margin-left: 10px;margin-top: 10px">diPan.So</span>
+<body ng-app="MyApp" id="MyApp" class="angularEnd" ng-controller="MainController">
+
+<!-- Sidebars -->
+<div ng-include="'sidebar.html'"
+     ui-track-as-search-param='true'
+     class="sidebar sidebar-left"></div>
+
+<div class="app">
+
+    <!-- Navbars -->
+
+    <div class="navbar navbar-app navbar-absolute-top">
+        <div class="navbar-brand navbar-brand-center" ui-yield-to="title">
+            Mobile Angular UI
+        </div>
+        <div class="btn-group pull-left">
+            <div ui-toggle="uiSidebarLeft" class="btn sidebar-toggle">
+                <i class="fa fa-angle-left"></i>
             </div>
         </div>
-
-        <!-- areaKey directive -->
-        <div area-key style="margin-top: 40px"></div>
-        <div id="leftLogo" class="left">
-            <div class="topDiZhu left">
-                <div class="name">
-                    <div style="font-weight: bold">
-                        <span class="left">地主:</span>
-
-                        <div class="left">
-                            &nbsp;[&nbsp;空缺中&nbsp;]
-                        </div>
-                        <div class=" left" style="margin-top: -6px">
-        <span class="btn btn-success btn-xs" style="margin-left: 10px;color: #fff"
-              click-router-ui-block="alertDiv.alertInfo" item="2">抢地盘</span>
-                        </div>
-                        <div class="wenHao left"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="contentDiv" id="contentDiv">
-            <!--左侧导航-->
-            <div id="block1">
-            </div>
-            <div id="block2" left-nav>
-                {$d2}
-            </div>
-            <div id="block3">
-                {$d3}
+        <div class="btn-group pull-right" ui-yield-to="navbarAction">
+            <div ui-toggle="uiSidebarRight" class="btn">
+                <i class="fa fa-bicycle"></i> Chat
             </div>
         </div>
     </div>
 
-    <div class="otherDiv">
-        <div alert-info></div>
-        <div alert-warn="2"></div>
+    <div class="navbar navbar-app navbar-absolute-bottom">
+        <div class="btn-group justified">
+            <a href="http://mobileangularui.com/" class="btn btn-navbar"><i class="fa fa-home fa-navbar"></i> Docs</a>
+            <a href="https://github.com/mcasimir/mobile-angular-ui" class="btn btn-navbar"><i
+                    class="fa fa-github fa-navbar"></i> Sources</a>
+            <a href="https://github.com/mcasimir/mobile-angular-ui/issues" class="btn btn-navbar"><i
+                    class="fa fa-exclamation-circle fa-navbar"></i> Issues</a>
+        </div>
     </div>
-</div>
+
+    <!-- App Body -->
+    <div class="app-body">
+        <div class="app-content">
+            <!--<ng-view></ng-view>  -->
+        </div>
+    </div>
+
+</div><!-- ~ .app -->
+
+<div ui-yield-to="modals"></div>
 
 <!--数据div-->
 <div url-parse={$indexAllRe}></div>
 
-<!--调试div 浮动 100%-->
-<div class="clear" style="position: fixed;z-index: 3000;background-color: #fff;width: 100%;height: 100%;display: none">
-</div>
+
 <script>
     var dist = false;
     if (dist) {

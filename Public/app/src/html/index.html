@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8"/>
+    <title ng-controller="header">{{title}}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="yes"/>
+    <!--<link rel="stylesheet" href="css/app.min.css"/>-->
+    <!--<link rel="stylesheet" href="css/responsive.min.css"/>-->
+    <!--<script src="js/app.min.js"></script>-->
+        <script type="text/javascript">
+    	
+   		document.addEventListener('plusready', function(){
+   			//console.log("所有plus api都应该在此事件发生后调用，否则会出现plus is undefined。"
+   			
+   			
+   		});
+   		
+    </script>
+</head>
+
+
+<body>
+index
+<!--<body ng-app="MyApp" id="MyApp" class="angularEnd" ng-controller="MainController">-->
+
+<!--&lt;!&ndash; Sidebars &ndash;&gt;-->
+<!--<div ng-include="'sidebar.html'"-->
+     <!--ui-track-as-search-param='true'-->
+     <!--class="sidebar sidebar-left"></div>-->
+
+<!--<div class="app">-->
+
+    <!--&lt;!&ndash; Navbars &ndash;&gt;-->
+
+    <!--<div class="navbar navbar-app navbar-absolute-top">-->
+        <!--<div class="navbar-brand navbar-brand-center" ui-yield-to="title">-->
+            <!--Mobile Angular UI-->
+        <!--</div>-->
+        <!--<div class="btn-group pull-left">-->
+            <!--<div ui-toggle="uiSidebarLeft" class="btn sidebar-toggle">-->
+                <!--<i class="fa fa-angle-left"></i>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="btn-group pull-right" ui-yield-to="navbarAction">-->
+            <!--<div ui-toggle="uiSidebarRight" class="btn">-->
+                <!--<i class="fa fa-bicycle"></i> Chat-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <!--<div class="navbar navbar-app navbar-absolute-bottom">-->
+        <!--<div class="btn-group justified">-->
+            <!--<a href="http://mobileangularui.com/" class="btn btn-navbar"><i class="fa fa-home fa-navbar"></i> Docs</a>-->
+            <!--<a href="https://github.com/mcasimir/mobile-angular-ui" class="btn btn-navbar"><i-->
+                    <!--class="fa fa-github fa-navbar"></i> Sources</a>-->
+            <!--<a href="https://github.com/mcasimir/mobile-angular-ui/issues" class="btn btn-navbar"><i-->
+                    <!--class="fa fa-exclamation-circle fa-navbar"></i> Issues</a>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <!--&lt;!&ndash; App Body &ndash;&gt;-->
+    <!--<div class="app-body">-->
+        <!--<div class="app-content">-->
+            <!--&lt;!&ndash;<ng-view></ng-view>  &ndash;&gt;-->
+        <!--</div>-->
+    <!--</div>-->
+
+<!--</div>&lt;!&ndash; ~ .app &ndash;&gt;-->
+
+<!--<div ui-yield-to="modals"></div>-->
+
+<!--&lt;!&ndash;数据div&ndash;&gt;-->
+<!--<div url-parse={{$indexAllRe}}></div>-->
+
+
+<script>
+    var dist = false;
+    if (dist) {
+        document.write('<script src="/Public/resCreate/js/app/dist/app.js?{$jsDate}"><\/script>');
+    }
+    else {
+        document.write('<script src="/Public/resCreate/js/app/dist/appDev.js?{$jsDate}"><\/script>');
+        document.write('<link rel="stylesheet" href="/Public/resCreate/css/dist/app.css?{$jsDate}"\/>');
+    }
+</script>
+</body>
+</html>
