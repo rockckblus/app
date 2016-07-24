@@ -9,7 +9,11 @@
       "dist/js/res/angular.min.js",
       "dist/js/res/angular-ui-router.min.js",
       "dist/js/appDev.js",
-      "dist/js/res/bindonce.min.js"
+      "dist/js/res/bindonce.min.js",
+      "src/js/controller/dipan.g.body.controller.js",
+      "src/js/aModule/aDipan.g.config.module.js",
+      "src/html/sidebar.html",
+      "src/html/block/sidebar.html"
     ],
     "refer": []
   }

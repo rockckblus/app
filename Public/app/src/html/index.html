@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
 <head>
     <meta charset="utf-8"/>
     <title ng-controller="header">{{title}}</title>
@@ -6,77 +7,77 @@
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="yes"/>
-    <!--<script src="js/app.min.js"></script>-->
     <script type="text/javascript">
 
         document.addEventListener('plusready', function () {
             //console.log("所有plus api都应该在此事件发生后调用，否则会出现plus is undefined。"
-
-
         });
 
     </script>
 </head>
 
 
-<body>
-<!--<body ng-app="dipan" class="angularEnd" ng-controller="body">-->
+<body class="angularEnd" ng-controller="body">
 
-<!--&lt;!&ndash; Sidebars &ndash;&gt;-->
-<!--<div ng-include="'sidebar.html'"-->
-     <!--ui-track-as-search-param='true'-->
-     <!--class="sidebar sidebar-left"></div>-->
+<!-- Sidebars -->
+<div id="sideBar" ng-include="a"
+     ui-track-as-search-param='true'
+     class="sidebar sidebar-left"></div>
 
-<!--<div class="app">-->
+<div class="app">
 
-    <!--&lt;!&ndash; Navbars &ndash;&gt;-->
+    <!-- Navbars -->
 
-    <!--<div class="navbar navbar-app navbar-absolute-top">-->
-        <!--<div class="navbar-brand navbar-brand-center" ui-yield-to="title">-->
-            <!--Mobile Angular UI-->
-        <!--</div>-->
-        <!--<div class="btn-group pull-left">-->
-            <!--<div ui-toggle="uiSidebarLeft" class="btn sidebar-toggle">-->
-                <!--<i class="fa fa-angle-left"></i>-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--<div class="btn-group pull-right" ui-yield-to="navbarAction">-->
-            <!--<div ui-toggle="uiSidebarRight" class="btn">-->
-                <!--<i class="fa fa-bicycle"></i> Chat-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
+    <div class="navbar navbar-app navbar-absolute-top">
+        <div class="navbar-brand navbar-brand-center" ui-yield-to="title">
+            Mobile Angular UI
+        </div>
+        <div class="btn-group pull-left">
+            <div ui-toggle="uiSidebarLeft" class="btn sidebar-toggle">
+                <i class="fa fa-angle-left"></i>
+            </div>
+        </div>
+        <div class="btn-group pull-right" ui-yield-to="navbarAction">
+            <div ui-toggle="uiSidebarRight" class="btn">
+                <i class="fa fa-bicycle"></i> Chat
+            </div>
+        </div>
+    </div>
 
-    <!--<div class="navbar navbar-app navbar-absolute-bottom">-->
-        <!--<div class="btn-group justified">-->
-            <!--<a href="#" class="btn btn-navbar"><i class="fa fa-home fa-navbar"></i> Docs</a>-->
-            <!--<a href="#" class="btn btn-navbar"><i-->
-                    <!--class="fa fa-github fa-navbar"></i> Sources</a>-->
-            <!--<a href="#" class="btn btn-navbar"><i-->
-                    <!--class="fa fa-exclamation-circle fa-navbar"></i> Issues</a>-->
-        <!--</div>-->
-    <!--</div>-->
+    <div class="navbar navbar-app navbar-absolute-bottom">
+        <div class="btn-group justified">
+            <a href="#" class="btn btn-navbar"><i class="fa fa-home fa-navbar"></i> Docs</a>
+            <a href="#" class="btn btn-navbar"><i
+                    class="fa fa-github fa-navbar"></i> Sources</a>
+            <a href="#" class="btn btn-navbar"><i
+                    class="fa fa-exclamation-circle fa-navbar"></i> Issues</a>
+        </div>
+    </div>
 
-    <!--&lt;!&ndash; App Body &ndash;&gt;-->
-    <!--<div class="app-body">-->
-        <!--<div class="app-content">-->
-            <!--&lt;!&ndash;<ng-view></ng-view>  &ndash;&gt;-->
-        <!--</div>-->
-    <!--</div>-->
+    <!-- App Body -->
+    <div class="app-body">
+        <div class="app-content">
+            <!--<ng-view></ng-view>  -->
+        </div>
+    </div>
 
-<!--</div>&lt;!&ndash; ~ .app &ndash;&gt;-->
+</div><!-- ~ .app -->
 
-<!--<div ui-yield-to="modals"></div>-->
+<div ui-yield-to="modals"></div>
 
-<!--&lt;!&ndash;数据div&ndash;&gt;-->
+<!--数据div-->
 <!--<div url-parse={{$indexAllRe}}></div>-->
 
 
 <script>
-    console.log('url',window.location.href);
+
+
     var dist = false;
     var isWeb = true;
     var basePath = 'Public/app';
+    if (!trueWeb()) {
+        basePath = '../..';
+    }
     if (dist) {
         document.write('<script src="/Public/resCreate/js/app/dist/app.js?{$jsDate}"><\/script>');
     }
@@ -85,8 +86,19 @@
             document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
             document.write('<link rel="stylesheet" href="' + basePath + '/src/css/responsive.css"/>');
 
-//            document.write('<script src="' + basePath + '/dist/js/appDev.js?{$jsDate}"><\/script>');
+            document.write('<script src="' + basePath + '/dist/js/appDev.js?{$jsDate}"><\/script>');
 //            document.write('<link rel="stylesheet" href="/Public/resCreate/css/dist/app.css?{$jsDate}"\/>');
+        } else {
+            document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
+            document.write('<script src="' + basePath + '/dist/js/appDev.js?{$jsDate}"><\/script>');
+        }
+    }
+
+    function trueWeb() {
+        var url = window.location.href;
+        url = url.split(':');
+        if (url[0] === 'http') {
+            return true;
         }
     }
 </script>

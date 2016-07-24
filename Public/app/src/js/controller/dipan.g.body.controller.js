@@ -7,8 +7,8 @@
     angular.module('dipan').controller('body', body);
 
     angular.module('dipan').controller('header', header);
-    header.$inject = ['$scope', 'urlParse', 'api'];
-    function header($scope, urlParse, api) {
+    header.$inject = ['$scope'];
+    function header($scope, api) {
         $scope.title = '';
         $scope.$on('urlParseChangeSub', function () {
             try {
@@ -30,8 +30,8 @@
     /**
      * controllerFun
      * 16/2/1 */
-    function body($scope, $timeout, repBindOnce) {
-
+    function body($scope, $timeout) {
+        $scope.a = basePath + '/src/html/block/sidebar.html';
     }
 
 
