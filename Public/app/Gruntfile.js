@@ -7,7 +7,7 @@ module.exports = function (grunt) {
         /** 检查代码  */
         jshint: {
             //此处是 需要 测试 的文件路径，可自己修改
-            build: ['js/app/src/**/*.js', 'api/*.js', 'api/db/**/*.js', 'api/routes/js'],
+            build: ['src/js/**/*.js'],
             options: {
                 //此处是 验证规则配置文件
                 jshintrc: '.jshintrc'
