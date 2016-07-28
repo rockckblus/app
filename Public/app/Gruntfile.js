@@ -20,9 +20,9 @@ module.exports = function (grunt) {
          * 16/1/22 */
         watch: {
             build: {
-                files: ['Gruntfile.js', '../../FrontApplication/Home/View/base/layout.html', 'js/app/src/**/*.js', 'js/app/src/**/**/*.js', 'js/app/src/**/**/**/*.js', 'css/src/*.css', 'html/src/**/**/**/*.html', 'html/src/**/**/html', 'html/src/**/*.html', 'api/*.js', 'api/db/**/*.js', 'api/routes/*.js'],
-                //tasks: ['jshint', 'ngtemplates', 'concat', 'uglify', 'cssmin', 'clean'],//dist 配置
-                tasks: ['jshint', 'ngtemplates', 'concat',  'cssmin', 'clean'],//dist 配置
+                files: ['Gruntfile.js', 'src/**/*.js', 'src/**/**/*.js', 'src/**/**/**/*.js', 'src/css/*.css', 'src/**/**/**/*.html', 'src/**/**/html', 'src/**/*.html'],
+                tasks: ['jshint', 'ngtemplates', 'concat', 'uglify', 'cssmin', 'clean'],//dist 配置
+                //tasks: ['jshint', 'ngtemplates', 'concat', 'cssmin', 'clean'],//dist 配置
                 //tasks: ['jshint', 'ngtemplates'],//dev 配置
                 options: {
                     spawn: false,
@@ -35,8 +35,8 @@ module.exports = function (grunt) {
         ngtemplates: {
             dipan: {
                 cwd: '../../',
-                src: 'Public/resCreate/html/src/**/**.html',
-                dest: 'js/app/dist/app.templates.js'
+                src: 'Public/app/src/html/**/**.html',
+                dest: 'dist/js/app.templates.js'
             }
         },
 
@@ -46,14 +46,17 @@ module.exports = function (grunt) {
                 stripBanners: true
             },
             dist: {
-                src: ['js/lib/bower_components/angular/angular.min.js',
-                    'js/lib/bower_components/angular-ui-router/release/angular-ui-router.min.js',
-                    'js/lib/bower_components/angular-bindonce/bindonce.min.js',
-                    'js/app/src/**/*.js',
-                    'js/app/src/**/**/*.js',
-                    'js/app/src/**/**/**/*.js',
-                    'js/app/dist/app.templates.js'
+                src: [
+                    'dist/js/res/angular.min.js',
+                    'dist/js/res/angular-ui-router.min.js',
+                    'dist/js/res/bindonce.min.js',
+                    'dist/js/res/mobile-angular-ui.js',
+                    'src/js/**/*.js',
+                    'src/js/**/**/*.js',
+                    'dist/js/app.templates.js',
+
                 ],//src文件夹下包括子文件夹下的所有文件
+
                 dest: 'js/app/dist/app.js'//合并文件在dist下名为app.js的文件
             }
         },
@@ -61,10 +64,11 @@ module.exports = function (grunt) {
         /**
          * 压缩 这个 合并后的 文件
          */
+
         uglify: {
             hellosea: {
                 files: {
-                    'js/app/dist/app.js': ['js/app/dist/app.js']
+                    'dist/js/app.js': ['js/app/dist/app.js']
                 }
             }
         },
@@ -72,7 +76,9 @@ module.exports = function (grunt) {
         /** 删除app.templates.js  */
         clean: {
 //            js: ['js/app/dist/app.templates.js'],
-            css: ['css/dist/*.min.css']
+            css: ['css/dit/*.min.css'],
+
+            //js: ['js/app/dist/app.js']
         },
 
         /**

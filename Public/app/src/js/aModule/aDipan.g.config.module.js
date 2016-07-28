@@ -16,10 +16,6 @@
 (function (window, document) {
     'use strict';
 
-    /** 启动angular  */
-    angular.element(document).ready(function () {
-        angular.bootstrap(window.document, ["dipan"]);
-    });
 
     /**
      * 声明module
@@ -29,6 +25,7 @@
         //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'uiBlock.dipan.uiGroup.module'], hackPost).config(uiRouter).config(secProvider);
         //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'mobile-angular-ui']);
     angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'mobile-angular-ui']);
+
 
 
     /**

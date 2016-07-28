@@ -11,11 +11,12 @@
     function header($scope, api) {
         $scope.title = '';
         $scope.$on('urlParseChangeSub', function () {
-            try {
-                $scope.title = urlParse.data.seoTitle;
-            } catch (e) {
-                console.error(e);
-            }
+            //try {
+            //    $scope.title = urlParse.data.seoTitle;
+            //} catch (e) {
+            //    console.error(e);
+            //}
+
         });
 
 

@@ -7,7 +7,7 @@
 
 (function () {
     'use strict';
-    angular.module('alertDiv.uiBlock.alertUi.module').factory('compile', compile);
+    angular.module('dipan').factory('compile', compile);
 
     compile.$inject = ['$compile'];
 

@@ -21,6 +21,7 @@
         "angular": false,
         "require": false,
         "module": false,
-        "__dirname": false
+        "__dirname": false,
+        "basePath":false
     }
 }

@@ -70,8 +70,6 @@
 
 
 <script>
-
-
     var dist = false;
     var isWeb = true;
     var basePath = 'Public/app';
@@ -79,7 +77,16 @@
         basePath = '../..';
     }
     if (dist) {
-        document.write('<script src="/Public/resCreate/js/app/dist/app.js?{$jsDate}"><\/script>');
+        if (isWeb) {
+            console.log(basePath);
+            document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
+            document.write('<link rel="stylesheet" href="' + basePath + '/src/css/responsive.css"/>');
+
+            document.write('<script src="' + basePath + '/dist/js/app.js?{$jsDate}"><\/script>');
+        } else {
+            document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
+            document.write('<script src="' + basePath + '/dist/js/app.js?{$jsDate}"><\/script>');
+        }
     }
     else {
         if (isWeb) {
@@ -87,7 +94,6 @@
             document.write('<link rel="stylesheet" href="' + basePath + '/src/css/responsive.css"/>');
 
             document.write('<script src="' + basePath + '/dist/js/appDev.js?{$jsDate}"><\/script>');
-//            document.write('<link rel="stylesheet" href="/Public/resCreate/css/dist/app.css?{$jsDate}"\/>');
         } else {
             document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
             document.write('<script src="' + basePath + '/dist/js/appDev.js?{$jsDate}"><\/script>');
