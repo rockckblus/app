@@ -13,7 +13,8 @@
       "src/js/controller/dipan.g.body.controller.js",
       "src/js/aModule/aDipan.g.config.module.js",
       "src/html/sidebar.html",
-      "src/html/block/sidebar.html"
+      "src/html/block/sidebar.html",
+      "dist/js/res/mobile-angular-ui.js"
     ],
     "refer": []
   }
