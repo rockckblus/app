@@ -42,8 +42,8 @@ function sosoApi(req, res) {
     var fun = req.params.fun;
     console.log('req',req);
     switch (fun) {
-        case 'getToStr' ://get sosoApi gps 转地址
-            _getToStr();
+        case 'gpsToStr' ://get sosoApi gps 转地址
+            _gpsToStr();
             break;
     }
 
@@ -51,7 +51,7 @@ function sosoApi(req, res) {
      * gps 转 地址
      * @return valObj
      * 16/3/22 */
-    function _getToStr() {
+    function _gpsToStr() {
         //res.json(doc);
     }
 }
