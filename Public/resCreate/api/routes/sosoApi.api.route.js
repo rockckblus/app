@@ -29,7 +29,7 @@ var api = {
         sosoKey: [
             'WGKBZ-YIYRU-3IOVL-B6A3J-HYANJ-BWFUC'
         ],
-        gpsToStr: 'http://apis.map.qq.com/ws/geocoder/v1/?location='//todo
+        gpsToStr: 'apis.map.qq.com/ws/geocoder/v1/?location='
     }
 };
 
@@ -40,10 +40,13 @@ var api = {
 
 function sosoApi(req, res) {
     var fun = req.params.fun;
-    console.log('req',req);
     switch (fun) {
         case 'gpsToStr' ://get sosoApi gps 转地址
-            _gpsToStr();
+            /*************************
+             * @请求的 url 传入 lat,lng http://dipan.so:3082/soso/sosoApi/gpsToStr?lat=39.604509&lng=116.943519
+             * 16/7/30 上午11:37 ByRockBlus
+             *************************/
+            _gpsToStr();//soso 接口 gps原生格式,转换 地理位置
             break;
     }
 
@@ -52,7 +55,16 @@ function sosoApi(req, res) {
      * @return valObj
      * 16/3/22 */
     function _gpsToStr() {
-        //res.json(doc);
+        var lat = req.query.lat;
+        var lng = req.query.lng;
+        if(lat && lng){
+            var sosoApiUrl = api.url.gpsToStr + lat + ',' + lng + '&coord_type=1&key=' + api.url.sosoKey[0];
+            curlCtrl.get(sosoApiUrl, function (doc) {
+                res.json(doc);
+            });
+        }else{
+            res.json('经纬度为空');
+        }
     }
 }
 

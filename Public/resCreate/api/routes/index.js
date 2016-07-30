@@ -189,7 +189,7 @@ function postSystem(req, res) {
 function postCategory(req, res) {
     var fun = req.params.fun;
     switch (fun) {
-        case 'selectCategoryServiceOneTwo' ://添加一条session 如果存在就修改,不存在就新加
+        case 'selectCategoryServiceOneTwo' ://
             _selectCategoryServiceOneTwo();
             break;
     }
@@ -207,7 +207,7 @@ function postCategory(req, res) {
 function curl(req, res) {
     var fun = req.params.fun;
     switch (fun) {
-        case 'text' ://添加一条session 如果存在就修改,不存在就新加
+        case 'text' :
             _test();
             break;
     }
