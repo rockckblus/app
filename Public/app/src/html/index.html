@@ -8,11 +8,14 @@
     <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="yes"/>
     <script type="text/javascript">
-
         document.addEventListener('plusready', function () {
+            plus.geolocation.watchPosition(function (p) {
+                plus.nativeUI.toast("Geolocation\nLatitude:" + p.coords.latitude + "\nLongitude:" + p.coords.longitude + "\nAltitude:" + p.coords.altitude);
+            }, function (e) {
+//              plus.nativeUI.toast("Geolocation error: " + e.message);
+            });
             //console.log("所有plus api都应该在此事件发生后调用，否则会出现plus is undefined。"
         });
-
     </script>
 </head>
 
@@ -20,7 +23,7 @@
 <body class="angularEnd" ng-controller="body">
 
 <!-- Sidebars -->
-<div ng-include="'Public/app/src/html/block/sidebar.html'"
+<div ng-include="sidebar"
      ui-track-as-search-param='true'
      class="sidebar sidebar-left"></div>
 
@@ -70,7 +73,7 @@
 
 
 <script>
-    var dist = false;
+    var dist = true;
     var isWeb = true;
     var basePath = 'Public/app';
     if (!trueWeb()) {

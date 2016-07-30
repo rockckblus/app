@@ -33,11 +33,15 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui\"/>\n" +
     "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"yes\"/>\n" +
     "    <script type=\"text/javascript\">\n" +
-    "\n" +
     "        document.addEventListener('plusready', function () {\n" +
+    "            plus.geolocation.watchPosition(function (a) {\n" +
+    "                plus.nativeUI.toast(\"Geolocation\\nLatitude:\" + p.coords.latitude + \"\\nLongitude:\" + p.coords.longitude + \"\\nAltitude:\" + p.coords.altitude);\n" +
+    "            }, function (e) {\n" +
+    "                plus.nativeUI.toast(\"Geolocation error: \" + e.message);\n" +
+    "            });\n" +
+    "            ('idkdkkdkdkk2ksdfk');\n" +
     "            //console.log(\"所有plus api都应该在此事件发生后调用，否则会出现plus is undefined。\"\n" +
     "        });\n" +
-    "\n" +
     "    </script>\n" +
     "</head>\n" +
     "\n" +
@@ -45,7 +49,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "<body class=\"angularEnd\" ng-controller=\"body\">\n" +
     "\n" +
     "<!-- Sidebars -->\n" +
-    "<div ng-include=\"'Public/app/src/html/block/sidebar.html'\"\n" +
+    "<div ng-include=\"sidebar\"\n" +
     "     ui-track-as-search-param='true'\n" +
     "     class=\"sidebar sidebar-left\"></div>\n" +
     "\n" +
@@ -95,7 +99,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "\n" +
     "\n" +
     "<script>\n" +
-    "    var dist = false;\n" +
+    "    var dist = true;\n" +
     "    var isWeb = true;\n" +
     "    var basePath = 'Public/app';\n" +
     "    if (!trueWeb()) {\n" +

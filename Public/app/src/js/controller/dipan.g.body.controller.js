@@ -32,7 +32,7 @@
      * controllerFun
      * 16/2/1 */
     function body($scope, $timeout) {
-        $scope.a = basePath + '/src/html/block/sidebar.html';
+        $scope.sidebar = basePath + '/src/html/block/sidebar.html';
     }
 
 
