@@ -34,12 +34,11 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"yes\"/>\n" +
     "    <script type=\"text/javascript\">\n" +
     "        document.addEventListener('plusready', function () {\n" +
-    "            plus.geolocation.watchPosition(function (a) {\n" +
+    "            plus.geolocation.watchPosition(function (p) {\n" +
     "                plus.nativeUI.toast(\"Geolocation\\nLatitude:\" + p.coords.latitude + \"\\nLongitude:\" + p.coords.longitude + \"\\nAltitude:\" + p.coords.altitude);\n" +
     "            }, function (e) {\n" +
-    "                plus.nativeUI.toast(\"Geolocation error: \" + e.message);\n" +
+    "//              plus.nativeUI.toast(\"Geolocation error: \" + e.message);\n" +
     "            });\n" +
-    "            ('idkdkkdkdkk2ksdfk');\n" +
     "            //console.log(\"所有plus api都应该在此事件发生后调用，否则会出现plus is undefined。\"\n" +
     "        });\n" +
     "    </script>\n" +
@@ -86,7 +85,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <!-- App Body -->\n" +
     "    <div class=\"app-body\">\n" +
     "        <div class=\"app-content\">\n" +
-    "            <!--<ng-view></ng-view>  -->\n" +
+    "            <ng-view></ng-view>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
@@ -99,7 +98,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "\n" +
     "\n" +
     "<script>\n" +
-    "    var dist = true;\n" +
+    "    var dist = false;\n" +
     "    var isWeb = true;\n" +
     "    var basePath = 'Public/app';\n" +
     "    if (!trueWeb()) {\n" +

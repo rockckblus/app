@@ -60,7 +60,9 @@
     <!-- App Body -->
     <div class="app-body">
         <div class="app-content">
-            <!--<ng-view></ng-view>  -->
+            <ui-view></ui-view>
+            <a ui-sref="state1">State 1</a>
+            <a ui-sref="state2">State 2</a>
         </div>
     </div>
 
@@ -73,7 +75,7 @@
 
 
 <script>
-    var dist = true;
+    var dist = false;
     var isWeb = true;
     var basePath = 'Public/app';
     if (!trueWeb()) {

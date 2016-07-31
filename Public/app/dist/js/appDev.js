@@ -6,9 +6,7 @@ document.write('<script src="' + basePath + '/dist/js/res/angular.min.js"><\/scr
 document.write('<script src="' + basePath + '/dist/js/res/angular-ui-router.min.js"><\/script>');
 document.write('<script src="' + basePath + '/dist/js/res/bindonce.min.js"><\/script>');
 document.write('<script src="' + basePath + '/dist/js/res/mobile-angular-ui.js"><\/script>');
-//document.write('<script src="../../dist/js/res/angular-ui-router.min.js"><\/script>');
-//document.write('<script src="../../dist/js/res/bindonce.min.js"><\/script>');
-//
+
 ///** module  */
 document.write('<script src="' + basePath + '/src/js/aModule/aDipan.g.config.module.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/aModule/uiBlock.dipan.uiGroup.module.js"><\/script>');
