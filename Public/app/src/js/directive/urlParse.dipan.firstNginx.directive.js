@@ -21,7 +21,6 @@
     thisController.$inject = ['$scope', '$rootScope', '$timeout', 'urlParse', 'api'];
 
     function thisController($scope, $rootScope, $timeout, urlParse, api) {
-
         $timeout(function () {
             urlParse.data = $scope.data;
             $scope.data.queryNode = true;//是node Api
@@ -35,8 +34,6 @@
                 //console.log('reContent', re);
             });
         }, 0);
-
-
     }
 
     function saveSessionCallBack(doc) {
