@@ -21,9 +21,9 @@ module.exports = function (grunt) {
         watch: {
             build: {
                 files: ['Gruntfile.js', 'src/**/*.js', 'src/**/**/*.js', 'src/**/**/**/*.js', 'src/css/*.css', 'src/**/**/**/*.html', 'src/**/**/html', 'src/**/*.html'],
-                //tasks: ['jshint', 'ngtemplates', 'concat', 'uglify', 'cssmin', 'clean'],//dist 配置
+                tasks: ['jshint', 'ngtemplates', 'concat', 'uglify', 'cssmin', 'clean'],//dist 配置
                 //tasks: ['jshint', 'ngtemplates', 'concat', 'cssmin', 'clean'],//dist 配置
-                tasks: ['jshint'],//dev 配置
+                //tasks: ['jshint'],//dev 配置
                 options: {
                     spawn: false,
                     livereload: true

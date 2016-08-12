@@ -9,6 +9,7 @@ document.write('<script src="' + basePath + '/dist/js/res/mobile-angular-ui.js">
 
 ///** module  */
 document.write('<script src="' + basePath + '/src/js/aModule/aDipan.g.config.module.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/aModule/block.dipan.module.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/aModule/uiBlock.dipan.uiGroup.module.js"><\/script>');
 //
 //document.write('<script src="/Public/resCreate/js/app/src/aModule/uiBlock/alertDiv.uiBlock.alertUi.module.js"><\/script>');
@@ -18,7 +19,10 @@ document.write('<script src="' + basePath + '/src/js/aModule/aDipan.g.config.mod
 document.write('<script src="' + basePath + '/src/js/controller/dipan.g.body.controller.js"><\/script>');
 //
 ///** directive  */
-//document.write('<script src="/Public/resCreate/js/app/src/directive/angularEnd.dipan.angularEnd.directive.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/directive/block/top.block.topNav.js"><\/script>');
+
+document.write('<script src="' + basePath + '/src/js/directive/member/my.dipan.myIndexNav.js"><\/script>');
+
 //document.write('<script src="/Public/resCreate/js/app/src/directive/clickRouterUiBlock.uiBlock.router.directive.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/directive/urlParse.dipan.firstNginx.directive.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/directive/areaKey/areaKey.dipan.topAreaKey.directive.js"><\/script>');

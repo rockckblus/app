@@ -4128,16 +4128,12 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 (function (window, document) {
     'use strict';
 
-
     /**
      * 声明module
      *
      * 此处是hackpost 到 node 转 对象格式问题, 如果是 请求node ,post的 需要传入 queryType = true; todo 默认不hackpost格式
      * 16/2/1 */
-        //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'uiBlock.dipan.uiGroup.module'], hackPost).config(uiRouter).config(secProvider);
-        //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'mobile-angular-ui']);
-    angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'mobile-angular-ui'], hackPost).config(uiRouter);
-
+    angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'mobile-angular-ui', 'block'], hackPost).config(uiRouter);
 
     /**
      * config 定义 全局变量
@@ -4154,19 +4150,27 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
     /** 路由配置  */
     function uiRouter($stateProvider, $urlRouterProvider) {
-        var state1Obj = {
-            url: '/state1',
-            template: '<div>hhhhh</div>'
-        };
-        var state2Obj = {
-            url: '/state2',
-            templateUrl: 'Public/resCreate/html/src/public/test.directive2.html'
-        };
+        //首页
+        $urlRouterProvider.when('', "/my");
 
+        //state1
+        $stateProvider.state('state1', {
+                url: '/state1',
+                templateUrl: window.tplPath + 'route/state1.html'
+            })
 
-        $urlRouterProvider.when('', "/state1");
-        $stateProvider.state('state1', state1Obj)
-            .state('state2', state2Obj);
+            //state2
+            .state('state2', {
+                url: '/state2',
+                templateUrl: window.tplPath + 'route/state2.html'
+            })
+
+            //我的
+            .state('my', {
+                url: '/my',
+                templateUrl: window.tplPath + 'route/member/my.html'
+            })
+        ;
     }
 
     /**
@@ -4245,6 +4249,19 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
 })(window, document);
 
+/**
+ * block 模块, 注入主模块 dipan ,碎片模块
+ * */
+(function () {
+    'use strict';
+
+    /**
+     * 声明module
+     * 16/2/1 */
+    angular.module('block', []);
+
+})();
+
 (function () {
     'use strict';
 
@@ -4252,23 +4269,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      * body 控制器
      * 16/2/1 */
     angular.module('dipan').controller('body', body);
-
-    angular.module('dipan').controller('header', header);
-    header.$inject = ['$scope'];
-    function header($scope, api) {
-        $scope.title = '';
-        $scope.$on('urlParseChangeSub', function () {
-            //try {
-            //    $scope.title = urlParse.data.seoTitle;
-            //} catch (e) {
-            //    console.error(e);
-            //}
-
-        });
-
-
-    }
-
 
     /**
      * 手动注入
@@ -4279,7 +4279,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      * controllerFun
      * 16/2/1 */
     function body($scope, $timeout) {
-        $scope.sidebar = basePath + '/src/html/block/sidebar.html';
+
     }
 
 
@@ -4293,16 +4293,12 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
  */
 (function () {
     'use strict';
-
     angular.module('dipan').directive('angularEnd', angularEnd);
-
-
     /**
      * angular 载入完成后。显示modle值
      * 15-12-26 */
     function angularEnd() {
         return {
-
             restrict: 'C',
             replace: false,
             link: function (scope, element, attrs) {
@@ -4312,6 +4308,61 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             }
         };
     }
+})();
+
+/**
+ * 命名注释：directive简称_top. 父模块_block. 功能_顶部导航 类型_directive .js
+ * 使用 ：<div my></div>
+ */
+(function () {
+    'use strict';
+    angular.module('block').directive('top', top);
+
+    function top() {
+        return {
+            restrict: 'A',
+            replace: false,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath+ 'directive/block/top.block.topNav.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout'];
+
+    function thisController($scope, $rootScope, $timeout) {
+        $scope.title = 1111;
+    }
+
+
+})();
+
+/**
+ * 命名注释：directive简称_my. 父模块_dipan . 功能_我的功能导航IndexList 类型_directive .js
+ * 使用 ：<div my></div>
+ */
+(function () {
+    'use strict';
+    angular.module('dipan').directive('my', urlParse);
+    function urlParse() {
+        return {
+            restrict: 'A',
+            replace: false,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/member/my.dipan.myIndexNav.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout'];
+
+    function thisController($scope, $rootScope, $timeout) {
+    }
+
 
 })();
 
@@ -4338,13 +4389,11 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     thisController.$inject = ['$scope', '$rootScope', '$timeout', 'urlParse', 'api'];
 
     function thisController($scope, $rootScope, $timeout, urlParse, api) {
-
         $timeout(function () {
             urlParse.data = $scope.data;
             $scope.data.queryNode = true;//是node Api
             api('saveSession', $scope.data, saveSessionCallBack);
             $rootScope.$broadcast('urlParseChange');//通知全局变量更新 urlParse.dipan.firstData.factory.js
-
             /**
              * 测试findSessionContent
              * 16/3/16 */
@@ -4352,9 +4401,8 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 //console.log('reContent', re);
             });
         }, 0);
-
-
     }
+
 
     function saveSessionCallBack(doc) {
         //console.log('docFront', doc);
@@ -4737,24 +4785,40 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 angular.module('dipan').run(['$templateCache', function($templateCache) {
   'use strict';
 
-  $templateCache.put('Public/app/src/html/block/home.html',
-    "<section class=\"section container-fluid\">\n" +
-    "  <h1 class=\"page-header\">Welcome dkkddk to My App</h1>\n" +
-    "</section>\n"
+  $templateCache.put('Public/app/src/html/directive/block/top.block.topNav.html',
+    "<!--topNav-->\n" +
+    "<div class=\"navbar navbar-app navbar-absolute-top\">\n" +
+    "    <div class=\"navbar-brand navbar-brand-center\">\n" +
+    "        <!--top中间title-->\n" +
+    "        {{title}}\n" +
+    "    </div>\n" +
+    "    <div class=\"btn-group pull-left\">\n" +
+    "        <div class=\"btn\" onclick=\"history.go(-1);\">\n" +
+    "            <!--top导航左侧图标-->\n" +
+    "                <i class=\"fa fa-angle-left\" ></i>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <div class=\"btn-group pull-right\">\n" +
+    "        <div class=\"btn\">\n" +
+    "            <!--top导航右侧图标-->\n" +
+    "            <i class=\"fa fa-search\"></i>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n"
   );
 
 
-  $templateCache.put('Public/app/src/html/block/sidebar.html',
-    "<h1 class=\"app-name\">分类</h1>\n" +
-    "\n" +
-    "<div class=\"scrollable\">\n" +
-    "  <h1 class=\"scrollable-header app-name\">分类</h1>\n" +
-    "  <div class=\"scrollable-content\">\n" +
-    "    <div class=\"list-group\" ui-turn-off='uiSidebarLeft'>\n" +
-    "      <a class=\"list-group-item\" href=\"#/\">首页<i class=\"fa fa-chevron-right pull-right\"></i></a>\n" +
+  $templateCache.put('Public/app/src/html/directive/member/my.dipan.myIndexNav.html',
+    "<div class=\"scrollable-content\" ui-scroll-bottom=\"bottomReached()\">\n" +
+    "    <div class=\"list-group\">\n" +
+    "        <a ui-sref=\"state1\" class=\"list-group-item ng-binding ng-scope\">\n" +
+    "            Item 11 <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
+    "        </a>\n" +
+    "        <a ui-sref=\"state2\" class=\"list-group-item ng-binding ng-scope\">\n" +
+    "            Item 2 <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
+    "        </a>\n" +
     "    </div>\n" +
-    "  </div>\n" +
-    "</div>"
+    "</div>\n"
   );
 
 
@@ -4763,11 +4827,54 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "<html ng-app=\"dipan\">\n" +
     "<head>\n" +
     "    <meta charset=\"utf-8\"/>\n" +
-    "    <title ng-controller=\"header\">{{title}}</title>\n" +
+    "    <title>dipan.so</title>\n" +
     "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\"/>\n" +
     "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\"/>\n" +
     "    <meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui\"/>\n" +
     "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"yes\"/>\n" +
+    "    <script>\n" +
+    "        var dist = true;//生产环境\n" +
+    "        var isWeb = true;//是否 web\n" +
+    "        var basePath = 'Public/app';//跟路径\n" +
+    "        var tplPath = 'Public/app/src/html/';//模板路径\n" +
+    "        var jsPath = 'Public/app/src/js/';//js路径\n" +
+    "        var jsDate = new Date().getFullYear() + '' + new Date().getMonth() + '' + new Date().getDate();\n" +
+    "        if (!trueWeb()) {\n" +
+    "            basePath = '../..';//跟路径\n" +
+    "            tplPath = '';//模板路径\n" +
+    "        }\n" +
+    "        if (dist) {\n" +
+    "            if (isWeb) {\n" +
+    "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
+    "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/responsive.css\"/>');\n" +
+    "\n" +
+    "                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
+    "            } else {\n" +
+    "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
+    "                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
+    "            }\n" +
+    "        }\n" +
+    "        else {\n" +
+    "            if (isWeb) {\n" +
+    "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
+    "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/responsive.css\"/>');\n" +
+    "\n" +
+    "                document.write('<script src=\"' + basePath + '/dist/js/appDev.js\"><\\/script>');\n" +
+    "            } else {\n" +
+    "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
+    "                document.write('<script src=\"' + basePath + '/dist/js/appDev.js\"><\\/script>');\n" +
+    "            }\n" +
+    "        }\n" +
+    "\n" +
+    "        //判断web 还是 app\n" +
+    "        function trueWeb() {\n" +
+    "            var url = window.location.href;\n" +
+    "            url = url.split(':');\n" +
+    "            if (url[0] === 'http') {\n" +
+    "                return true;\n" +
+    "            }\n" +
+    "        }\n" +
+    "    </script>\n" +
     "    <script type=\"text/javascript\">\n" +
     "        document.addEventListener('plusready', function () {\n" +
     "            plus.geolocation.watchPosition(function (p) {\n" +
@@ -4780,100 +4887,87 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    </script>\n" +
     "</head>\n" +
     "\n" +
-    "\n" +
     "<body class=\"angularEnd\" ng-controller=\"body\">\n" +
-    "\n" +
-    "<!-- Sidebars -->\n" +
-    "<div ng-include=\"sidebar\"\n" +
-    "     ui-track-as-search-param='true'\n" +
-    "     class=\"sidebar sidebar-left\"></div>\n" +
-    "\n" +
     "<div class=\"app\">\n" +
-    "\n" +
-    "    <!-- Navbars -->\n" +
-    "\n" +
-    "    <div class=\"navbar navbar-app navbar-absolute-top\">\n" +
-    "        <div class=\"navbar-brand navbar-brand-center\" ui-yield-to=\"title\">\n" +
-    "            Mobile Angular UI\n" +
-    "        </div>\n" +
-    "        <div class=\"btn-group pull-left\">\n" +
-    "            <div ui-toggle=\"uiSidebarLeft\" class=\"btn sidebar-toggle\">\n" +
-    "                <i class=\"fa fa-angle-left\"></i>\n" +
-    "            </div>\n" +
-    "        </div>\n" +
-    "        <div class=\"btn-group pull-right\" ui-yield-to=\"navbarAction\">\n" +
-    "            <div ui-toggle=\"uiSidebarRight\" class=\"btn\">\n" +
-    "                <i class=\"fa fa-search\"></i> Chat\n" +
-    "            </div>\n" +
-    "        </div>\n" +
-    "    </div>\n" +
+    "    <!-- topNavbars -->\n" +
+    "    <div top></div>\n" +
     "\n" +
     "    <div class=\"navbar navbar-app navbar-absolute-bottom\">\n" +
     "        <div class=\"btn-group justified\">\n" +
-    "            <a href=\"#\" class=\"btn btn-navbar\"><i class=\"fa fa-home fa-navbar\"></i> Docs</a>\n" +
+    "            <!--底部连接-->\n" +
+    "            <a href=\"#\" class=\"btn btn-navbar\"><i class=\"fa fa-home fa-navbar\"></i> </a>\n" +
     "            <a href=\"#\" class=\"btn btn-navbar\"><i\n" +
-    "                    class=\"fa fa-github fa-navbar\"></i> Sources</a>\n" +
-    "            <a href=\"#\" class=\"btn btn-navbar\"><i\n" +
-    "                    class=\"fa fa-exclamation-circle fa-navbar\"></i> Issues</a>\n" +
+    "                    class=\"fa fa-github fa-navbar\"></i> </a>\n" +
+    "            <a ui-sref=\"my\" class=\"btn btn-navbar\"><i\n" +
+    "                    class=\"fa fa-exclamation-circle fa-navbar\"></i> 我的</a>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
     "    <!-- App Body -->\n" +
     "    <div class=\"app-body\">\n" +
-    "        <div class=\"app-content\">\n" +
-    "            <ng-view></ng-view>\n" +
-    "        </div>\n" +
+    "\n" +
+    "        <ui-view></ui-view>\n" +
+    "\n" +
+    "\n" +
+    "        <!--<div class=\"app-content\">-->\n" +
+    "        <!--<div class=\"scrollable\">-->\n" +
+    "        <!--<div class=\"scrollable-content section\" ui-scroll-bottom=\"loadMore()\">-->\n" +
+    "        <!--<ul>-->\n" +
+    "        <!--<li>-->\n" +
+    "        <!--item.name-->\n" +
+    "        <!--</li>-->\n" +
+    "        <!--</ul>-->\n" +
+    "        <!--</div>-->\n" +
+    "        <!--</div>-->\n" +
+    "        <!--</div>-->\n" +
+    "\n" +
+    "\n" +
+    "        <!--<ui-view></ui-view>-->\n" +
+    "        <!--<a ui-sref=\"state1\">State 1</a>-->\n" +
+    "        <!--<a ui-sref=\"state2\">State 2</a>-->\n" +
     "    </div>\n" +
     "\n" +
     "</div><!-- ~ .app -->\n" +
     "\n" +
-    "<div ui-yield-to=\"modals\"></div>\n" +
+    "<!--<div ui-yield-to=\"modals\"></div>-->\n" +
     "\n" +
     "<!--数据div-->\n" +
     "<!--<div url-parse={{$indexAllRe}}></div>-->\n" +
     "\n" +
     "\n" +
-    "<script>\n" +
-    "    var dist = false;\n" +
-    "    var isWeb = true;\n" +
-    "    var basePath = 'Public/app';\n" +
-    "    if (!trueWeb()) {\n" +
-    "        basePath = '../..';\n" +
-    "    }\n" +
-    "    if (dist) {\n" +
-    "        if (isWeb) {\n" +
-    "            console.log(basePath);\n" +
-    "            document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
-    "            document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/responsive.css\"/>');\n" +
-    "\n" +
-    "            document.write('<script src=\"' + basePath + '/dist/js/app.js?{$jsDate}\"><\\/script>');\n" +
-    "        } else {\n" +
-    "            document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
-    "            document.write('<script src=\"' + basePath + '/dist/js/app.js?{$jsDate}\"><\\/script>');\n" +
-    "        }\n" +
-    "    }\n" +
-    "    else {\n" +
-    "        if (isWeb) {\n" +
-    "            document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
-    "            document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/responsive.css\"/>');\n" +
-    "\n" +
-    "            document.write('<script src=\"' + basePath + '/dist/js/appDev.js?{$jsDate}\"><\\/script>');\n" +
-    "        } else {\n" +
-    "            document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
-    "            document.write('<script src=\"' + basePath + '/dist/js/appDev.js?{$jsDate}\"><\\/script>');\n" +
-    "        }\n" +
-    "    }\n" +
-    "\n" +
-    "    function trueWeb() {\n" +
-    "        var url = window.location.href;\n" +
-    "        url = url.split(':');\n" +
-    "        if (url[0] === 'http') {\n" +
-    "            return true;\n" +
-    "        }\n" +
-    "    }\n" +
-    "</script>\n" +
     "</body>\n" +
     "</html>\n"
+  );
+
+
+  $templateCache.put('Public/app/src/html/route/home.html',
+    "<section class=\"section container-fluid\">\n" +
+    "  <h1 class=\"page-header\">Welcome dkkddk to My App</h1>\n" +
+    "</section>\n"
+  );
+
+
+  $templateCache.put('Public/app/src/html/route/member/my.html',
+    "<!--我的导航列表-->\n" +
+    "<div my></div>\n"
+  );
+
+
+  $templateCache.put('Public/app/src/html/route/state1.html',
+    "<h1>\n" +
+    "    item1\n" +
+    "</h1>\n" +
+    "\n" +
+    "\n"
+  );
+
+
+  $templateCache.put('Public/app/src/html/route/state2.html',
+    "<h1>\n" +
+    "    ite2m\n" +
+    "</h1>\n" +
+    "\n" +
+    "\n"
   );
 
 }]);

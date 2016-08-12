@@ -16,14 +16,12 @@
 (function (window, document) {
     'use strict';
 
-
     /**
      * 声明module
      *
      * 此处是hackpost 到 node 转 对象格式问题, 如果是 请求node ,post的 需要传入 queryType = true; todo 默认不hackpost格式
      * 16/2/1 */
-    angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'mobile-angular-ui'], hackPost).config(uiRouter);
-
+    angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'mobile-angular-ui', 'block'], hackPost).config(uiRouter);
 
     /**
      * config 定义 全局变量
@@ -40,20 +38,27 @@
 
     /** 路由配置  */
     function uiRouter($stateProvider, $urlRouterProvider) {
-        var state1Obj = {
-            url: '/state1',
-            template: '<div>hhhhh</div>'
-        };
-        var state2Obj = {
-            url: '/state2',
-            template: '<div>kkkk</div>'
-            //templateUrl: 'Public/resCreate/html/src/public/test.directive2.html'
-        };
+        //首页
+        $urlRouterProvider.when('', "/my");
 
+        //state1
+        $stateProvider.state('state1', {
+                url: '/state1',
+                templateUrl: window.tplPath + 'route/state1.html'
+            })
 
-        $urlRouterProvider.when('', "/state2");
-        $stateProvider.state('state1', state1Obj)
-            .state('state2', state2Obj);
+            //state2
+            .state('state2', {
+                url: '/state2',
+                templateUrl: window.tplPath + 'route/state2.html'
+            })
+
+            //我的
+            .state('my', {
+                url: '/my',
+                templateUrl: window.tplPath + 'route/member/my.html'
+            })
+        ;
     }
 
     /**

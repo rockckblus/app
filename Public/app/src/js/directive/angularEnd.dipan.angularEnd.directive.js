@@ -6,16 +6,12 @@
  */
 (function () {
     'use strict';
-
     angular.module('dipan').directive('angularEnd', angularEnd);
-
-
     /**
      * angular 载入完成后。显示modle值
      * 15-12-26 */
     function angularEnd() {
         return {
-
             restrict: 'C',
             replace: false,
             link: function (scope, element, attrs) {
@@ -25,5 +21,4 @@
             }
         };
     }
-
 })();
