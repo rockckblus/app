@@ -34,8 +34,8 @@ module.exports = function (grunt) {
         /** angular 模板合并  */
         ngtemplates: {
             dipan: {
-                cwd: '../../',
-                src: 'Public/app/src/html/**/**.html',
+                cwd: '../../Public/app/src/html/',
+                src: '**/**.html',
                 dest: 'dist/js/app.templates.js'
             }
         },

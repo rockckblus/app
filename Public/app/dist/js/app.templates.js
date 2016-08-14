@@ -1,7 +1,7 @@
 angular.module('dipan').run(['$templateCache', function($templateCache) {
   'use strict';
 
-  $templateCache.put('Public/app/src/html/directive/block/top.block.topNav.html',
+  $templateCache.put('directive/block/top.block.topNav.html',
     "<!--topNav-->\n" +
     "<div class=\"navbar navbar-app navbar-absolute-top\">\n" +
     "    <div class=\"navbar-brand navbar-brand-center\">\n" +
@@ -24,7 +24,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   );
 
 
-  $templateCache.put('Public/app/src/html/directive/member/my.dipan.myIndexNav.html',
+  $templateCache.put('directive/member/my.dipan.myIndexNav.html',
     "<div class=\"scrollable-content\" ui-scroll-bottom=\"bottomReached()\">\n" +
     "    <div class=\"list-group\">\n" +
     "        <a ui-sref=\"state1\" class=\"list-group-item ng-binding ng-scope\">\n" +
@@ -38,7 +38,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   );
 
 
-  $templateCache.put('Public/app/src/html/index.html',
+  $templateCache.put('index.html',
     "<!DOCTYPE html>\n" +
     "<html ng-app=\"dipan\">\n" +
     "<head>\n" +
@@ -156,20 +156,20 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   );
 
 
-  $templateCache.put('Public/app/src/html/route/home.html',
+  $templateCache.put('route/home.html',
     "<section class=\"section container-fluid\">\n" +
     "  <h1 class=\"page-header\">Welcome dkkddk to My App</h1>\n" +
     "</section>\n"
   );
 
 
-  $templateCache.put('Public/app/src/html/route/member/my.html',
+  $templateCache.put('route/member/my.html',
     "<!--我的导航列表-->\n" +
     "<div my></div>\n"
   );
 
 
-  $templateCache.put('Public/app/src/html/route/state1.html',
+  $templateCache.put('route/state1.html',
     "<h1>\n" +
     "    item1\n" +
     "</h1>\n" +
@@ -178,7 +178,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   );
 
 
-  $templateCache.put('Public/app/src/html/route/state2.html',
+  $templateCache.put('route/state2.html',
     "<h1>\n" +
     "    ite2m\n" +
     "</h1>\n" +
