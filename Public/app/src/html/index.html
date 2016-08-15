@@ -5,18 +5,20 @@
     <title>dipan.so</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui"/>
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="yes"/>
     <script>
-        var dist = true;//生产环境
+        var dist = false;//生产环境
         var isWeb = true;//是否 web
         var basePath = 'Public/app';//跟路径
-        var tplPath = 'Public/app/src/html/';//模板路径
+        var tplPath = '';//模板路径
         var jsPath = 'Public/app/src/js/';//js路径
         var jsDate = new Date().getFullYear() + '' + new Date().getMonth() + '' + new Date().getDate();
         if (!trueWeb()) {
+            //如果是 app 环境
             basePath = '../..';//跟路径
-            tplPath = '';//模板路径
+        } else if (!dist) {
+            tplPath = 'Public/app/src/html/';//web 环境下,调试模式时候的 模板路径
         }
         if (dist) {
             if (isWeb) {
@@ -53,7 +55,7 @@
     <script type="text/javascript">
         document.addEventListener('plusready', function () {
             plus.geolocation.watchPosition(function (p) {
-                plus.nativeUI.toast("Geolocation\nLatitude:" + p.coords.latitude + "\nLongitude:" + p.coords.longitude + "\nAltitude:" + p.coords.altitude);
+//                plus.nativeUI.toast("Geolocation\nLatitude:" + p.coords.latitude + "\nLongitude:" + p.coords.longitude + "\nAltitude:" + p.coords.altitude);
             }, function (e) {
 //              plus.nativeUI.toast("Geolocation error: " + e.message);
             });
@@ -70,41 +72,22 @@
     <div class="navbar navbar-app navbar-absolute-bottom">
         <div class="btn-group justified">
             <!--底部连接-->
-            <a href="#" class="btn btn-navbar"><i class="fa fa-home fa-navbar"></i> </a>
+            <a ui-sref="home" class="btn btn-navbar"><i class="fa fa-home fa-navbar fa-lg"></i> </a>
             <a href="#" class="btn btn-navbar"><i
-                    class="fa fa-github fa-navbar"></i> </a>
-            <a ui-sref="my" class="btn btn-navbar"><i
-                    class="fa fa-exclamation-circle fa-navbar"></i> 我的</a>
+                    class="fa fa-github fa-navbar fa-lg"></i> </a>
+            <a ui-sref="memberIndex" class="btn btn-navbar"><i
+                    class="fa fa-exclamation-circle fa-navbar fa-lg"></i> 我的</a>
         </div>
     </div>
 
     <!-- App Body -->
     <div class="app-body">
-
+        <!--loading directive-->
+        <div  loading></div>
         <ui-view></ui-view>
-
-
-        <!--<div class="app-content">-->
-        <!--<div class="scrollable">-->
-        <!--<div class="scrollable-content section" ui-scroll-bottom="loadMore()">-->
-        <!--<ul>-->
-        <!--<li>-->
-        <!--item.name-->
-        <!--</li>-->
-        <!--</ul>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</div>-->
-
-
-        <!--<ui-view></ui-view>-->
-        <!--<a ui-sref="state1">State 1</a>-->
-        <!--<a ui-sref="state2">State 2</a>-->
     </div>
 
 </div><!-- ~ .app -->
-
-<!--<div ui-yield-to="modals"></div>-->
 
 <!--数据div-->
 <!--<div url-parse={{$indexAllRe}}></div>-->

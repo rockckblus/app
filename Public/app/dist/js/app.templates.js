@@ -27,11 +27,8 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   $templateCache.put('directive/member/my.dipan.myIndexNav.html',
     "<div class=\"scrollable-content\" ui-scroll-bottom=\"bottomReached()\">\n" +
     "    <div class=\"list-group\">\n" +
-    "        <a ui-sref=\"state1\" class=\"list-group-item ng-binding ng-scope\">\n" +
-    "            Item 11 <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
-    "        </a>\n" +
-    "        <a ui-sref=\"state2\" class=\"list-group-item ng-binding ng-scope\">\n" +
-    "            Item 2 <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
+    "        <a ui-sref=\"{{vo.url}}\" class=\"list-group-item ng-binding ng-scope\" ng-repeat=\"vo in listNav\">\n" +
+    "           {{vo.name}}  <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
     "        </a>\n" +
     "    </div>\n" +
     "</div>\n"
@@ -49,15 +46,17 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui\"/>\n" +
     "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"yes\"/>\n" +
     "    <script>\n" +
-    "        var dist = true;//生产环境\n" +
+    "        var dist = false;//生产环境\n" +
     "        var isWeb = true;//是否 web\n" +
     "        var basePath = 'Public/app';//跟路径\n" +
-    "        var tplPath = 'Public/app/src/html/';//模板路径\n" +
+    "        var tplPath = '';//模板路径\n" +
     "        var jsPath = 'Public/app/src/js/';//js路径\n" +
     "        var jsDate = new Date().getFullYear() + '' + new Date().getMonth() + '' + new Date().getDate();\n" +
     "        if (!trueWeb()) {\n" +
+    "            //如果是 app 环境\n" +
     "            basePath = '../..';//跟路径\n" +
-    "            tplPath = '';//模板路径\n" +
+    "        } else if (!dist) {\n" +
+    "            tplPath = 'Public/app/src/html/';//web 环境下,调试模式时候的 模板路径\n" +
     "        }\n" +
     "        if (dist) {\n" +
     "            if (isWeb) {\n" +

@@ -20,6 +20,7 @@ document.write('<script src="' + basePath + '/src/js/controller/dipan.g.body.con
 //
 ///** directive  */
 document.write('<script src="' + basePath + '/src/js/directive/block/top.block.topNav.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/directive/block/loading.dipan.loanding.directive.js"><\/script>');
 
 document.write('<script src="' + basePath + '/src/js/directive/member/my.dipan.myIndexNav.js"><\/script>');
 
@@ -38,7 +39,7 @@ document.write('<script src="' + basePath + '/src/js/directive/member/my.dipan.m
 //document.write('<script src="/Public/resCreate/js/app/src/filter/editCategoryServiceNav.dipan.editCategoryServiceNav.filter.js"><\/script>');
 //
 ///** server  */
-//document.write('<script src="/Public/resCreate/js/app/src/server/dipan.fun.reBindOnce.factory.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/server/localData.dipan.localDataNav.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/alertDiv.uiBlock.alertUi.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/compile.uiBlock.compile.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/tools.dipan.block.factory.js"><\/script>');

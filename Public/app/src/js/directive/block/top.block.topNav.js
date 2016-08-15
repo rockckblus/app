@@ -12,7 +12,7 @@
             replace: false,
             scope: {},
             controller: thisController,
-            templateUrl: window.tplPath+ 'directive/block/top.block.topNav.html',
+            templateUrl: window.tplPath + 'directive/block/top.block.topNav.html',
             link: function (scope, element, attrs) {
             }
         };

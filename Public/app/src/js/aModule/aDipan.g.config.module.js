@@ -38,26 +38,34 @@
 
     /** 路由配置  */
     function uiRouter($stateProvider, $urlRouterProvider) {
+        //首页 跳转
+        $urlRouterProvider.when('', "/home");
+
+        $stateProvider
         //首页
-        $urlRouterProvider.when('', "/my");
-
-        //state1
-        $stateProvider.state('state1', {
-                url: '/state1',
-                templateUrl: window.tplPath + 'route/state1.html'
+            .state('home', {
+                url: '/home',
+                templateUrl: window.tplPath + 'route/home.html'
             })
 
-            //state2
-            .state('state2', {
-                url: '/state2',
-                templateUrl: window.tplPath + 'route/state2.html'
+            //memberIndex 我的
+            .state('memberIndex', {
+                url: '/memberIndex',
+                templateUrl: window.tplPath + 'route/member/memberIndex.html'
             })
 
-            //我的
-            .state('my', {
-                url: '/my',
-                templateUrl: window.tplPath + 'route/member/my.html'
+            //member 资料编辑
+            .state('member/memberInfo', {
+                url: 'member/memberInfo',
+                templateUrl: window.tplPath + 'route/member/memberInfo.html'
             })
+
+            //member 退出登录
+            .state('member/loginOut', {
+                url: '/member/loginOut',
+                templateUrl: window.tplPath + 'route/member/loginOut.html'
+            })
+
         ;
     }
 

@@ -4324,7 +4324,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             replace: false,
             scope: {},
             controller: thisController,
-            templateUrl: window.tplPath+ 'directive/block/top.block.topNav.html',
+            templateUrl: window.tplPath + 'directive/block/top.block.topNav.html',
             link: function (scope, element, attrs) {
             }
         };
@@ -4358,9 +4358,11 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
 
-    function thisController($scope, $rootScope, $timeout) {
+    function thisController($scope, $rootScope, $timeout, localData) {
+        //我的 导航list > 本地数据
+        $scope.listNav = localData.memberIndexNav;
     }
 
 
@@ -4544,6 +4546,45 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         }
 
         return _compile;
+    }
+
+
+})();
+
+
+/**
+ * localData.dipan.localDataNav.factory.js
+ * 命名注释：server简称_localData. 父模块 dipan . 功能_本地 & app 默认数据. 类型_factory.js
+ */
+
+(function () {
+    'use strict';
+    angular.module('dipan').factory('localData', localData);
+    function localData() {
+        var localData = {};
+        localData.memberIndexNav = _memberIndexNav; //我的 首页导航list
+
+        return localData;
+    }
+
+
+    /*************************
+     * 我的 首页 导航 list
+     * 16/8/15 上午9:02 ByRockBlus
+     *************************/
+    function _memberIndexNav() {
+        return [
+            {
+                'name': '资料编辑',
+                'url': 'memberInfo'
+            },
+            {
+                'name':'退出登录',
+                'url':'loginOut'
+            }
+        ];
+
+
     }
 
 
@@ -4811,11 +4852,8 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   $templateCache.put('directive/member/my.dipan.myIndexNav.html',
     "<div class=\"scrollable-content\" ui-scroll-bottom=\"bottomReached()\">\n" +
     "    <div class=\"list-group\">\n" +
-    "        <a ui-sref=\"state1\" class=\"list-group-item ng-binding ng-scope\">\n" +
-    "            Item 11 <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
-    "        </a>\n" +
-    "        <a ui-sref=\"state2\" class=\"list-group-item ng-binding ng-scope\">\n" +
-    "            Item 2 <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
+    "        <a ui-sref=\"{{vo.url}}\" class=\"list-group-item ng-binding ng-scope\" ng-repeat=\"vo in listNav\">\n" +
+    "           {{vo.name}}  <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
     "        </a>\n" +
     "    </div>\n" +
     "</div>\n"
@@ -4833,15 +4871,17 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui\"/>\n" +
     "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"yes\"/>\n" +
     "    <script>\n" +
-    "        var dist = true;//生产环境\n" +
+    "        var dist = false;//生产环境\n" +
     "        var isWeb = true;//是否 web\n" +
     "        var basePath = 'Public/app';//跟路径\n" +
-    "        var tplPath = 'Public/app/src/html/';//模板路径\n" +
+    "        var tplPath = '';//模板路径\n" +
     "        var jsPath = 'Public/app/src/js/';//js路径\n" +
     "        var jsDate = new Date().getFullYear() + '' + new Date().getMonth() + '' + new Date().getDate();\n" +
     "        if (!trueWeb()) {\n" +
+    "            //如果是 app 环境\n" +
     "            basePath = '../..';//跟路径\n" +
-    "            tplPath = '';//模板路径\n" +
+    "        } else if (!dist) {\n" +
+    "            tplPath = 'Public/app/src/html/';//web 环境下,调试模式时候的 模板路径\n" +
     "        }\n" +
     "        if (dist) {\n" +
     "            if (isWeb) {\n" +

@@ -17,9 +17,12 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
 
-    function thisController($scope, $rootScope, $timeout) {
+    function thisController($scope, $rootScope, $timeout, localData) {
+        //我的 导航list > 本地数据
+        console.log('localData',localData);
+        $scope.listNav = localData.memberIndexNav;
     }
 
 

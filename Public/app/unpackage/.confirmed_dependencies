@@ -15,7 +15,14 @@
       "src/html/sidebar.html",
       "src/html/block/sidebar.html",
       "dist/js/res/mobile-angular-ui.js",
-      "dist/js/app.js"
+      "dist/js/app.js",
+      "src/js/directive/block/top.block.topNav.js",
+      "src/js/directive/member/my.dipan.myIndexNav.js",
+      "src/js/aModule/block.dipan.module.js",
+      "src/js/server/localData.dipan.localDataNav.factory.js",
+      "src/html/directive/block/top.block.topNav.html",
+      "src/js/directive/block/loading.dipan.loanding.directive.js",
+      "src/html/directive/block/loading.dipan.loanding.directive.html"
     ],
     "refer": []
   }
