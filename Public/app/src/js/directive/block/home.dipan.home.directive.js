@@ -12,7 +12,7 @@
             replace: true,
             scope: {},
             controller: thisController,
-            //templateUrl: window.tplPath + 'directive/home.html',
+            templateUrl: window.tplPath + 'directive/home.dipan.home.directive.html',
             link: function (scope, element, attrs) {
             }
         };
@@ -23,9 +23,12 @@
     function thisController($scope, $rootScope, $timeout, tools) {
         $rootScope.$broadcast('openLoading');//显示loading
 
+        $scope.list = [];
         var url = 'http://city.5656111.com/Member/GetAjax/get_union_user_list/begin_city/%E5%A4%A9%E6%B4%A5';
         tools.postJsp(url, {}, function (re) {
-            tools.alert(re.msg);
+            $timeout(function () {
+                $scope.list = re.data.list;
+            }, 0);
         });
     }
 

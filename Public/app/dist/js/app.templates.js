@@ -29,10 +29,21 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   );
 
 
+  $templateCache.put('directive/home.dipan.home.directive.html',
+    "<div class=\"scrollable-content\" ui-scroll-bottom=\"alert(1111);\">\n" +
+    "    <div class=\"list-group\" style=\"margin-top: 1em\">\n" +
+    "        <a class=\"list-group-item \" ng-repeat=\"vo in list\" style=\"height: 100px\">\n" +
+    "            <span style=\"font-size: 1.4em\">{{vo.branch_name}}</span> <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
+    "        </a>\n" +
+    "    </div>\n" +
+    "</div>\n"
+  );
+
+
   $templateCache.put('directive/member/my.dipan.myIndexNav.html',
     "<div class=\"scrollable-content\" ui-scroll-bottom=\"bottomReached()\">\n" +
     "\n" +
-    "    <div class=\"list-group\" style=\"margin-top: 1em\">\n" +
+    "    <div class=\"list-group\" >\n" +
     "        <a ui-sref=\"{{vo.url}}\" class=\"list-group-item ng-binding ng-scope\" ng-repeat=\"vo in listNav\">\n" +
     "           <span style=\"font-size: 1.4em\">{{vo.name}}</span>  <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
     "        </a>\n" +
@@ -143,9 +154,13 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('route/home.html',
-    "<section class=\"section container-fluid\" home>\n" +
+    "<section class=\"section container-fluid\" >\n" +
     "  <h1 class=\"page-header\">Welcome dkkddk to My App</h1>\n" +
-    "</section>\n"
+    "</section>\n" +
+    "\n" +
+    "<div home></div>\n" +
+    "\n" +
+    "\n"
   );
 
 
