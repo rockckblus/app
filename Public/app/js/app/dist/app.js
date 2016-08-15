@@ -4410,6 +4410,37 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 })();
 
 /**
+ * 命名注释：directive简称_tab. 父模块_block. 功能_顶部tan导航 类型_directive .js
+ * 使用 ：<div tab></div>
+ */
+(function () {
+    'use strict';
+    angular.module('block').directive('tab', tab);
+
+    function tab() {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/block/tab.block.tabNav.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout'];
+
+    function thisController($scope, $rootScope, $timeout) {
+        alert(11);
+
+
+
+    }
+
+})();
+
+/**
  * 命名注释：directive简称_top. 父模块_block. 功能_顶部导航 类型_directive .js
  * 使用 ：<div my></div>
  */
@@ -4961,6 +4992,15 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   );
 
 
+  $templateCache.put('directive/block/tab.block.tabNav.directive.html',
+    "<div class=\"clear\" style=\"margin-top: 50px;background-color: #fff\">\n" +
+    "    <a class=\"btn btn-default small active\">Tab 1</a>\n" +
+    "    <a class=\"btn btn-default\">Tab 2</a>\n" +
+    "    <a class=\"btn btn-default\">Tab 3</a>\n" +
+    "</div>\n"
+  );
+
+
   $templateCache.put('directive/block/top.block.topNav.html',
     "<!--topNav-->\n" +
     "<div class=\"navbar navbar-app navbar-absolute-top\">\n" +
@@ -4980,12 +5020,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "            <i class=\"fa fa-search fa-lg\"></i>\n" +
     "        </div>\n" +
     "    </div>\n" +
-    "\n" +
-    "    <div class=\"clear\" style=\"margin-top: 50px;background-color: #fff\">\n" +
-    "        <a class=\"btn btn-default small active\">Tab 1</a>\n" +
-    "        <a class=\"btn btn-default\">Tab 2</a>\n" +
-    "        <a class=\"btn btn-default\">Tab 3</a>\n" +
-    "    </div>\n" +
+    "    <div tab></div>\n" +
     "</div>\n"
   );
 

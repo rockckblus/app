@@ -6,6 +6,15 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   );
 
 
+  $templateCache.put('directive/block/tab.block.tabNav.directive.html',
+    "<div class=\"clear\" style=\"margin-top: 50px;background-color: #fff\">\n" +
+    "    <a class=\"btn btn-default small active\">Tab 1</a>\n" +
+    "    <a class=\"btn btn-default\">Tab 2</a>\n" +
+    "    <a class=\"btn btn-default\">Tab 3</a>\n" +
+    "</div>\n"
+  );
+
+
   $templateCache.put('directive/block/top.block.topNav.html',
     "<!--topNav-->\n" +
     "<div class=\"navbar navbar-app navbar-absolute-top\">\n" +
@@ -25,12 +34,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "            <i class=\"fa fa-search fa-lg\"></i>\n" +
     "        </div>\n" +
     "    </div>\n" +
-    "\n" +
-    "    <div class=\"clear\" style=\"margin-top: 50px;background-color: #fff\">\n" +
-    "        <a class=\"btn btn-default small active\">Tab 1</a>\n" +
-    "        <a class=\"btn btn-default\">Tab 2</a>\n" +
-    "        <a class=\"btn btn-default\">Tab 3</a>\n" +
-    "    </div>\n" +
+    "    <div tab></div>\n" +
     "</div>\n"
   );
 
