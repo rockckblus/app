@@ -30,6 +30,13 @@
                 $scope.list = re.data.list;
             }, 0);
         });
+
+
+       $scope.a = function() {
+          tools.alert(11) ;
+       };
+
+
     }
 
 })();

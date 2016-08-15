@@ -13,10 +13,10 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "        <!--top中间title-->\n" +
     "        {{title}}\n" +
     "    </div>\n" +
-    "    <div class=\"btn-group pull-left\" >\n" +
+    "    <div class=\"btn-group pull-left\">\n" +
     "        <div class=\"btn\" onclick=\"history.go(-1);\">\n" +
     "            <!--top导航左侧图标-->\n" +
-    "                <i class=\"fa fa-angle-left fa-lg\" ></i>\n" +
+    "            <i class=\"fa fa-angle-left fa-lg\"></i>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "    <div class=\"btn-group pull-right\">\n" +
@@ -25,13 +25,19 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "            <i class=\"fa fa-search fa-lg\"></i>\n" +
     "        </div>\n" +
     "    </div>\n" +
+    "\n" +
+    "    <div class=\"clear\" style=\"margin-top: 50px;background-color: #fff\">\n" +
+    "        <a class=\"btn btn-default small active\">Tab 1</a>\n" +
+    "        <a class=\"btn btn-default\">Tab 2</a>\n" +
+    "        <a class=\"btn btn-default\">Tab 3</a>\n" +
+    "    </div>\n" +
     "</div>\n"
   );
 
 
   $templateCache.put('directive/home.dipan.home.directive.html',
-    "<div class=\"scrollable-content\" ui-scroll-bottom=\"alert(1111);\">\n" +
-    "    <div class=\"list-group\" style=\"margin-top: 1em\">\n" +
+    "<div class=\"scrollable-content\" ui-scroll-bottom=\"a()\">\n" +
+    "    <div class=\"list-group\">\n" +
     "        <a class=\"list-group-item \" ng-repeat=\"vo in list\" style=\"height: 100px\">\n" +
     "            <span style=\"font-size: 1.4em\">{{vo.branch_name}}</span> <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
     "        </a>\n" +
@@ -42,8 +48,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('directive/member/my.dipan.myIndexNav.html',
     "<div class=\"scrollable-content\" ui-scroll-bottom=\"bottomReached()\">\n" +
-    "\n" +
-    "    <div class=\"list-group\" >\n" +
+    "    <div class=\"list-group\">\n" +
     "        <a ui-sref=\"{{vo.url}}\" class=\"list-group-item ng-binding ng-scope\" ng-repeat=\"vo in listNav\">\n" +
     "           <span style=\"font-size: 1.4em\">{{vo.name}}</span>  <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
     "        </a>\n" +
@@ -138,7 +143,8 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <!-- App Body -->\n" +
     "    <div class=\"app-body\">\n" +
     "        <!--loading directive-->\n" +
-    "        <div  loading></div>\n" +
+    "        <div loading></div>\n" +
+    "\n" +
     "        <ui-view></ui-view>\n" +
     "    </div>\n" +
     "\n" +
@@ -154,9 +160,6 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('route/home.html',
-    "<section class=\"section container-fluid\" >\n" +
-    "  <h1 class=\"page-header\">Welcome dkkddk to My App</h1>\n" +
-    "</section>\n" +
     "\n" +
     "<div home></div>\n" +
     "\n" +
