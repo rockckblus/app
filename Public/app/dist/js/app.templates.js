@@ -1,6 +1,11 @@
 angular.module('dipan').run(['$templateCache', function($templateCache) {
   'use strict';
 
+  $templateCache.put('directive/block/loading.dipan.loanding.directive.html',
+    "<i ng-show=\"loading\"  class=\"fa fa-spinner fa-spin fa-3x fa-fw loading\"></i>"
+  );
+
+
   $templateCache.put('directive/block/top.block.topNav.html',
     "<!--topNav-->\n" +
     "<div class=\"navbar navbar-app navbar-absolute-top\">\n" +
@@ -8,16 +13,16 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "        <!--top中间title-->\n" +
     "        {{title}}\n" +
     "    </div>\n" +
-    "    <div class=\"btn-group pull-left\">\n" +
+    "    <div class=\"btn-group pull-left\" >\n" +
     "        <div class=\"btn\" onclick=\"history.go(-1);\">\n" +
     "            <!--top导航左侧图标-->\n" +
-    "                <i class=\"fa fa-angle-left\" ></i>\n" +
+    "                <i class=\"fa fa-angle-left fa-lg\" ></i>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "    <div class=\"btn-group pull-right\">\n" +
     "        <div class=\"btn\">\n" +
     "            <!--top导航右侧图标-->\n" +
-    "            <i class=\"fa fa-search\"></i>\n" +
+    "            <i class=\"fa fa-search fa-lg\"></i>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "</div>\n"
@@ -26,9 +31,10 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('directive/member/my.dipan.myIndexNav.html',
     "<div class=\"scrollable-content\" ui-scroll-bottom=\"bottomReached()\">\n" +
-    "    <div class=\"list-group\">\n" +
+    "\n" +
+    "    <div class=\"list-group\" style=\"margin-top: 1em\">\n" +
     "        <a ui-sref=\"{{vo.url}}\" class=\"list-group-item ng-binding ng-scope\" ng-repeat=\"vo in listNav\">\n" +
-    "           {{vo.name}}  <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
+    "           <span style=\"font-size: 1.4em\">{{vo.name}}</span>  <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
     "        </a>\n" +
     "    </div>\n" +
     "</div>\n"
@@ -43,10 +49,10 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <title>dipan.so</title>\n" +
     "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\"/>\n" +
     "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\"/>\n" +
-    "    <meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui\"/>\n" +
+    "    <meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1.0, maximum-scale=1.0\"/>\n" +
     "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"yes\"/>\n" +
     "    <script>\n" +
-    "        var dist = false;//生产环境\n" +
+    "        var dist = true;//生产环境\n" +
     "        var isWeb = true;//是否 web\n" +
     "        var basePath = 'Public/app';//跟路径\n" +
     "        var tplPath = '';//模板路径\n" +
@@ -93,7 +99,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <script type=\"text/javascript\">\n" +
     "        document.addEventListener('plusready', function () {\n" +
     "            plus.geolocation.watchPosition(function (p) {\n" +
-    "                plus.nativeUI.toast(\"Geolocation\\nLatitude:\" + p.coords.latitude + \"\\nLongitude:\" + p.coords.longitude + \"\\nAltitude:\" + p.coords.altitude);\n" +
+    "//                plus.nativeUI.toast(\"Geolocation\\nLatitude:\" + p.coords.latitude + \"\\nLongitude:\" + p.coords.longitude + \"\\nAltitude:\" + p.coords.altitude);\n" +
     "            }, function (e) {\n" +
     "//              plus.nativeUI.toast(\"Geolocation error: \" + e.message);\n" +
     "            });\n" +
@@ -110,41 +116,22 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <div class=\"navbar navbar-app navbar-absolute-bottom\">\n" +
     "        <div class=\"btn-group justified\">\n" +
     "            <!--底部连接-->\n" +
-    "            <a href=\"#\" class=\"btn btn-navbar\"><i class=\"fa fa-home fa-navbar\"></i> </a>\n" +
+    "            <a ui-sref=\"home\" class=\"btn btn-navbar\"><i class=\"fa fa-home fa-navbar fa-lg\"></i> </a>\n" +
     "            <a href=\"#\" class=\"btn btn-navbar\"><i\n" +
-    "                    class=\"fa fa-github fa-navbar\"></i> </a>\n" +
-    "            <a ui-sref=\"my\" class=\"btn btn-navbar\"><i\n" +
-    "                    class=\"fa fa-exclamation-circle fa-navbar\"></i> 我的</a>\n" +
+    "                    class=\"fa fa-github fa-navbar fa-lg\"></i> </a>\n" +
+    "            <a ui-sref=\"memberIndex\" class=\"btn btn-navbar\"><i\n" +
+    "                    class=\"fa fa-exclamation-circle fa-navbar fa-lg\"></i> 我的</a>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
     "    <!-- App Body -->\n" +
     "    <div class=\"app-body\">\n" +
-    "\n" +
+    "        <!--loading directive-->\n" +
+    "        <div  loading></div>\n" +
     "        <ui-view></ui-view>\n" +
-    "\n" +
-    "\n" +
-    "        <!--<div class=\"app-content\">-->\n" +
-    "        <!--<div class=\"scrollable\">-->\n" +
-    "        <!--<div class=\"scrollable-content section\" ui-scroll-bottom=\"loadMore()\">-->\n" +
-    "        <!--<ul>-->\n" +
-    "        <!--<li>-->\n" +
-    "        <!--item.name-->\n" +
-    "        <!--</li>-->\n" +
-    "        <!--</ul>-->\n" +
-    "        <!--</div>-->\n" +
-    "        <!--</div>-->\n" +
-    "        <!--</div>-->\n" +
-    "\n" +
-    "\n" +
-    "        <!--<ui-view></ui-view>-->\n" +
-    "        <!--<a ui-sref=\"state1\">State 1</a>-->\n" +
-    "        <!--<a ui-sref=\"state2\">State 2</a>-->\n" +
     "    </div>\n" +
     "\n" +
     "</div><!-- ~ .app -->\n" +
-    "\n" +
-    "<!--<div ui-yield-to=\"modals\"></div>-->\n" +
     "\n" +
     "<!--数据div-->\n" +
     "<!--<div url-parse={{$indexAllRe}}></div>-->\n" +
@@ -156,33 +143,25 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('route/home.html',
-    "<section class=\"section container-fluid\">\n" +
+    "<section class=\"section container-fluid\" home>\n" +
     "  <h1 class=\"page-header\">Welcome dkkddk to My App</h1>\n" +
     "</section>\n"
   );
 
 
-  $templateCache.put('route/member/my.html',
+  $templateCache.put('route/member/loginOut.html',
+    "loginOUt"
+  );
+
+
+  $templateCache.put('route/member/memberIndex.html',
     "<!--我的导航列表-->\n" +
     "<div my></div>\n"
   );
 
 
-  $templateCache.put('route/state1.html',
-    "<h1>\n" +
-    "    item1\n" +
-    "</h1>\n" +
-    "\n" +
-    "\n"
-  );
-
-
-  $templateCache.put('route/state2.html',
-    "<h1>\n" +
-    "    ite2m\n" +
-    "</h1>\n" +
-    "\n" +
-    "\n"
+  $templateCache.put('route/member/memberInfo.html',
+    "memberINfo"
   );
 
 }]);

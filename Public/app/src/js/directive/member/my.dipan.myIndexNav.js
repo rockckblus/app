@@ -20,9 +20,18 @@
     thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
 
     function thisController($scope, $rootScope, $timeout, localData) {
+        $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
+
         //我的 导航list > 本地数据
-        console.log('localData',localData);
         $scope.listNav = localData.memberIndexNav;
+
+        /*************************
+         * 判断数据赋值成功 关闭 loading
+         * 16/8/15 下午2:57 ByRockBlus
+         *************************/
+        if ($scope.listNav) {
+            $rootScope.$broadcast('closeLoading');
+        }
     }
 
 

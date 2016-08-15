@@ -10,9 +10,9 @@
     angular.module('dipan').factory('tools', tools);
 
 
-    tools.$inject = ['$http'];
+    tools.$inject = ['$http', '$rootScope'];
 
-    function tools($http) {
+    function tools($http, $rootScope) {
 
         var re;
 
@@ -28,7 +28,6 @@
              * 16/2/18 ************************/
             /** 验证空 15-3-22 */
             isEmpty: isEmpty,
-
 
             /** 验证手机号 15-3-22 */
             checkMobile: checkMobile,
@@ -46,7 +45,13 @@
             /**
              * 判断是否 function
              * 16/2/19 */
-            isFunction: isFunction
+            isFunction: isFunction,
+
+            /*************************
+             * alert 判断app 还是 html 显示不同的 弹出框,手机用原生弹窗
+             * 16/8/15 下午3:18 ByRockBlus
+             *************************/
+            alert: toolsAlert,
         };
 
         /**
@@ -105,6 +110,7 @@
          * angular post
          * 15-3-27 */
         function postJsp(getMoreUrl, data, re, errRe) {
+            $rootScope.$broadcast('openLoading');//http请求前 显示loading
             var endData = {};
             for (var vo in data) {
                 endData[vo] = data[vo];
@@ -115,12 +121,15 @@
                 data: endData,
                 timeout: 10000 //超时设置
             }).success(function (response) {
+                $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
                 re(response);
             }).error(function (data, status, headers, config, error) {
-                if (errRe) {
-                    errRe();
+                if (errRe) {//如果有回调方法,回调错误
+                    $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
+                    errRe(error);
                 } else {
-                    console.log('错误');
+                    $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
+                    toolsAlert('http错误:' + error);
                 }
                 return false;
             });
@@ -131,6 +140,18 @@
          * 16/2/19 */
         function isFunction(fn) {
             return Object.prototype.toString.call(fn) === '[object Function]';
+        }
+
+        /*************************
+         * alert 判断app 还是 html 显示不同的 弹出框,手机用原生弹窗
+         * 16/8/15 下午3:18 ByRockBlus
+         *************************/
+        function toolsAlert(msg) {
+            if (window.trueWeb()) {
+                alert(msg);
+            } else {
+                plus.nativeUI.toast(msg);
+            }
         }
 
 
