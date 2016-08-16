@@ -238,5 +238,5 @@
 				"package.json"
 			]
 		}
-	},"fullscreen":true
+	},"fullscreen":false
 }
