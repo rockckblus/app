@@ -9,6 +9,7 @@
     function localData() {
         var localData = {};
         localData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
+        localData.ti
 
         return localData;
     }

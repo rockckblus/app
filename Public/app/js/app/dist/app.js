@@ -4432,7 +4432,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     thisController.$inject = ['$scope', '$rootScope', '$timeout'];
 
     function thisController($scope, $rootScope, $timeout) {
-        alert(11);
 
 
 
@@ -4993,11 +4992,17 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('directive/block/tab.block.tabNav.directive.html',
-    "<div class=\"clear\" style=\"margin-top: 50px;background-color: #fff\">\n" +
-    "    <a class=\"btn btn-default small active\">Tab 1</a>\n" +
-    "    <a class=\"btn btn-default\">Tab 2</a>\n" +
-    "    <a class=\"btn btn-default\">Tab 3</a>\n" +
-    "</div>\n"
+    "<div id=\"tab\" class=\"clear\" style=\"\" >\n" +
+    "    <span class=\"btn thisItem\">Tab 1</span>\n" +
+    "    <sapn class=\"btn \">Tab 2</sapn>\n" +
+    "    <sapn class=\"btn \">Tab 3</sapn>\n" +
+    "\n" +
+    "<style>\n" +
+    "    .has-navbar-top .app-body {\n" +
+    "        padding-top: 104px;\n" +
+    "    }\n" +
+    "</style>\n" +
+    "</div>"
   );
 
 

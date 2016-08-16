@@ -21,7 +21,7 @@
     thisController.$inject = ['$scope', '$rootScope', '$timeout'];
 
     function thisController($scope, $rootScope, $timeout) {
-        alert(11);
+
 
 
 

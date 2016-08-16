@@ -19,8 +19,12 @@ document.write('<script src="' + basePath + '/src/js/aModule/block.dipan.module.
 document.write('<script src="' + basePath + '/src/js/controller/dipan.g.body.controller.js"><\/script>');
 //
 ///** directive  */
+document.write('<script src="' + basePath + '/src/js/directive/angularEnd.dipan.angularEnd.directive.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/directive/home.dipan.home.directive.js"><\/script>');
+
 document.write('<script src="' + basePath + '/src/js/directive/block/top.block.topNav.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/block/loading.dipan.loanding.directive.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/directive/block/tab.block.tabNav.directive.js"><\/script>');
 
 document.write('<script src="' + basePath + '/src/js/directive/member/my.dipan.myIndexNav.js"><\/script>');
 
@@ -40,6 +44,7 @@ document.write('<script src="' + basePath + '/src/js/directive/member/my.dipan.m
 //
 ///** server  */
 document.write('<script src="' + basePath + '/src/js/server/localData.dipan.localDataNav.factory.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/server/tools.dipan.block.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/alertDiv.uiBlock.alertUi.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/compile.uiBlock.compile.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/tools.dipan.block.factory.js"><\/script>');

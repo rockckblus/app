@@ -225,7 +225,9 @@
 					"src/js/server/localData.dipan.localDataNav.factory.js",
 					"src/html/directive/block/top.block.topNav.html",
 					"src/js/directive/block/loading.dipan.loanding.directive.js",
-					"src/html/directive/block/loading.dipan.loanding.directive.html"
+					"src/html/directive/block/loading.dipan.loanding.directive.html",
+					"src/js/directive/angularEnd.dipan.angularEnd.directive.js",
+					"src/js/server/tools.dipan.block.factory.js"
 				],
 				"refer": []
 			}
