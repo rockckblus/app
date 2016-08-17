@@ -6479,7 +6479,6 @@ button.close {
 .modal-header {
   padding: 15px;
   border-bottom: 1px solid #e5e5e5;
-  
 }
 .modal-header .close {
   margin-top: -2px;
@@ -6496,7 +6495,6 @@ button.close {
   padding: 15px;
   text-align: right;
   border-top: 1px solid #e5e5e5;
-  
 }
 .modal-footer .btn + .btn {
   margin-left: 5px;
@@ -7021,6 +7019,10 @@ button.close {
 .pager:after,
 .panel-body:before,
 .panel-body:after,
+.modal-header:before,
+.modal-header:after,
+.modal-footer:before,
+.modal-footer:after,
 .section:before,
 .section:after {
   content: " ";
@@ -7040,6 +7042,8 @@ button.close {
 .navbar-collapse:after,
 .pager:after,
 .panel-body:after,
+.modal-header:after,
+.modal-footer:after,
 .section:after {
   clear: both;
 }
@@ -7886,5 +7890,15 @@ body {
 #tab .threeTab {
   text-align: center;
   width: 33%;
+  float: left;
+}
+#tab .twoTab {
+  text-align: center;
+  width: 50%;
+  float: left;
+}
+#tab .fourTab {
+  text-align: center;
+  width: 25%;
   float: left;
 }

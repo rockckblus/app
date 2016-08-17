@@ -10,7 +10,7 @@
         return {
             restrict: 'A',
             replace: true,
-            scope: {},
+            //scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/block/tab.block.tabNav.directive.html',
             link: function (scope, element, attrs) {
@@ -18,13 +18,9 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
 
-    function thisController($scope, $rootScope, $timeout) {
-
-
-
-
+    function thisController($scope, $rootScope, $timeout, localData) {
     }
 
 })();

@@ -10,7 +10,7 @@
         return {
             restrict: 'A',
             replace: false,
-            scope: {},
+            //scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/block/top.block.topNav.html',
             link: function (scope, element, attrs) {
@@ -18,10 +18,9 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
 
-    function thisController($scope, $rootScope, $timeout) {
-        $scope.title = 1111;
+    function thisController($scope, $rootScope, $timeout, localData) {
     }
 
 

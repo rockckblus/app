@@ -5,9 +5,17 @@
         {{title}}
     </div>
     <div class="btn-group pull-left">
-        <div class="btn" onclick="history.go(-1);">
+
+        <!--home-->
+        <div class="btn" ng-if="url !== '/home'" onclick="history.go(-1);">
             <!--top导航左侧图标-->
             <i class="fa fa-angle-left fa-lg"></i>
+        </div>
+
+        <!--default-->
+        <div class="btn" ng-if="url == '/home'" ui-sref="memberIndex" >
+            <!--top导航左侧图标-->
+            地区 <i class="fa fa-caret-down fa-1" aria-hidden="true" ></i>
         </div>
     </div>
     <div class="btn-group pull-right">
@@ -16,5 +24,5 @@
             <i class="fa fa-search fa-lg"></i>
         </div>
     </div>
-    <div tab></div>
+    <div tab ng-if="showTab"></div>
 </div>

@@ -10,7 +10,7 @@
         return {
             restrict: 'A',
             replace: true,
-            scope: {},
+            //scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/home.dipan.home.directive.html',
             link: function (scope, element, attrs) {
@@ -21,7 +21,9 @@
     thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools'];
 
     function thisController($scope, $rootScope, $timeout, tools) {
-        $rootScope.$broadcast('openLoading');//显示loading
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');
+        });
 
         $scope.list = [];
         var url = 'http://city.5656111.com/Member/GetAjax/get_union_user_list/begin_city/%E5%A4%A9%E6%B4%A5';
@@ -32,9 +34,9 @@
         });
 
 
-       $scope.a = function() {
-          tools.alert(11) ;
-       };
+        $scope.a = function () {
+            tools.alert(11);
+        };
 
 
     }

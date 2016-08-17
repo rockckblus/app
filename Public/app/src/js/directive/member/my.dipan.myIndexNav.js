@@ -20,7 +20,9 @@
     thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
 
     function thisController($scope, $rootScope, $timeout, localData) {
-        $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');
+        });
 
         //我的 导航list > 本地数据
         $scope.listNav = localData.memberIndexNav;
@@ -30,7 +32,9 @@
          * 16/8/15 下午2:57 ByRockBlus
          *************************/
         if ($scope.listNav) {
-            $rootScope.$broadcast('closeLoading');
+            $timeout(function () {
+                $rootScope.$broadcast('closeLoading');
+            }, 0);
         }
     }
 
