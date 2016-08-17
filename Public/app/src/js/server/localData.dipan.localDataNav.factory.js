@@ -13,7 +13,6 @@
 
     function localData($location) {
         location = $location;
-
         var localData = {};
         localData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
         localData.tab = _tab;//根据 url 遍历 给tab数据
