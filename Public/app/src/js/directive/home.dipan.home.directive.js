@@ -26,13 +26,18 @@
         });
 
         $scope.list = [];
-        var url = 'http://city.5656111.com/Member/GetAjax/get_union_user_list/begin_city/%E5%A4%A9%E6%B4%A5';
-        tools.postJsp(url, {}, function (re) {
+        var url = 'http://city.5656111.com/Member/GetAjax/get_union_user_list1/begin_city/%E5%A4%A9%E6%B4%A5';
+        tools.postJsp(url, {}).then(call, err);
+
+        function call(re) {
             $timeout(function () {
                 $scope.list = re.data.list;
             }, 0);
-        });
+        }
 
+        function err(err) {
+            tools.alert(err);
+        }
 
         $scope.a = function () {
             tools.alert(11);

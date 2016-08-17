@@ -10,9 +10,9 @@
     angular.module('dipan').factory('tools', tools);
 
 
-    tools.$inject = ['$http', '$rootScope'];
+    tools.$inject = ['$http', '$rootScope', '$q'];
 
-    function tools($http, $rootScope) {
+    function tools($http, $rootScope, $q) {
 
         var re;
 
@@ -109,30 +109,52 @@
         /**
          * angular post
          * 15-3-27 */
-        function postJsp(getMoreUrl, data, re, errRe) {
+        function postJsp(getMoreUrl, data) {
             $rootScope.$broadcast('openLoading');//http请求前 显示loading
             var endData = {};
             for (var vo in data) {
                 endData[vo] = data[vo];
             }
-            $http({
-                url: getMoreUrl,
-                method: "POST",
-                data: endData,
-                timeout: 10000 //超时设置
-            }).success(function (response) {
-                $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
-                re(response);
-            }).error(function (data, status, headers, config, error) {
-                if (errRe) {//如果有回调方法,回调错误
+            //$http({
+            //    url: getMoreUrl,
+            //    method: "POST",
+            //    data: endData,
+            //    timeout: 10000 //超时设置
+            //}).success(function (response) {
+            //    $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
+            //    re(response);
+            //}).error(function (data, status, headers, config, error) {
+            //    if (errRe) {//如果有回调方法,回调错误
+            //        $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
+            //        errRe(error);
+            //    } else {
+            //        $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
+            //        toolsAlert('http错误:' + error);
+            //    }
+            //    return false;
+            //});
+
+
+            function _post(url, postData) {
+                var defer = $q.defer();
+                $http({
+                    url: url,
+                    method: 'POST',
+                    data: postData,
+                    timeout: 10000
+                })
+                    .success(function (doc) {
+                        $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
+                        defer.resolve(doc);
+                    }).error(function (err) {
                     $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
-                    errRe(error);
-                } else {
-                    $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
-                    toolsAlert('http错误:' + error);
-                }
-                return false;
-            });
+                    defer.reject(err);
+                });
+                return defer.promise;
+            }
+
+            return _post(getMoreUrl, endData);
+
         }
 
         /**
@@ -153,7 +175,6 @@
                 plus.nativeUI.toast(msg);
             }
         }
-
 
         return re;
     }
