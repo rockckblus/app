@@ -88,15 +88,27 @@
             case '/home':
                 _obj = [
                     {
-                        colNumCss: _objDefaulOne.colNumCss,//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                         thisItem: _objDefaulOne.thisItem,//高亮
-                        name: '首页',//名称
+                        name: '供',//名称
                         route: 'home'//routeUrl
                     },
                     {
-                        colNumCss: _objDefaulOne.colNumCss,//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                         thisItem: false,//高亮
-                        name: '我的',//名称
+                        name: '需',//名称
+                        route: 'memberIndex'//routeUrl
+                    },
+                    {
+                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: false,//高亮
+                        name: '评',//名称
+                        route: 'memberIndex'//routeUrl
+                    },
+                    {
+                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: false,//高亮
+                        name: '...',//名称
                         route: 'memberIndex'//routeUrl
                     },
                 ];
