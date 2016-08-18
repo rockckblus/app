@@ -19,7 +19,8 @@
             $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
             var _url = $location.url();
             $timeout(function () {
-                $scope.title = localData.getTitle(_url);//getTitle
+                //$scope.title = localData.getTitle(_url);//getTitle
+                $scope.title = '武清 河西务 唐庄';//getTitle
                 $scope.showTab = localData.showTab(_url);//是否显示 tab
                 $scope.tabList = localData.tab(_url);//tablist body 控制器
                 $scope.url = _url;//url变量,判断 top 模板 显示图标用
