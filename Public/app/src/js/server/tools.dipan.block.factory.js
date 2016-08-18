@@ -149,6 +149,7 @@
                     }).error(function (err) {
                     $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
                     defer.reject(err);
+                    //re.alert(err);
                 });
                 return defer.promise;
             }

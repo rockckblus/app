@@ -39,7 +39,7 @@ document.write('<script src="' + basePath + '/src/js/directive/member/my.dipan.m
 //document.write('<script src="/Public/resCreate/js/app/src/directive/uiBlock/alertDiv/alertWarn.alertDiv.alertWarn.directive.js"><\/script>');
 //
 ///** filter  */
-//document.write('<script src="/Public/resCreate/js/app/src/filter/toHtml.dipan.toHtml.filter.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/filter/toHtml.dipan.toHtml.filter.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/filter/editCategoryServiceNav.dipan.editCategoryServiceNav.filter.js"><\/script>');
 //
 ///** server  */

@@ -4,9 +4,9 @@
  */
 (function () {
     'use strict';
-    angular.module('block').directive('home', loading);
+    angular.module('block').directive('home', home);
 
-    function loading() {
+    function home() {
         return {
             restrict: 'A',
             replace: true,

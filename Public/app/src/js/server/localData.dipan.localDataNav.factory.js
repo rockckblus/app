@@ -108,7 +108,7 @@
                     {
                         colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                         thisItem: false,//高亮
-                        name: '...',//名称
+                        name: '<i class="fa fa-ellipsis-h"></i>',//名称
                         route: 'memberIndex'//routeUrl
                     },
                 ];
