@@ -10,9 +10,9 @@
     angular.module('dipan').factory('tools', tools);
 
 
-    tools.$inject = ['$http', '$rootScope', '$q'];
+    tools.$inject = ['$http', '$rootScope', '$q', 'ui'];
 
-    function tools($http, $rootScope, $q) {
+    function tools($http, $rootScope, $q, ui) {
 
         var re;
 
@@ -52,6 +52,12 @@
              * 16/8/15 下午3:18 ByRockBlus
              *************************/
             alert: toolsAlert,
+
+            /*************************
+             * function trueWeb(web,app) 判断手机,还是 wap,回调函数
+             * 16/8/19 上午7:32 ByRockBlus
+             *************************/
+            trueWeb: trueWeb
         };
 
         /**
@@ -149,7 +155,10 @@
                     }).error(function (err) {
                     $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
                     defer.reject(err);
-                    //re.alert(err);
+                    re.alert({
+                        title:'网络请求失败',
+                        content:'请检查网络设置'
+                    });
                 });
                 return defer.promise;
             }
@@ -169,12 +178,21 @@
          * alert 判断app 还是 html 显示不同的 弹出框,手机用原生弹窗
          * 16/8/15 下午3:18 ByRockBlus
          *************************/
-        function toolsAlert(msg) {
+        function toolsAlert(msgObj) {
+            ui.alert(msgObj);
+        }
+
+        /*************************
+         * function trueWeb(web,app) 判断手机,还是 wap,回调函数
+         * 16/8/19 上午7:32 ByRockBlus
+         *************************/
+        function trueWeb(web, app) {
             if (window.trueWeb()) {
-                alert(msg);
+                web();
             } else {
-                plus.nativeUI.toast(msg);
+                app();
             }
+
         }
 
         return re;
