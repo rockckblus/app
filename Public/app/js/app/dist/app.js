@@ -4249,7 +4249,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     function config() {
         return {
             host: {//host 配置
-                nodeHost: 'http://www.dipan.so:3082'//nodejsApi hostUrl
+                nodeHost: 'http://192.168.0.25:3082'//nodejsApi hostUrl
             }
         };
     }
@@ -4281,13 +4281,23 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     /**
      * 手动注入
      * 16/2/1 */
-    body.$inject = ['$scope', '$timeout'];
+    body.$inject = ['$scope', '$rootScope', '$timeout', 'localData', '$location'];
 
     /**
      * controllerFun
      * 16/2/1 */
-    function body($scope, $timeout) {
-
+    function body($scope, $rootScope, $timeout, localData, $location) {
+        $scope.$on('changeBody', function () {
+            $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
+            var _url = $location.url();
+            $timeout(function () {
+                //$scope.title = localData.getTitle(_url);//getTitle
+                $scope.title = '武清 河西务 唐庄';//getTitle
+                $scope.showTab = localData.showTab(_url);//是否显示 tab
+                $scope.tabList = localData.tab(_url);//tablist body 控制器
+                $scope.url = _url;//url变量,判断 top 模板 显示图标用
+            }, 0);
+        });
     }
 
 
@@ -4319,45 +4329,57 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 })();
 
 /**
- * 命名注释：directive简称_home. 父模块_dipan. 功能_首页模块 类型_directive .js
- * 使用 ：<div home></div>
+ * 命名注释：directive简称_alert. 父模块_block. 功能_alert 公共ui 类型_directive .js
+ * 使用 ：<div alert></div>
  */
 (function () {
     'use strict';
-    angular.module('block').directive('home', loading);
+    angular.module('block').directive('alert', top);
 
-    function loading() {
+    function top() {
         return {
             restrict: 'A',
             replace: true,
             scope: {},
             controller: thisController,
-            templateUrl: window.tplPath + 'directive/home.dipan.home.directive.html',
+            templateUrl: window.tplPath + 'directive/block/alert.block.alertUi.html',
             link: function (scope, element, attrs) {
             }
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
 
-    function thisController($scope, $rootScope, $timeout, tools) {
-        $rootScope.$broadcast('openLoading');//显示loading
+    function thisController($scope, $rootScope, $timeout, localData) {
+        $scope.alertUiClass = 'showThis';
+        $scope.showAlertUi = false;
 
-        $scope.list = [];
-        var url = 'http://city.5656111.com/Member/GetAjax/get_union_user_list/begin_city/%E5%A4%A9%E6%B4%A5';
-        tools.postJsp(url, {}, function (re) {
+        $scope.title = '错误';
+        $scope.content = '请重试';
+
+        $scope.$on('alert', show);//监听alet事件 显示
+
+
+        /*************************
+         * 显示alert 并 2秒后 消失
+         * 16/8/19 上午9:45 ByRockBlus
+         *************************/
+        function show(e,obj) {
+            $scope.showAlertUi = true;
+            $scope.title = obj.title;
+            $scope.content = obj.content;
+
             $timeout(function () {
-                $scope.list = re.data.list;
-            }, 0);
-        });
+                $scope.alertUiClass = 'hideThis';
+                $timeout(function () {
+                    $scope.showAlertUi = false;
+                    $scope.alertUiClass = 'showThis';
+                }, 600);
 
-
-       $scope.a = function() {
-          tools.alert(11) ;
-       };
-
-
+            }, 1000);
+        }
     }
+
 
 })();
 
@@ -4421,7 +4443,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         return {
             restrict: 'A',
             replace: true,
-            scope: {},
+            //scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/block/tab.block.tabNav.directive.html',
             link: function (scope, element, attrs) {
@@ -4429,12 +4451,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
 
-    function thisController($scope, $rootScope, $timeout) {
-
-
-
+    function thisController($scope, $rootScope, $timeout, localData) {
     }
 
 })();
@@ -4451,7 +4470,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         return {
             restrict: 'A',
             replace: false,
-            scope: {},
+            //scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/block/top.block.topNav.html',
             link: function (scope, element, attrs) {
@@ -4459,12 +4478,108 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
 
-    function thisController($scope, $rootScope, $timeout) {
-        $scope.title = 1111;
+    function thisController($scope, $rootScope, $timeout, localData) {
     }
 
+
+})();
+
+/**
+ * 命名注释：directive简称_home. 父模块_dipan. 功能_首页模块 类型_directive .js
+ * 使用 ：<div home></div>
+ */
+(function () {
+    'use strict';
+    angular.module('block').directive('home', home);
+
+    function home() {
+        return {
+            restrict: 'A',
+            replace: true,
+            //scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/home.dipan.home.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools'];
+
+    function thisController($scope, $rootScope, $timeout, tools) {
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');
+        });
+        $scope.list = [];//默认首页 列表 数据,
+
+        /*************************
+         * todo
+         * 默认读取上次的缓存 数据, 然后 再异步更新 到 最新数据
+         * 16/8/19 上午7:45 ByRockBlus
+         *************************/
+        giveDefaultList();
+
+
+        var url = 'http://city.5656111.com/Member/GetAjax/get_union_user_list/begin_city/%E5%A4%A9%E6%B4%A5';
+        tools.postJsp(url, {}).then(call, err);
+
+        tools.trueWeb(_web, _app);//判断手机 或者 app 来判断 定位 ,获取地理位置数据
+
+        /*************************
+         * todo
+         * //获取 ip地址,去反查地址数据
+         * 16/8/19 上午7:43 ByRockBlus
+         *************************/
+        function _web() {
+            //获取 ip地址,去反查地址数据
+
+        }
+
+        /*************************
+         * todo
+         *获取手机导航gps,去soso拿地址数据
+         * 16/8/19 上午7:43 ByRockBlus
+         *************************/
+        function _app() {
+
+        }
+
+
+        function call(re) {
+            $timeout(function () {
+                $scope.list = re.data.list;
+            }, 0);
+        }
+
+        function err() {
+            tools.alert({
+                title: '网络请求失败',
+                content: '请检查网络'
+            });
+        }
+
+
+        /*************************
+         * 默认读取上次的缓存 数据, 然后 再异步更新 到 最新数据 todo
+         * 16/8/19 上午7:48 ByRockBlus
+         *************************/
+        function giveDefaultList() {
+
+        }
+
+
+        /*************************
+         * // 滚动到 底部 的 触发动作 test todo
+         * 16/8/19 上午7:47 ByRockBlus
+         *************************/
+        $scope.a = function () {
+            tools.alert({title:'这是标题',content:'内容 '});
+        };
+
+
+    }
 
 })();
 
@@ -4490,7 +4605,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
 
     function thisController($scope, $rootScope, $timeout, localData) {
-        $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');
+        });
 
         //我的 导航list > 本地数据
         $scope.listNav = localData.memberIndexNav;
@@ -4500,7 +4617,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * 16/8/15 下午2:57 ByRockBlus
          *************************/
         if ($scope.listNav) {
-            $rootScope.$broadcast('closeLoading');
+            $timeout(function () {
+                $rootScope.$broadcast('closeLoading');
+            }, 0);
         }
     }
 
@@ -4583,64 +4702,14 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     'use strict';
 
     /** api接口,nodejs,php  */
-    var apiUrl = {
-        nodejs: {
-            system: {},
-            city: {},
-            category: {}
-        },
-        php: {}
-    };
+    var apiUrl = {};
 
 
     angular.module('dipan').factory('api', api);
     api.$inject = ['$http', '$q', 'config'];
 
     function api($http, $q, config) {
-        var postApi = function (funName, postData, callBack, callBackErr) {
-            switch (funName) {
-            /*************************
-             * session system
-             * 16/5/25 下午1:04 ByRockBlus
-             *************************/
-                case 'saveSession' ://添加一条session 没有就更新
-                    var url = apiUrl.nodejs.system.saveSession;
-                    _post(url, postData).then(callBack, callBackErr);
-                    break;
-                case 'findSessionContent' ://根据sessionid 返回sessionContent
-                    var url2 = apiUrl.nodejs.system.findSessionContent;
-                    _post(url2, postData).then(callBack, callBackErr);
-                    break;
-
-            /*************************
-             * city
-             * 16/5/25 下午1:04 ByRockBlus
-             *************************/
-                case 'selectHotCity' ://返回热门城市
-                    var url3 = apiUrl.nodejs.city.selectHotCity;
-                    _post(url3, postData).then(callBack, callBackErr);
-                    break;
-
-            /*************************
-             * category
-             * 16/5/25 下午1:07 ByRockBlus
-             *************************/
-                case 'selectCategoryServiceOneTwo'://返回服务频道下面的1,2级分类
-                    var url4 = apiUrl.nodejs.category.selectCategoryServiceOneTwo;
-                    _post(url4).then(callBack, callBackErr);
-                    break;
-            }
-        };
-
-        //system
-        apiUrl.nodejs.system.saveSession = config.host.nodeHost + '/system/saveSession';//save一条session 传reqbody
-        apiUrl.nodejs.system.findSessionContent = config.host.nodeHost + '/system/findSessionContent';//根据sessionid find session content
-
-        //city
-        apiUrl.nodejs.city.selectHotCity = config.host.nodeHost + '/city/selectHotCity';//返回热门城市
-
-        //category_serivce 服务频道
-        apiUrl.nodejs.category.selectCategoryServiceOneTwo = config.host.nodeHost + '/category/selectCategoryServiceOneTwo';//返回服务频道下面的1,2级分类
+        var postApi;
 
         function _post(url, postData) {
             var defer = $q.defer();
@@ -4699,13 +4768,35 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 (function () {
     'use strict';
     angular.module('dipan').factory('localData', localData);
-    function localData() {
+
+    localData.$inject = ['$location'];
+
+    var location;
+
+    function localData($location) {
+        location = $location;
         var localData = {};
         localData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
-
+        localData.tab = _tab;//根据 url 遍历 给tab数据
+        localData.showTab = _showTab;//遍历url 返回true false ,控制是否显示tab
+        localData.getTitle = _getTitle;//getTitle
         return localData;
     }
 
+    /*************************
+     * getTitle
+     * 16/8/17 上午10:18 ByRockBlus
+     *************************/
+    function _getTitle(url) {
+        switch (url) {
+            case '/memberIndex' :
+                return '我的';
+            case '/home' :
+                return 'Home';
+            default:
+                return false;
+        }
+    }
 
     /*************************
      * 我的 首页 导航 list
@@ -4718,14 +4809,94 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 'url': 'member/memberInfo'
             },
             {
-                'name':'退出登录',
-                'url':'member/loginOut'
+                'name': '退出登录',
+                'url': 'member/loginOut'
             }
         ];
+    }
+
+
+    /*************************
+     * 遍历url 返回true false ,控制是否显示tab
+     * 16/8/17 上午9:31 ByRockBlus
+     *************************/
+    function _showTab(url) {
+        console.log('rul', url);
+        switch (url) {
+            case '/home' :
+                return true;
+            case '/memberIndex' :
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /*************************
+     * 根据 url 遍历 给tab数据
+     * 16/8/17 上午7:47 ByRockBlus
+     *************************/
+    function _tab(url) {
+        var _obj = [];
+        //var title = _getTitle();
+        var title = '_getTitle()';
+        var _objDefaulOne = {
+            colNumCss: 'twoTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            thisItem: 'thisItem',//高亮 css 名称
+            name: title,//名称
+            route: url//routeUrl
+        };
+        switch (url) {
+            case '/home':
+                _obj = [
+                    {
+                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: _objDefaulOne.thisItem,//高亮
+                        name: '供',//名称
+                        route: 'home'//routeUrl
+                    },
+                    {
+                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: false,//高亮
+                        name: '需',//名称
+                        route: 'memberIndex'//routeUrl
+                    },
+                    {
+                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: false,//高亮
+                        name: '评',//名称
+                        route: 'memberIndex'//routeUrl
+                    },
+                    {
+                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: false,//高亮
+                        name: '<i class="fa fa-ellipsis-h"></i>',//名称
+                        route: 'memberIndex'//routeUrl
+                    },
+                ];
+                return _obj;
+            case '/memberIndex':
+                _obj = [
+                    {
+                        colNumCss: _objDefaulOne.colNumCss,//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: false,//高亮
+                        name: '首页',//名称
+                        route: 'home'//routeUrl
+                    },
+                    {
+                        colNumCss: _objDefaulOne.colNumCss,//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: _objDefaulOne.thisItem,//高亮
+                        name: '我的',//名称
+                        route: 'memberIndex'//routeUrl
+                    },
+                ];
+                return _obj;
+            default:
+                return [];
+        }
 
 
     }
-
 
 })();
 
@@ -4742,9 +4913,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     angular.module('dipan').factory('tools', tools);
 
 
-    tools.$inject = ['$http', '$rootScope'];
+    tools.$inject = ['$http', '$rootScope', '$q', 'ui'];
 
-    function tools($http, $rootScope) {
+    function tools($http, $rootScope, $q, ui) {
 
         var re;
 
@@ -4784,6 +4955,12 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
              * 16/8/15 下午3:18 ByRockBlus
              *************************/
             alert: toolsAlert,
+
+            /*************************
+             * function trueWeb(web,app) 判断手机,还是 wap,回调函数
+             * 16/8/19 上午7:32 ByRockBlus
+             *************************/
+            trueWeb: trueWeb
         };
 
         /**
@@ -4841,30 +5018,56 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         /**
          * angular post
          * 15-3-27 */
-        function postJsp(getMoreUrl, data, re, errRe) {
+        function postJsp(getMoreUrl, data) {
             $rootScope.$broadcast('openLoading');//http请求前 显示loading
             var endData = {};
             for (var vo in data) {
                 endData[vo] = data[vo];
             }
-            $http({
-                url: getMoreUrl,
-                method: "POST",
-                data: endData,
-                timeout: 10000 //超时设置
-            }).success(function (response) {
-                $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
-                re(response);
-            }).error(function (data, status, headers, config, error) {
-                if (errRe) {//如果有回调方法,回调错误
+            //$http({
+            //    url: getMoreUrl,
+            //    method: "POST",
+            //    data: endData,
+            //    timeout: 10000 //超时设置
+            //}).success(function (response) {
+            //    $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
+            //    re(response);
+            //}).error(function (data, status, headers, config, error) {
+            //    if (errRe) {//如果有回调方法,回调错误
+            //        $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
+            //        errRe(error);
+            //    } else {
+            //        $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
+            //        toolsAlert('http错误:' + error);
+            //    }
+            //    return false;
+            //});
+
+
+            function _post(url, postData) {
+                var defer = $q.defer();
+                $http({
+                    url: url,
+                    method: 'POST',
+                    data: postData,
+                    timeout: 10000
+                })
+                    .success(function (doc) {
+                        $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
+                        defer.resolve(doc);
+                    }).error(function (err) {
                     $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
-                    errRe(error);
-                } else {
-                    $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
-                    toolsAlert('http错误:' + error);
-                }
-                return false;
-            });
+                    defer.reject(err);
+                    re.alert({
+                        title:'网络请求失败',
+                        content:'请检查网络设置'
+                    });
+                });
+                return defer.promise;
+            }
+
+            return _post(getMoreUrl, endData);
+
         }
 
         /**
@@ -4878,19 +5081,55 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * alert 判断app 还是 html 显示不同的 弹出框,手机用原生弹窗
          * 16/8/15 下午3:18 ByRockBlus
          *************************/
-        function toolsAlert(msg) {
-            if (window.trueWeb()) {
-                alert(msg);
-            } else {
-                plus.nativeUI.toast(msg);
-            }
+        function toolsAlert(msgObj) {
+            ui.alert(msgObj);
         }
 
+        /*************************
+         * function trueWeb(web,app) 判断手机,还是 wap,回调函数
+         * 16/8/19 上午7:32 ByRockBlus
+         *************************/
+        function trueWeb(web, app) {
+            if (window.trueWeb()) {
+                web();
+            } else {
+                app();
+            }
+
+        }
 
         return re;
     }
 })();
 
+
+/**
+ * ui.dipan.ui.factory.js
+ * 命名注释：server简称_ui. 父模块 dipan . 功能_ui相关封装(alert,),rootScope 下的事件触发,. 类型_factory.js
+ */
+
+(function () {
+    'use strict';
+
+    /** api接口,nodejs,php  */
+    var apiUrl = {};
+
+
+    angular.module('dipan').factory('ui', ui);
+    ui.$inject = ['$rootScope'];
+
+    function ui($rootScope) {
+        var re = {};
+        re.alert = _alert;//标准alertui
+
+        function _alert(obj) {
+            //obj 格式 {'title':title,'content':content}
+            $rootScope.$broadcast('alert', obj);
+        }
+        return re;
+    }
+
+})();
 
 /**
  * urlParse.dipan.urlParse.factory.js
@@ -4986,22 +5225,35 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 angular.module('dipan').run(['$templateCache', function($templateCache) {
   'use strict';
 
+  $templateCache.put('directive/block/alert.block.alertUi.html',
+    "<div id=\"alertUi\" ng-if=\"showAlertUi\">\n" +
+    "    <div style=\"width: 100%;height: 100%;\" ng-class=\"alertUiClass\">\n" +
+    "        <div class=\"left\" style=\"margin-left: 30px;\">\n" +
+    "            <i class=\"fa fa-ban fa-4x\" style=\"color: #f4f4f4;margin-top: 7px\"></i>\n" +
+    "        </div>\n" +
+    "        <div class=\"left\">\n" +
+    "            <div class=\"clear\" style=\"margin-left: 20px;font-size: 1.2em;margin-top: 10px \">{{title}}</div>\n" +
+    "            <div class=\"clear\" style=\"margin-left: 20px;font-size: 0.9em;margin-top: 3px;color: #777 \">{{content}}</div> </div>\n" +
+    "    </div>\n" +
+    "</div>"
+  );
+
+
   $templateCache.put('directive/block/loading.dipan.loanding.directive.html',
     "<i ng-show=\"loading\"  class=\"fa fa-spinner fa-spin fa-3x fa-fw loading\"></i>"
   );
 
 
   $templateCache.put('directive/block/tab.block.tabNav.directive.html',
-    "<div id=\"tab\" class=\"clear\" style=\"\" >\n" +
-    "    <span class=\"btn thisItem\">Tab 1</span>\n" +
-    "    <sapn class=\"btn \">Tab 2</sapn>\n" +
-    "    <sapn class=\"btn \">Tab 3</sapn>\n" +
-    "\n" +
-    "<style>\n" +
-    "    .has-navbar-top .app-body {\n" +
-    "        padding-top: 104px;\n" +
-    "    }\n" +
-    "</style>\n" +
+    "<div id=\"tab\" class=\"clear\" style=\"\">\n" +
+    "    <div ng-class=\"vo.colNumCss\" ng-repeat=\"vo in tabList\">\n" +
+    "        <span ui-sref=\"{{vo.route}}\" ng-class=\"vo.thisItem\" class=\"btn\" ng-bind-html=\"vo.name|toHtml\"></span>\n" +
+    "    </div>\n" +
+    "    <style>\n" +
+    "        .has-navbar-top .app-body {\n" +
+    "            padding-top: 104px;\n" +
+    "        }\n" +
+    "    </style>\n" +
     "</div>"
   );
 
@@ -5014,9 +5266,18 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "        {{title}}\n" +
     "    </div>\n" +
     "    <div class=\"btn-group pull-left\">\n" +
-    "        <div class=\"btn\" onclick=\"history.go(-1);\">\n" +
+    "\n" +
+    "        <!--home-->\n" +
+    "        <div class=\"btn\" ng-if=\"url !== '/home'\" onclick=\"history.go(-1);\">\n" +
     "            <!--top导航左侧图标-->\n" +
     "            <i class=\"fa fa-angle-left fa-lg\"></i>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <!--default-->\n" +
+    "        <div class=\"btn\" ng-if=\"url == '/home'\" ui-sref=\"memberIndex\" >\n" +
+    "            <!--top导航左侧图标-->\n" +
+    "            <i class=\"fa fa-location-arrow fa-lg\" aria-hidden=\"true\" ></i>\n" +
+    "            <!--<i class=\"fa fa-caret-down fa-1\" aria-hidden=\"true\" ></i>-->\n" +
     "        </div>\n" +
     "    </div>\n" +
     "    <div class=\"btn-group pull-right\">\n" +
@@ -5025,7 +5286,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "            <i class=\"fa fa-search fa-lg\"></i>\n" +
     "        </div>\n" +
     "    </div>\n" +
-    "    <div tab></div>\n" +
+    "    <div tab ng-if=\"showTab\"></div>\n" +
     "</div>\n"
   );
 
@@ -5079,8 +5340,8 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "            if (isWeb) {\n" +
     "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
     "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/responsive.css\"/>');\n" +
-    "\n" +
     "                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
+    "\n" +
     "            } else {\n" +
     "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
     "                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
@@ -5129,9 +5390,9 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "            <!--底部连接-->\n" +
     "            <a ui-sref=\"home\" class=\"btn btn-navbar\"><i class=\"fa fa-home fa-navbar fa-lg\"></i> </a>\n" +
     "            <a href=\"#\" class=\"btn btn-navbar\"><i\n" +
-    "                    class=\"fa fa-github fa-navbar fa-lg\"></i> </a>\n" +
+    "                    class=\"fa fa-map-marker fa-navbar fa-lg\"></i> </a>\n" +
     "            <a ui-sref=\"memberIndex\" class=\"btn btn-navbar\"><i\n" +
-    "                    class=\"fa fa-exclamation-circle fa-navbar fa-lg\"></i> 我的</a>\n" +
+    "                    class=\"fa fa-user fa-navbar fa-lg\"></i> </a>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
@@ -5139,7 +5400,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <div class=\"app-body\">\n" +
     "        <!--loading directive-->\n" +
     "        <div loading></div>\n" +
-    "\n" +
+    "        <div alert></div>\n" +
     "        <ui-view></ui-view>\n" +
     "    </div>\n" +
     "\n" +

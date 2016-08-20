@@ -27,7 +27,10 @@
       "src/js/server/tools.dipan.block.factory.js",
       "src/js/directive/block/tab.block.tabNav.directive.js",
       "src/js/directive/home.dipan.home.directive.js",
-      "src/js/filter/toHtml.dipan.toHtml.filter.js"
+      "src/js/filter/toHtml.dipan.toHtml.filter.js",
+      "src/js/directive/block/alert.block.alertUi.directive.js",
+      "src/js/server/ui.dipan.ui.factory.js",
+      "src/html/directive/block/alert.block.alertUi.html"
     ],
     "refer": []
   }

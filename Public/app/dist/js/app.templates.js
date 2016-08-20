@@ -1,22 +1,35 @@
 angular.module('dipan').run(['$templateCache', function($templateCache) {
   'use strict';
 
+  $templateCache.put('directive/block/alert.block.alertUi.html',
+    "<div id=\"alertUi\" ng-if=\"showAlertUi\">\n" +
+    "    <div style=\"width: 100%;height: 100%;\" ng-class=\"alertUiClass\">\n" +
+    "        <div class=\"left\" style=\"margin-left: 30px;\">\n" +
+    "            <i class=\"fa fa-ban fa-4x\" style=\"color: #f4f4f4;margin-top: 7px\"></i>\n" +
+    "        </div>\n" +
+    "        <div class=\"left\">\n" +
+    "            <div class=\"clear\" style=\"margin-left: 20px;font-size: 1.2em;margin-top: 10px \">{{title}}</div>\n" +
+    "            <div class=\"clear\" style=\"margin-left: 20px;font-size: 0.9em;margin-top: 3px;color: #777 \">{{content}}</div> </div>\n" +
+    "    </div>\n" +
+    "</div>"
+  );
+
+
   $templateCache.put('directive/block/loading.dipan.loanding.directive.html',
     "<i ng-show=\"loading\"  class=\"fa fa-spinner fa-spin fa-3x fa-fw loading\"></i>"
   );
 
 
   $templateCache.put('directive/block/tab.block.tabNav.directive.html',
-    "<div id=\"tab\" class=\"clear\" style=\"\" >\n" +
-    "    <span class=\"btn thisItem\">Tab 1</span>\n" +
-    "    <sapn class=\"btn \">Tab 2</sapn>\n" +
-    "    <sapn class=\"btn \">Tab 3</sapn>\n" +
-    "\n" +
-    "<style>\n" +
-    "    .has-navbar-top .app-body {\n" +
-    "        padding-top: 104px;\n" +
-    "    }\n" +
-    "</style>\n" +
+    "<div id=\"tab\" class=\"clear\" style=\"\">\n" +
+    "    <div ng-class=\"vo.colNumCss\" ng-repeat=\"vo in tabList\">\n" +
+    "        <span ui-sref=\"{{vo.route}}\" ng-class=\"vo.thisItem\" class=\"btn\" ng-bind-html=\"vo.name|toHtml\"></span>\n" +
+    "    </div>\n" +
+    "    <style>\n" +
+    "        .has-navbar-top .app-body {\n" +
+    "            padding-top: 104px;\n" +
+    "        }\n" +
+    "    </style>\n" +
     "</div>"
   );
 
@@ -29,9 +42,18 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "        {{title}}\n" +
     "    </div>\n" +
     "    <div class=\"btn-group pull-left\">\n" +
-    "        <div class=\"btn\" onclick=\"history.go(-1);\">\n" +
+    "\n" +
+    "        <!--home-->\n" +
+    "        <div class=\"btn\" ng-if=\"url !== '/home'\" onclick=\"history.go(-1);\">\n" +
     "            <!--top导航左侧图标-->\n" +
     "            <i class=\"fa fa-angle-left fa-lg\"></i>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <!--default-->\n" +
+    "        <div class=\"btn\" ng-if=\"url == '/home'\" ui-sref=\"memberIndex\" >\n" +
+    "            <!--top导航左侧图标-->\n" +
+    "            <i class=\"fa fa-location-arrow fa-lg\" aria-hidden=\"true\" ></i>\n" +
+    "            <!--<i class=\"fa fa-caret-down fa-1\" aria-hidden=\"true\" ></i>-->\n" +
     "        </div>\n" +
     "    </div>\n" +
     "    <div class=\"btn-group pull-right\">\n" +
@@ -40,7 +62,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "            <i class=\"fa fa-search fa-lg\"></i>\n" +
     "        </div>\n" +
     "    </div>\n" +
-    "    <div tab></div>\n" +
+    "    <div tab ng-if=\"showTab\"></div>\n" +
     "</div>\n"
   );
 
@@ -94,8 +116,8 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "            if (isWeb) {\n" +
     "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
     "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/responsive.css\"/>');\n" +
-    "\n" +
     "                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
+    "\n" +
     "            } else {\n" +
     "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
     "                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
@@ -144,9 +166,9 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "            <!--底部连接-->\n" +
     "            <a ui-sref=\"home\" class=\"btn btn-navbar\"><i class=\"fa fa-home fa-navbar fa-lg\"></i> </a>\n" +
     "            <a href=\"#\" class=\"btn btn-navbar\"><i\n" +
-    "                    class=\"fa fa-github fa-navbar fa-lg\"></i> </a>\n" +
+    "                    class=\"fa fa-map-marker fa-navbar fa-lg\"></i> </a>\n" +
     "            <a ui-sref=\"memberIndex\" class=\"btn btn-navbar\"><i\n" +
-    "                    class=\"fa fa-exclamation-circle fa-navbar fa-lg\"></i> 我的</a>\n" +
+    "                    class=\"fa fa-user fa-navbar fa-lg\"></i> </a>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
@@ -154,7 +176,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <div class=\"app-body\">\n" +
     "        <!--loading directive-->\n" +
     "        <div loading></div>\n" +
-    "\n" +
+    "        <div alert></div>\n" +
     "        <ui-view></ui-view>\n" +
     "    </div>\n" +
     "\n" +

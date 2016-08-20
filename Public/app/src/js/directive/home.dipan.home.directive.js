@@ -87,7 +87,7 @@
          * 16/8/19 上午7:47 ByRockBlus
          *************************/
         $scope.a = function () {
-            tools.alert(11);
+            tools.alert({title:'这是标题',content:'内容 '});
         };
 
 

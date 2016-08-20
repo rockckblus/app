@@ -43,8 +43,10 @@
                 $scope.alertUiClass = 'hideThis';
                 $timeout(function () {
                     $scope.showAlertUi = false;
-                }, 800);
-            }, 2000);
+                    $scope.alertUiClass = 'showThis';
+                }, 600);
+
+            }, 1000);
         }
     }
 
