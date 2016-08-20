@@ -4521,7 +4521,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          *************************/
         giveDefaultList();
 
-
         var url = 'http://city.5656111.com/Member/GetAjax/get_union_user_list/begin_city/%E5%A4%A9%E6%B4%A5';
         tools.postJsp(url, {}).then(call, err);
 
@@ -4534,7 +4533,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          *************************/
         function _web() {
             //获取 ip地址,去反查地址数据
-
         }
 
         /*************************
@@ -4543,6 +4541,20 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * 16/8/19 上午7:43 ByRockBlus
          *************************/
         function _app() {
+            var  gpsObj = {};
+           document.addEventListener('plusready',function(e){
+
+               console.log('e',e);
+               plus.geolocation.getCurrentPosition(function (p) {
+                   gpsObj.lat = p.coords.latitude;
+                   gpsObj.lng = p.coords.longitude ;
+                   tools.alert({'title':gpsObj.lat,'content':gpsObj.lng});
+               }, function (e) {
+                   tools.alert({title: e.message});
+               });
+           });
+
+
 
         }
 
@@ -4780,6 +4792,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         localData.tab = _tab;//根据 url 遍历 给tab数据
         localData.showTab = _showTab;//遍历url 返回true false ,控制是否显示tab
         localData.getTitle = _getTitle;//getTitle
+        localData.gps = {};
         return localData;
     }
 

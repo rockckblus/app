@@ -18,6 +18,7 @@
         localData.tab = _tab;//根据 url 遍历 给tab数据
         localData.showTab = _showTab;//遍历url 返回true false ,控制是否显示tab
         localData.getTitle = _getTitle;//getTitle
+        localData.gps = {};
         return localData;
     }
 
