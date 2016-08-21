@@ -7,16 +7,19 @@
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="yes"/>
+    <meta http-equiv="Cache-Control" content="public" />
+
     <script>
         var dist = true;//生产环境
         var isWeb = true;//是否 web
-        var basePath = 'Public/app';//跟路径
+        var basePath = 'http://192.168.18.13/Public/app';//跟路径
         var tplPath = '';//模板路径
-        var jsPath = 'Public/app/src/js/';//js路径
+        var jsPath = 'http://192.168.18.13/Public/app/src/js/';//js路径
         var jsDate = new Date().getFullYear() + '' + new Date().getMonth() + '' + new Date().getDate();
         if (!trueWeb()) {
+
             //如果是 app 环境
-            basePath = '../..';//跟路径
+//            basePath = '../..';//跟路径
         } else if (!dist) {
             tplPath = 'Public/app/src/html/';//web 环境下,调试模式时候的 模板路径
         }
@@ -25,7 +28,6 @@
                 document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
                 document.write('<link rel="stylesheet" href="' + basePath + '/src/css/responsive.css"/>');
                 document.write('<script src="' + basePath + '/dist/js/app.js?' + jsDate + '"><\/script>');
-
             } else {
                 document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
                 document.write('<script src="' + basePath + '/dist/js/app.js?' + jsDate + '"><\/script>');

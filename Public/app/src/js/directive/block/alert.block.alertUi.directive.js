@@ -24,10 +24,13 @@
         $scope.alertUiClass = 'showThis';
         $scope.showAlertUi = false;
 
+
         $scope.title = '错误';
         $scope.content = '请重试';
 
         $scope.$on('alert', show);//监听alet事件 显示
+
+
 
 
         /*************************
@@ -44,8 +47,7 @@
                 $timeout(function () {
                     $scope.showAlertUi = false;
                     $scope.alertUiClass = 'showThis';
-                }, 600);
-
+                }, 800);
             }, 1000);
         }
     }

@@ -36,39 +36,6 @@
         var url = 'http://city.5656111.com/Member/GetAjax/get_union_user_list/begin_city/%E5%A4%A9%E6%B4%A5';
         tools.postJsp(url, {}).then(call, err);
 
-        tools.trueWeb(_web, _app);//判断手机 或者 app 来判断 定位 ,获取地理位置数据
-
-        /*************************
-         * todo
-         * //获取 ip地址,去反查地址数据
-         * 16/8/19 上午7:43 ByRockBlus
-         *************************/
-        function _web() {
-            //获取 ip地址,去反查地址数据
-        }
-
-        /*************************
-         * todo
-         *获取手机导航gps,去soso拿地址数据
-         * 16/8/19 上午7:43 ByRockBlus
-         *************************/
-        function _app() {
-            var  gpsObj = {};
-           document.addEventListener('plusready',function(e){
-
-               console.log('e',e);
-               plus.geolocation.getCurrentPosition(function (p) {
-                   gpsObj.lat = p.coords.latitude;
-                   gpsObj.lng = p.coords.longitude ;
-                   tools.alert({'title':gpsObj.lat,'content':gpsObj.lng});
-               }, function (e) {
-                   tools.alert({title: e.message});
-               });
-           });
-
-
-
-        }
 
 
         function call(re) {

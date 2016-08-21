@@ -9,7 +9,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "        </div>\n" +
     "        <div class=\"left\">\n" +
     "            <div class=\"clear\" style=\"margin-left: 20px;font-size: 1.2em;margin-top: 10px \">{{title}}</div>\n" +
-    "            <div class=\"clear\" style=\"margin-left: 20px;font-size: 0.9em;margin-top: 3px;color: #777 \">{{content}}</div> </div>\n" +
+    "            <div class=\"clear\" style=\"margin-left: 20px;font-size: 0.9em;margin-top: 3px;color: #777;height: 20px;overflow: hidden \">{{content}}</div> </div>\n" +
     "    </div>\n" +
     "</div>"
   );
@@ -99,16 +99,19 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\"/>\n" +
     "    <meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1.0, maximum-scale=1.0\"/>\n" +
     "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"yes\"/>\n" +
+    "    <meta http-equiv=\"Cache-Control\" content=\"public\" />\n" +
+    "\n" +
     "    <script>\n" +
     "        var dist = true;//生产环境\n" +
     "        var isWeb = true;//是否 web\n" +
-    "        var basePath = 'Public/app';//跟路径\n" +
+    "        var basePath = 'http://192.168.18.13/Public/app';//跟路径\n" +
     "        var tplPath = '';//模板路径\n" +
-    "        var jsPath = 'Public/app/src/js/';//js路径\n" +
+    "        var jsPath = 'http://192.168.18.13/Public/app/src/js/';//js路径\n" +
     "        var jsDate = new Date().getFullYear() + '' + new Date().getMonth() + '' + new Date().getDate();\n" +
     "        if (!trueWeb()) {\n" +
+    "\n" +
     "            //如果是 app 环境\n" +
-    "            basePath = '../..';//跟路径\n" +
+    "//            basePath = '../..';//跟路径\n" +
     "        } else if (!dist) {\n" +
     "            tplPath = 'Public/app/src/html/';//web 环境下,调试模式时候的 模板路径\n" +
     "        }\n" +
@@ -117,7 +120,6 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
     "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/responsive.css\"/>');\n" +
     "                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
-    "\n" +
     "            } else {\n" +
     "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
     "                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +

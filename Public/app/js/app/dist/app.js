@@ -4354,10 +4354,13 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         $scope.alertUiClass = 'showThis';
         $scope.showAlertUi = false;
 
+
         $scope.title = '错误';
         $scope.content = '请重试';
 
         $scope.$on('alert', show);//监听alet事件 显示
+
+
 
 
         /*************************
@@ -4374,8 +4377,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 $timeout(function () {
                     $scope.showAlertUi = false;
                     $scope.alertUiClass = 'showThis';
-                }, 600);
-
+                }, 800);
             }, 1000);
         }
     }
@@ -4524,39 +4526,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         var url = 'http://city.5656111.com/Member/GetAjax/get_union_user_list/begin_city/%E5%A4%A9%E6%B4%A5';
         tools.postJsp(url, {}).then(call, err);
 
-        tools.trueWeb(_web, _app);//判断手机 或者 app 来判断 定位 ,获取地理位置数据
-
-        /*************************
-         * todo
-         * //获取 ip地址,去反查地址数据
-         * 16/8/19 上午7:43 ByRockBlus
-         *************************/
-        function _web() {
-            //获取 ip地址,去反查地址数据
-        }
-
-        /*************************
-         * todo
-         *获取手机导航gps,去soso拿地址数据
-         * 16/8/19 上午7:43 ByRockBlus
-         *************************/
-        function _app() {
-            var  gpsObj = {};
-           document.addEventListener('plusready',function(e){
-
-               console.log('e',e);
-               plus.geolocation.getCurrentPosition(function (p) {
-                   gpsObj.lat = p.coords.latitude;
-                   gpsObj.lng = p.coords.longitude ;
-                   tools.alert({'title':gpsObj.lat,'content':gpsObj.lng});
-               }, function (e) {
-                   tools.alert({title: e.message});
-               });
-           });
-
-
-
-        }
 
 
         function call(re) {
@@ -4781,19 +4750,31 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     'use strict';
     angular.module('dipan').factory('localData', localData);
 
-    localData.$inject = ['$location'];
+    localData.$inject = ['$location','tools','$rootScope'];
 
     var location;
+    var thisLocalData = {};
+    var thisTools;
+    var thisRootScope;
+    setTimeout(function(){
+        getGps();//获取gps数据
+    },0);
 
-    function localData($location) {
+    function localData($location,tools,$rootScope) {
+        thisTools= tools;
+        thisRootScope = $rootScope;
+
         location = $location;
-        var localData = {};
-        localData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
-        localData.tab = _tab;//根据 url 遍历 给tab数据
-        localData.showTab = _showTab;//遍历url 返回true false ,控制是否显示tab
-        localData.getTitle = _getTitle;//getTitle
-        localData.gps = {};
-        return localData;
+        thisLocalData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
+        thisLocalData.tab = _tab;//根据 url 遍历 给tab数据
+        thisLocalData.showTab = _showTab;//遍历url 返回true false ,控制是否显示tab
+        thisLocalData.getTitle = _getTitle;//getTitle
+        thisLocalData.gps = {
+            isHaveGps:false,//判断
+        };
+
+
+        return thisLocalData ;
     }
 
     /*************************
@@ -4910,6 +4891,85 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
 
     }
+
+
+    /**************************
+     * get gps 获取gps 或者 ip定位 拿到 gps(web), 给到 gpsObj
+     * 广播全局 gps 事件.
+     * 16/8/21 上午9:53 ByRockBlus
+     **************************/
+    function getGps(){
+        thisTools.trueWeb(_web, _app);//判断手机 或者 app 来判断 定位 ,获取地理位置数据
+            thisTools.alert({title:4446667777888});
+
+
+        /*************************
+         * todo
+         * //获取 ip地址,去反查地址数据
+         * 16/8/19 上午7:43 ByRockBlus
+         *************************/
+        function _web() {
+            //获取 ip地址,去反查地址数据
+        }
+
+        /*************************
+         * todo
+         *获取手机导航gps,去soso拿地址数据
+         * 16/8/19 上午7:43 ByRockBlus
+         *************************/
+        function _app() {
+            var  gpsObj = {};
+            document.addEventListener('plusready',function(e){
+                plus.geolocation.getCurrentPosition(_success,_err,_option);
+
+                //定位成功回调
+                function _success(p){
+                    console.log('p',p);
+                    gpsObj.lat = p.coords.latitude;
+                    gpsObj.lng = p.coords.longitude ;
+                    thisTools.alert({'title':gpsObj.lat,'content':gpsObj.lng});
+                }
+
+                //失败回调
+                function _err(e){
+                    thisTools.alert({title:'获取位置失败',content: ''});
+
+                }
+
+                //参数配置
+                /**************************
+                 * enableHighAccuracy: (Boolean 类型 )是否高精确度获取位置信息
+                 高精度获取表示需要使用更多的系统资源，默认值为false。
+
+                 timeout: (Number 类型 )获取位置信息的超时时间
+                 单位为毫秒（ms），默认值为不超时。如果在指定的时间内没有获取到位置信息则触发错误回调函数。
+
+                 maximumAge: (Number 类型 )获取位置信息的缓存时间
+                 单位为毫秒（ms），默认值为0（立即更新获取）。如果设备缓存的位置信息超过指定的缓存时间，将重新更新位置信息后再返回。
+
+                 provider: (String 类型 )优先使用的定位模块
+                 可取以下供应者： "system"：表示系统定位模块，支持wgs84坐标系；
+                 "baidu"：表示百度定位模块，支持gcj02/bd09/bd09ll坐标系；
+                 "amap"：表示高德定位模板，支持gcj02坐标系。
+                 默认值按以下优先顺序获取（amap>baidu>system），若指定的provider不存在或无效则返回错误回调。
+                 注意：百度/高德定位模块需要配置百度/高德地图相关参数才能正常使用。
+                 * 16/8/21 上午7:43 ByRockBlus
+                 **************************/
+
+                function _option(){
+                    return{
+                        enableHightAccuracy:false,
+                        timeout:10000,
+                        maximumAge:600000,
+                    };
+                }
+            });
+        }
+
+
+
+    }
+
 
 })();
 
@@ -5246,7 +5306,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "        </div>\n" +
     "        <div class=\"left\">\n" +
     "            <div class=\"clear\" style=\"margin-left: 20px;font-size: 1.2em;margin-top: 10px \">{{title}}</div>\n" +
-    "            <div class=\"clear\" style=\"margin-left: 20px;font-size: 0.9em;margin-top: 3px;color: #777 \">{{content}}</div> </div>\n" +
+    "            <div class=\"clear\" style=\"margin-left: 20px;font-size: 0.9em;margin-top: 3px;color: #777;height: 20px;overflow: hidden \">{{content}}</div> </div>\n" +
     "    </div>\n" +
     "</div>"
   );
@@ -5336,16 +5396,19 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\"/>\n" +
     "    <meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1.0, maximum-scale=1.0\"/>\n" +
     "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"yes\"/>\n" +
+    "    <meta http-equiv=\"Cache-Control\" content=\"public\" />\n" +
+    "\n" +
     "    <script>\n" +
     "        var dist = true;//生产环境\n" +
     "        var isWeb = true;//是否 web\n" +
-    "        var basePath = 'Public/app';//跟路径\n" +
+    "        var basePath = 'http://192.168.18.13/Public/app';//跟路径\n" +
     "        var tplPath = '';//模板路径\n" +
-    "        var jsPath = 'Public/app/src/js/';//js路径\n" +
+    "        var jsPath = 'http://192.168.18.13/Public/app/src/js/';//js路径\n" +
     "        var jsDate = new Date().getFullYear() + '' + new Date().getMonth() + '' + new Date().getDate();\n" +
     "        if (!trueWeb()) {\n" +
+    "\n" +
     "            //如果是 app 环境\n" +
-    "            basePath = '../..';//跟路径\n" +
+    "//            basePath = '../..';//跟路径\n" +
     "        } else if (!dist) {\n" +
     "            tplPath = 'Public/app/src/html/';//web 环境下,调试模式时候的 模板路径\n" +
     "        }\n" +
@@ -5354,7 +5417,6 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
     "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/responsive.css\"/>');\n" +
     "                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
-    "\n" +
     "            } else {\n" +
     "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
     "                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
