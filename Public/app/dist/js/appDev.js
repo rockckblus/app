@@ -47,6 +47,7 @@ document.write('<script src="' + basePath + '/src/js/filter/toHtml.dipan.toHtml.
 document.write('<script src="' + basePath + '/src/js/server/localData.dipan.localDataNav.factory.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/server/tools.dipan.block.factory.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/server/ui.dipan.ui.factory.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/server/update.block.getJsCss.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/alertDiv.uiBlock.alertUi.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/compile.uiBlock.compile.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/tools.dipan.block.factory.js"><\/script>');

@@ -1,7 +1,7 @@
 (function (window, document) {
     'use strict';
 //app端
-    var dist = false;//生产环境
+    var dist = true;//生产环境
     window.basePath = 'Public/app';//跟路径
     window.tplPath = '';//模板路径
     window.jsPath = 'Public/app/src/js/';//js路径
@@ -71,52 +71,9 @@
                 //app端
                 window.basePath = '../..';//跟路径
                 document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
-                document.write('<script src="' + window.basePath + '/dist/js/appDev.js"><\/script>');
+                document.write('<script src="' + window.basePath + '/dist/js/appDev.js?' + jsDate + '"><\/script>');
             }
         }
     }
 
-    document.addEventListener('plusready', function () {
-
-        var appJsName = '_documents/app.js';
-        delAppJs();
-        /*************************
-         * 删除app文件
-         * 16/8/22 上午11:06 ByRockBlus
-         *************************/
-        function delAppJs() {
-            plus.io.resolveLocalFileSystemURL(appJsName, succesCb, errorCb);//判断是否存在app.js 存在就删除,然后下载,不存在,直接下载
-
-            function succesCb(e) {
-                e.remove(function () {
-                    createDownload();
-                });
-            }
-
-            function errorCb() {
-                createDownload();
-            }
-        }
-
-        // 创建下载任务
-        function createDownload() {
-
-            var dtask = plus.downloader.createDownload("http://192.168.0.25/Public/app/dist/js/app.js", {
-                filename: appJsName
-            }, function (d, status) {
-                // 下载完成
-                if (status == 200) {
-                    plus.io.resolveLocalFileSystemURL(d.filename, function (entry) {
-                        init(entry.fullPath);
-                    });
-//                        alert("Download success: " + d.filename);
-                } else {
-                    console.log('err', '下载文件失败,直接使用线上app.js');
-                    //init('http://192.168.0.25/Public/app/dist/js/app.js');
-                }
-            });
-            //dtask.addEventListener( "statechanged", onStateChanged, false );
-            dtask.start();
-        }
-    });
 })(window, document);

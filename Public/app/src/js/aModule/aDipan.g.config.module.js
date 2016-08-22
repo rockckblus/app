@@ -136,9 +136,20 @@
 
     function config() {
         return {
-            host: {//host 配置
-                nodeHost: 'http://192.168.0.25:3082'//nodejsApi hostUrl
+            host: {
+                //host 配置
+                nodeHost: 'http://192.168.0.25:3082',//nodejsApi hostUrl
+                appPath: 'http://192.168.0.25/Public/App/'//app 静态路径
+            },
+            localSaveName: {
+                //localStroe 存储标示 name
+                downLoad: {
+                    //下载相关
+                    appJsPath: 'appJsPath',//app.js 更新后的下载存储路径
+                    appCssPath: 'appCssPath',//app.css 更新后的下载存储路径
+                }
             }
+
         };
     }
 
