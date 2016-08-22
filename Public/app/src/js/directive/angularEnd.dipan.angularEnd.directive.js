@@ -15,7 +15,9 @@
             restrict: 'C',
             replace: false,
             link: function (scope, element, attrs) {
+                console.log(11);
                 scope.$watch('$viewContentLoaded', function () {
+                    console.log(1111);
                     element[0].style.display = 'block';
                 });
             }

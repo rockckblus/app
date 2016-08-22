@@ -20,7 +20,7 @@ module.exports = function (grunt) {
          * 16/1/22 */
         watch: {
             build: {
-                files: ['Gruntfile.js', 'src/**/*.js', 'src/**/**/*.js', 'src/**/**/**/*.js', 'src/css/*.css', 'src/**/**/**/*.html', 'src/**/**/html', 'src/**/*.html'],
+                files: ['Gruntfile.js','dist/js/init.js', 'src/**/*.js', 'src/**/**/*.js', 'src/**/**/**/*.js', 'src/css/*.css', 'src/**/**/**/*.html', 'src/**/**/html', 'src/**/*.html'],
                 tasks: ['jshint', 'ngtemplates', 'concat', 'uglify', 'cssmin', 'clean'],//dist 配置
                 //tasks: ['jshint', 'ngtemplates', 'concat', 'cssmin', 'clean'],//dist 配置
                 //tasks: ['jshint'],//dev 配置

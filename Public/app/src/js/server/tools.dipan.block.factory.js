@@ -5,7 +5,7 @@
  * Created by rockblus on 16-2-5.
  */
 
-(function () {
+(function (window) {
     'use strict';
     angular.module('dipan').factory('tools', tools);
 
@@ -156,8 +156,8 @@
                     $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
                     defer.reject(err);
                     re.alert({
-                        title:'网络请求失败',
-                        content:'请检查网络设置'
+                        title: '网络请求失败',
+                        content: '请检查网络设置'
                     });
                 });
                 return defer.promise;
@@ -187,15 +187,17 @@
          * 16/8/19 上午7:32 ByRockBlus
          *************************/
         function trueWeb(web, app) {
-            if (window.trueWeb()) {
-                web();
-            } else {
-                app();
-            }
+            setTimeout(function(){
+                if (window.trueWeb()) {
+                    web();
+                } else {
+                    app();
+                }
+            },0);
 
         }
 
         return re;
     }
-})();
+})(window);
 

@@ -91,7 +91,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('index.html',
     "<!DOCTYPE html>\n" +
-    "<html manifest=\"http://192.168.0.25/Public/app/index.appcache\" ng-app=\"dipan\">\n" +
+    "<html>\n" +
     "<head>\n" +
     "    <meta charset=\"utf-8\"/>\n" +
     "    <title>dipan.so</title>\n" +
@@ -99,126 +99,33 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\"/>\n" +
     "    <meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1.0, maximum-scale=1.0\"/>\n" +
     "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"yes\"/>\n" +
-    "    <meta http-equiv=\"Cache-Control\" content=\"public\"/>\n" +
     "\n" +
     "    <script>\n" +
-    "        var dist = true;//生产环境\n" +
-    "        var basePath = 'Public/app';//跟路径\n" +
-    "        var tplPath = '';//模板路径\n" +
-    "        var jsPath = 'Public/app/src/js/';//js路径\n" +
-    "        var jsDate = new Date().getFullYear() + '' + new Date().getMonth() + '' + new Date().getDate();\n" +
-    "        var appJsPath = 'http://192.168.0.25/Public/app/dist/js/app.js';//net url app.js\n" +
     "\n" +
-    "        /*************************\n" +
-    "         * plusReady 之后执行\n" +
-    "         * 16/8/22 上午11:31 ByRockBlus\n" +
-    "         *************************/\n" +
-    "        function init(appPath) {\n" +
-    "\n" +
-    "            /*************************\n" +
-    "             * 生产环境 配置\n" +
-    "             * 16/8/22 上午11:32 ByRockBlus\n" +
-    "             *************************/\n" +
-    "            if (dist) {\n" +
-    "                if (trueWeb()) {\n" +
-    "                    //web 端\n" +
-    "                    document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
-    "                    document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/responsive.css\"/>');\n" +
-    "//                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
-    "                    document.write('<script src=\"http://192.168.0.25/Public/app/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
-    "                } else {\n" +
-    "                    //app端\n" +
-    "                    document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
-    "//                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
-    "                    document.write('<script src=' + appPath + '><\\/script>');\n" +
-    "                }\n" +
-    "            }\n" +
-    "            /*************************\n" +
-    "             * 开发环境配置\n" +
-    "             * 16/8/22 上午11:34 ByRockBlus\n" +
-    "             *************************/\n" +
-    "            else {\n" +
-    "                if (trueWeb()) {\n" +
-    "                    //web端\n" +
-    "                    tplPath = 'Public/app/src/html/';//web 环境下,调试模式时候的 模板路径 全局变量\n" +
-    "\n" +
-    "                    document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
-    "                    document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/responsive.css\"/>');\n" +
-    "                    document.write('<script src=\"' + basePath + '/dist/js/appDev.js\"><\\/script>');\n" +
-    "                } else {\n" +
-    "                    //app端\n" +
-    "                    basePath = '../..';//跟路径\n" +
-    "                    document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
-    "                    document.write('<script src=\"' + basePath + '/dist/js/appDev.js\"><\\/script>');\n" +
+    "        (function (window) {\n" +
+    "            //判断web 还是 app\n" +
+    "            window.trueWeb = trueWeb;\n" +
+    "            function trueWeb() {\n" +
+    "                var url = window.location.href;\n" +
+    "                url = url.split(':');\n" +
+    "                if (url[0] === 'http') {\n" +
+    "                    return true;\n" +
     "                }\n" +
     "            }\n" +
     "\n" +
-    "\n" +
-    "        }\n" +
-    "\n" +
-    "        //判断web 还是 app\n" +
-    "        function trueWeb() {\n" +
-    "            var url = window.location.href;\n" +
-    "            url = url.split(':');\n" +
-    "            if (url[0] === 'http') {\n" +
-    "                return true;\n" +
+    "            //web端\n" +
+    "            if (trueWeb()) {\n" +
+    "                document.write('<script src=\"/Public/app/dist/js/init.js\"><\\/script>');\n" +
+    "            } else {\n" +
+    "                //app 端\n" +
+    "                document.write('<script src=\"../../dist/js/init.js\"><\\/script>');\n" +
     "            }\n" +
-    "        }\n" +
+    "        })(window);\n" +
     "\n" +
-    "    </script>\n" +
-    "    <script type=\"text/javascript\">\n" +
-    "        document.addEventListener('plusready', function () {\n" +
-    "            var appJsName = '_documents/app.js';\n" +
-    "\n" +
-    "            delAppJs();\n" +
-    "\n" +
-    "            /*************************\n" +
-    "             * 删除app文件\n" +
-    "             * 16/8/22 上午11:06 ByRockBlus\n" +
-    "             *************************/\n" +
-    "            function delAppJs() {\n" +
-    "                plus.io.resolveLocalFileSystemURL(appJsName, succesCb, errorCb);//判断是否存在app.js 存在就删除,然后下载,不存在,直接下载\n" +
-    "\n" +
-    "                function succesCb(e) {\n" +
-    "                    e.remove(function () {\n" +
-    "                        createDownload();\n" +
-    "                    });\n" +
-    "                }\n" +
-    "\n" +
-    "                function errorCb() {\n" +
-    "                    createDownload();\n" +
-    "                }\n" +
-    "\n" +
-    "            }\n" +
-    "\n" +
-    "\n" +
-    "            // 创建下载任务\n" +
-    "            function createDownload() {\n" +
-    "\n" +
-    "                var dtask = plus.downloader.createDownload(\"http://192.168.0.25/Public/app/dist/js/app.js\", {\n" +
-    "                    filename: appJsName\n" +
-    "                }, function (d, status) {\n" +
-    "                    // 下载完成\n" +
-    "                    if (status == 200) {\n" +
-    "                        plus.io.resolveLocalFileSystemURL(d.filename, function (entry) {\n" +
-    "                            console.log('entry', entry);\n" +
-    "                            init(entry.fullPath);\n" +
-    "                        });\n" +
-    "//                        alert(\"Download success: \" + d.filename);\n" +
-    "                    } else {\n" +
-    "                        console.log('err', '下载文件失败,直接使用线上app.js');\n" +
-    "                        init('http://192.168.0.25/Public/app/dist/js/app.js');\n" +
-    "                    }\n" +
-    "                });\n" +
-    "                //dtask.addEventListener( \"statechanged\", onStateChanged, false );\n" +
-    "                dtask.start();\n" +
-    "            }\n" +
-    "\n" +
-    "        });\n" +
     "    </script>\n" +
     "</head>\n" +
     "\n" +
-    "<body class=\"angularEnd\" ng-controller=\"body\">\n" +
+    "<body ng-app=\"dipan\" class=\"angularEnd\" ng-controller=\"body\">\n" +
     "<div class=\"app\">\n" +
     "    <!-- topNavbars -->\n" +
     "    <div top></div>\n" +
@@ -236,10 +143,6 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <!-- App Body -->\n" +
     "    <div class=\"app-body\">\n" +
-    "\n" +
-    "        <button id=\"down\">下载</button>\n" +
-    "\n" +
-    "\n" +
     "        <!--loading directive-->\n" +
     "        <div loading></div>\n" +
     "        <div alert></div>\n" +
@@ -250,7 +153,6 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "\n" +
     "<!--数据div-->\n" +
     "<!--<div url-parse={{$indexAllRe}}></div>-->\n" +
-    "\n" +
     "\n" +
     "</body>\n" +
     "</html>\n"

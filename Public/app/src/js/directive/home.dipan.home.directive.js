@@ -37,7 +37,6 @@
         tools.postJsp(url, {}).then(call, err);
 
 
-
         function call(re) {
             $timeout(function () {
                 $scope.list = re.data.list;
@@ -66,7 +65,7 @@
          * 16/8/19 上午7:47 ByRockBlus
          *************************/
         $scope.a = function () {
-            tools.alert({title:'这是标题',content:'内容 '});
+            tools.alert({title: '这是标题', content: '内容 '});
         };
 
 

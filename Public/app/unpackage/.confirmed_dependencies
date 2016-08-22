@@ -30,7 +30,10 @@
       "src/js/filter/toHtml.dipan.toHtml.filter.js",
       "src/js/directive/block/alert.block.alertUi.directive.js",
       "src/js/server/ui.dipan.ui.factory.js",
-      "src/html/directive/block/alert.block.alertUi.html"
+      "src/html/directive/block/alert.block.alertUi.html",
+      "/dist/js/init.js",
+      "dist/js/init.js",
+      "dist/js/res/angular.min.js.map"
     ],
     "refer": []
   }

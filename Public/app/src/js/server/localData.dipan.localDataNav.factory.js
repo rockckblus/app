@@ -7,32 +7,32 @@
     'use strict';
     angular.module('dipan').factory('localData', localData);
 
-    localData.$inject = ['$location','tools','$rootScope'];
+    localData.$inject = ['$location', 'tools', '$rootScope'];
 
     var location;
     var thisLocalData = {};
-    var thisTools;
+    var thisTools = {};
     var thisRootScope;
-    setTimeout(function(){
-        getGps();//获取gps数据
-    },0);
 
-    function localData($location,tools,$rootScope) {
-        thisTools= tools;
+    function localData($location, tools, $rootScope) {
+        console.log('thisTools', tools);
         thisRootScope = $rootScope;
-
         location = $location;
         thisLocalData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
         thisLocalData.tab = _tab;//根据 url 遍历 给tab数据
         thisLocalData.showTab = _showTab;//遍历url 返回true false ,控制是否显示tab
         thisLocalData.getTitle = _getTitle;//getTitle
         thisLocalData.gps = {
-            isHaveGps:false,//判断
+            isHaveGps: false,//判断
         };
 
+        thisLocalData._init = function () {
+            thisTools = tools;
+        };
 
-        return thisLocalData ;
+        return thisLocalData;
     }
+
 
     /*************************
      * getTitle
@@ -155,9 +155,12 @@
      * 广播全局 gps 事件.
      * 16/8/21 上午9:53 ByRockBlus
      **************************/
-    function getGps(){
-        thisTools.trueWeb(_web, _app);//判断手机 或者 app 来判断 定位 ,获取地理位置数据
-            thisTools.alert({title:4446667777888});
+    function getGps() {
+        setTimeout(function () {
+            console.log('thi', thisTools);
+        }, 2000);
+        //thisTools.trueWeb(_web, _app);//判断手机 或者 app 来判断 定位 ,获取地理位置数据
+        //thisTools.alert({title: 4446667777888});
 
 
         /*************************
@@ -175,21 +178,21 @@
          * 16/8/19 上午7:43 ByRockBlus
          *************************/
         function _app() {
-            var  gpsObj = {};
-            document.addEventListener('plusready',function(e){
-                plus.geolocation.getCurrentPosition(_success,_err,_option);
+            var gpsObj = {};
+            document.addEventListener('plusready', function (e) {
+                plus.geolocation.getCurrentPosition(_success, _err, _option);
 
                 //定位成功回调
-                function _success(p){
-                    console.log('p',p);
+                function _success(p) {
+                    console.log('p', p);
                     gpsObj.lat = p.coords.latitude;
-                    gpsObj.lng = p.coords.longitude ;
-                    thisTools.alert({'title':gpsObj.lat,'content':gpsObj.lng});
+                    gpsObj.lng = p.coords.longitude;
+                    thisTools.alert({'title': gpsObj.lat, 'content': gpsObj.lng});
                 }
 
                 //失败回调
-                function _err(e){
-                    thisTools.alert({title:'获取位置失败',content: ''});
+                function _err(e) {
+                    thisTools.alert({title: '获取位置失败', content: ''});
 
                 }
 
@@ -213,16 +216,15 @@
                  * 16/8/21 上午7:43 ByRockBlus
                  **************************/
 
-                function _option(){
-                    return{
-                        enableHightAccuracy:false,
-                        timeout:10000,
-                        maximumAge:600000,
+                function _option() {
+                    return {
+                        enableHightAccuracy: false,
+                        timeout: 10000,
+                        maximumAge: 600000,
                     };
                 }
             });
         }
-
 
 
     }
