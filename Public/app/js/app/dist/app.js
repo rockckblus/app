@@ -4292,7 +4292,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             var _url = $location.url();
             $timeout(function () {
                 //$scope.title = localData.getTitle(_url);//getTitle
-                $scope.title = '武清 河西务 唐庄';//getTitle
+                $scope.title = 'home';//getTitle
                 $scope.showTab = localData.showTab(_url);//是否显示 tab
                 $scope.tabList = localData.tab(_url);//tablist body 控制器
                 $scope.url = _url;//url变量,判断 top 模板 显示图标用
@@ -5388,7 +5388,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('index.html',
     "<!DOCTYPE html>\n" +
-    "<html ng-app=\"dipan\">\n" +
+    "<html manifest=\"http://192.168.0.25/Public/app/index.appcache\" ng-app=\"dipan\">\n" +
     "<head>\n" +
     "    <meta charset=\"utf-8\"/>\n" +
     "    <title>dipan.so</title>\n" +
@@ -5396,42 +5396,61 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\"/>\n" +
     "    <meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1.0, maximum-scale=1.0\"/>\n" +
     "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"yes\"/>\n" +
-    "    <meta http-equiv=\"Cache-Control\" content=\"public\" />\n" +
+    "    <meta http-equiv=\"Cache-Control\" content=\"public\"/>\n" +
     "\n" +
     "    <script>\n" +
     "        var dist = true;//生产环境\n" +
-    "        var isWeb = true;//是否 web\n" +
-    "        var basePath = 'http://192.168.18.13/Public/app';//跟路径\n" +
+    "        var basePath = 'Public/app';//跟路径\n" +
     "        var tplPath = '';//模板路径\n" +
-    "        var jsPath = 'http://192.168.18.13/Public/app/src/js/';//js路径\n" +
+    "        var jsPath = 'Public/app/src/js/';//js路径\n" +
     "        var jsDate = new Date().getFullYear() + '' + new Date().getMonth() + '' + new Date().getDate();\n" +
-    "        if (!trueWeb()) {\n" +
+    "        var appJsPath = 'http://192.168.0.25/Public/app/dist/js/app.js';//net url app.js\n" +
     "\n" +
-    "            //如果是 app 环境\n" +
-    "//            basePath = '../..';//跟路径\n" +
-    "        } else if (!dist) {\n" +
-    "            tplPath = 'Public/app/src/html/';//web 环境下,调试模式时候的 模板路径\n" +
-    "        }\n" +
-    "        if (dist) {\n" +
-    "            if (isWeb) {\n" +
-    "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
-    "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/responsive.css\"/>');\n" +
-    "                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
-    "            } else {\n" +
-    "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
-    "                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
-    "            }\n" +
-    "        }\n" +
-    "        else {\n" +
-    "            if (isWeb) {\n" +
-    "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
-    "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/responsive.css\"/>');\n" +
+    "        /*************************\n" +
+    "         * plusReady 之后执行\n" +
+    "         * 16/8/22 上午11:31 ByRockBlus\n" +
+    "         *************************/\n" +
+    "        function init(appPath) {\n" +
     "\n" +
-    "                document.write('<script src=\"' + basePath + '/dist/js/appDev.js\"><\\/script>');\n" +
-    "            } else {\n" +
-    "                document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
-    "                document.write('<script src=\"' + basePath + '/dist/js/appDev.js\"><\\/script>');\n" +
+    "            /*************************\n" +
+    "             * 生产环境 配置\n" +
+    "             * 16/8/22 上午11:32 ByRockBlus\n" +
+    "             *************************/\n" +
+    "            if (dist) {\n" +
+    "                if (trueWeb()) {\n" +
+    "                    //web 端\n" +
+    "                    document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
+    "                    document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/responsive.css\"/>');\n" +
+    "//                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
+    "                    document.write('<script src=\"http://192.168.0.25/Public/app/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
+    "                } else {\n" +
+    "                    //app端\n" +
+    "                    document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
+    "//                document.write('<script src=\"' + basePath + '/dist/js/app.js?' + jsDate + '\"><\\/script>');\n" +
+    "                    document.write('<script src=' + appPath + '><\\/script>');\n" +
+    "                }\n" +
     "            }\n" +
+    "            /*************************\n" +
+    "             * 开发环境配置\n" +
+    "             * 16/8/22 上午11:34 ByRockBlus\n" +
+    "             *************************/\n" +
+    "            else {\n" +
+    "                if (trueWeb()) {\n" +
+    "                    //web端\n" +
+    "                    tplPath = 'Public/app/src/html/';//web 环境下,调试模式时候的 模板路径 全局变量\n" +
+    "\n" +
+    "                    document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
+    "                    document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/responsive.css\"/>');\n" +
+    "                    document.write('<script src=\"' + basePath + '/dist/js/appDev.js\"><\\/script>');\n" +
+    "                } else {\n" +
+    "                    //app端\n" +
+    "                    basePath = '../..';//跟路径\n" +
+    "                    document.write('<link rel=\"stylesheet\" href=\"' + basePath + '/src/css/app.css\"/>');\n" +
+    "                    document.write('<script src=\"' + basePath + '/dist/js/appDev.js\"><\\/script>');\n" +
+    "                }\n" +
+    "            }\n" +
+    "\n" +
+    "\n" +
     "        }\n" +
     "\n" +
     "        //判断web 还是 app\n" +
@@ -5442,15 +5461,56 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "                return true;\n" +
     "            }\n" +
     "        }\n" +
+    "\n" +
     "    </script>\n" +
     "    <script type=\"text/javascript\">\n" +
     "        document.addEventListener('plusready', function () {\n" +
-    "            plus.geolocation.watchPosition(function (p) {\n" +
-    "//                plus.nativeUI.toast(\"Geolocation\\nLatitude:\" + p.coords.latitude + \"\\nLongitude:\" + p.coords.longitude + \"\\nAltitude:\" + p.coords.altitude);\n" +
-    "            }, function (e) {\n" +
-    "//              plus.nativeUI.toast(\"Geolocation error: \" + e.message);\n" +
-    "            });\n" +
-    "            //console.log(\"所有plus api都应该在此事件发生后调用，否则会出现plus is undefined。\"\n" +
+    "            var appJsName = '_documents/app.js';\n" +
+    "\n" +
+    "            delAppJs();\n" +
+    "\n" +
+    "            /*************************\n" +
+    "             * 删除app文件\n" +
+    "             * 16/8/22 上午11:06 ByRockBlus\n" +
+    "             *************************/\n" +
+    "            function delAppJs() {\n" +
+    "                plus.io.resolveLocalFileSystemURL(appJsName, succesCb, errorCb);//判断是否存在app.js 存在就删除,然后下载,不存在,直接下载\n" +
+    "\n" +
+    "                function succesCb(e) {\n" +
+    "                    e.remove(function () {\n" +
+    "                        createDownload();\n" +
+    "                    });\n" +
+    "                }\n" +
+    "\n" +
+    "                function errorCb() {\n" +
+    "                    createDownload();\n" +
+    "                }\n" +
+    "\n" +
+    "            }\n" +
+    "\n" +
+    "\n" +
+    "            // 创建下载任务\n" +
+    "            function createDownload() {\n" +
+    "\n" +
+    "                var dtask = plus.downloader.createDownload(\"http://192.168.0.25/Public/app/dist/js/app.js\", {\n" +
+    "                    filename: appJsName\n" +
+    "                }, function (d, status) {\n" +
+    "                    // 下载完成\n" +
+    "                    if (status == 200) {\n" +
+    "                        plus.io.resolveLocalFileSystemURL(d.filename, function (entry) {\n" +
+    "                            console.log('entry', entry);\n" +
+    "                            init(entry.fullPath);\n" +
+    "                        });\n" +
+    "//                        alert(\"Download success: \" + d.filename);\n" +
+    "                    } else {\n" +
+    "                        console.log('err', '下载文件失败,直接使用线上app.js');\n" +
+    "                        init('http://192.168.0.25/Public/app/dist/js/app.js');\n" +
+    "                    }\n" +
+    "                });\n" +
+    "                //dtask.addEventListener( \"statechanged\", onStateChanged, false );\n" +
+    "                dtask.start();\n" +
+    "            }\n" +
+    "\n" +
     "        });\n" +
     "    </script>\n" +
     "</head>\n" +
@@ -5473,6 +5533,10 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <!-- App Body -->\n" +
     "    <div class=\"app-body\">\n" +
+    "\n" +
+    "        <button id=\"down\">下载</button>\n" +
+    "\n" +
+    "\n" +
     "        <!--loading directive-->\n" +
     "        <div loading></div>\n" +
     "        <div alert></div>\n" +

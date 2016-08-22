@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="dipan">
+<html manifest="http://192.168.0.25/Public/app/index.appcache" ng-app="dipan">
 <head>
     <meta charset="utf-8"/>
     <title>dipan.so</title>
@@ -7,42 +7,61 @@
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="yes"/>
-    <meta http-equiv="Cache-Control" content="public" />
+    <meta http-equiv="Cache-Control" content="public"/>
 
     <script>
         var dist = true;//生产环境
-        var isWeb = true;//是否 web
-        var basePath = 'http://192.168.18.13/Public/app';//跟路径
+        var basePath = 'Public/app';//跟路径
         var tplPath = '';//模板路径
-        var jsPath = 'http://192.168.18.13/Public/app/src/js/';//js路径
+        var jsPath = 'Public/app/src/js/';//js路径
         var jsDate = new Date().getFullYear() + '' + new Date().getMonth() + '' + new Date().getDate();
-        if (!trueWeb()) {
+        var appJsPath = 'http://192.168.0.25/Public/app/dist/js/app.js';//net url app.js
 
-            //如果是 app 环境
-//            basePath = '../..';//跟路径
-        } else if (!dist) {
-            tplPath = 'Public/app/src/html/';//web 环境下,调试模式时候的 模板路径
-        }
-        if (dist) {
-            if (isWeb) {
-                document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
-                document.write('<link rel="stylesheet" href="' + basePath + '/src/css/responsive.css"/>');
-                document.write('<script src="' + basePath + '/dist/js/app.js?' + jsDate + '"><\/script>');
-            } else {
-                document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
-                document.write('<script src="' + basePath + '/dist/js/app.js?' + jsDate + '"><\/script>');
-            }
-        }
-        else {
-            if (isWeb) {
-                document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
-                document.write('<link rel="stylesheet" href="' + basePath + '/src/css/responsive.css"/>');
+        /*************************
+         * plusReady 之后执行
+         * 16/8/22 上午11:31 ByRockBlus
+         *************************/
+        function init(appPath) {
 
-                document.write('<script src="' + basePath + '/dist/js/appDev.js"><\/script>');
-            } else {
-                document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
-                document.write('<script src="' + basePath + '/dist/js/appDev.js"><\/script>');
+            /*************************
+             * 生产环境 配置
+             * 16/8/22 上午11:32 ByRockBlus
+             *************************/
+            if (dist) {
+                if (trueWeb()) {
+                    //web 端
+                    document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
+                    document.write('<link rel="stylesheet" href="' + basePath + '/src/css/responsive.css"/>');
+//                document.write('<script src="' + basePath + '/dist/js/app.js?' + jsDate + '"><\/script>');
+                    document.write('<script src="http://192.168.0.25/Public/app/dist/js/app.js?' + jsDate + '"><\/script>');
+                } else {
+                    //app端
+                    document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
+//                document.write('<script src="' + basePath + '/dist/js/app.js?' + jsDate + '"><\/script>');
+                    document.write('<script src=' + appPath + '><\/script>');
+                }
             }
+            /*************************
+             * 开发环境配置
+             * 16/8/22 上午11:34 ByRockBlus
+             *************************/
+            else {
+                if (trueWeb()) {
+                    //web端
+                    tplPath = 'Public/app/src/html/';//web 环境下,调试模式时候的 模板路径 全局变量
+
+                    document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
+                    document.write('<link rel="stylesheet" href="' + basePath + '/src/css/responsive.css"/>');
+                    document.write('<script src="' + basePath + '/dist/js/appDev.js"><\/script>');
+                } else {
+                    //app端
+                    basePath = '../..';//跟路径
+                    document.write('<link rel="stylesheet" href="' + basePath + '/src/css/app.css"/>');
+                    document.write('<script src="' + basePath + '/dist/js/appDev.js"><\/script>');
+                }
+            }
+
+
         }
 
         //判断web 还是 app
@@ -53,15 +72,56 @@
                 return true;
             }
         }
+
     </script>
     <script type="text/javascript">
         document.addEventListener('plusready', function () {
-            plus.geolocation.watchPosition(function (p) {
-//                plus.nativeUI.toast("Geolocation\nLatitude:" + p.coords.latitude + "\nLongitude:" + p.coords.longitude + "\nAltitude:" + p.coords.altitude);
-            }, function (e) {
-//              plus.nativeUI.toast("Geolocation error: " + e.message);
-            });
-            //console.log("所有plus api都应该在此事件发生后调用，否则会出现plus is undefined。"
+            var appJsName = '_documents/app.js';
+
+            delAppJs();
+
+            /*************************
+             * 删除app文件
+             * 16/8/22 上午11:06 ByRockBlus
+             *************************/
+            function delAppJs() {
+                plus.io.resolveLocalFileSystemURL(appJsName, succesCb, errorCb);//判断是否存在app.js 存在就删除,然后下载,不存在,直接下载
+
+                function succesCb(e) {
+                    e.remove(function () {
+                        createDownload();
+                    });
+                }
+
+                function errorCb() {
+                    createDownload();
+                }
+
+            }
+
+
+            // 创建下载任务
+            function createDownload() {
+
+                var dtask = plus.downloader.createDownload("http://192.168.0.25/Public/app/dist/js/app.js", {
+                    filename: appJsName
+                }, function (d, status) {
+                    // 下载完成
+                    if (status == 200) {
+                        plus.io.resolveLocalFileSystemURL(d.filename, function (entry) {
+                            console.log('entry', entry);
+                            init(entry.fullPath);
+                        });
+//                        alert("Download success: " + d.filename);
+                    } else {
+                        console.log('err', '下载文件失败,直接使用线上app.js');
+                        init('http://192.168.0.25/Public/app/dist/js/app.js');
+                    }
+                });
+                //dtask.addEventListener( "statechanged", onStateChanged, false );
+                dtask.start();
+            }
+
         });
     </script>
 </head>
@@ -84,6 +144,10 @@
 
     <!-- App Body -->
     <div class="app-body">
+
+        <button id="down">下载</button>
+
+
         <!--loading directive-->
         <div loading></div>
         <div alert></div>
