@@ -4345,7 +4345,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
  * 命名注释：directive简称_alert. 父模块_block. 功能_alert 公共ui 类型_directive .js
  * 使用 ：<div alert></div>
  */
-(function () {
+(function() {
     'use strict';
     angular.module('block').directive('alert', top);
 
@@ -4356,48 +4356,40 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/block/alert.block.alertUi.html',
-            link: function (scope, element, attrs) {
-            }
+            link: function(scope, element, attrs) {}
         };
     }
+
 
     thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
 
     function thisController($scope, $rootScope, $timeout, localData) {
         $scope.alertUiClass = 'showThis';
         $scope.showAlertUi = false;
-
-
         $scope.title = '错误';
         $scope.content = '请重试';
-
-        $scope.$on('alert', show);//监听alet事件 显示
-
-
-
+        $scope.$on('alert', show); //监听alet事件 显示
 
         /*************************
          * 显示alert 并 2秒后 消失
          * 16/8/19 上午9:45 ByRockBlus
          *************************/
-        function show(e,obj) {
+        function show(e, obj) {
             $scope.showAlertUi = true;
             $scope.title = obj.title;
             $scope.content = obj.content;
-
-            $timeout(function () {
+            $timeout(function() {
                 $scope.alertUiClass = 'hideThis';
-                $timeout(function () {
+                $timeout(function() {
                     $scope.showAlertUi = false;
                     $scope.alertUiClass = 'showThis';
                 }, 800);
             }, 1000);
         }
+
     }
 
-
 })();
-
 /**
  * 命名注释：directive简称_loading. 父模块_block. 功能_顶部导航 类型_directive .js
  * 使用 ：<div loading></div>
@@ -4505,7 +4497,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
  * 命名注释：directive简称_home. 父模块_dipan. 功能_首页模块 类型_directive .js
  * 使用 ：<div home></div>
  */
-(function () {
+(function() {
     'use strict';
     angular.module('block').directive('home', home);
 
@@ -4516,18 +4508,20 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             //scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/home.dipan.home.directive.html',
-            link: function (scope, element, attrs) {
-            }
+            link: function(scope, element, attrs) {}
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools','update'];
 
-    function thisController($scope, $rootScope, $timeout, tools) {
-        $scope.$watch('$viewContentLoading', function () {
+    function thisController($scope, $rootScope, $timeout, tools,update) {
+
+
+
+        $scope.$watch('$viewContentLoading', function() {
             $rootScope.$broadcast('changeBody');
         });
-        $scope.list = [];//默认首页 列表 数据,
+        $scope.list = []; //默认首页 列表 数据,
 
         /*************************
          * todo
@@ -4541,7 +4535,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
 
         function call(re) {
-            $timeout(function () {
+            $timeout(function() {
                 $scope.list = re.data.list;
             }, 0);
         }
@@ -4567,15 +4561,17 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * // 滚动到 底部 的 触发动作 test todo
          * 16/8/19 上午7:47 ByRockBlus
          *************************/
-        $scope.a = function () {
-            tools.alert({title: '这是标题', content: '内容 '});
+        $scope.a = function() {
+            tools.alert({
+                title: '这是标题',
+                content: '内容 '
+            });
         };
 
 
     }
 
 })();
-
 /**
  * 命名注释：directive简称_my. 父模块_dipan . 功能_我的功能导航IndexList 类型_directive .js
  * 使用 ：<div my></div>
@@ -4758,7 +4754,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
  * 命名注释：server简称_localData. 父模块 dipan . 功能_本地 & app 默认数据. 类型_factory.js
  */
 
-(function () {
+(function() {
     'use strict';
     angular.module('dipan').factory('localData', localData);
 
@@ -4774,14 +4770,14 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         thisRootScope = $rootScope;
         location = $location;
         thisLocalData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
-        thisLocalData.tab = _tab;//根据 url 遍历 给tab数据
-        thisLocalData.showTab = _showTab;//遍历url 返回true false ,控制是否显示tab
-        thisLocalData.getTitle = _getTitle;//getTitle
+        thisLocalData.tab = _tab; //根据 url 遍历 给tab数据
+        thisLocalData.showTab = _showTab; //遍历url 返回true false ,控制是否显示tab
+        thisLocalData.getTitle = _getTitle; //getTitle
         thisLocalData.gps = {
-            isHaveGps: false,//判断
+            isHaveGps: false, //判断
         };
 
-        thisLocalData._init = function () {
+        thisLocalData._init = function() {
             thisTools = tools;
         };
 
@@ -4795,9 +4791,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      *************************/
     function _getTitle(url) {
         switch (url) {
-            case '/memberIndex' :
-                return '我的';
-            case '/home' :
+            case '/memberIndex':
+                return '我的1';
+            case '/home':
                 return 'Home';
             default:
                 return false;
@@ -4809,16 +4805,13 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      * 16/8/15 上午9:02 ByRockBlus
      *************************/
     function _memberIndexNav() {
-        return [
-            {
-                'name': '资料编辑',
-                'url': 'member/memberInfo'
-            },
-            {
-                'name': '退出登录',
-                'url': 'member/loginOut'
-            }
-        ];
+        return [{
+            'name': '资料编辑',
+            'url': 'member/memberInfo'
+        }, {
+            'name': '退出登录',
+            'url': 'member/loginOut'
+        }];
     }
 
 
@@ -4829,9 +4822,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     function _showTab(url) {
         console.log('rul', url);
         switch (url) {
-            case '/home' :
+            case '/home':
                 return true;
-            case '/memberIndex' :
+            case '/memberIndex':
                 return true;
             default:
                 return false;
@@ -4847,55 +4840,47 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         //var title = _getTitle();
         var title = '_getTitle()';
         var _objDefaulOne = {
-            colNumCss: 'twoTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-            thisItem: 'thisItem',//高亮 css 名称
-            name: title,//名称
-            route: url//routeUrl
+            colNumCss: 'twoTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            thisItem: 'thisItem', //高亮 css 名称
+            name: title, //名称
+            route: url //routeUrl
         };
         switch (url) {
             case '/home':
-                _obj = [
-                    {
-                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: _objDefaulOne.thisItem,//高亮
-                        name: '供',//名称
-                        route: 'home'//routeUrl
-                    },
-                    {
-                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: false,//高亮
-                        name: '需',//名称
-                        route: 'memberIndex'//routeUrl
-                    },
-                    {
-                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: false,//高亮
-                        name: '评',//名称
-                        route: 'memberIndex'//routeUrl
-                    },
-                    {
-                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: false,//高亮
-                        name: '<i class="fa fa-ellipsis-h"></i>',//名称
-                        route: 'memberIndex'//routeUrl
-                    },
-                ];
+                _obj = [{
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: _objDefaulOne.thisItem, //高亮
+                    name: '供', //名称
+                    route: 'home' //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '需', //名称
+                    route: 'memberIndex' //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '评', //名称
+                    route: 'memberIndex' //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                    route: 'memberIndex' //routeUrl
+                }, ];
                 return _obj;
             case '/memberIndex':
-                _obj = [
-                    {
-                        colNumCss: _objDefaulOne.colNumCss,//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: false,//高亮
-                        name: '首页',//名称
-                        route: 'home'//routeUrl
-                    },
-                    {
-                        colNumCss: _objDefaulOne.colNumCss,//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: _objDefaulOne.thisItem,//高亮
-                        name: '我的',//名称
-                        route: 'memberIndex'//routeUrl
-                    },
-                ];
+                _obj = [{
+                    colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '首页', //名称
+                    route: 'home' //routeUrl
+                }, {
+                    colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: _objDefaulOne.thisItem, //高亮
+                    name: '我的', //名称
+                    route: 'memberIndex' //routeUrl
+                }, ];
                 return _obj;
             default:
                 return [];
@@ -4911,7 +4896,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      * 16/8/21 上午9:53 ByRockBlus
      **************************/
     function getGps() {
-        setTimeout(function () {
+        setTimeout(function() {
             console.log('thi', thisTools);
         }, 2000);
         //thisTools.trueWeb(_web, _app);//判断手机 或者 app 来判断 定位 ,获取地理位置数据
@@ -4934,7 +4919,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          *************************/
         function _app() {
             var gpsObj = {};
-            document.addEventListener('plusready', function (e) {
+            document.addEventListener('plusready', function(e) {
                 plus.geolocation.getCurrentPosition(_success, _err, _option);
 
                 //定位成功回调
@@ -4942,12 +4927,18 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                     console.log('p', p);
                     gpsObj.lat = p.coords.latitude;
                     gpsObj.lng = p.coords.longitude;
-                    thisTools.alert({'title': gpsObj.lat, 'content': gpsObj.lng});
+                    thisTools.alert({
+                        'title': gpsObj.lat,
+                        'content': gpsObj.lng
+                    });
                 }
 
                 //失败回调
                 function _err(e) {
-                    thisTools.alert({title: '获取位置失败', content: ''});
+                    thisTools.alert({
+                        title: '获取位置失败',
+                        content: ''
+                    });
 
                 }
 
@@ -4986,8 +4977,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
 
 })();
-
-
 /**
  *tools.dipan.block.factory.js
  * 命名注释：server简称_tools. 父模块 dipan . 功能_tools 相关服务:otherDiv. 类型_factory.js
@@ -4995,9 +4984,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
  * Created by rockblus on 16-2-5.
  */
 
-(function (window) {
+(function(window) {
     'use strict';
     angular.module('dipan').factory('tools', tools);
+
 
 
     tools.$inject = ['$http', '$rootScope', '$q', 'ui'];
@@ -5062,7 +5052,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             var reContent = document.getElementById('otherData');
             if (reContent) {
                 reContent = angular.element(reContent);
-                setTimeout(function () {
+                setTimeout(function() {
                     reContent = reContent.attr('data');
                     reContent = JSON.parse(reContent);
                     fun(reContent);
@@ -5092,7 +5082,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * 16/2/18 */
         function arrDel(arr, num) {
             if (!Array.prototype.remove) {
-                Array.prototype.remove = function (from, to) {
+                Array.prototype.remove = function(from, to) {
                     var rest = this.slice((to || from) + 1 || this.length);
                     this.length = from < 0 ? this.length + from : from;
                     return this.push.apply(this, rest);
@@ -5106,7 +5096,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * angular post
          * 15-3-27 */
         function postJsp(getMoreUrl, data) {
-            $rootScope.$broadcast('openLoading');//http请求前 显示loading
+            $rootScope.$broadcast('openLoading'); //http请求前 显示loading
             var endData = {};
             for (var vo in data) {
                 endData[vo] = data[vo];
@@ -5134,22 +5124,22 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             function _post(url, postData) {
                 var defer = $q.defer();
                 $http({
-                    url: url,
-                    method: 'POST',
-                    data: postData,
-                    timeout: 10000
-                })
-                    .success(function (doc) {
-                        $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
+                        url: url,
+                        method: 'POST',
+                        data: postData,
+                        timeout: 10000
+                    })
+                    .success(function(doc) {
+                        $rootScope.$broadcast('closeLoading'); //http请求成功 关闭loading
                         defer.resolve(doc);
-                    }).error(function (err) {
-                    $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
-                    defer.reject(err);
-                    re.alert({
-                        title: '网络请求失败',
-                        content: '请检查网络设置'
+                    }).error(function(err) {
+                        $rootScope.$broadcast('closeLoading'); //http请求成功 关闭loading
+                        defer.reject(err);
+                        re.alert({
+                            title: '网络请求失败',
+                            content: '请检查网络设置'
+                        });
                     });
-                });
                 return defer.promise;
             }
 
@@ -5177,21 +5167,19 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * 16/8/19 上午7:32 ByRockBlus
          *************************/
         function trueWeb(web, app) {
-            setTimeout(function(){
+            setTimeout(function() {
                 if (window.trueWeb()) {
                     web();
                 } else {
                     app();
                 }
-            },0);
+            }, 0);
 
         }
 
         return re;
     }
 })(window);
-
-
 /**
  * ui.dipan.ui.factory.js
  * 命名注释：server简称_ui. 父模块 dipan . 功能_ui相关封装(alert,),rootScope 下的事件触发,. 类型_factory.js
@@ -5227,44 +5215,79 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
  * 类型_factory.js
  */
 
-(function () {
+(function() {
     'use strict';
     angular.module('dipan').factory('update', upData);
     upData.$inject = ['config'];
 
     var _this;
+    var _config;
 
     function upData(config) {
         var re = {};
         re.upFileList = {
             //需要下载的 文件url list
-            appJs: config.host.appPath + 'dist/js/app.js',//app.js
-            appCss: config.host.appPath + 'src/css/app.css',//app.css
-            appJsSavePath: '_documents/app.js',//app.js 存储路径
-            appCssSavePath: '_documents/app.css',//app.css 存储路径
+            appJs: config.host.appPath + 'dist/js/app.js', //app.js
+            appCss: config.host.appPath + 'src/css/app.css', //app.css
+            appJsSavePath: '_documents/app.js', //app.js 存储路径
+            appCssSavePath: '_documents/app.css', //app.css 存储路径
         };
-        re.trueUpdate = _trueUpdate;//判断是否升级
-        re.saveFile = _saveFile;//下载文件并存储
-        re.saveItemLocalStore = _saveItemLocalStore;//记录localStore
-        re.delItemLocalStore = _delItemLocalStore;//删除 localStore
-        re.delAppJsCss = _delAppJsCss;//删除文件 app.js app.css
-        re.init = _init;//起始动作,plusReady之后再调用
+        re.trueUpdate = _trueUpdate; //判断是否升级
+        re.saveFile = _saveFile; //下载文件并存储
+        re.saveItemLocalStore = _saveItemLocalStore; //记录localStore
+        re.delItemLocalStore = _delItemLocalStore; //删除 localStore
+        re.delAppJsCss = _delAppJsCss; //删除文件 app.js app.css
+        re.init = _init; //起始动作,plusReady之后再调用
 
         _this = re;
+        _config = config;
+
         return re;
     }
 
-    //起始动作,plusReady之后再调用
-    function _init() {
-        
+    _this.init();
+
+
+
+    //升级更新起始动作,plusReady之后再调用,传入 name  str ,单独文件名(app.js,app.css),
+    function _init(name) {
+        //判断是否存在,如果不存在 直接下载,记录localStroe
+        //存在,先删除,再下载
+        _trueUpdate(name, __isHaveCall, __isNoCall);
+
+        /*************************
+         * 存在
+         * 16/8/22 下午5:09 ByRockBlus
+         *************************/
+        function __isHaveCall() {
+
+        }
+
+        /**
+         * [__isNoCall 不存在 直接下载n]
+         * @param  {[string]} savePath       [存储到app本地的 路径]
+         * @param  {[string]} downItemNetUrl [需要下载的文件url]
+         * @param  {[string]} localName      []
+         */
+        function __isNoCall(savePath, downItemNetUrl, localName) {
+            _saveFile(savePath, downItemNetUrl, function() {
+                _saveItemLocalStore(localName, savePath); //存储本地localstroe name，val
+
+            }, function() {
+
+
+
+            });
+        }
+
     }
 
     //删除文件 app.js app.css ,传入 文件路径 ,回调
     function _delAppJsCss(filePath, createDownload) {
-        plus.io.resolveLocalFileSystemURL(filePath, succesCb, errorCb);//判断是否存在app.js 存在就删除,然后下载,不存在,直接下载
+        plus.io.resolveLocalFileSystemURL(filePath, succesCb, errorCb); //判断是否存在app.js 存在就删除,然后下载,不存在,直接下载
 
         function succesCb(e) {
-            e.remove(function () {
+            e.remove(function() {
                 createDownload();
             });
         }
@@ -5274,22 +5297,55 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         }
     }
 
-    //判断是否升级
-    function _trueUpdate() {
+    //判断是否升级,
+    function _trueUpdate(name, __isHaveCall, __isNoCall) {
+        var savePath; //需要存储的 文件path
+        var downItemNetUrl; //需要远程下载 的url
+        var localName; //local标示
+        var isHave; //get local ,是否存在
+
+        switch (name) {
+            case 'app.js':
+                savePath = _this.upFileList.appJsSavePath;
+                downItemNetUrl = _this.upFileList.appJs;
+                isHave = localStorage.getItem(_config.localSaveName.downLoad.appJsPath);
+                localName = _config.localSaveName.downLoad.appJsPath;
+                break;
+            case 'app.css':
+                savePath = _this.upFileList.appCssSavePath;
+                downItemNetUrl = _this.upFileList.appCss;
+                isHave = localStorage.getItem(_config.localSaveName.downLoad.appCssPath);
+                localName = _config.localSaveName.downLoad.appJsPath;
+                break;
+        }
+
+        if (isHave) {
+            console.log('log', 1);
+            /**
+             * 
+             */
+
+        } else {
+            /**
+             * 不存在,直接下载
+             */
+            __isNoCall(savePath, downItemNetUrl, localName);
+
+        }
+
 
     }
 
     //建立下载 传 文件path,成功回调,失败回调
-    function _saveFile(filePath, succesCall, errCall) {
+    function _saveFile(filePath, downItemNetUrl, succesCall, errCall) {
 
-
-        var dtask = plus.downloader.createDownload("http://192.168.0.25/Public/app/dist/js/app.js", {
+        var dtask = plus.downloader.createDownload(downItemNetUrl, {
             filename: filePath
-        }, function (d, status) {
+        }, function(d, status) {
             // 下载完成
             if (status == 200) {
-                plus.io.resolveLocalFileSystemURL(d.filename, function (entry) {
-                    succesCall();
+                plus.io.resolveLocalFileSystemURL(d.filename, function(entry) {
+                    succesCall(entry);
                 });
             } else {
                 //下载失败
@@ -5301,19 +5357,25 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
     //_saveItemLocalStore ,存储localStore
     function _saveItemLocalStore(name, path) {
-
+        if (name && path) {
+            //先清除
+            _delItemLocalStore(name);
+            setTimeout(function() {
+                // 1秒后存储
+                localStorage.saveItem(name, path);
+            }, 1000);
+        }
 
     }
 
     //_delItemLocalStore ,删除localStore
     function _delItemLocalStore(name) {
-
-
+        localStorage.removeItem(name);
     }
 
 
-})();
 
+})();
 /**
  * urlParse.dipan.urlParse.factory.js
  * 命名注释：server简称_urlParse. 父模块 dipan . 功能_全局变量 数据 模型. 类型_factory.js

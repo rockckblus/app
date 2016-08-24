@@ -3,7 +3,7 @@
  * 命名注释：server简称_localData. 父模块 dipan . 功能_本地 & app 默认数据. 类型_factory.js
  */
 
-(function () {
+(function() {
     'use strict';
     angular.module('dipan').factory('localData', localData);
 
@@ -19,14 +19,14 @@
         thisRootScope = $rootScope;
         location = $location;
         thisLocalData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
-        thisLocalData.tab = _tab;//根据 url 遍历 给tab数据
-        thisLocalData.showTab = _showTab;//遍历url 返回true false ,控制是否显示tab
-        thisLocalData.getTitle = _getTitle;//getTitle
+        thisLocalData.tab = _tab; //根据 url 遍历 给tab数据
+        thisLocalData.showTab = _showTab; //遍历url 返回true false ,控制是否显示tab
+        thisLocalData.getTitle = _getTitle; //getTitle
         thisLocalData.gps = {
-            isHaveGps: false,//判断
+            isHaveGps: false, //判断
         };
 
-        thisLocalData._init = function () {
+        thisLocalData._init = function() {
             thisTools = tools;
         };
 
@@ -40,9 +40,9 @@
      *************************/
     function _getTitle(url) {
         switch (url) {
-            case '/memberIndex' :
-                return '我的';
-            case '/home' :
+            case '/memberIndex':
+                return '我的1';
+            case '/home':
                 return 'Home';
             default:
                 return false;
@@ -54,16 +54,13 @@
      * 16/8/15 上午9:02 ByRockBlus
      *************************/
     function _memberIndexNav() {
-        return [
-            {
-                'name': '资料编辑',
-                'url': 'member/memberInfo'
-            },
-            {
-                'name': '退出登录',
-                'url': 'member/loginOut'
-            }
-        ];
+        return [{
+            'name': '资料编辑',
+            'url': 'member/memberInfo'
+        }, {
+            'name': '退出登录',
+            'url': 'member/loginOut'
+        }];
     }
 
 
@@ -74,9 +71,9 @@
     function _showTab(url) {
         console.log('rul', url);
         switch (url) {
-            case '/home' :
+            case '/home':
                 return true;
-            case '/memberIndex' :
+            case '/memberIndex':
                 return true;
             default:
                 return false;
@@ -92,55 +89,47 @@
         //var title = _getTitle();
         var title = '_getTitle()';
         var _objDefaulOne = {
-            colNumCss: 'twoTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-            thisItem: 'thisItem',//高亮 css 名称
-            name: title,//名称
-            route: url//routeUrl
+            colNumCss: 'twoTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            thisItem: 'thisItem', //高亮 css 名称
+            name: title, //名称
+            route: url //routeUrl
         };
         switch (url) {
             case '/home':
-                _obj = [
-                    {
-                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: _objDefaulOne.thisItem,//高亮
-                        name: '供',//名称
-                        route: 'home'//routeUrl
-                    },
-                    {
-                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: false,//高亮
-                        name: '需',//名称
-                        route: 'memberIndex'//routeUrl
-                    },
-                    {
-                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: false,//高亮
-                        name: '评',//名称
-                        route: 'memberIndex'//routeUrl
-                    },
-                    {
-                        colNumCss: 'fourTab',//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: false,//高亮
-                        name: '<i class="fa fa-ellipsis-h"></i>',//名称
-                        route: 'memberIndex'//routeUrl
-                    },
-                ];
+                _obj = [{
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: _objDefaulOne.thisItem, //高亮
+                    name: '供', //名称
+                    route: 'home' //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '需', //名称
+                    route: 'memberIndex' //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '评', //名称
+                    route: 'memberIndex' //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                    route: 'memberIndex' //routeUrl
+                }, ];
                 return _obj;
             case '/memberIndex':
-                _obj = [
-                    {
-                        colNumCss: _objDefaulOne.colNumCss,//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: false,//高亮
-                        name: '首页',//名称
-                        route: 'home'//routeUrl
-                    },
-                    {
-                        colNumCss: _objDefaulOne.colNumCss,//设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: _objDefaulOne.thisItem,//高亮
-                        name: '我的',//名称
-                        route: 'memberIndex'//routeUrl
-                    },
-                ];
+                _obj = [{
+                    colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '首页', //名称
+                    route: 'home' //routeUrl
+                }, {
+                    colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: _objDefaulOne.thisItem, //高亮
+                    name: '我的', //名称
+                    route: 'memberIndex' //routeUrl
+                }, ];
                 return _obj;
             default:
                 return [];
@@ -156,7 +145,7 @@
      * 16/8/21 上午9:53 ByRockBlus
      **************************/
     function getGps() {
-        setTimeout(function () {
+        setTimeout(function() {
             console.log('thi', thisTools);
         }, 2000);
         //thisTools.trueWeb(_web, _app);//判断手机 或者 app 来判断 定位 ,获取地理位置数据
@@ -179,7 +168,7 @@
          *************************/
         function _app() {
             var gpsObj = {};
-            document.addEventListener('plusready', function (e) {
+            document.addEventListener('plusready', function(e) {
                 plus.geolocation.getCurrentPosition(_success, _err, _option);
 
                 //定位成功回调
@@ -187,12 +176,18 @@
                     console.log('p', p);
                     gpsObj.lat = p.coords.latitude;
                     gpsObj.lng = p.coords.longitude;
-                    thisTools.alert({'title': gpsObj.lat, 'content': gpsObj.lng});
+                    thisTools.alert({
+                        'title': gpsObj.lat,
+                        'content': gpsObj.lng
+                    });
                 }
 
                 //失败回调
                 function _err(e) {
-                    thisTools.alert({title: '获取位置失败', content: ''});
+                    thisTools.alert({
+                        title: '获取位置失败',
+                        content: ''
+                    });
 
                 }
 
@@ -231,4 +226,3 @@
 
 
 })();
-

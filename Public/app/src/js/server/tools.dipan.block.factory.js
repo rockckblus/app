@@ -5,9 +5,10 @@
  * Created by rockblus on 16-2-5.
  */
 
-(function (window) {
+(function(window) {
     'use strict';
     angular.module('dipan').factory('tools', tools);
+
 
 
     tools.$inject = ['$http', '$rootScope', '$q', 'ui'];
@@ -72,7 +73,7 @@
             var reContent = document.getElementById('otherData');
             if (reContent) {
                 reContent = angular.element(reContent);
-                setTimeout(function () {
+                setTimeout(function() {
                     reContent = reContent.attr('data');
                     reContent = JSON.parse(reContent);
                     fun(reContent);
@@ -102,7 +103,7 @@
          * 16/2/18 */
         function arrDel(arr, num) {
             if (!Array.prototype.remove) {
-                Array.prototype.remove = function (from, to) {
+                Array.prototype.remove = function(from, to) {
                     var rest = this.slice((to || from) + 1 || this.length);
                     this.length = from < 0 ? this.length + from : from;
                     return this.push.apply(this, rest);
@@ -116,7 +117,7 @@
          * angular post
          * 15-3-27 */
         function postJsp(getMoreUrl, data) {
-            $rootScope.$broadcast('openLoading');//http请求前 显示loading
+            $rootScope.$broadcast('openLoading'); //http请求前 显示loading
             var endData = {};
             for (var vo in data) {
                 endData[vo] = data[vo];
@@ -144,22 +145,22 @@
             function _post(url, postData) {
                 var defer = $q.defer();
                 $http({
-                    url: url,
-                    method: 'POST',
-                    data: postData,
-                    timeout: 10000
-                })
-                    .success(function (doc) {
-                        $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
+                        url: url,
+                        method: 'POST',
+                        data: postData,
+                        timeout: 10000
+                    })
+                    .success(function(doc) {
+                        $rootScope.$broadcast('closeLoading'); //http请求成功 关闭loading
                         defer.resolve(doc);
-                    }).error(function (err) {
-                    $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
-                    defer.reject(err);
-                    re.alert({
-                        title: '网络请求失败',
-                        content: '请检查网络设置'
+                    }).error(function(err) {
+                        $rootScope.$broadcast('closeLoading'); //http请求成功 关闭loading
+                        defer.reject(err);
+                        re.alert({
+                            title: '网络请求失败',
+                            content: '请检查网络设置'
+                        });
                     });
-                });
                 return defer.promise;
             }
 
@@ -187,17 +188,16 @@
          * 16/8/19 上午7:32 ByRockBlus
          *************************/
         function trueWeb(web, app) {
-            setTimeout(function(){
+            setTimeout(function() {
                 if (window.trueWeb()) {
                     web();
                 } else {
                     app();
                 }
-            },0);
+            }, 0);
 
         }
 
         return re;
     }
 })(window);
-
