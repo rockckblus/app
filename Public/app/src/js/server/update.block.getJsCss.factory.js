@@ -62,13 +62,10 @@
          * @param  {[string]} localName      []
          */
         function __isNoCall(savePath, downItemNetUrl, localName) {
-            _saveFile(savePath, downItemNetUrl, function() {
+            _saveFile(savePath, downItemNetUrl, function(savePath) {
                 _saveItemLocalStore(localName, savePath); //存储本地localstroe name，val
-
-            }, function() {
-
-
-
+            }, function(err) {
+                console.error('err', err);
             });
         }
 
@@ -126,23 +123,25 @@
 
         }
 
-
     }
 
     //建立下载 传 文件path,成功回调,失败回调
     function _saveFile(filePath, downItemNetUrl, succesCall, errCall) {
-
+                console.log('downItemll',downItemNetUrl);
         var dtask = plus.downloader.createDownload(downItemNetUrl, {
-            filename: filePath
+            filename: filePath,
+            timeout: 1000
         }, function(d, status) {
             // 下载完成
             if (status == 200) {
                 plus.io.resolveLocalFileSystemURL(d.filename, function(entry) {
-                    succesCall(entry);
+                    console.log('下载成功');
+                    // succesCall(entry);
                 });
             } else {
+                console.log('下载失败');
                 //下载失败
-                errCall();
+                // errCall();
             }
         });
 
