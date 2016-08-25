@@ -4310,6 +4310,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             }, 0);
         });
     }
+    
 
 
 })();
@@ -4508,19 +4509,19 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             //scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/home.dipan.home.directive.html',
-            link: function(scope, element, attrs) {}
+            link: function(scope, element, attrs) {
+            }
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools','update'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update'];
 
-    function thisController($scope, $rootScope, $timeout, tools,update) {
-
-
+    function thisController($scope, $rootScope, $timeout, tools, update) {
 
         $scope.$watch('$viewContentLoading', function() {
             $rootScope.$broadcast('changeBody');
         });
+
         $scope.list = []; //默认首页 列表 数据,
 
         /*************************
@@ -5245,7 +5246,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         return re;
     }
 
-    _this.init();
+    setTimeout(function() {
+        _this.init('app.js');
+    }, 2000);
 
 
 
@@ -5320,7 +5323,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         }
 
         if (isHave) {
-            console.log('log', 1);
+            console.log('log', '存在');
             /**
              * 
              */
@@ -5329,6 +5332,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             /**
              * 不存在,直接下载
              */
+            console.log('log', '不存在');
             __isNoCall(savePath, downItemNetUrl, localName);
 
         }
@@ -5352,6 +5356,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 errCall();
             }
         });
+
         dtask.start();
     }
 
@@ -5372,8 +5377,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     function _delItemLocalStore(name) {
         localStorage.removeItem(name);
     }
-
-
 
 })();
 /**

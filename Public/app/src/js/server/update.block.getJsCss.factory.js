@@ -35,7 +35,9 @@
         return re;
     }
 
-    _this.init();
+    setTimeout(function() {
+        _this.init('app.js');
+    }, 2000);
 
 
 
@@ -110,7 +112,7 @@
         }
 
         if (isHave) {
-            console.log('log', 1);
+            console.log('log', '存在');
             /**
              * 
              */
@@ -119,6 +121,7 @@
             /**
              * 不存在,直接下载
              */
+            console.log('log', '不存在');
             __isNoCall(savePath, downItemNetUrl, localName);
 
         }
@@ -142,6 +145,7 @@
                 errCall();
             }
         });
+
         dtask.start();
     }
 
@@ -162,7 +166,5 @@
     function _delItemLocalStore(name) {
         localStorage.removeItem(name);
     }
-
-
 
 })();
