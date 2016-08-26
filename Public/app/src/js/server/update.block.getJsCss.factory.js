@@ -32,7 +32,6 @@
         return re;
     }
 
-
     //升级更新起始动作,plusReady之后再调用,传入 name  str ,单独文件名(app.js,app.css),
     function _init() {
         /**************************
