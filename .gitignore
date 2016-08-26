@@ -34,3 +34,9 @@ Application/diguo/*
 
 
 *.swp
+
+Public/app/.idea/*
+
+Public/app/.idea/workspace.xml
+
+Public/app/.idea/workspace.xml

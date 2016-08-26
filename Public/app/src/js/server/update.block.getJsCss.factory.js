@@ -32,7 +32,6 @@
         return re;
     }
 
-<<<<<<< HEAD
 
     //升级更新起始动作,plusReady之后再调用,传入 name  str ,单独文件名(app.js,app.css),
     function _init() {
@@ -47,42 +46,7 @@
                 content: err
             })
         });
-=======
-    setTimeout(function() {
-        _this.init('app.js');
-    }, 2000);
 
-
-
-    //升级更新起始动作,plusReady之后再调用,传入 name  str ,单独文件名(app.js,app.css),
-    function _init(name) {
-        //判断是否存在,如果不存在 直接下载,记录localStroe
-        //存在,先删除,再下载
-        _trueUpdate(name, __isHaveCall, __isNoCall);
-
-        /*************************
-         * 存在
-         * 16/8/22 下午5:09 ByRockBlus
-         *************************/
-        function __isHaveCall() {
-
-        }
-
-        /**
-         * [__isNoCall 不存在 直接下载n]
-         * @param  {[string]} savePath       [存储到app本地的 路径]
-         * @param  {[string]} downItemNetUrl [需要下载的文件url]
-         * @param  {[string]} localName      []
-         */
-        function __isNoCall(savePath, downItemNetUrl, localName) {
-            _saveFile(savePath, downItemNetUrl, function(savePath) {
-                _saveItemLocalStore(localName, savePath); //存储本地localstroe name，val
-            }, function(err) {
-                console.error('err', err);
-            });
-        }
-
->>>>>>> origin/mobileAngualrUi
     }
 
     //根据版本号判断是否升级
@@ -127,7 +91,6 @@
             )
         }
 
-<<<<<<< HEAD
         return defer.promise;
     }
 
@@ -136,46 +99,7 @@
         _tools.alert({
             title: '打开updataWebView'
         })
-=======
-        if (isHave) {
-            console.log('log', '存在');
-            /**
-             * 
-             */
 
-        } else {
-            /**
-             * 不存在,直接下载
-             */
-            console.log('log', '不存在');
-            __isNoCall(savePath, downItemNetUrl, localName);
-
-        }
-
-    }
-
-    //建立下载 传 文件path,成功回调,失败回调
-    function _saveFile(filePath, downItemNetUrl, succesCall, errCall) {
-                console.log('downItemll',downItemNetUrl);
-        var dtask = plus.downloader.createDownload(downItemNetUrl, {
-            filename: filePath,
-            timeout: 1000
-        }, function(d, status) {
-            // 下载完成
-            if (status == 200) {
-                plus.io.resolveLocalFileSystemURL(d.filename, function(entry) {
-                    console.log('下载成功');
-                    // succesCall(entry);
-                });
-            } else {
-                console.log('下载失败');
-                //下载失败
-                // errCall();
-            }
-        });
-
-        dtask.start();
->>>>>>> origin/mobileAngualrUi
     }
 
 
@@ -212,15 +136,10 @@
     //}
 
     //_delItemLocalStore ,删除localStore
-<<<<<<< HEAD
     //function _delItemLocalStore(name) {
     //    localStorage.removeItem(name);
     //}
 
-=======
-    function _delItemLocalStore(name) {
-        localStorage.removeItem(name);
-    }
->>>>>>> origin/mobileAngualrUi
+
 
 })();
