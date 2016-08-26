@@ -24,9 +24,11 @@
     angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'mobile-angular-ui', 'block'], hackPost).config(uiRouter);
 
     /**
-     * config 定义 全局变量
+     * config 定义 全局变量 ,并且保留到window全局变量
+     * window.config
      * 16/3/8 */
     angular.module('dipan').factory('config', function () {
+        window.config = config();
         return config();
     });
 
@@ -148,8 +150,16 @@
                     appJsPath: 'appJsPath',//app.js 更新后的下载存储路径
                     appCssPath: 'appCssPath',//app.css 更新后的下载存储路径
                 }
+            },
+            //版本号
+            version: {
+                key: 'version',//localStroe key
+                default: '1.0',//当前默认版本号,第一次安装,写入local用
+            },
+            //系统配置
+            system: {
+                timeoutUpData: 10000,//启动app之后 检查升级的 超时时间 单位:毫秒
             }
-
         };
     }
 

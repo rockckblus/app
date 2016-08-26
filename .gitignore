@@ -34,3 +34,19 @@ Application/diguo/*
 
 
 *.swp
+
+Public/app/.idea/modules.xml
+
+Public/app/.idea/misc.xml
+
+Public/app/.idea/libraries/app_node_modules.xml
+
+Public/app/.idea/jsLibraryMappings.xml
+
+Public/app/.idea/encodings.xml
+
+Public/app/.idea/app.iml
+
+Public/app/.idea/.name
+
+Public/app/.idea/workspace.xml
