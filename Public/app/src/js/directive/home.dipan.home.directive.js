@@ -13,19 +13,19 @@
             //scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/home.dipan.home.directive.html',
-            link: function(scope, element, attrs) {}
+            link: function(scope, element, attrs) {
+            }
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools','update'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update'];
 
-    function thisController($scope, $rootScope, $timeout, tools,update) {
-
-
+    function thisController($scope, $rootScope, $timeout, tools, update) {
 
         $scope.$watch('$viewContentLoading', function() {
             $rootScope.$broadcast('changeBody');
         });
+
         $scope.list = []; //默认首页 列表 数据,
 
         /*************************

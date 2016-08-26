@@ -4310,6 +4310,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             }, 0);
         });
     }
+    
 
 
 })();
@@ -4508,19 +4509,19 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             //scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/home.dipan.home.directive.html',
-            link: function(scope, element, attrs) {}
+            link: function(scope, element, attrs) {
+            }
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools','update'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update'];
 
-    function thisController($scope, $rootScope, $timeout, tools,update) {
-
-
+    function thisController($scope, $rootScope, $timeout, tools, update) {
 
         $scope.$watch('$viewContentLoading', function() {
             $rootScope.$broadcast('changeBody');
         });
+
         $scope.list = []; //默认首页 列表 数据,
 
         /*************************
@@ -5245,7 +5246,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         return re;
     }
 
-    _this.init();
+    setTimeout(function() {
+        _this.init('app.js');
+    }, 2000);
 
 
 
@@ -5270,13 +5273,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * @param  {[string]} localName      []
          */
         function __isNoCall(savePath, downItemNetUrl, localName) {
-            _saveFile(savePath, downItemNetUrl, function() {
+            _saveFile(savePath, downItemNetUrl, function(savePath) {
                 _saveItemLocalStore(localName, savePath); //存储本地localstroe name，val
-
-            }, function() {
-
-
-
+            }, function(err) {
+                console.error('err', err);
             });
         }
 
@@ -5320,7 +5320,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         }
 
         if (isHave) {
-            console.log('log', 1);
+            console.log('log', '存在');
             /**
              * 
              */
@@ -5329,29 +5329,33 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             /**
              * 不存在,直接下载
              */
+            console.log('log', '不存在');
             __isNoCall(savePath, downItemNetUrl, localName);
 
         }
-
 
     }
 
     //建立下载 传 文件path,成功回调,失败回调
     function _saveFile(filePath, downItemNetUrl, succesCall, errCall) {
-
+                console.log('downItemll',downItemNetUrl);
         var dtask = plus.downloader.createDownload(downItemNetUrl, {
-            filename: filePath
+            filename: filePath,
+            timeout: 1000
         }, function(d, status) {
             // 下载完成
             if (status == 200) {
                 plus.io.resolveLocalFileSystemURL(d.filename, function(entry) {
-                    succesCall(entry);
+                    console.log('下载成功');
+                    // succesCall(entry);
                 });
             } else {
+                console.log('下载失败');
                 //下载失败
-                errCall();
+                // errCall();
             }
         });
+
         dtask.start();
     }
 
@@ -5372,8 +5376,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     function _delItemLocalStore(name) {
         localStorage.removeItem(name);
     }
-
-
 
 })();
 /**
