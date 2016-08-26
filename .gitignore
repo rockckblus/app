@@ -35,8 +35,16 @@ Application/diguo/*
 
 *.swp
 
+
 Public/app/.idea/*
 
-Public/app/.idea/workspace.xml
 
-Public/app/.idea/workspace.xml
+Public/app/.idea/.name
+
+*.iml
+
+Public/app/dist/js/app.js
+
+Public/app/dist/js/app.templates.js
+
+Public/app/js/app/dist/app.js

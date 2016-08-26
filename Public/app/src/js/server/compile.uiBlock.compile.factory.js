@@ -11,7 +11,6 @@
 
     compile.$inject = ['$compile'];
 
-
     function compile($compile) {
         function _compile(domId, htmlStr, scope) {
             try {
@@ -24,10 +23,7 @@
                 console.error(e);
             }
         }
-
         return _compile;
     }
-
-
 })();
 
