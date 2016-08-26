@@ -182,4 +182,23 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "memberINfo"
   );
 
+
+  $templateCache.put('updata.html',
+    "<!DOCTYPE html>\n" +
+    "<html>\n" +
+    "<head>\n" +
+    "    <meta charset=\"utf-8\"/>\n" +
+    "    <title>updata</title>\n" +
+    "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\"/>\n" +
+    "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\"/>\n" +
+    "    <meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1.0, maximum-scale=1.0\"/>\n" +
+    "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"yes\"/>\n" +
+    "    <script src=\"../../dist/js/updata.js\"></script>\n" +
+    "</head>\n" +
+    "\n" +
+    "<body>\n" +
+    "</body>\n" +
+    "</html>\n"
+  );
+
 }]);

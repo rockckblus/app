@@ -4729,7 +4729,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
     compile.$inject = ['$compile'];
 
-
     function compile($compile) {
         function _compile(domId, htmlStr, scope) {
             try {
@@ -4742,11 +4741,8 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 console.error(e);
             }
         }
-
         return _compile;
     }
-
-
 })();
 
 
@@ -5216,7 +5212,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
  * 类型_factory.js
  */
 
-(function() {
+(function () {
     'use strict';
     angular.module('dipan').factory('update', upData);
     upData.$inject = ['config'];
@@ -5239,6 +5235,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         re.delItemLocalStore = _delItemLocalStore; //删除 localStore
         re.delAppJsCss = _delAppJsCss; //删除文件 app.js app.css
         re.init = _init; //起始动作,plusReady之后再调用
+        re.upFileName = ['app.js', 'app.css'];
 
         _this = re;
         _config = config;
@@ -5246,17 +5243,12 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         return re;
     }
 
-    setTimeout(function() {
-        _this.init('app.js');
-    }, 2000);
-
-
 
     //升级更新起始动作,plusReady之后再调用,传入 name  str ,单独文件名(app.js,app.css),
     function _init(name) {
         //判断是否存在,如果不存在 直接下载,记录localStroe
         //存在,先删除,再下载
-        _trueUpdate(name, __isHaveCall, __isNoCall);
+        _trueUpdate(__isHaveCall, __isNoCall);
 
         /*************************
          * 存在
@@ -5273,11 +5265,12 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * @param  {[string]} localName      []
          */
         function __isNoCall(savePath, downItemNetUrl, localName) {
-            _saveFile(savePath, downItemNetUrl, function(savePath) {
-                _saveItemLocalStore(localName, savePath); //存储本地localstroe name，val
-            }, function(err) {
-                console.error('err', err);
-            });
+            console.log(savePath,downItemNetUrl,localName);
+            //_saveFile(savePath, downItemNetUrl, function (savePath) {
+            //    _saveItemLocalStore(localName, savePath); //存储本地localstroe name，val
+            //}, function (err) {
+            //    console.error('err', err);
+            //});
         }
 
     }
@@ -5287,7 +5280,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         plus.io.resolveLocalFileSystemURL(filePath, succesCb, errorCb); //判断是否存在app.js 存在就删除,然后下载,不存在,直接下载
 
         function succesCb(e) {
-            e.remove(function() {
+            e.remove(function () {
                 createDownload();
             });
         }
@@ -5298,54 +5291,52 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     }
 
     //判断是否升级,
-    function _trueUpdate(name, __isHaveCall, __isNoCall) {
+    function _trueUpdate(__isHaveCall, __isNoCall) {
         var savePath; //需要存储的 文件path
         var downItemNetUrl; //需要远程下载 的url
         var localName; //local标示
         var isHave; //get local ,是否存在
+        angular.forEach(_this.upFileName, function (vo) {
+            switch (vo) {
+                case 'app.js':
+                    savePath = _this.upFileList.appJsSavePath;
+                    downItemNetUrl = _this.upFileList.appJs;
+                    isHave = localStorage.getItem(_config.localSaveName.downLoad.appJsPath);
+                    localName = _config.localSaveName.downLoad.appJsPath;
+                    break;
+                case 'app.css':
+                    savePath = _this.upFileList.appCssSavePath;
+                    downItemNetUrl = _this.upFileList.appCss;
+                    isHave = localStorage.getItem(_config.localSaveName.downLoad.appCssPath);
+                    localName = _config.localSaveName.downLoad.appJsPath;
+                    break;
+            }
 
-        switch (name) {
-            case 'app.js':
-                savePath = _this.upFileList.appJsSavePath;
-                downItemNetUrl = _this.upFileList.appJs;
-                isHave = localStorage.getItem(_config.localSaveName.downLoad.appJsPath);
-                localName = _config.localSaveName.downLoad.appJsPath;
-                break;
-            case 'app.css':
-                savePath = _this.upFileList.appCssSavePath;
-                downItemNetUrl = _this.upFileList.appCss;
-                isHave = localStorage.getItem(_config.localSaveName.downLoad.appCssPath);
-                localName = _config.localSaveName.downLoad.appJsPath;
-                break;
-        }
+            if (isHave) {
+                console.log('log', '存在');
+                __isHaveCall();
+            } else {
+                /**
+                 * 不存在,直接下载
+                 */
+                console.log('log', '不存在');
+                __isNoCall(savePath, downItemNetUrl, localName);
+            }
+        });
 
-        if (isHave) {
-            console.log('log', '存在');
-            /**
-             * 
-             */
-
-        } else {
-            /**
-             * 不存在,直接下载
-             */
-            console.log('log', '不存在');
-            __isNoCall(savePath, downItemNetUrl, localName);
-
-        }
 
     }
 
     //建立下载 传 文件path,成功回调,失败回调
     function _saveFile(filePath, downItemNetUrl, succesCall, errCall) {
-                console.log('downItemll',downItemNetUrl);
+        console.log('downItemll', downItemNetUrl);
         var dtask = plus.downloader.createDownload(downItemNetUrl, {
             filename: filePath,
             timeout: 1000
-        }, function(d, status) {
+        }, function (d, status) {
             // 下载完成
             if (status == 200) {
-                plus.io.resolveLocalFileSystemURL(d.filename, function(entry) {
+                plus.io.resolveLocalFileSystemURL(d.filename, function (entry) {
                     console.log('下载成功');
                     // succesCall(entry);
                 });
@@ -5364,7 +5355,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         if (name && path) {
             //先清除
             _delItemLocalStore(name);
-            setTimeout(function() {
+            setTimeout(function () {
                 // 1秒后存储
                 localStorage.saveItem(name, path);
             }, 1000);
@@ -5651,6 +5642,25 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('route/member/memberInfo.html',
     "memberINfo"
+  );
+
+
+  $templateCache.put('updata.html',
+    "<!DOCTYPE html>\n" +
+    "<html>\n" +
+    "<head>\n" +
+    "    <meta charset=\"utf-8\"/>\n" +
+    "    <title>updata</title>\n" +
+    "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\"/>\n" +
+    "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\"/>\n" +
+    "    <meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1.0, maximum-scale=1.0\"/>\n" +
+    "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"yes\"/>\n" +
+    "    <script src=\"../../dist/js/updata.js\"></script>\n" +
+    "</head>\n" +
+    "\n" +
+    "<body>\n" +
+    "</body>\n" +
+    "</html>\n"
   );
 
 }]);
