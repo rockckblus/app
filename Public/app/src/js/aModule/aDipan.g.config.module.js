@@ -16,6 +16,7 @@
 (function (window, document) {
     'use strict';
 
+    window.config = config();
     /**
      * 声明module
      *
@@ -28,7 +29,6 @@
      * window.config
      * 16/3/8 */
     angular.module('dipan').factory('config', function () {
-        window.config = config();
         return config();
     });
 
@@ -138,24 +138,37 @@
 
     function config() {
         return {
-            host: {
-                //host 配置
-                nodeHost: 'http://192.168.0.25:3082',//nodejsApi hostUrl
-                appPath: 'http://192.168.0.25/Public/App/'//app 静态路径
+
+            //版本号默认设置
+            version: {
+                default: '1.0',//当前默认版本号,第一次安装,写入local用
             },
+
+            //host 配置
+            host: {
+                nodeHost: 'http://192.168.0.7:3082',//nodejsApi hostUrl
+                appPath: 'http://192.168.0.7:8001/Public/App/'//app 静态路径
+            },
+
+            //localStroe 存储标示 name
             localSaveName: {
-                //localStroe 存储标示 name
                 downLoad: {
                     //下载相关
                     appJsPath: 'appJsPath',//app.js 更新后的下载存储路径
                     appCssPath: 'appCssPath',//app.css 更新后的下载存储路径
-                }
+                    isFirstJs:'isFirstJs',//是否第一次下载Js, 默认是 空,第一次 以后就写入localstroe 1 ,第2次以后,就 为 2
+                    isFirstCss:'isFirstCss',//是否第一次下载css, 默认是 空,第一次 以后就写入localstroe 1 ,第2次以后,就 为 2
+                },
+                system:{
+                    //系统配置相关
+                    trueUpdata:'trueUpdata',//(0:自动升级，1.提示升级，2.永不升级)
+                },
+                version: {
+                    //版本
+                    key: 'version',//localStroe key
+                },
             },
-            //版本号
-            version: {
-                key: 'version',//localStroe key
-                default: '1.0',//当前默认版本号,第一次安装,写入local用
-            },
+
             //系统配置
             system: {
                 timeoutUpData: 10000,//启动app之后 检查升级的 超时时间 单位:毫秒

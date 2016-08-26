@@ -237,7 +237,39 @@
 					"dist/js/res/angular.min.js.map",
 					"src/js/server/update.block.getJsCss.factory.js"
 				],
-				"refer": []
+				"refer": [
+					"src/html/updata.html"
+				]
+			},
+			"src/html/updata.html": {
+				"resources": [
+					"dist/js/updata.js",
+					"dist/js/init.js",
+					"src/js/directive/block/top.block.topNav.js",
+					"src/js/directive/block/tab.block.tabNav.directive.js",
+					"src/js/controller/dipan.g.body.controller.js",
+					"dist/js/res/angular.min.js",
+					"src/js/directive/block/loading.dipan.loanding.directive.js",
+					"src/css/app.css",
+					"src/js/server/update.block.getJsCss.factory.js",
+					"src/js/directive/block/alert.block.alertUi.directive.js",
+					"src/js/directive/home.dipan.home.directive.js",
+					"src/js/directive/member/my.dipan.myIndexNav.js",
+					"dist/js/res/angular.min.js.map",
+					"src/js/filter/toHtml.dipan.toHtml.filter.js",
+					"src/js/aModule/aDipan.g.config.module.js",
+					"src/js/server/ui.dipan.ui.factory.js",
+					"src/js/aModule/block.dipan.module.js",
+					"src/js/directive/angularEnd.dipan.angularEnd.directive.js",
+					"dist/js/res/mobile-angular-ui.js",
+					"src/js/server/localData.dipan.localDataNav.factory.js",
+					"dist/js/appDev.js",
+					"dist/js/res/angular-ui-router.min.js",
+					"src/js/server/tools.dipan.block.factory.js",
+					"dist/js/res/bindonce.min.js"
+				],
+				"refer": [],
+				"priority": 0
 			}
 		},
 		"idle": {

@@ -150,7 +150,8 @@
                 var defer = $q.defer();
                 $http({
                     url: url,
-                    method: 'POST',
+                    //method: 'POST',
+                    method: 'GET',//调试
                     data: postData,
                     timeout: 10000
                 })

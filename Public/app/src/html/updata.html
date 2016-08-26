@@ -1,15 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <title>updata</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0"/>
-    <meta name="apple-mobile-web-app-status-bar-style" content="yes"/>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        (function (window) {
+            //判断web 还是 app
+            window.trueWeb = trueWeb;
+            function trueWeb() {
+                var url = window.location.href;
+                url = url.split(':');
+                if (url[0] === 'http') {
+                    return true;
+                }
+            }
+
+        })(window);
+    </script>
+    <script src="../../dist/js/init.js"></script>
     <script src="../../dist/js/updata.js"></script>
 </head>
-
 <body>
+upData
 </body>
 </html>

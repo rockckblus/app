@@ -16,6 +16,7 @@
     var q;
 
     function upData(config, $q, tools) {
+
         var re = {};
         re.trueUpdata = trueUpdata; //根据版本号判断是否升级
         re.init = _init; //起始动作,plusReady之后再调用
@@ -43,7 +44,7 @@
             _tools.alert({
                 title: '升级失败',
                 content: err
-            })
+            });
         });
     }
 
@@ -55,17 +56,17 @@
         //if没有版本号,就写入config 默认版本号
         if (!version) {
             localStorage.setItem(_config.version.key, _config.version.default);
-            return defer.reject('第一次运行,写入版本号');
+            defer.reject('第一次运行,写入版本号');
         }
 
         //if 有version 就去接口拿需最新的 版本号,然后比较
         if (version) {
-            _getVersion(function () {
+            _getVersion(function (re) {
                 try {
-                    if (interval(version) < re.version) {
+                    if (parseFloat(version) < parseFloat(re.version)) {
                         defer.resolve(true);//回调成功执行then的 升级步骤
                     } else {
-                        return defer.reject('无需升级');
+                        defer.reject('无需升级');
                     }
                 } catch (e) {
                     console.error('请求版本失败(callBack方法中)');
@@ -73,20 +74,23 @@
                 }
             }, function (err) {
                 return defer.reject(err);
-            })
+            });
         }
+
 
         //请求接口版本号
         function _getVersion(callBack, callBackErr) {
-            var url = '';//todo
+            var url = 'http://192.168.0.7:8001/version.json?' + new Date() ;//todo
             _tools.postJsp(url, {}, true).then(function (re) {
+                    //{code: "S", version: "1.2", msg: "获取版本成功"}
                     callBack(re);
                 },
                 function (err) {
+                    console.log(222);
                     callBackErr(err);
                     console.log('err', '请求version接口失败');
                 }
-            )
+            );
         }
 
         return defer.promise;
@@ -96,7 +100,12 @@
     function openUdataWebView() {
         _tools.alert({
             title: '打开updataWebView'
-        })
+        });
+
+       plus.webview.create('updata.html');
+
+
+
     }
 
 
