@@ -33,7 +33,8 @@
       "src/html/directive/block/alert.block.alertUi.html",
       "/dist/js/init.js",
       "dist/js/init.js",
-      "dist/js/res/angular.min.js.map"
+      "dist/js/res/angular.min.js.map",
+      "src/js/server/update.block.getJsCss.factory.js"
     ],
     "refer": []
   }
