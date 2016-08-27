@@ -101,11 +101,7 @@
         _tools.alert({
             title: '打开updataWebView'
         });
-
        plus.webview.create('updata.html');
-
-
-
     }
 
 

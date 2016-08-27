@@ -22,7 +22,11 @@
          * 16/8/26 上午9:58 ByRockBlus
          **************************/
         function _init() {
-            _delAppJsCss(_this.appJsSavePath, _saveFile(_this.appJsSavePath, _this.appJs));
+            _delAppJsCss(_this.appJsSavePath,
+                _saveFile(_this.upFileList.appJsSavePath, _this.upFileList.appJs,
+                    _saveItemLocalStore(window.config.localSaveName.downLoad.appJsPath, _this.upFileList.appJsSavePath)
+                )
+            );
         }
 
         /**************************
@@ -31,11 +35,21 @@
          * 16/8/26 上午9:41 ByRockBlus
          **************************/
         function _delAppJsCss(filePath, createDownloadCall) {
-            //判断是否第一次下载
+            //逻辑:判断是否第一次下载
             // if (第一次,直接下载) else (删除下载)
             //存在就删除
             //  if(删除成功,去下载) else (删除失败)
             //不存在,,直接下载
+
+            //判断第一次下载js 变量  null('未下载过') 1('第一次') 2 ('第一次以后')
+            var firstDownJs = localStorage.getItem(window.config.localSaveName.downLoad.isFirstJs);
+
+            //if 没下载过 //不需要删除,直接下载(回调)
+            if (!firstDownJs) {
+                createDownloadCall();
+            }
+
+
             plus.io.resolveLocalFileSystemURL(filePath, succesCb, errorCb);
 
             function succesCb(e) {
@@ -77,14 +91,12 @@
                     localStorage.saveItem(name, path);
                 }, 1000);
             }
-
         }
 
         //_delItemLocalStore ,删除localStore
         function _delItemLocalStore(name) {
             localStorage.removeItem(name);
         }
-
 
         /*************************
          * 关闭当前webView
