@@ -100,7 +100,7 @@
 
         //请求接口版本号
         function _getVersion(callBack, callBackErr) {
-            var url = 'http://127.0.0.1:8081/version.json?' + new Date();//todo
+            var url = 'http://dipan.so:8080/version.json?' + new Date();//todo
             _tools.postJsp(url, {}, true).then(function (re) {
                     //{code: "S", version: "1.2", msg: "获取版本成功"}
                     callBack(re);

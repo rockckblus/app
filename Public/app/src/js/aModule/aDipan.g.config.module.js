@@ -149,7 +149,7 @@
             //host 配置
             host: {
                 nodeHost: 'http://192.168.0.7:3082',//nodejsApi hostUrl
-                appPath: 'http://127.0.0.1:8080/Public/App/'//app 静态路径
+                appPath: 'http://dipan.so/Public/App/'//app 静态路径
             },
 
             //localStroe 存储标示 name

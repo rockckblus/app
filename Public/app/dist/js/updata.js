@@ -24,6 +24,7 @@
         //    }
         //};
 
+
         var _this = {};
         _this.newVersion = getNewVersion();//父页面传递来的 版本号
         _this.upFileList = {
