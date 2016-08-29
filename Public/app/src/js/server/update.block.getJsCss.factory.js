@@ -26,15 +26,35 @@
         _tools = tools;
         q = $q;
 
-        setTimeout(function () {
+        // H5 plus事件处理
+        function plusReady() {
+            if (!window.plus) {
+                alert(2222);
+                return;
+            }
             _init();
-        }, config.system.timeoutUpData);
+        }
 
-        return re;
+        if (window.plus) {
+            plusReady();
+        } else {
+            document.addEventListener("plusready", plusReady, false);
+        }
+
+        // 监听DOMContentLoaded事件
+        //document.addEventListener("DOMContentLoaded", function () {
+        //    console.log(333333);
+        //    domready = true;
+        //    plusReady();
+        //}, false);
+
+
     }
+
 
     //升级更新起始动作,plusReady之后再调用,传入 name  str ,单独文件名(app.js,app.css),
     function _init() {
+        alert(111);
         /**************************
          * 1.检测升级
          * 2.需要升级,就去 启动 升级 打开 webview updata.html
@@ -52,10 +72,10 @@
     function trueUpdata() {
 
         var defer = q.defer();
-        var version = localStorage.getItem(_config.version.key);
+        var version = localStorage.getItem(_config.localSaveName.version.key);
         //if没有版本号,就写入config 默认版本号
         if (!version) {
-            localStorage.setItem(_config.version.key, _config.version.default);
+            localStorage.setItem(_config.localSaveName.version.key, _config.version.default);
             defer.reject('第一次运行,写入版本号');
         }
 
@@ -64,7 +84,7 @@
             _getVersion(function (re) {
                 try {
                     if (parseFloat(version) < parseFloat(re.version)) {
-                        defer.resolve(true);//回调成功执行then的 升级步骤
+                        defer.resolve(re.version);//回调成功执行then的 升级步骤
                     } else {
                         defer.reject('无需升级');
                     }
@@ -80,13 +100,12 @@
 
         //请求接口版本号
         function _getVersion(callBack, callBackErr) {
-            var url = 'http://192.168.0.7:8001/version.json?' + new Date() ;//todo
+            var url = 'http://127.0.0.1:8081/version.json?' + new Date();//todo
             _tools.postJsp(url, {}, true).then(function (re) {
                     //{code: "S", version: "1.2", msg: "获取版本成功"}
                     callBack(re);
                 },
                 function (err) {
-                    console.log(222);
                     callBackErr(err);
                     console.log('err', '请求version接口失败');
                 }
@@ -96,12 +115,15 @@
         return defer.promise;
     }
 
+
     //启动 升级 打开 webview updata.html
-    function openUdataWebView() {
+    function openUdataWebView(verison) {
         _tools.alert({
-            title: '打开updataWebView'
+            title: '打开updataWebView',
+            content: verison + '号'
         });
-       plus.webview.create('updata.html');
+
+        plus.webview.create('updata.html', '', '', {verison: verison});
     }
 
 

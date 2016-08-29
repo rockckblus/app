@@ -2,7 +2,7 @@
  * 命名注释：directive简称_home. 父模块_dipan. 功能_首页模块 类型_directive .js
  * 使用 ：<div home></div>
  */
-(function() {
+(function () {
     'use strict';
     angular.module('block').directive('home', home);
 
@@ -13,7 +13,7 @@
             //scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/home.dipan.home.directive.html',
-            link: function(scope, element, attrs) {
+            link: function (scope, element, attrs) {
             }
         };
     }
@@ -22,7 +22,10 @@
 
     function thisController($scope, $rootScope, $timeout, tools, update) {
 
-        $scope.$watch('$viewContentLoading', function() {
+        tools.alert({
+            title: '升级测试2.4'
+        });
+        $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
         });
 
@@ -40,7 +43,7 @@
 
 
         function call(re) {
-            $timeout(function() {
+            $timeout(function () {
                 $scope.list = re.data.list;
             }, 0);
         }
@@ -66,7 +69,7 @@
          * // 滚动到 底部 的 触发动作 test todo
          * 16/8/19 上午7:47 ByRockBlus
          *************************/
-        $scope.a = function() {
+        $scope.a = function () {
             tools.alert({
                 title: '这是标题',
                 content: '内容 '

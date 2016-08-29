@@ -16,7 +16,9 @@
 (function (window, document) {
     'use strict';
 
-    window.config = config();
+    document.addEventListener('plusready', function () {
+        window.config = config();
+    });
     /**
      * 声明module
      *
@@ -147,7 +149,7 @@
             //host 配置
             host: {
                 nodeHost: 'http://192.168.0.7:3082',//nodejsApi hostUrl
-                appPath: 'http://192.168.0.7:8001/Public/App/'//app 静态路径
+                appPath: 'http://127.0.0.1:8080/Public/App/'//app 静态路径
             },
 
             //localStroe 存储标示 name
@@ -156,12 +158,12 @@
                     //下载相关
                     appJsPath: 'appJsPath',//app.js 更新后的下载存储路径
                     appCssPath: 'appCssPath',//app.css 更新后的下载存储路径
-                    isFirstJs:'isFirstJs',//是否第一次下载Js, 默认是 空,第一次 以后就写入localstroe 1 ,第2次以后,就 为 2
-                    isFirstCss:'isFirstCss',//是否第一次下载css, 默认是 空,第一次 以后就写入localstroe 1 ,第2次以后,就 为 2
+                    isFirstJs: 'isFirstJs',//是否第一次下载Js, 默认是 空,第一次 以后就写入localstroe 1 ,第2次以后,就 为 2
+                    isFirstCss: 'isFirstCss',//是否第一次下载css, 默认是 空,第一次 以后就写入localstroe 1 ,第2次以后,就 为 2
                 },
-                system:{
+                system: {
                     //系统配置相关
-                    trueUpdata:'trueUpdata',//(0:自动升级，1.提示升级，2.永不升级)
+                    trueUpdata: 'trueUpdata',//(0:自动升级，1.提示升级，2.永不升级)
                 },
                 version: {
                     //版本

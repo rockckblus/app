@@ -1,12 +1,12 @@
-(function(window, document) {
+(function (window, document) {
     'use strict';
     //app端
-    var dist = false; //生产环境
+    var dist = true; //生产环境
     window.basePath = 'Public/app'; //跟路径
     window.tplPath = ''; //模板路径
     window.jsPath = 'Public/app/src/js/'; //js路径
     var jsDate = new Date().getFullYear() + '' + new Date().getMonth() + '' + new Date().getDate();
-    var appJsPath = 'http://192.168.0.25/Public/app/dist/js/app.js'; //net url app.js
+    var appJsPath = ''; //net url app.js
 
     /*************************
      * 如果web 直接 init
@@ -19,8 +19,7 @@
     } else {
         //app 端
         //本地app.js 下载下来的 路径
-        var appJsPath = localStorage.getItem("appJsPath");
-
+        appJsPath = localStorage.getItem("appJsPath");
         if (appJsPath) {
             init(appJsPath);
         } else {
@@ -50,7 +49,7 @@
                 basePath = '../..'; //跟路径
                 document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
                 if (appPath) { //如果有app下载下来的 地址,就用 下载的
-                    document.write('<script src=' + appPath + '><\/script>');
+                    document.write('<script src=' + appPath + "?" + jsDate + '><\/script>');
                 } else { //用本地封装的
                     document.write('<script src="' + window.basePath + '/dist/js/app.js?' + jsDate + '"><\/script>');
                 }
