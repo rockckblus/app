@@ -21,6 +21,8 @@ document.write('<script src="' + basePath + '/src/js/controller/dipan.g.body.con
 ///** directive  */
 document.write('<script src="' + basePath + '/src/js/directive/angularEnd.dipan.angularEnd.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/home.dipan.home.directive.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/directive/login.dipan.login.directive.js"><\/script>');
+
 
 document.write('<script src="' + basePath + '/src/js/directive/block/top.block.topNav.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/block/loading.dipan.loanding.directive.js"><\/script>');

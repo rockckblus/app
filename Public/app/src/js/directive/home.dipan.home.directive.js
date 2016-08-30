@@ -18,9 +18,11 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update','config'];
 
-    function thisController($scope, $rootScope, $timeout, tools, update) {
+    function thisController($scope, $rootScope, $timeout, tools, update,config) {
+
+
 
         tools.alert({
             title: '升级测试2.4'

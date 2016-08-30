@@ -70,6 +70,11 @@
                 templateUrl: window.tplPath + 'route/member/loginOut.html'
             })
 
+            //member 退出登录
+            .state('login', {
+                url: '/login',
+                templateUrl: window.tplPath + 'route/login.html'
+            })
         ;
     }
 

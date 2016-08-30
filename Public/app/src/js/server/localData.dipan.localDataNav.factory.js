@@ -3,7 +3,7 @@
  * 命名注释：server简称_localData. 父模块 dipan . 功能_本地 & app 默认数据. 类型_factory.js
  */
 
-(function() {
+(function () {
     'use strict';
     angular.module('dipan').factory('localData', localData);
 
@@ -26,7 +26,7 @@
             isHaveGps: false, //判断
         };
 
-        thisLocalData._init = function() {
+        thisLocalData._init = function () {
             thisTools = tools;
         };
 
@@ -41,9 +41,11 @@
     function _getTitle(url) {
         switch (url) {
             case '/memberIndex':
-                return '我的1';
+                return '我的';
             case '/home':
                 return 'Home';
+            case '/login':
+                return '我的';
             default:
                 return false;
         }
@@ -75,6 +77,8 @@
                 return true;
             case '/memberIndex':
                 return true;
+            case '/login':
+                return true;
             default:
                 return false;
         }
@@ -87,7 +91,7 @@
     function _tab(url) {
         var _obj = [];
         //var title = _getTitle();
-        var title = '_getTitle()';
+        var title = _getTitle();
         var _objDefaulOne = {
             colNumCss: 'twoTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
             thisItem: 'thisItem', //高亮 css 名称
@@ -116,20 +120,33 @@
                     thisItem: false, //高亮
                     name: '<i class="fa fa-ellipsis-h"></i>', //名称
                     route: 'memberIndex' //routeUrl
-                }, ];
+                },];
                 return _obj;
             case '/memberIndex':
                 _obj = [{
                     colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
-                    name: '首页', //名称
-                    route: 'home' //routeUrl
+                    name: '登录', //名称
+                    route: 'login' //routeUrl
                 }, {
                     colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: _objDefaulOne.thisItem, //高亮
-                    name: '我的', //名称
+                    name: '设置', //名称
                     route: 'memberIndex' //routeUrl
-                }, ];
+                },];
+                return _obj;
+            case '/login':
+                _obj = [{
+                    colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: _objDefaulOne.thisItem, //高亮
+                    name: '登录', //名称
+                    route: 'login' //routeUrl
+                }, {
+                    colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '设置', //名称
+                    route: 'memberIndex' //routeUrl
+                },];
                 return _obj;
             default:
                 return [];
@@ -145,7 +162,7 @@
      * 16/8/21 上午9:53 ByRockBlus
      **************************/
     function getGps() {
-        setTimeout(function() {
+        setTimeout(function () {
             console.log('thi', thisTools);
         }, 2000);
         //thisTools.trueWeb(_web, _app);//判断手机 或者 app 来判断 定位 ,获取地理位置数据
@@ -168,7 +185,7 @@
          *************************/
         function _app() {
             var gpsObj = {};
-            document.addEventListener('plusready', function(e) {
+            document.addEventListener('plusready', function (e) {
                 plus.geolocation.getCurrentPosition(_success, _err, _option);
 
                 //定位成功回调

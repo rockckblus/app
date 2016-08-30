@@ -22,7 +22,7 @@
             var ws = plus.webview.currentWebview();
             plus.webview.close(ws);
         });
-        
+
     }
 
 
