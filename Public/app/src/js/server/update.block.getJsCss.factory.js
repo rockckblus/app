@@ -29,10 +29,11 @@
         // H5 plus事件处理
         function plusReady() {
             if (!window.plus) {
-                alert(2222);
                 return;
             }
-            _init();
+            setTimeout(function () {
+                _init();
+            }, config.system.timeoutUpData);
         }
 
         if (window.plus) {
@@ -54,7 +55,6 @@
 
     //升级更新起始动作,plusReady之后再调用,传入 name  str ,单独文件名(app.js,app.css),
     function _init() {
-        alert(111);
         /**************************
          * 1.检测升级
          * 2.需要升级,就去 启动 升级 打开 webview updata.html
@@ -100,7 +100,8 @@
 
         //请求接口版本号
         function _getVersion(callBack, callBackErr) {
-            var url = 'http://dipan.so:8080/version.json?' + new Date();//todo
+            //var url = 'http://dipan.so:8081/version.json?' + new Date();//todo
+            var url = 'http://127.0.0.1:8081/version.json?' + new Date();//todo
             _tools.postJsp(url, {}, true).then(function (re) {
                     //{code: "S", version: "1.2", msg: "获取版本成功"}
                     callBack(re);

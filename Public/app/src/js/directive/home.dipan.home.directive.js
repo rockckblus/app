@@ -25,7 +25,7 @@
 
 
         tools.alert({
-            title: '升级测试2.4'
+            title: '升级测试3.2'
         });
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');

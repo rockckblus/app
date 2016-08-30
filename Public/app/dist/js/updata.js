@@ -44,7 +44,7 @@
 
         setTimeout(function () {
             _init();
-        },0);
+        }, 0);
         /**************************
          * init,启动下载 ,直接先删除app.js app.css,然后重新下载,
          * 下载成功后,记录localstore
@@ -158,6 +158,7 @@
          * 16/8/26 下午4:41 ByRockBlus
          *************************/
         function _closeThisWebView() {
+            return;
             var ws = plus.webview.currentWebview();
             plus.webview.close(ws);
         }

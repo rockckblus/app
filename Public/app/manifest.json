@@ -266,7 +266,8 @@
 					"dist/js/appDev.js",
 					"dist/js/res/angular-ui-router.min.js",
 					"src/js/server/tools.dipan.block.factory.js",
-					"dist/js/res/bindonce.min.js"
+					"dist/js/res/bindonce.min.js",
+					"dist/js/app.js"
 				],
 				"refer": [],
 				"priority": 0
