@@ -7,14 +7,15 @@
     'use strict';
     angular.module('dipan').factory('localData', localData);
 
-    localData.$inject = ['$location', 'tools', '$rootScope'];
+    localData.$inject = ['$location', 'tools', '$rootScope', 'config'];
 
     var location;
     var thisLocalData = {};
     var thisTools = {};
     var thisRootScope;
+    var _config;
 
-    function localData($location, tools, $rootScope) {
+    function localData($location, tools, $rootScope, config) {
         console.log('thisTools', tools);
         thisRootScope = $rootScope;
         location = $location;
@@ -25,11 +26,15 @@
         thisLocalData.gps = {
             isHaveGps: false, //判断
         };
-
+        thisLocalData.giveRoundCode = _giveRoundCode;//第一次后给一个随机码,验证用户发送短信用
         thisLocalData._init = function () {
             thisTools = tools;
+            _config = config;
+            thisLocalData.giveRoundCode();
         };
 
+        //start
+        thisLocalData._init();
         return thisLocalData;
     }
 
@@ -241,5 +246,25 @@
 
     }
 
+    /*************************
+     * 第一次后给localStorage一个随机码,验证用户发送短信用
+     * 16/8/31 上午8:05 ByRockBlus
+     *************************/
+    function _giveRoundCode() {
+        alert(11);
+        localStorage.clear(_config.localSaveName.user.roundCodeId);
+        setTimeout(function () {
+            var roundCode = rndNum(8);
+            localStorage.setItem(_config.localSaveName.user.roundCodeId, roundCode);
+        }, 200);
+
+        function rndNum(n) {
+            var rnd = "";
+            for (var i = 0; i < n; i++) {
+                rnd += Math.floor(Math.random() * 10);
+            }
+            return rnd;
+        }
+    }
 
 })();

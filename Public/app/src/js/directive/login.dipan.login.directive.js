@@ -11,15 +11,15 @@
             replace: false,
             scope: {},
             controller: thisController,
-            templateUrl: window.tplPath + 'directive/login.dipan.login.html',
+            templateUrl: window.tplPath + 'directive/login.dipan.login.directive.html',
             link: function (scope, element, attrs) {
             }
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tools','config'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tools', 'config'];
 
-    function thisController($scope, $rootScope, $timeout, localData, tools,config) {
+    function thisController($scope, $rootScope, $timeout, localData, tools, config) {
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
         });
@@ -91,9 +91,10 @@
             if (isGetNow) {
                 return;
             } else {
+                var roundCodeId = localStorage.getItem(config.localSaveName.user.roundCodeId);
 
-                //http://city.5656111.com/Api/ApiPublic/send_smscode
-                tools.postJsp(config.host.apiHost + '/Api/ApiPublic/send_smscode', {'phone': $scope.tel,'other':'1'}, true).then(function (re) {
+                //'Api/Sem/getCode/roundCodeId/' + roundCodeId + '/mtNum/' + telNum;
+                tools.postJsp(config.host.phpHost + '/Api/Sem/getCode/roundCodeId/', {}, true).then(function (re) {
                     console.log('re', re);
                 });
                 $timeout(function () {
