@@ -9,7 +9,6 @@
     'use strict';
     angular.module('dipan').factory('tools', tools);
 
-
     tools.$inject = ['$http', '$rootScope', '$q', 'ui'];
 
     function tools($http, $rootScope, $q, ui) {
@@ -36,6 +35,11 @@
              * 删除数组中的 第几个元素
              * 16/2/18 */
             arrDel: arrDel,
+
+            /**
+             * postJsp
+             * 16/2/19 */
+            getJsp: getJsp,
 
             /**
              * postJsp
@@ -113,6 +117,47 @@
         }
 
         /**
+         * angular get
+         * 传 url
+         * data对象
+         * isNoLoading (可选 true:不显示loading动画)
+         * 15-3-27 */
+        function getJsp(getMoreUrl, isNoLoading) {
+            if (!isNoLoading) {
+                $rootScope.$broadcast('openLoading'); //http请求前 显示loading
+            }
+
+
+            function _get(url) {
+                var defer = $q.defer();
+                $http({
+                    url: url,
+                    method: 'GET',
+                    timeout: 10000
+                })
+                    .success(function (doc) {
+                        if (!isNoLoading) {
+                            $rootScope.$broadcast('closeLoading'); //http请求成功 关闭loading
+                        }
+                        defer.resolve(doc);
+                    }).error(function (err) {
+                    if (!isNoLoading) {
+                        $rootScope.$broadcast('closeLoading'); //http请求成功 关闭loading
+                    }
+                    defer.reject(err);
+                    re.alert({
+                        title: '网络请求失败',
+                        content: '请检查网络设置'
+                    });
+                });
+                return defer.promise;
+            }
+
+            return _get(getMoreUrl);
+
+        }
+
+        /**
          * angular post
          * 传 url
          * data对象
@@ -150,8 +195,7 @@
                 var defer = $q.defer();
                 $http({
                     url: url,
-                    //method: 'POST',
-                    method: 'GET',//调试
+                    method: 'POST',
                     data: postData,
                     timeout: 10000
                 })

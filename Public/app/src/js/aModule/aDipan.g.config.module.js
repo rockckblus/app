@@ -175,6 +175,7 @@
                 user: {
                     //用户数据
                     roundCodeId: 'roundCodeId',//随机id,启动后生成
+                    isLogin:'isLogin',//判断登录
                 },
                 version: {
                     //版本
