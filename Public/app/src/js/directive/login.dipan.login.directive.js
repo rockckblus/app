@@ -94,7 +94,10 @@
                 var roundCodeId = localStorage.getItem(config.localSaveName.user.roundCodeId);
 
                 //'Api/Sem/getCode/roundCodeId/' + roundCodeId + '/mtNum/' + telNum;
-                tools.postJsp(config.host.phpHost + '/Api/Sem/getCode/roundCodeId/', {}, true).then(function (re) {
+                tools.postJsp(config.host.phpHost + '/Api/Sem/getCode/roundCodeId/' + roundCodeId + '/mtNum/' + $scope.tel, {}, true).then(function (re) {
+                    tools.alert({
+                        title: re
+                    });
                     console.log('re', re);
                 });
                 $timeout(function () {
