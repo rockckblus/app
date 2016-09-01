@@ -87,6 +87,7 @@ class IndexController extends CommonController
             $this->indexAllRe['session']['id'] = session_id();
             $jsonCode = json_encode($this->indexAllRe);
             $this->assign('indexAllRe', $jsonCode);//返回全部 json数组
+
             $this->display();
         } else {
             //分配分类导航数据
@@ -94,7 +95,7 @@ class IndexController extends CommonController
             $jsonCode = json_encode($this->indexAllRe);
             $this->assign('indexAllRe', $jsonCode);//返回全部 json数组
             $this->assignCategoryOneTwo();
-            $this->display('/Public/app/src/html/index.html');
+            $this->display('key');
         }
     }
 
