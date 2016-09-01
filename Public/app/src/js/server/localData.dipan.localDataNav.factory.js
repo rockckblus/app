@@ -31,6 +31,7 @@
             thisTools = tools;
             _config = config;
             thisLocalData.giveRoundCode();
+            getGps();
         };
 
         //start
@@ -167,12 +168,7 @@
      * 16/8/21 上午9:53 ByRockBlus
      **************************/
     function getGps() {
-        setTimeout(function () {
-            console.log('thi', thisTools);
-        }, 2000);
-        //thisTools.trueWeb(_web, _app);//判断手机 或者 app 来判断 定位 ,获取地理位置数据
-        //thisTools.alert({title: 4446667777888});
-
+        thisTools.trueWeb(_web, _app);//判断手机 或者 app 来判断 定位 ,获取地理位置数据
 
         /*************************
          * todo
@@ -180,6 +176,16 @@
          * 16/8/19 上午7:43 ByRockBlus
          *************************/
         function _web() {
+            var url = _config.host.phpHost + '/Api/Jsonp/getIP/from/web';
+
+            thisTools.getJsp(url,true).then(_s,_f);
+
+            function _s(re){
+                thisTools.alert({title:re.ip});
+            }
+            function _f(){
+
+            }
             //获取 ip地址,去反查地址数据
         }
 
@@ -189,6 +195,7 @@
          * 16/8/19 上午7:43 ByRockBlus
          *************************/
         function _app() {
+            alert('app');
             var gpsObj = {};
             document.addEventListener('plusready', function (e) {
                 plus.geolocation.getCurrentPosition(_success, _err, _option);
@@ -242,7 +249,6 @@
                 }
             });
         }
-
 
     }
 

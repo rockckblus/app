@@ -50,3 +50,5 @@ Public/app/dist/js/app.templates.js
 Public/app/js/app/dist/app.js
 
 .DS_Store
+
+Application/.idea/*

@@ -46,7 +46,14 @@ class JsonpController extends CommonController
         else if (getenv("REMOTE_ADDR"))
             $ip = getenv("REMOTE_ADDR");
         else $ip = "Unknow";
-        return $ip;
+
+        if($_GET['from']=='web'){
+            /** 判断是前端查询来的 */
+            $re = array('ip'=>$ip);
+            $this->ajaxReturn($re);
+        }else{
+            return $ip;
+        }
     }
 
     //curl 百度Api 传入网址，返回 json

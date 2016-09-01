@@ -18,9 +18,9 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update','config'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config'];
 
-    function thisController($scope, $rootScope, $timeout, tools, update,config) {
+    function thisController($scope, $rootScope, $timeout, tools, update, config) {
 
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
@@ -35,9 +35,8 @@
          *************************/
         giveDefaultList();
 
-        var url = 'http://city.5656111.com/Member/GetAjax/get_union_user_list/begin_city/%E5%A4%A9%E6%B4%A5';
-        tools.postJsp(url, {}).then(call, err);
-
+        //var url = 'http://city.5656111.com/Member/GetAjax/get_union_user_list/begin_city/%E5%A4%A9%E6%B4%A5';
+        //tools.postJsp(url, {}).then(call, err);
 
         function call(re) {
             $timeout(function () {
