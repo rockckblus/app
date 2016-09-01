@@ -12,12 +12,13 @@
 
     function touchScroll($rootScope) {
 
+
         /**
          * ji禁止滚动
          * 15/12/22 */
         function preventDefault(e) {
             e.preventDefault();
-        };
+        }
 
 
         /**

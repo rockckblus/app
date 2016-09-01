@@ -22,11 +22,6 @@
 
     function thisController($scope, $rootScope, $timeout, tools, update,config) {
 
-
-
-        tools.alert({
-            title: '升级测试3.2'
-        });
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
         });
@@ -56,7 +51,6 @@
                 content: '请检查网络'
             });
         }
-
 
         /*************************
          * 默认读取上次的缓存 数据, 然后 再异步更新 到 最新数据 todo

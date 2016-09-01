@@ -251,7 +251,6 @@
      * 16/8/31 上午8:05 ByRockBlus
      *************************/
     function _giveRoundCode() {
-        alert(11);
         localStorage.clear(_config.localSaveName.user.roundCodeId);
         setTimeout(function () {
             var roundCode = rndNum(8);
