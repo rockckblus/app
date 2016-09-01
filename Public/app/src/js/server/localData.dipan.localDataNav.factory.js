@@ -180,6 +180,7 @@
 
             thisTools.getJsp(url,true).then(_s,_f);
 
+
             function _s(re){
                 thisTools.alert({title:re.ip});
             }

@@ -39,6 +39,8 @@ class JsonpController extends CommonController
     // 定义一个函数getIP()
     function getIP()
     {
+        header('Access-Control-Allow-Origin:*');
+
         if (getenv("HTTP_CLIENT_IP"))
             $ip = getenv("HTTP_CLIENT_IP");
         else if (getenv("HTTP_X_FORWARDED_FOR"))
