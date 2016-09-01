@@ -16,7 +16,9 @@ class SemController extends Controller
     /** 继承方法 */
     function _initialize()
     {
+    	header('Access-Control-Allow-Origin:*');
         $this->tempCode = D('Mongod/tempCode');//验证码模型
+
     }
 
     /** 获取验证码 获取客户ip 限制超过1分钟*/

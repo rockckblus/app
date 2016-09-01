@@ -52,7 +52,13 @@
                 templateUrl: window.tplPath + 'route/home.html'
             })
 
-            //memberIndex 我的
+            //block 地区选择页面
+            .state('area', {
+                url: '/area',
+                templateUrl: window.tplPath + 'route/block/area.html'
+            })
+
+            //memberIndex 我的 member
             .state('memberIndex', {
                 url: '/memberIndex',
                 templateUrl: window.tplPath + 'route/member/memberIndex.html'
@@ -175,7 +181,7 @@
                 user: {
                     //用户数据
                     roundCodeId: 'roundCodeId',//随机id,启动后生成
-                    isLogin:'isLogin',//判断登录
+                    isLogin: 'isLogin',//判断登录
                 },
                 version: {
                     //版本
