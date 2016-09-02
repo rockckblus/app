@@ -1,29 +1,4 @@
-<!--topNav-->
-<div class="navbar navbar-app navbar-absolute-top">
-    <div class="navbar-brand navbar-brand-center">
-        <!--top中间title-->
-        {{title}}
-    </div>
-    <div class="btn-group pull-left">
-
-        <!--home-->
-        <div class="btn" ng-if="url !== '/home'" onclick="history.go(-1);">
-            <!--top导航左侧图标-->
-            <i class="fa fa-angle-left fa-lg"></i>
-        </div>
-
-        <!--default-->
-        <div class="btn" ng-if="url == '/home'" ui-sref="memberIndex">
-            <!--top导航左侧图标-->
-            <i ui-sref="area" class="fa fa-location-arrow fa-lg" aria-hidden="true"></i>
-            <!--<i class="fa fa-caret-down fa-1" aria-hidden="true" ></i>-->
-        </div>
-    </div>
-    <div class="btn-group pull-right">
-        <div class="btn">
-            <!--top导航右侧图标-->
-            <i class="fa fa-search fa-lg"></i>
-        </div>
-    </div>
-    <div tab ng-if="showTab"></div>
-</div>
+<header class="mui-bar mui-bar-nav">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    <h1 class="mui-title">{{title}}</h1>
+</header>

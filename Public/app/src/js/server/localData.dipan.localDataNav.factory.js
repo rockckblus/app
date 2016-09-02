@@ -46,6 +46,7 @@
      * @private
      */
     function _getTitle(url) {
+        alert(1);
         switch (url) {
             case '/memberIndex':
                 return '我的';

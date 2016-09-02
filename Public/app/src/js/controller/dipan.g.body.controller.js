@@ -9,16 +9,17 @@
     /**
      * 手动注入
      * 16/2/1 */
-    body.$inject = ['$scope', '$rootScope', '$timeout', 'localData', '$location', 'touchScroll'];
+    body.$inject = ['$scope', '$rootScope', '$timeout', 'localData', '$location'];
 
     /**
      * controllerFun
      * 16/2/1 */
-    function body($scope, $rootScope, $timeout, localData, $location, touchScroll) {
+    function body($scope, $rootScope, $timeout, localData, $location) {
         $scope.$on('changeBody', function () {
             $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
             var _url = $location.url();
             $timeout(function () {
+                alert(111);
                 $scope.title = localData.getTitle(_url);//getTitle
                 $scope.showTab = localData.showTab(_url);//是否显示 tab
                 $scope.tabList = localData.tab(_url);//tablist body 控制器

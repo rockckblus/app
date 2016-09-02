@@ -37,7 +37,11 @@
       "src/js/server/update.block.getJsCss.factory.js",
       "src/js/directive/login.dipan.login.directive.js",
       "src/js/server/touchScroll.dipan.hackScrollClick.factory.js",
-      "dist/js/res/mobile-angular-ui.gestures.min.js"
+      "dist/js/res/mobile-angular-ui.gestures.min.js",
+      "dist/js/res/mui.min.js",
+      "src/css/mui.min.css",
+      "src/fonts/mui.ttf",
+      "src/html/directive/block/tab.block.tabNav.directive.html"
     ],
     "refer": [
       "src/html/updata.html"

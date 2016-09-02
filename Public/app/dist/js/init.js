@@ -28,7 +28,6 @@
     }
 
 
-
     /*************************
      * plusReady 之后执行
      * 16/8/22 上午11:31 ByRockBlus
@@ -42,14 +41,16 @@
         if (dist) {
             if (window.trueWeb()) {
                 //web 端
-                document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
-                document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/responsive.css"/>');
+                //document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
+                //document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/responsive.css"/>');
+                document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/mui.min.css"/>');
                 //                document.write('<script src="' + basePath + '/dist/js/app.js?' + jsDate + '"><\/script>');
                 document.write('<script src="/Public/app/dist/js/app.js?' + jsDate + '"><\/script>');
             } else {
                 //app端
                 basePath = '../..'; //跟路径
-                document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
+                //document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
+                document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/mui.min.css"/>');
                 if (appPath) { //如果有app下载下来的 地址,就用 下载的
                     document.write('<script src=' + appPath + "?" + jsDate + '><\/script>');
                 } else { //用本地封装的
@@ -71,7 +72,8 @@
             } else {
                 //app端
                 window.basePath = '../..'; //跟路径
-                document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
+                //document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
+                document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/mui.min.css"/>');
                 document.write('<script src="' + window.basePath + '/dist/js/appDev.js?' + jsDate + '"><\/script>');
             }
         }

@@ -21,7 +21,9 @@
     thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config'];
 
     function thisController($scope, $rootScope, $timeout, tools, update, config) {
+        console.log('url',window.location.href);
 
+        alert(111);
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
         });

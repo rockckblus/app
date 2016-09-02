@@ -1,0 +1,33 @@
+<!--topNav-->
+<!--<div class="navbar navbar-app navbar-absolute-top">-->
+    <!--<div class="navbar-brand navbar-brand-center">-->
+        <!--&lt;!&ndash;top中间title&ndash;&gt;-->
+        <!--{{title}}-->
+    <!--</div>-->
+    <!--<div class="btn-group pull-left">-->
+
+        <!--&lt;!&ndash;home&ndash;&gt;-->
+        <!--<div class="btn" ng-if="url !== '/home'" onclick="history.go(-1);">-->
+            <!--&lt;!&ndash;top导航左侧图标&ndash;&gt;-->
+            <!--<i class="fa fa-angle-left fa-lg"></i>-->
+        <!--</div>-->
+
+        <!--&lt;!&ndash;default&ndash;&gt;-->
+        <!--<div class="btn" ng-if="url == '/home'" ui-sref="memberIndex">-->
+            <!--&lt;!&ndash;top导航左侧图标&ndash;&gt;-->
+            <!--<i ui-sref="area" class="fa fa-location-arrow fa-lg" aria-hidden="true"></i>-->
+            <!--&lt;!&ndash;<i class="fa fa-caret-down fa-1" aria-hidden="true" ></i>&ndash;&gt;-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="btn-group pull-right">-->
+        <!--<div class="btn">-->
+            <!--&lt;!&ndash;top导航右侧图标&ndash;&gt;-->
+            <!--<i class="fa fa-search fa-lg"></i>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div tab ng-if="showTab"></div>-->
+<!--</div>-->
+<header class="mui-bar mui-bar-nav">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    <h1 class="mui-title">底部选项卡-div模式</h1>
+</header>
