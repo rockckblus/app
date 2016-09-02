@@ -29,7 +29,13 @@ var api = {
         sosoKey: [
             'WGKBZ-YIYRU-3IOVL-B6A3J-HYANJ-BWFUC'
         ],
-        gpsToStr: 'apis.map.qq.com/ws/geocoder/v1/?location='
+        gaodeKey: [
+            '8bc8bb3d13cc9fdab255b1aeb5d1c533',
+            '17b8b3d7ffc09d97a150d0ce0aa741ec'
+        ],
+        gpsToStr: 'apis.map.qq.com/ws/geocoder/v1/?location=',//soso gpstostr url
+        gaoDeIpToCity:'restapi.amap.com/v3/ip?ip=',//gaoDe ip定位
+
     }
 };
 
@@ -48,6 +54,13 @@ function sosoApi(req, res) {
              *************************/
             _gpsToStr();//soso 接口 gps原生格式,转换 地理位置
             break;
+        case 'ipToCity' ://get ip 定位
+            /*************************
+             * @请求的 url 传入 lat,lng http://dipan.so:3082/soso/sosoApi/gpsToStr?lat=39.604509&lng=116.943519
+             * 16/7/30 上午11:37 ByRockBlus
+             *************************/
+            _gpsToStr();//soso 接口 gps原生格式,转换 地理位置
+            break;
     }
 
     /**
@@ -57,12 +70,12 @@ function sosoApi(req, res) {
     function _gpsToStr() {
         var lat = req.query.lat;
         var lng = req.query.lng;
-        if(lat && lng){
+        if (lat && lng) {
             var sosoApiUrl = api.url.gpsToStr + lat + ',' + lng + '&coord_type=1&key=' + api.url.sosoKey[0];
             curlCtrl.get(sosoApiUrl, function (doc) {
                 res.json(doc);
             });
-        }else{
+        } else {
             res.json('经纬度为空');
         }
     }

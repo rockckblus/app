@@ -35,7 +35,9 @@
       "dist/js/init.js",
       "dist/js/res/angular.min.js.map",
       "src/js/server/update.block.getJsCss.factory.js",
-      "src/js/directive/login.dipan.login.directive.js"
+      "src/js/directive/login.dipan.login.directive.js",
+      "src/js/server/touchScroll.dipan.hackScrollClick.factory.js",
+      "dist/js/res/mobile-angular-ui.gestures.min.js"
     ],
     "refer": [
       "src/html/updata.html"

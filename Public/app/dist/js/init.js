@@ -1,7 +1,7 @@
 (function (window, document) {
     'use strict';
     //app端
-    var dist = true; //生产环境
+    var dist = false; //生产环境
     window.basePath = 'Public/app'; //跟路径
     window.tplPath = ''; //模板路径
     window.jsPath = 'Public/app/src/js/'; //js路径

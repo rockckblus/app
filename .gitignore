@@ -52,3 +52,5 @@ Public/app/dist/js/app.templates.js
 .DS_Store
 
 Application/.idea/*
+
+Public/resCreate/api/.idea/*
