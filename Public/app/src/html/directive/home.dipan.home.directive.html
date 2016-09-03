@@ -1,16 +1,27 @@
-<div class="scrollable" style="padding-top: 103px;padding-bottom: 32px">
-    <div class="scrollable-content" ui-scroll-bottom="a()">
-        <div class="list-group">
-            <a class="list-group-item" bindonce ng-repeat="vo in list" style="height: 100px;overflow: hidden">
-                <div class="clear" bindonce ng-repeat="(key,vo2) in vo">
-                <span style="font-size: 1.4em">
-                   {{key}}
-                </span>
-                <span style="font-size: 1.4em">
+<div id="tabbar-with-chat" class="mui-control-content">
+    <div class="title">这是div模式选项卡中的第2个子页面，该页面展示一个消息列表</div>
+    <ul class="mui-table-view mui-table-view-chevron">
+        <li class="mui-table-view-cell" bindonce ng-repeat="vo in list" >
+            <a href="" class="mui-navigate-right" bindonce ng-repeat="(key,vo2) in vo">
+                   {{key}}--
                    {{vo2}}
-                </span>
-                </div>
             </a>
-        </div>
+        </li>
+</ul>
     </div>
-</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
