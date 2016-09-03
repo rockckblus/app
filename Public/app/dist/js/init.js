@@ -72,9 +72,9 @@
             } else {
                 //app端
                 window.basePath = '../..'; //跟路径
-                document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
                 document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/mui.min.css"/>');
                 document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/font-awesome.min.css"/>');
+                document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
                 document.write('<script src="' + window.basePath + '/dist/js/appDev.js?' + jsDate + '"><\/script>');
             }
         }

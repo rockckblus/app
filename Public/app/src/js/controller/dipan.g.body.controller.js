@@ -19,7 +19,6 @@
             $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
             var _url = $location.url();
             $timeout(function () {
-                alert(111);
                 $scope.title = localData.getTitle(_url);//getTitle
                 $scope.showTab = localData.showTab(_url);//是否显示 tab
                 $scope.tabList = localData.tab(_url);//tablist body 控制器

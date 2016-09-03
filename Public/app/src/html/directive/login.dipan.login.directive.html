@@ -14,6 +14,9 @@
                     -ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
                     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
                 }
+                fieldset{
+                    border:0px;
+                }
             </style>
 
             <form name="myForm" id="myForm" novalidate>
@@ -23,17 +26,13 @@
                                class="form-control"
                                placeholder="手机号">
                     </div>
-
-
                     <div class="clearThis"></div>
                     <div class="form-group has-success has-feedback left" style="width:60%">
                         <input type="number" ng-model="code" class="form-control " placeholder="验证码">
                     </div>
-
-                    <div class="btn right" ng-class="codeClass" ng-click="getCode()" style="margin-top: 10px;width:38%;background-color: #f4f4f4;border-color:#000;color:#000; ">
+                    <div class="mui-btn right" ng-class="codeClass" ng-click="getCode()" style="width:38%;background-color: #f4f4f4;border-color:#000;color:#000; ">
                         {{codeText}}
                     </div>
-
                 </fieldset>
                 <hr>
 
