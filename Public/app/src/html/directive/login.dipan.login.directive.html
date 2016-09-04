@@ -1,44 +1,48 @@
-        <div class="scrollable-content section">
-            <style>
-                .btn-danger{
-                    background-color: #bd0000;
-                    border-color: #bd0000;
-                }
-                .has-success .form-control:focus{
-                    border-color: #000000;
-                    -ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #aeafb1;
-                    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #a8a6b1;
-                }
-                .has-success .form-control{
-                    border-color: #000000;
-                    -ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-                    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-                }
-                fieldset{
-                    border:0px;
-                }
-            </style>
+<div class="scrollable-content section">
+    <style>
+        .btn-danger {
+            background-color: #bd0000;
+            border-color: #bd0000;
+        }
 
-            <form name="myForm" id="myForm" novalidate>
-                <fieldset>
-                    <div class="form-group has-success has-feedback " >
-                        <input  type="number" name="tel" required ng-model="tel"
-                               class="form-control"
-                               placeholder="手机号">
-                    </div>
-                    <div class="clearThis"></div>
-                    <div class="form-group has-success has-feedback left" style="width:60%">
-                        <input type="number" ng-model="code" class="form-control " placeholder="验证码">
-                    </div>
-                    <div class="mui-btn right" ng-class="codeClass" ng-click="getCode()" style="width:38%;background-color: #f4f4f4;border-color:#000;color:#000; ">
-                        {{codeText}}
-                    </div>
-                </fieldset>
-                <hr>
+        .has-success .form-control:focus {
+            border-color: #000000;
+            -ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #aeafb1;
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #a8a6b1;
+        }
 
-                <button ng-click="formSub()" class="btn btn-danger btn-block btn-lg">
-                    登录
-                </button>
+        .has-success .form-control {
+            border-color: #000000;
+            -ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        }
 
-            </form>
-        </div>
+        fieldset {
+            border: 0px;
+        }
+    </style>
+
+    <form name="myForm" id="myForm" novalidate>
+        <fieldset>
+            <div class="form-group has-success has-feedback ">
+                <input type="number" name="tel" required ng-model="tel"
+                       class="form-control"
+                       placeholder="手机号">
+            </div>
+            <div class="clearThis"></div>
+            <div class="form-group has-success has-feedback left" style="width:60%">
+                <input type="number" ng-model="code" class="form-control " placeholder="验证码">
+            </div>
+            <div class="mui-btn right" ng-class="codeClass" ng-click="getCode()"
+                 style="width:38%;background-color: #f4f4f4;border-color:#000;color:#000;font-size: 17px ">
+                {{codeText}}
+            </div>
+            <div class="clear"></div>
+            <button style="width:100%;color:#fff;font-size: 17px;font-weight: bold" ng-click="formSub()" class="btn btn-danger btn-block btn-lg">
+                登录
+            </button>
+        </fieldset>
+
+
+    </form>
+</div>
