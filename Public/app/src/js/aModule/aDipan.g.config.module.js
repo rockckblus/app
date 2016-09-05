@@ -59,6 +59,12 @@
                 templateUrl: window.tplPath + 'route/block/area.html'
             })
 
+            //search 页面
+            .state('search', {
+                url: '/search',
+                templateUrl: window.tplPath + 'route/block/search.html'
+            })
+
             //memberIndex 我的 member
             .state('memberIndex', {
                 url: '/memberIndex',

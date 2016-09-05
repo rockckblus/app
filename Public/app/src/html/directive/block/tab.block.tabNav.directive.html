@@ -1,10 +1,5 @@
 <div id="tab" class="clear" style="">
-    <div ng-class="vo.colNumCss" ng-repeat="vo in tabList">
+    <div ng-class="vo.colNumCss"  class="linkMouse" ng-repeat="vo in tabList">
         <span ui-sref="{{vo.route}}" ng-class="vo.thisItem" class="btn" ng-bind-html="vo.name|toHtml"></span>
     </div>
-    <style>
-        .has-navbar-top .app-body {
-            padding-top: 104px;
-        }
-    </style>
 </div>

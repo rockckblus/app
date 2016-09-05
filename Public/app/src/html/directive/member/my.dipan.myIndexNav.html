@@ -1,7 +1,11 @@
-<div class="scrollable-content" ui-scroll-bottom="bottomReached()">
-    <div class="list-group">
-        <a ui-sref="{{vo.url}}" class="list-group-item ng-binding ng-scope" ng-repeat="vo in listNav">
-           <span style="font-size: 1.4em">{{vo.name}}</span>  <i class="fa fa-chevron-right pull-right"></i>
-        </a>
-    </div>
+<div class="clear viewContent" style="text-align: center ;margin-top: 130px">
+    <ul class="mui-table-view mui-table-view-chevron" style="text-align: left" bindonce ng-repeat="vo in listNav">
+        <div url="{{vo.url}}"  class="mui-table-view-cell linkMouse clear" style="padding-right: 26px;height: 50px;padding-top: 16px;">
+            <i class="{{vo.icon}} pull-left" style="color:#888;margin-top: 3px"></i>
+            <i class="fa fa-chevron-right pull-right"></i>
+            <span style="font-size: 1.4em">{{vo.name}}</span>
+        </div>
+    </ul>
+    <div class="clear" style="margin-top: 40px"></div>
+    <div class="clear" style="font-size: 12px">当前版本:<span style="color: #bd0000">{{version}}</span></div>
 </div>

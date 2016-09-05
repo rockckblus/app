@@ -53,6 +53,10 @@
                 return 'Home';
             case '/login':
                 return '我的';
+            case '/area':
+                return '地区选择';
+            case '/search':
+                return '搜索';
             default:
                 return false;
         }
@@ -67,10 +71,14 @@
     function _memberIndexNav() {
         return [{
             'name': '资料编辑',
-            'url': 'member/memberInfo'
+            'url': 'member/memberInfo',
+            'id': 1,
+            'icon': 'fa fa-pencil-square-o fa-1x'
         }, {
             'name': '退出登录',
-            'url': 'member/loginOut'
+            'url': 'member/loginOut',
+            'id': 2,
+            'icon': 'fa fa-sign-out fa-1x'
         }];
     }
 
@@ -88,6 +96,10 @@
                 return true;
             case '/login':
                 return true;
+            case '/area':
+                return false;
+            case '/search':
+                return false;
             default:
                 return false;
         }
@@ -280,10 +292,6 @@
         console.log('arg', arguments);
 
     }
-
-
-
-
 
 
     /*************************

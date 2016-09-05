@@ -30,6 +30,8 @@ document.write('<script src="' + basePath + '/src/js/directive/block/top.block.t
 document.write('<script src="' + basePath + '/src/js/directive/block/loading.dipan.loanding.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/block/tab.block.tabNav.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/block/alert.block.alertUi.directive.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/directive/block/area.dipan.areaSelect.directive.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/directive/block/search.dipan.search.directive.js"><\/script>');
 
 document.write('<script src="' + basePath + '/src/js/directive/member/my.dipan.myIndexNav.js"><\/script>');
 
@@ -53,6 +55,7 @@ document.write('<script src="' + basePath + '/src/js/server/tools.dipan.block.fa
 document.write('<script src="' + basePath + '/src/js/server/ui.dipan.ui.factory.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/server/update.block.getJsCss.factory.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/server/touchScroll.dipan.hackScrollClick.factory.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/server/tap.dipan.clickTapPublic.server.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/alertDiv.uiBlock.alertUi.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/compile.uiBlock.compile.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/tools.dipan.block.factory.js"><\/script>');

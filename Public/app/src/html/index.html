@@ -36,25 +36,39 @@
 
 <body ng-app="dipan" class="angularEnd" ng-controller="body">
 
+<!--顶部-->
 <div top></div>
 
+<!--<div tab ng-if="showTab"></div>-->
 
-<nav class="mui-bar mui-bar-tab">
-    <a class="mui-tab-item mui-active" >
-        <span class="mui-icon mui-icon-home"></span>
-    </a>
-    <a class="mui-tab-item" >
-        <span class="mui-icon mui-icon-email"><span class="mui-badge">9</span></span>
-    </a>
-    <a class="mui-tab-item" href="#tabbar-with-contact">
-        <span class="mui-icon mui-icon-contact"></span>
-    </a>
-    </nav>
+<!--底部-->
+<nav class="mui-bar mui-bar-tab" style="padding-top: 0px;">
+    <div id="hrefHome" url="home" class="mui-tab-item mui-btn icon-btn">
+        <span class="mui-icon fa fa-home fa-navbar fa-lg"></span>
+    </div>
+    <div id="hrefMaster" url="master" class="mui-tab-item mui-btn icon-btn">
+        <span class="mui-icon fa fa-map-marker fa-navbar fa-lg"></span>
+    </div>
+    <div id="hrefMember" url="memberIndex" class="mui-tab-item mui-btn icon-btn">
+        <span class="mui-icon fa fa-user fa-navbar fa-lg">
+        </span>
+        <i class="fa fa-ellipsis-h fa-2x" style="
+width: 7px;
+overflow-x: hidden;
+color: #bd0000;
+position: absolute;
+bottom:19px;
+margin-left: -2px;
+"></i>
+    </div>
+</nav>
 
 
+<!--内容-->
 <div class="mui-content">
     <div loading></div>
     <div alert></div>
+    <div tab ng-if="showTab"></div>
     <ui-view></ui-view>
 </div>
 <!--<div class="app">-->

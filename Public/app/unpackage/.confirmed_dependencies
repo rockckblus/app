@@ -41,7 +41,12 @@
       "dist/js/res/mui.min.js",
       "src/css/mui.min.css",
       "src/fonts/mui.ttf",
-      "src/html/directive/block/tab.block.tabNav.directive.html"
+      "src/html/directive/block/tab.block.tabNav.directive.html",
+      "src/css/font-awesome.min.css",
+      "src/js/server/tap.dipan.clickTapPublic.server.js",
+      "src/js/directive/area.dipan.areaSelect.directive.js",
+      "src/js/directive/block/search.dipan.search.directive.js",
+      "src/js/directive/block/area.dipan.areaSelect.directive.js"
     ],
     "refer": [
       "src/html/updata.html"

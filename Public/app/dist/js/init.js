@@ -66,8 +66,14 @@
             if (window.trueWeb()) {
                 //web端
                 window.tplPath = 'Public/app/src/html/'; //web 环境下,调试模式时候的 模板路径 全局变量
+                //document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
+                //document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/responsive.css"/>');
+
+                document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/mui.min.css"/>');
+                document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/font-awesome.min.css"/>');
                 document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
-                document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/responsive.css"/>');
+
+
                 document.write('<script src="' + window.basePath + '/dist/js/appDev.js"><\/script>');
             } else {
                 //app端

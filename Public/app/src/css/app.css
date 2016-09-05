@@ -4,15 +4,45 @@
   left: 50%;
   margin-left: -30px;
 }
+.yuanBtn {
+  border-radius: 0.2em;
+}
 .yuan {
   border-radius: 0.2em;
   box-shadow: 0px 0px 3px 1px #777;
-  padding: 3px;
+}
+.mui-bar-tab .mui-tab-item.mui-active {
+  color: #000;
+}
+.mui-bar-tab .mui-tab-item {
+  color: #000;
+}
+.mui-bar-tab .mui-tab-item .mui-icon {
+  font-size: 22px;
+}
+.mui-bar-nav {
+  box-shadow: none;
+}
+.mui-bar {
+  background-color: #fff;
+  height: 50px;
+  border-bottom: 1px solid #000;
+  padding-top: 4px;
+}
+.mui-bar .mui-icon {
+  font-size: 18px;
+}
+.mui-bar-tab ~ .mui-content {
+  padding-top: 50px;
+  padding-bottom: 0px;
+  background-color: #fff;
 }
 html,
 body {
   height: 100%;
   font-family: "Microsoft YaHei", tahoma, arial, "Hiragino Sans GB", "\5b8b\4f53", sans-serif;
+  background-color: #777;
+  color: #000;
 }
 .c {
   margin: 0 auto;
@@ -55,22 +85,28 @@ body {
   border: 0px;
 }
 #tab {
-  margin-top: 50px;
+  position: fixed;
+  top: 50px;
+  height: 44px;
+  width: 100%;
+  z-index: 9999;
   background-color: #fff;
-  border-top: 1px solid #000;
+  padding-top: 10px;
+  border-bottom: 1px solid #000;
 }
 #tab .btn {
   margin-top: 11px;
   margin-bottom: 12px;
-  padding-top: 1px;
+  padding-top: 3px;
   line-height: 24px;
-  padding-bottom: 1px;
+  padding-bottom: 3px;
   padding-left: 10px;
   padding-right: 10px;
 }
 #tab .thisItem {
   background-color: #bd0000;
   color: #fff;
+  border-radius: 0.2em;
 }
 #tab .threeTab {
   text-align: center;
@@ -94,12 +130,11 @@ body {
   width: 80%;
   float: left;
   margin-left: 10%;
-  z-index: 9000;
+  z-index: 90000;
 }
 #alertUi .showThis {
   border-radius: 0.2em;
   box-shadow: 0px 0px 3px 1px #777;
-  padding: 3px;
   background-color: #fff;
   -webkit-animation: bounceInDown 0.5s ease-in-out;
   -ms-animation: bounceInDown 0.5s ease-in-out;
@@ -198,7 +233,6 @@ body {
 #alertUi .hideThis {
   border-radius: 0.2em;
   box-shadow: 0px 0px 3px 1px #777;
-  padding: 3px;
   background-color: #fff;
   -webkit-animation: fadeOut 1s ease-in-out;
   -ms-animation: fadeOut 1s ease-in-out;
@@ -237,4 +271,32 @@ body {
     -webkit-transform: translate3d(0, 0, 0);
             transform: translate3d(0, 0, 0);
   }
+}
+.viewContent {
+  margin-top: 50px;
+  padding-bottom: 50px;
+}
+#titleInfo {
+  margin: 0 auto;
+  width: 194px;
+  text-align: center;
+  padding: 3px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin-top: 10px;
+  font-size: 14px;
+  background-color: #000;
+  color: #fff;
+  border-radius: 0.2em;
+}
+.listHeader img {
+  width: 20px;
+  height: 20px;
+}
+.panle {
+  margin-top: 10px;
+  text-align: right;
+}
+.panle .icon-btn {
+  color: #d8d8d8;
 }

@@ -1,4 +1,7 @@
 <header class="mui-bar mui-bar-nav">
-    <a ui-sref="login" class="fa fa-location-arrow fa-1 mui-pull-left mui-btn icon-btn"></a>
+    <i ng-if="url !== '/home'" onclick="history.go(-1);" id="goHistory" url="goHistory" class="fa fa-angle-left linkMouse  mui-pull-left mui-btn icon-btn"></i>
+    <i ng-if="url == '/home'" id="hrefArea" url="area" class="fa fa-location-arrow  mui-pull-left mui-btn icon-btn linkMouse"></i>
+    <i id="hrefSearch" url="search" class="fa fa-search fa-1  mui-pull-right mui-icon icon-btn"
+       style="padding-right: 17px;padding-top: 13px;"></i>
     <h1 class="mui-title">{{title}}</h1>
 </header>
