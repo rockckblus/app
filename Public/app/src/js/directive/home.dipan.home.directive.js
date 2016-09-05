@@ -18,9 +18,9 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config', 'compile','$state'];
 
-    function thisController($scope, $rootScope, $timeout, tools, update, config) {
+    function thisController($scope, $rootScope, $timeout, tools, update, config, compile,$state) {
 
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
@@ -42,11 +42,15 @@
             function _bind() {
                 mui('#list').on('tap', '.iconStar', function () {
                     var _this = angular.element(this);
-                    var id = _this.text();
+                    var id = _this.attr('iconId');
                     reForList(id);
                 });
             }
 
+            //滚动到底事件
+            document.addEventListener('plusscrollbottom', function () {
+                alert(11);
+            }, false);
             _bind();
         });
 
@@ -56,10 +60,9 @@
          * @param id
          */
         function reForList(id) {
-            console.log('id',id);
+            console.log('id', id);
             angular.forEach($scope.list, function (vo) {
                 if (vo.id == id) {
-                    alert(11);
                     if (vo.iconStar == 'fa-star-o') {
                         $timeout(function () {
                             vo.iconStar = 'fa-star';
@@ -244,6 +247,8 @@
                 ];
 
             $scope.list = obj;
+            //tools.saveLocalStorageObj();
+            console.log('s',$state);
 
             $scope.text = 2222;
 

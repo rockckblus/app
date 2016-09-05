@@ -8,6 +8,7 @@
         .mui-table-view-chevron .mui-table-view-cell {
             padding-right: 30px;
         }
+
     </style>
     <div class="titleInfo clear" ng-show="true">
         <div id="titleInfo">
@@ -33,7 +34,8 @@
 
             <div class="panle">
                 <div class="mui-btn fa fa-weixin fa-1x icon-btn"></div>
-                <div class="mui-btn fa  fa-1x icon-btn iconStar" bo-class="vo.iconStar" bo-text="vo.id"></div>
+                <div class="mui-btn fa  fa-1x icon-btn-noBack iconStar" ng-class="vo.iconStar" bo-attr
+                     bo-attr-iconId="vo.id"></div>
             </div>
         </li>
     </div>

@@ -56,6 +56,7 @@ document.write('<script src="' + basePath + '/src/js/server/ui.dipan.ui.factory.
 document.write('<script src="' + basePath + '/src/js/server/update.block.getJsCss.factory.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/server/touchScroll.dipan.hackScrollClick.factory.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/server/tap.dipan.clickTapPublic.server.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/server/compile.uiBlock.compile.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/alertDiv.uiBlock.alertUi.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/compile.uiBlock.compile.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/tools.dipan.block.factory.js"><\/script>');

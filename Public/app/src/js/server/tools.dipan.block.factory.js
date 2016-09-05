@@ -61,7 +61,21 @@
              * function trueWeb(web,app) 判断手机,还是 wap,回调函数
              * 16/8/19 上午7:32 ByRockBlus
              *************************/
-            trueWeb: trueWeb
+            trueWeb: trueWeb,
+
+            /**
+             * 根据名称 存储obj
+             * @param localName
+             * @param obj
+             */
+            saveLocalStorageObj: saveLocalStorageObj,
+
+            /**
+             * 根据名称 getobj
+             * @param localName
+             * @param obj
+             */
+            getLocalStorageObj: getLocalStorageObj
         };
 
         /**
@@ -249,6 +263,30 @@
                 }
             }, 0);
 
+        }
+
+        /**
+         * 根据名称 存储obj
+         * @param localName
+         * @param obj
+         */
+        function saveLocalStorageObj(localName, obj) {
+            localStorage.removeItem(localName);
+            setTimeout(function () {
+                var objStr = JSON.stringify(obj);
+                localName.setItem(localName, objStr);
+            }, 200);
+        }
+
+        /**
+         * 根据名称 getObj
+         * @param localName
+         * @return obj
+         */
+        function getLocalStorageObj(localName) {
+            var obj = localStorage.getItem(localName);
+            var objStr = JSON.parse(obj);
+            return objStr;
         }
 
         return re;

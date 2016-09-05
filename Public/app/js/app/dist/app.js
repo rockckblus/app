@@ -4621,9 +4621,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config', 'compile','$state'];
 
-    function thisController($scope, $rootScope, $timeout, tools, update, config) {
+    function thisController($scope, $rootScope, $timeout, tools, update, config, compile,$state) {
 
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
@@ -4645,11 +4645,15 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             function _bind() {
                 mui('#list').on('tap', '.iconStar', function () {
                     var _this = angular.element(this);
-                    var id = _this.text();
+                    var id = _this.attr('iconId');
                     reForList(id);
                 });
             }
 
+            //滚动到底事件
+            document.addEventListener('plusscrollbottom', function () {
+                alert(11);
+            }, false);
             _bind();
         });
 
@@ -4659,10 +4663,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * @param id
          */
         function reForList(id) {
-            console.log('id',id);
+            console.log('id', id);
             angular.forEach($scope.list, function (vo) {
                 if (vo.id == id) {
-                    alert(11);
                     if (vo.iconStar == 'fa-star-o') {
                         $timeout(function () {
                             vo.iconStar = 'fa-star';
@@ -4847,6 +4850,8 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 ];
 
             $scope.list = obj;
+            //tools.saveLocalStorageObj();
+            console.log('s',$state);
 
             $scope.text = 2222;
 
@@ -5716,7 +5721,21 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
              * function trueWeb(web,app) 判断手机,还是 wap,回调函数
              * 16/8/19 上午7:32 ByRockBlus
              *************************/
-            trueWeb: trueWeb
+            trueWeb: trueWeb,
+
+            /**
+             * 根据名称 存储obj
+             * @param localName
+             * @param obj
+             */
+            saveLocalStorageObj: saveLocalStorageObj,
+
+            /**
+             * 根据名称 getobj
+             * @param localName
+             * @param obj
+             */
+            getLocalStorageObj: getLocalStorageObj
         };
 
         /**
@@ -5904,6 +5923,30 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 }
             }, 0);
 
+        }
+
+        /**
+         * 根据名称 存储obj
+         * @param localName
+         * @param obj
+         */
+        function saveLocalStorageObj(localName, obj) {
+            localStorage.removeItem(localName);
+            setTimeout(function () {
+                var objStr = JSON.stringify(obj);
+                localName.setItem(localName, objStr);
+            }, 200);
+        }
+
+        /**
+         * 根据名称 getObj
+         * @param localName
+         * @return obj
+         */
+        function getLocalStorageObj(localName) {
+            var obj = localStorage.getItem(localName);
+            var objStr = JSON.parse(obj);
+            return objStr;
         }
 
         return re;
@@ -6346,6 +6389,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "        .mui-table-view-chevron .mui-table-view-cell {\n" +
     "            padding-right: 30px;\n" +
     "        }\n" +
+    "\n" +
     "    </style>\n" +
     "    <div class=\"titleInfo clear\" ng-show=\"true\">\n" +
     "        <div id=\"titleInfo\">\n" +
@@ -6371,7 +6415,8 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "\n" +
     "            <div class=\"panle\">\n" +
     "                <div class=\"mui-btn fa fa-weixin fa-1x icon-btn\"></div>\n" +
-    "                <div class=\"mui-btn fa  fa-1x icon-btn iconStar\" bo-class=\"vo.iconStar\" bo-text=\"vo.id\"></div>\n" +
+    "                <div class=\"mui-btn fa  fa-1x icon-btn-noBack iconStar\" ng-class=\"vo.iconStar\" bo-attr\n" +
+    "                     bo-attr-iconId=\"vo.id\"></div>\n" +
     "            </div>\n" +
     "        </li>\n" +
     "    </div>\n" +
