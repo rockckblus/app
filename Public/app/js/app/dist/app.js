@@ -4679,7 +4679,14 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                         var id = _this.attr('iconId');
                         reForList(id);
                     });
+                   
+                    var scrolldiv = document.getElementById('list');
+                    scrolldiv = angular.element(scrolldiv);
+                    scrolldiv[0].addEventListener("onscroll", function () {
+                        alert(11);
+                    });
                 }
+
 
                 //滚动到底事件
                 document.addEventListener('plusscrollbottom', function () {
@@ -4715,6 +4722,11 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          *************************/
         function giveDefaultList() {
 
+            $timeout(function () {
+                var url = 'http://192.168.0.7:8080/homeListOne.json?' + tools.getRoundCode(8);
+                //var url = 'http://127.0.0.1:8080/homeListOne.json?' + tools.getRoundCode(8);
+                tools.getJsp(url).then(call, err);
+            }, 400);
 
         }
 
@@ -6298,7 +6310,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "        }\n" +
     "\n" +
     "    </style>\n" +
-    "    <div class=\"titleInfo clear\" ng-show=\"true\">\n" +
+    "    <div class=\"titleInfo clear\" ng-show=\"false\">\n" +
     "        <div id=\"titleInfo\">\n" +
     "            刚刚有{{peopleNum}}3人访问了你\n" +
     "        </div>\n" +
