@@ -4621,9 +4621,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config', 'compile','$state'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config', 'compile', '$state'];
 
-    function thisController($scope, $rootScope, $timeout, tools, update, config, compile,$state) {
+    function thisController($scope, $rootScope, $timeout, tools, update, config, compile, $state) {
 
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
@@ -4631,61 +4631,43 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
         $scope.list = []; //默认首页 列表 数据,
 
-
-        $scope.text = 1111;
         /*************************
          * todo
          * 默认读取上次的缓存 数据, 然后 再异步更新 到 最新数据
          * 16/8/19 上午7:45 ByRockBlus
          *************************/
-        giveDefaultList();
+        init();
 
+        function init() {
+            var url = 'http://192.168.0.7:8080/homeListOne.json?' + tools.getRoundCode(8);
+            //var url = 'http://127.0.0.1:8080/homeListOne.json?' + tools.getRoundCode(8);
+            tools.getJsp(url).then(call, err);
+        }
 
-        mui.plusReady(function () {
-            function _bind() {
-                mui('#list').on('tap', '.iconStar', function () {
-                    var _this = angular.element(this);
-                    var id = _this.attr('iconId');
-                    reForList(id);
-                });
-            }
-
-            //滚动到底事件
-            document.addEventListener('plusscrollbottom', function () {
-                alert(11);
-            }, false);
-            _bind();
-        });
-
-
-        /**
-         * 重新给 list
-         * @param id
-         */
-        function reForList(id) {
-            console.log('id', id);
-            angular.forEach($scope.list, function (vo) {
-                if (vo.id == id) {
-                    if (vo.iconStar == 'fa-star-o') {
-                        $timeout(function () {
-                            vo.iconStar = 'fa-star';
-                        }, 0);
-                    } else if (vo.iconStar == 'fa-star') {
-                        $timeout(function () {
-                            vo.iconStar = 'fa-star-o';
-                        }, 0);
-                    }
+        function plusInit() {
+            mui.plusReady(function () {
+                function _bind() {
+                    mui('#list').on('tap', '.iconStar', function () {
+                        var _this = angular.element(this);
+                        var id = _this.attr('iconId');
+                        reForList(id);
+                    });
                 }
+
+                //滚动到底事件
+                document.addEventListener('plusscrollbottom', function () {
+                    tools.alert({
+                        title: '底部'
+                    });
+                }, false);
+                _bind();
             });
         }
 
-
-        //var url = 'http://city.5656111.com/Member/GetAjax/get_union_user_list/begin_city/%E5%A4%A9%E6%B4%A5';
-        //tools.postJsp(url, {}).then(call, err);
-
         function call(re) {
             $timeout(function () {
-                $scope.list = re.data.list;
+                $scope.list = re.list;
+                plusInit();
             }, 0);
         }
 
@@ -4701,162 +4683,29 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * 16/8/19 上午7:48 ByRockBlus
          *************************/
         function giveDefaultList() {
-            var obj =
-                [
-                    {
-                        id: 1,
-                        listHeader: 'https://avatars1.githubusercontent.com/u/3006580?v=3&s=40',
-                        title: 'titleTest1,titleTest1titleTest1titleTest1',
-                        iconStar: 'fa-star-o',
-                        content: {
-                            姓名: 1,
-                            电话: 222,
-                        },
 
-                    },
-                    {
-                        id: 2,
-                        listHeader: 'https://avatars1.githubusercontent.com/u/3006580?v=3&s=40',
-                        title: 'titleTest1,titleTest1titleTest1titleTest1',
-                        iconStar: 'fa-star-o',
-                        content: {
-                            姓名: 1,
-                            电话: 222,
-                            内容: '扣扣水电费 ,送福利卡士大夫阿萨德法师打发斯蒂芬,啊扫地理发卡思考的浪费阿斯蒂芬,,按时到付款了  扩散到付款'
-                        },
-
-                    },
-                    {
-                        id: 3,
-                        listHeader: 'https://avatars1.githubusercontent.com/u/3006580?v=3&s=40',
-                        title: 'titleTest1,titleTest1titleTest1titleTest1',
-                        iconStar: 'fa-star-o',
-                        content: {
-                            姓名: 1,
-                            电话: 222,
-                        },
-
-                    },
-                    {
-                        id: 4,
-                        listHeader: 'https://avatars1.githubusercontent.com/u/3006580?v=3&s=40',
-                        title: 'titleTest1,titleTest1titleTest1titleTest1',
-                        iconStar: 'fa-star-o',
-                        content: {
-                            姓名: 1,
-                            电话: 222,
-                        },
-
-                    },
-                    {
-                        id: 5,
-                        listHeader: 'https://avatars1.githubusercontent.com/u/3006580?v=3&s=40',
-                        title: 'titleTest1,titleTest1titleTest1titleTest1',
-                        iconStar: 'fa-star-o',
-                        content: {
-                            姓名: 1,
-                            电话: 222,
-                        },
-
-                    },
-                    {
-                        id: 6,
-                        listHeader: 'https://avatars1.githubusercontent.com/u/3006580?v=3&s=40',
-                        title: 'titleTest1,titleTest1titleTest1titleTest1',
-                        iconStar: 'fa-star-o',
-                        content: {
-                            姓名: 1,
-                            电话: 222,
-                        },
-
-                    },
-                    {
-                        id: 7,
-                        listHeader: 'https://avatars1.githubusercontent.com/u/3006580?v=3&s=40',
-                        title: 'titleTest1,titleTest1titleTest1titleTest1',
-                        iconStar: 'fa-star-o',
-                        content: {
-                            姓名: 1,
-                            电话: 222,
-                        },
-
-                    },
-                    {
-                        id: 8,
-                        listHeader: 'https://avatars1.githubusercontent.com/u/3006580?v=3&s=40',
-                        title: 'titleTest1,titleTest1titleTest1titleTest1',
-                        iconStar: 'fa-star-o',
-                        content: {
-                            姓名: 1,
-                            电话: 222,
-                        },
-
-                    },
-                    {
-                        id: 9,
-                        listHeader: 'https://avatars1.githubusercontent.com/u/3006580?v=3&s=40',
-                        title: 'titleTest1,titleTest1titleTest1titleTest1',
-                        iconStar: 'fa-star-o',
-                        content: {
-                            姓名: 1,
-                            电话: 222,
-                        },
-
-                    },
-                    {
-                        id: 10,
-                        listHeader: 'https://avatars1.githubusercontent.com/u/3006580?v=3&s=40',
-                        title: 'titleTest1,titleTest1titleTest1titleTest1',
-                        iconStar: 'fa-star-o',
-                        content: {
-                            姓名: 1,
-                            电话: 222,
-                        },
-
-                    },
-                    {
-                        id: 11,
-                        listHeader: 'https://avatars1.githubusercontent.com/u/3006580?v=3&s=40',
-                        title: 'titleTest1,titleTest1titleTest1titleTest1',
-                        iconStar: 'fa-star-o',
-                        content: {
-                            姓名: 1,
-                            电话: 222,
-                        },
-
-                    },
-                    {
-                        id: 12,
-                        listHeader: 'https://avatars1.githubusercontent.com/u/3006580?v=3&s=40',
-                        title: 'titleTest1,titleTest1titleTest1titleTest1',
-                        iconStar: 'fa-star-o',
-                        content: {
-                            姓名: 1,
-                            电话: 222,
-                        },
-
-                    },
-                    {
-                        id: 13,
-                        listHeader: 'https://avatars1.githubusercontent.com/u/3006580?v=3&s=40',
-                        title: 'titleTest1,titleTest1titleTest1titleTest1',
-                        iconStar: 'fa-star-o',
-                        content: {
-                            姓名: 1,
-                            电话: 222,
-                        },
-
-                    },
-                ];
-
-            $scope.list = obj;
-            //tools.saveLocalStorageObj();
-            console.log('s',$state);
-
-            $scope.text = 2222;
 
         }
 
+        /**
+         * 重新给 list
+         * @param id
+         */
+        function reForList(id) {
+            angular.forEach($scope.list, function (vo) {
+                if (vo.id == id) {
+                    if (vo.iconStar == 'fa-star-o') {
+                        $timeout(function () {
+                            vo.iconStar = 'fa-star';
+                        }, 0);
+                    } else if (vo.iconStar == 'fa-star') {
+                        $timeout(function () {
+                            vo.iconStar = 'fa-star-o';
+                        }, 0);
+                    }
+                }
+            });
+        }
 
         /*************************
          * // 滚动到 底部 的 触发动作 test todo
@@ -5238,10 +5087,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         thisLocalData.tab = _tab; //根据 url 遍历 给tab数据
         thisLocalData.showTab = _showTab; //遍历url 返回true false ,控制是否显示tab
         thisLocalData.getTitle = _getTitle; //getTitle
+        thisLocalData.giveRoundCode = _giveRoundCode;// 给一个8位随机码,验证短信用
         thisLocalData.gps = {
             isHaveGps: false, //判断
         };
-        thisLocalData.giveRoundCode = _giveRoundCode;//第一次后给一个随机码,验证用户发送短信用
         thisLocalData._init = function () {
             thisTools = tools;
             _config = config;
@@ -5521,22 +5370,11 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     function _giveRoundCode() {
         localStorage.clear(_config.localSaveName.user.roundCodeId);
         setTimeout(function () {
-            var roundCode = rndNum(8);
+            var roundCode = thisTools.getRoundCode(8);
             localStorage.setItem(_config.localSaveName.user.roundCodeId, roundCode);
         }, 200);
 
-        /**
-         * 返回一个 随机数
-         * @param {位数}n
-         * @returns {string}
-         */
-        function rndNum(n) {
-            var rnd = "";
-            for (var i = 0; i < n; i++) {
-                rnd += Math.floor(Math.random() * 10);
-            }
-            return rnd;
-        }
+
     }
 
 })();
@@ -5735,7 +5573,14 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
              * @param localName
              * @param obj
              */
-            getLocalStorageObj: getLocalStorageObj
+            getLocalStorageObj: getLocalStorageObj,
+
+            /**
+             * 返回一个 随机数
+             * @param {位数}n
+             * @returns {string}
+             */
+            getRoundCode: getRoundCode
         };
 
         /**
@@ -5776,8 +5621,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         }
 
         /**
-         * 删除数组中的元素,传入数组，和第一个
-         * 16/2/18 */
+         * 删除数组中的元素,传入数组，和第几个
+         * @param {Array} arr
+         * @param {Number} num
+         */
         function arrDel(arr, num) {
             if (!Array.prototype.remove) {
                 Array.prototype.remove = function (from, to) {
@@ -5897,7 +5744,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
         /**
          * 判断是 function
-         * 16/2/19 */
+         * @param {Function} fn
+         * @returns {boolean}
+         */
         function isFunction(fn) {
             return Object.prototype.toString.call(fn) === '[object Function]';
         }
@@ -5947,6 +5796,19 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             var obj = localStorage.getItem(localName);
             var objStr = JSON.parse(obj);
             return objStr;
+        }
+
+        /**
+         * 返回一个 随机数
+         * @param {位数}n
+         * @returns {string}
+         */
+        function getRoundCode(n) {
+            var rnd = "";
+            for (var i = 0; i < n; i++) {
+                rnd += Math.floor(Math.random() * 10);
+            }
+            return rnd;
         }
 
         return re;
@@ -6403,7 +6265,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "                <div class=\"left listHeader\">\n" +
     "                    <img bo-src=\"vo.listHeader\"/>\n" +
     "                </div>\n" +
-    "                <div class=\"left listTitle\" style=\"margin-left: 10px\">\n" +
+    "                <div class=\"left listTitle\">\n" +
     "                    <span bo-text=\"vo.title\"></span>\n" +
     "                </div>\n" +
     "            </div>\n" +
@@ -6496,10 +6358,11 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   $templateCache.put('directive/member/my.dipan.myIndexNav.html',
     "<div class=\"clear viewContent\" style=\"text-align: center ;margin-top: 130px\">\n" +
     "    <ul class=\"mui-table-view mui-table-view-chevron\" style=\"text-align: left\" bindonce ng-repeat=\"vo in listNav\">\n" +
-    "        <div url=\"{{vo.url}}\"  class=\"mui-table-view-cell linkMouse clear\" style=\"padding-right: 26px;height: 50px;padding-top: 16px;\">\n" +
+    "        <div url=\"{{vo.url}}\" class=\"mui-table-view-cell linkMouse clear\"\n" +
+    "             style=\"padding-right: 26px;height: 50px;padding-top: 16px;\">\n" +
     "            <i class=\"{{vo.icon}} pull-left\" style=\"color:#888;margin-top: 3px\"></i>\n" +
     "            <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
-    "            <span style=\"font-size: 1.4em\">{{vo.name}}</span>\n" +
+    "            <span style=\"font-size: 1.4em;margin-left: 20px\">{{vo.name}}</span>\n" +
     "        </div>\n" +
     "    </ul>\n" +
     "    <div class=\"clear\" style=\"margin-top: 40px\"></div>\n" +
@@ -6554,21 +6417,21 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "\n" +
     "<!--底部-->\n" +
     "<nav class=\"mui-bar mui-bar-tab\" style=\"padding-top: 0px;\">\n" +
-    "    <div id=\"hrefHome\" url=\"home\" class=\"mui-tab-item mui-btn icon-btn\">\n" +
-    "        <span class=\"mui-icon fa fa-home fa-navbar fa-lg\"></span>\n" +
+    "    <div id=\"hrefHome\" url=\"home\" class=\"bottomBar mui-btn  icon-btn\">\n" +
+    "        <span class=\"mui-icon fa fa-home fa-navbar\"></span>\n" +
     "    </div>\n" +
-    "    <div id=\"hrefMaster\" url=\"master\" class=\"mui-tab-item mui-btn icon-btn\">\n" +
-    "        <span class=\"mui-icon fa fa-map-marker fa-navbar fa-lg\"></span>\n" +
+    "    <div id=\"hrefMaster\" url=\"master\" class=\"bottomBar  mui-btn icon-btn\">\n" +
+    "        <span class=\"mui-icon fa fa-map-marker fa-navbar\"></span>\n" +
     "    </div>\n" +
-    "    <div id=\"hrefMember\" url=\"memberIndex\" class=\"mui-tab-item mui-btn icon-btn\">\n" +
-    "        <span class=\"mui-icon fa fa-user fa-navbar fa-lg\">\n" +
+    "    <div id=\"hrefMember\" url=\"memberIndex\" class=\"bottomBar mui-btn icon-btn\">\n" +
+    "        <span class=\"mui-icon fa fa-user fa-navbar \">\n" +
     "        </span>\n" +
     "        <i class=\"fa fa-ellipsis-h fa-2x\" style=\"\n" +
     "width: 7px;\n" +
     "overflow-x: hidden;\n" +
     "color: #bd0000;\n" +
     "position: absolute;\n" +
-    "bottom:19px;\n" +
+    "bottom:13px;\n" +
     "margin-left: -2px;\n" +
     "\"></i>\n" +
     "    </div>\n" +

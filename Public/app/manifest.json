@@ -256,7 +256,8 @@
 					"src/js/server/tap.dipan.clickTapPublic.server.js",
 					"src/js/directive/area.dipan.areaSelect.directive.js",
 					"src/js/directive/block/search.dipan.search.directive.js",
-					"src/js/directive/block/area.dipan.areaSelect.directive.js"
+					"src/js/directive/block/area.dipan.areaSelect.directive.js",
+					"src/js/server/compile.uiBlock.compile.factory.js"
 				],
 				"refer": [
 					"src/html/updata.html"

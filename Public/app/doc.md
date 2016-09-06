@@ -14,6 +14,13 @@
 	3.2 ——— post url
 	3.3 ——— 判断是手机还是 app的 回调函数
 	3.4——— 错误alert 提示框
+	3.5 --- get url(同postUrl,不传post对象)
+	3.6 --- 返回一个 随机数
+    3.7 --- 根据名称 存储localStorage 一个 obj
+    3.8 --- 根据名称读取localStorage 返回一个 obj
+    3.9 --- 删除数组中的元素
+    3.a1 --- 判断是否funcion类型
+
 ### 4.本地数据localStorage
 	4.1 ——— app.js 更新后的 下载存储路径  downLoad.appJsPath
 	4.2 ——— app.css 更新后的 下载存储路径 downLoad.appCssPath
@@ -44,6 +51,11 @@
 ># `功能说明`
 
 ### 1.app自动更新功能
+### 2.浏览数据缓存机制
+### 3.直接标记功能
+### 4.直接聊天功能
+### 5.浏览提示功能
+### 6.gps定位功能
 
 
 # 正文-----------------------------------------
@@ -92,10 +104,11 @@
 #### 3.2post Url
 
     注入名称：tools
-    使用方法：tools.postJsp(url,data).then(callBackOkFun,callBackErrFun,isNoLoading)
+    使用方法：tools.postJsp(url,data,noLoadIng).then(callBackOkFun,callBackErrFun,isNoLoading)
     功能：post请求url
     传参：url —— post的 网址
 	data ：js对象 格式：{a：1，b：2}
+	noLoadIng:{布尔} 是否显示loading动画, true 为不显示
 	callBackOkFun:  function callBackOkFun(re) 成功的回调函数，直接回调返回值
 	callBackErrFun: function callBackErrFun(err) 失败的回调，直接返回错误信息
 	isNoLoading : (可选 true:不显示loading动画)
@@ -107,13 +120,48 @@
     注入名称：tools
     使用方法： tools.trueWeb( wap ,  app  )
     传参：wap:  function(){}    //wap端执行 的 回调函数
-	     app:  function(){}    //app端执行 的 回调函数
+	app:  function(){}    //app端执行 的 回调函数
 
 
 #### 3.4  错误alert 提示框
     注入名称：tools
     使用方法：tools.alert( {title:’title’，content: ‘content’} )
     传参：obj {title：str   ，content ：str}
+
+#### 3.6 返回一个随机数
+    注入名称：tools
+    使用方法：tools.getRoundCode(n)
+    传参：{num} n
+    demo: tools.getRoundCode(8) ; // 12345678
+
+#### 3.7 根据名称 存储localstorage obj
+    注入名称：tools
+    使用方法：tools.saveLocalStorageObj(localName,obj)
+    @param {String} localName
+    @param {Object} obj
+
+#### 3.8 根据名称 读取localstorage obj
+    注入名称：tools
+    使用方法：tools.saveLocalStorageObj(localName)
+    @param {String} localName
+    @return {Object} obj
+
+#### 3.9 删除数组中的元素
+    注入名称：tools
+    使用方法：tools.arrDel(arr,num)
+    @param {Array} arr
+    @param {Number} num
+    demo: tools.arrDel([a,b,c],1); // 数组原型变为 [a,c]
+
+#### 3.a1 判断是 function
+    注入名称：tools
+    使用方法：tools.isFunction(fn)
+    @param {*} fn
+    @returns {boolean}
+    demo: tools.isFunction(function(){}); // true
+    demo: tools.isFunction([1,2]); // false
+
+
 ---
 >### 4.本地数据localStorage
 
@@ -235,3 +283,40 @@
     自动更新设置 选项功能。
 
     1自动更新（success），2提示手动更新（todo），3不更新（todo）
+
+
+>### 2.浏览数据缓存机制
+
+    滚动刷新,缓存浏览过的 n条数据,记录滚动页面的高度,不同板块切换后直接读取缓存,
+    不去请求网络,省流量,增强用户体验
+
+    切换板块之后,先去显示缓存,然后异步去请求服务器是否有更新
+        有更新:追加到list顶部,同时存储到缓存
+
+>### 3.直接标记功能
+    直接进入的板块列表页面,添加标记功能,专门提取标记数据记录到缓存,同时缓存浏览过标记的详情页面
+    在我的标记里面,直接列表显示
+
+>### 4.直接聊天功能
+    直接进入的板块列表页面,添加聊天功能,可文字,图片,声音
+
+>### 5.浏览提示功能
+    直接重要提示,有n个人访问过你. 增加社区互动的引导性
+
+>### 6.gps 定位功能
+    app 调用手机综合定位功能,根据定位显示周边相应信息.
+    wap 调用 ip 定位功能,定位到基本城市.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

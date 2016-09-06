@@ -75,7 +75,14 @@
              * @param localName
              * @param obj
              */
-            getLocalStorageObj: getLocalStorageObj
+            getLocalStorageObj: getLocalStorageObj,
+
+            /**
+             * 返回一个 随机数
+             * @param {位数}n
+             * @returns {string}
+             */
+            getRoundCode: getRoundCode
         };
 
         /**
@@ -116,8 +123,10 @@
         }
 
         /**
-         * 删除数组中的元素,传入数组，和第一个
-         * 16/2/18 */
+         * 删除数组中的元素,传入数组，和第几个
+         * @param {Array} arr
+         * @param {Number} num
+         */
         function arrDel(arr, num) {
             if (!Array.prototype.remove) {
                 Array.prototype.remove = function (from, to) {
@@ -237,7 +246,9 @@
 
         /**
          * 判断是 function
-         * 16/2/19 */
+         * @param {Function} fn
+         * @returns {boolean}
+         */
         function isFunction(fn) {
             return Object.prototype.toString.call(fn) === '[object Function]';
         }
@@ -287,6 +298,19 @@
             var obj = localStorage.getItem(localName);
             var objStr = JSON.parse(obj);
             return objStr;
+        }
+
+        /**
+         * 返回一个 随机数
+         * @param {位数}n
+         * @returns {string}
+         */
+        function getRoundCode(n) {
+            var rnd = "";
+            for (var i = 0; i < n; i++) {
+                rnd += Math.floor(Math.random() * 10);
+            }
+            return rnd;
         }
 
         return re;

@@ -137,6 +137,9 @@ html, body {
 .icon-btn {
   background-color: transparent;
   border: 0px;
+  &:active {
+    background-color: #bd0000;
+  }
 }
 
 #tab {
@@ -219,9 +222,17 @@ html, body {
   .yuanBtn();
 }
 
-.listHeader img {
-  width: 20px;
-  height: 20px;
+.listHeader {
+  .all(10, 1);
+  overflow-y: hidden;
+  img {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.listTitle {
+  .all(10, 9);
 }
 
 //list 操作面板
@@ -230,16 +241,31 @@ html, body {
   text-align: right;
   .icon-btn {
     color: #d8d8d8;
+    &:active {
+      color: #fff;
+      background-color: #bd0000;
+    }
   }
   .icon-btn-noBack {
     background-color: transparent;
     border: 0px;
+    &:active {
+      background-color: #bd0000;
+      color: #fff;
+    }
   }
   .fa-star-o {
     color: #d8d8d8;
   }
   .fa-star {
     color: #bd0000;
+  }
+}
+
+.bottomBar {
+  .all(9, 3);
+  .fa-navbar {
+    font-size: 23px;
   }
 }
 

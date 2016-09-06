@@ -23,10 +23,10 @@
         thisLocalData.tab = _tab; //根据 url 遍历 给tab数据
         thisLocalData.showTab = _showTab; //遍历url 返回true false ,控制是否显示tab
         thisLocalData.getTitle = _getTitle; //getTitle
+        thisLocalData.giveRoundCode = _giveRoundCode;// 给一个8位随机码,验证短信用
         thisLocalData.gps = {
             isHaveGps: false, //判断
         };
-        thisLocalData.giveRoundCode = _giveRoundCode;//第一次后给一个随机码,验证用户发送短信用
         thisLocalData._init = function () {
             thisTools = tools;
             _config = config;
@@ -306,22 +306,11 @@
     function _giveRoundCode() {
         localStorage.clear(_config.localSaveName.user.roundCodeId);
         setTimeout(function () {
-            var roundCode = rndNum(8);
+            var roundCode = thisTools.getRoundCode(8);
             localStorage.setItem(_config.localSaveName.user.roundCodeId, roundCode);
         }, 200);
 
-        /**
-         * 返回一个 随机数
-         * @param {位数}n
-         * @returns {string}
-         */
-        function rndNum(n) {
-            var rnd = "";
-            for (var i = 0; i < n; i++) {
-                rnd += Math.floor(Math.random() * 10);
-            }
-            return rnd;
-        }
+
     }
 
 })();
