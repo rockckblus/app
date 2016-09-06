@@ -36,9 +36,22 @@
         init();
 
         function init() {
-            var url = 'http://192.168.0.7:8080/homeListOne.json?' + tools.getRoundCode(8);
-            //var url = 'http://127.0.0.1:8080/homeListOne.json?' + tools.getRoundCode(8);
-            tools.getJsp(url).then(call, err);
+            var localData = tools.getLocalStorageObj($state.current.name);
+            console.log('localData', localData);
+            if (localData) {//如果缓存的 数据存在,先读缓存数据
+                var re = {
+                    list: localData
+                };
+                call(re);
+            } else {
+                _getList();
+            }
+
+            function _getList() {
+                var url = 'http://192.168.0.7:8080/homeListOne.json?' + tools.getRoundCode(8);
+                //var url = 'http://127.0.0.1:8080/homeListOne.json?' + tools.getRoundCode(8);
+                tools.getJsp(url).then(call, err);
+            }
         }
 
         function plusInit() {
@@ -58,13 +71,17 @@
                     });
                 }, false);
                 _bind();
+
             });
         }
 
         function call(re) {
             $timeout(function () {
                 $scope.list = re.list;
-                plusInit();
+                var name = $state.current.name;
+                var obj = $scope.list;
+                tools.saveLocalStorageObj(name, obj);//存储obj
+                plusInit();//绑定点击事件
             }, 0);
         }
 
@@ -100,6 +117,9 @@
                             vo.iconStar = 'fa-star-o';
                         }, 0);
                     }
+
+                    var name = $state.current.name;
+                    tools.saveLocalStorageObj(name, $scope.list);//存储obj
                 }
             });
         }

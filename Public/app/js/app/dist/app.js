@@ -4342,20 +4342,34 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     /**
      * 手动注入
      * 16/2/1 */
-    body.$inject = ['$scope', '$rootScope', '$timeout', 'localData', '$location', 'tap'];
+    body.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tap', '$state'];
 
     /**
      * controllerFun
      * 16/2/1 */
-    function body($scope, $rootScope, $timeout, localData, $location, tap) {
+    function body($scope, $rootScope, $timeout, localData, tap, $state) {
         $scope.$on('changeBody', function () {
             $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
-            var _url = $location.url();
+            var _url = '/' + $state.current.name;
             $timeout(function () {
                 $scope.title = localData.getTitle(_url);//getTitle
                 $scope.showTab = localData.showTab(_url);//是否显示 tab
                 $scope.tabList = localData.tab(_url);//tablist body 控制器
                 $scope.url = _url;//url变量,判断 top 模板 显示图标用
+
+                mui.plusReady(function () {
+                    var scrollTopNum = $state.current.name + '_scrollTop';
+                    var num = parseInt(localStorage.getItem(scrollTopNum));
+                    try {
+                        document.body.scrollTop = num;
+                    } catch (e) {
+                        try {
+                            window.pageYOffset = num;
+                        } catch (e) {
+                            document.documentElement.scrollTop = num;
+                        }
+                    }
+                });
                 tap.init();
             }, 0);
         });
@@ -4639,9 +4653,22 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         init();
 
         function init() {
-            var url = 'http://192.168.0.7:8080/homeListOne.json?' + tools.getRoundCode(8);
-            //var url = 'http://127.0.0.1:8080/homeListOne.json?' + tools.getRoundCode(8);
-            tools.getJsp(url).then(call, err);
+            var localData = tools.getLocalStorageObj($state.current.name);
+            console.log('localData', localData);
+            if (localData) {//如果缓存的 数据存在,先读缓存数据
+                var re = {
+                    list: localData
+                };
+                call(re);
+            } else {
+                _getList();
+            }
+
+            function _getList() {
+                var url = 'http://192.168.0.7:8080/homeListOne.json?' + tools.getRoundCode(8);
+                //var url = 'http://127.0.0.1:8080/homeListOne.json?' + tools.getRoundCode(8);
+                tools.getJsp(url).then(call, err);
+            }
         }
 
         function plusInit() {
@@ -4661,13 +4688,17 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                     });
                 }, false);
                 _bind();
+
             });
         }
 
         function call(re) {
             $timeout(function () {
                 $scope.list = re.list;
-                plusInit();
+                var name = $state.current.name;
+                var obj = $scope.list;
+                tools.saveLocalStorageObj(name, obj);//存储obj
+                plusInit();//绑定点击事件
             }, 0);
         }
 
@@ -4703,6 +4734,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                             vo.iconStar = 'fa-star-o';
                         }, 0);
                     }
+
+                    var name = $state.current.name;
+                    tools.saveLocalStorageObj(name, $scope.list);//存储obj
                 }
             });
         }
@@ -5358,6 +5392,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     }
 
 
+
     /*************************
      * 根据gps 定位城市,并返回 具体信息 (app)
      * 16/9/2 上午8:10 ByRockBlus
@@ -5368,15 +5403,12 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      * @private
      */
     function _giveRoundCode() {
-        localStorage.clear(_config.localSaveName.user.roundCodeId);
+        localStorage.removeItem(_config.localSaveName.user.roundCodeId);
         setTimeout(function () {
             var roundCode = thisTools.getRoundCode(8);
             localStorage.setItem(_config.localSaveName.user.roundCodeId, roundCode);
         }, 200);
-
-
     }
-
 })();
 /**
  * tap.dipan.clickTapPublic.server.js
@@ -5438,8 +5470,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
             function _call() {
                 angular.forEach(ids, function (vo) {
-
-
                     var doc = _trueIsSetId(vo);
                     if (doc) {//判断id存在
                         var _doc = angular.element(doc);
@@ -5464,14 +5494,27 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             }, function () {
             });
             doc.addEventListener(type, function () {
-
+                __saveScrollTop();
                 if (url == 'goHistory') {//判断是 返回上页的点击事件
                     history.go(-1);
                 } else {
                     $state.go(url);
                 }
-
             });
+
+
+            /**
+             * 记录body滚动位置,对应url 去存储
+             * @private
+             */
+            function __saveScrollTop() {
+                var url = $state.current.name;
+                var saveStr = url + '_scrollTop';
+                var num = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+                localStorage.removeItem(saveStr);
+                localStorage.setItem(saveStr, num);
+            }
+
         }
 
 
@@ -5783,7 +5826,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             localStorage.removeItem(localName);
             setTimeout(function () {
                 var objStr = JSON.stringify(obj);
-                localName.setItem(localName, objStr);
+                localStorage.setItem(localName, objStr);
             }, 200);
         }
 
@@ -5794,8 +5837,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          */
         function getLocalStorageObj(localName) {
             var obj = localStorage.getItem(localName);
-            var objStr = JSON.parse(obj);
-            return objStr;
+            if (obj) {
+                var objStr = JSON.parse(obj);
+                return objStr;
+            }
         }
 
         /**

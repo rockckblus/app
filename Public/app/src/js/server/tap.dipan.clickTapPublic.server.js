@@ -58,8 +58,6 @@
 
             function _call() {
                 angular.forEach(ids, function (vo) {
-
-
                     var doc = _trueIsSetId(vo);
                     if (doc) {//判断id存在
                         var _doc = angular.element(doc);
@@ -84,14 +82,27 @@
             }, function () {
             });
             doc.addEventListener(type, function () {
-
+                __saveScrollTop();
                 if (url == 'goHistory') {//判断是 返回上页的点击事件
                     history.go(-1);
                 } else {
                     $state.go(url);
                 }
-
             });
+
+
+            /**
+             * 记录body滚动位置,对应url 去存储
+             * @private
+             */
+            function __saveScrollTop() {
+                var url = $state.current.name;
+                var saveStr = url + '_scrollTop';
+                var num = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+                localStorage.removeItem(saveStr);
+                localStorage.setItem(saveStr, num);
+            }
+
         }
 
 

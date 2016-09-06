@@ -294,6 +294,7 @@
     }
 
 
+
     /*************************
      * 根据gps 定位城市,并返回 具体信息 (app)
      * 16/9/2 上午8:10 ByRockBlus
@@ -304,13 +305,10 @@
      * @private
      */
     function _giveRoundCode() {
-        localStorage.clear(_config.localSaveName.user.roundCodeId);
+        localStorage.removeItem(_config.localSaveName.user.roundCodeId);
         setTimeout(function () {
             var roundCode = thisTools.getRoundCode(8);
             localStorage.setItem(_config.localSaveName.user.roundCodeId, roundCode);
         }, 200);
-
-
     }
-
 })();

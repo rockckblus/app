@@ -285,7 +285,7 @@
             localStorage.removeItem(localName);
             setTimeout(function () {
                 var objStr = JSON.stringify(obj);
-                localName.setItem(localName, objStr);
+                localStorage.setItem(localName, objStr);
             }, 200);
         }
 
@@ -296,8 +296,10 @@
          */
         function getLocalStorageObj(localName) {
             var obj = localStorage.getItem(localName);
-            var objStr = JSON.parse(obj);
-            return objStr;
+            if (obj) {
+                var objStr = JSON.parse(obj);
+                return objStr;
+            }
         }
 
         /**
