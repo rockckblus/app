@@ -48,8 +48,9 @@
             }
 
             function _getList() {
-                var url = 'http://192.168.0.7:8080/homeListOne.json?' + tools.getRoundCode(8);
+                //var url = 'http://192.168.0.7:8080/homeListOne.json?' + tools.getRoundCode(8);
                 //var url = 'http://127.0.0.1:8080/homeListOne.json?' + tools.getRoundCode(8);
+                var url = 'http://192.168.18.13:8888/homeListOne.json?' + tools.getRoundCode(8);
                 tools.getJsp(url).then(call, err);
             }
         }
@@ -66,7 +67,7 @@
                     //var scrolldiv = document.getElementById('list');
                     //scrolldiv = angular.element(scrolldiv);
                     window.onscroll = function () {
-                        alert(11);
+
                     }
                 }
 
@@ -106,8 +107,9 @@
         function giveDefaultList() {
 
             $timeout(function () {
-                var url = 'http://192.168.0.7:8080/homeListOne.json?' + tools.getRoundCode(8);
+                //var url = 'http://192.168.0.7:8080/homeListOne.json?' + tools.getRoundCode(8);
                 //var url = 'http://127.0.0.1:8080/homeListOne.json?' + tools.getRoundCode(8);
+                var url = 'http://127.0.0.1:8888/homeListOne.json?' + tools.getRoundCode(8);
                 tools.getJsp(url).then(call, err);
             }, 400);
 
