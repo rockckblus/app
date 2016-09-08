@@ -19,16 +19,6 @@
         "姓名": 1,
         "电话": 222
       }
-    },
-    {
-      "id": 3,
-      "listHeader": "https://avatars1.githubusercontent.com/u/3006580?v=3&s=40",
-      "title": "titleTest1,titleTest1titleTest1titleTest1",
-      "iconStar": "fa-star-o",
-      "content": {
-        "姓名": 1,
-        "电话": 222
-      }
     }
   ]
 }

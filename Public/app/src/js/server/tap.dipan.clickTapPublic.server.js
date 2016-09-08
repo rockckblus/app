@@ -29,6 +29,8 @@
             'hrefMember',//我的首页
         ];
 
+        var idsIsBind = [];//已经在服务绑定过的 id,就不去绑定了
+
         function plus(callBack) {
             // H5 plus事件处理
             function plusReady() {
@@ -81,6 +83,8 @@
                 type = 'click';
             }, function () {
             });
+
+
             doc.addEventListener(type, function () {
                 __saveScrollTop();
                 if (url == 'goHistory') {//判断是 返回上页的点击事件
@@ -114,9 +118,12 @@
          */
         function _trueIsSetId(id) {
             if (id) {
-                var doc = document.getElementById(id);
-                if (doc) {
-                    return doc;
+                if (idsIsBind.indexOf(id) == -1) {
+                    var doc = document.getElementById(id);
+                    if (doc) {
+                        idsIsBind.push(id);
+                        return doc;
+                    }
                 }
             }
         }
