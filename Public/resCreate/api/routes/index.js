@@ -217,8 +217,8 @@ function postCategory(req, res) {
 function postSns(req, res) {
     var fun = req.params.fun;
     switch (fun) {
-        case 'test_article' :
-            _testArticle();
+        case 'getList' :
+            _getList();
             break;
         case 'addOneArticle' ://添加一条记录
             _addArticle(req.body);
@@ -229,11 +229,13 @@ function postSns(req, res) {
      * 测试下拉文章 list 接口
      * @private
      */
-    function _testArticle() {
-        snsArticleServiceCtrl.testArticle({}, _callback);
+    function _getList() {
+        snsArticleServiceCtrl.getList({}, _callback);
+
         function _callback(err, doc) {
             res.json({err: err, doc: doc});
         }
+
     }
 
     /**

@@ -60,7 +60,7 @@ function addOneArticle(postObj, callBack, errCallBack) {
  * @param callBack
  */
 function getList(postObj, callBack) {
-    snsArticleModel.find().limit(10).sort('editTime').exec(callBack);
+    snsArticleModel.find().limit(10).sort('-editTime').exec(callBack);
 };
 
 

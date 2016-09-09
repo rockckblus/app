@@ -27,31 +27,31 @@
         });
 
         $scope.list = []; //默认首页 列表 数据,
+        $scope.isWeb = true;//加载更多按钮
+        tools.trueWeb(function () {
+        }, function () {
+            $scope.isWeb = false;
+            compile('list', 'isWeb', $scope);
+        });//判断手机隐藏加载更多按钮
+
 
         /*************************
-         * 默认读取上次的缓存 数据, 然后 再异步更新 到 最新数据
+         * 默认读取上次的缓存 数据, 然后 再异步更新 到 最新数据,
+         * bind 点击事件
          * 16/8/19 上午7:45 ByRockBlus
          *************************/
         init();
 
         function init() {
-            //function testLocalStroageBig() {
-            //    if (!window.localStorage) {
-            //        console.log('浏览器不支持localStorage');
-            //    }
-            //    var size = 0;
-            //    for (var item in window.localStorage) {
-            //        if (window.localStorage.hasOwnProperty(item)) {
-            //            size += window.localStorage.getItem(item).length;
-            //        }
-            //    }
-            //    setTimeout(function(){
-            //        console.log('当前localStorage剩余容量为' + (size / 1024).toFixed(2) + 'KB');
-            //    },5000);
-            //}
-            //
-            //testLocalStroageBig();
+            _init();//判断缓存,去执行响应逻辑(变换滚动位置,获取最新数据)
+            bindLoadMoreClick();//bind 加载 更多点击事件
+        }
 
+
+        /**
+         * 判断缓存,去执行响应逻辑(变换滚动位置,获取最新数据)
+         */
+        function _init() {
             var localData = tools.getLocalStorageObj($state.current.name);
             if (localData) {//如果缓存的 数据存在,先读缓存数据
                 var re = {
@@ -69,28 +69,38 @@
                 }
             } else {
                 getList.getList($state.current.name, false, false, $scope, 'list', _bind);
-                //_getList();
                 console.log('请求全新数据');
             }
-
-            //function _getList() {
-            //    var url = 'http://192.168.0.7:8080/homeListOne.json?' + tools.getRoundCode(8);
-            //    //var url = 'http://127.0.0.1:8080/homeListOne.json?' + tools.getRoundCode(8);
-            //    tools.getJsp(url).then(call, err);
-            //}
         }
 
+
+        /**
+         * bind 加载 更多点击事件
+         */
+        function bindLoadMoreClick() {
+            var bindBtn = document.getElementById('isWeb');
+            bindBtn.addEventListener('tap', function () {
+                downGetList();//请求下拉更多数据
+            })
+
+        }
+
+
+        /**
+         * plus App 绑定滚动到底部事件
+         */
         function plusInit() {
             mui.plusReady(function () {
                 //滚动到底事件
                 document.addEventListener('plusscrollbottom', function () {
-                    getList.getList($state.current.name, false, false, $scope, 'list', _bind);
+                    downGetList();
                 }, false);
                 _bind();
             });
         }
 
 
+        //bind 星标 点击事件
         function _bind() {
             mui('#list').on('tap', '.iconStar', function () {
                 var _this = angular.element(this);
@@ -100,6 +110,25 @@
         }
 
 
+        //底部下拉,去请求数据
+        function downGetList() {
+            var endId = _getLastId();
+            getList.getList($state.current.name, false, endId, $scope, 'list', _bind);
+
+            /**
+             * 遍历list 取最后一条的 id
+             * @return {String} _id
+             */
+            function _getLastId() {
+                var endNum = $scope.list.length - 1;
+                return $scope.list[endNum]._id;
+            }
+        }
+
+        /**
+         * 请求成功后重新给list 赋值
+         * @param re
+         */
         function call(re) {
             $timeout(function () {
                 $scope.list = re.list;
@@ -139,8 +168,6 @@
                 }
             });
         }
-
-
 
 
     }

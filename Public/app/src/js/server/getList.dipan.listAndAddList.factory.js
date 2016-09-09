@@ -81,13 +81,13 @@
                 'endId': _endId,
             };
 
-            //_tools.postJsp(url,postData).then(call, err);//正式
-            _tools.getJsp(url).then(call, err);//测试 todo
+            _tools.postJsp(url,postData).then(call, err);//正式
+            //_tools.getJsp(url).then(call, err);//测试 todo
         }
 
         function call(re) {
             //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
-            _addNewListToOldList(re.list, function (reAllList) {
+            _addNewListToOldList(re.doc, function (reAllList) {
                 _timeout(function () {
                     eval("scope." + listNam + "= reAllList");
                     callBack();//回调去绑定点击事件
