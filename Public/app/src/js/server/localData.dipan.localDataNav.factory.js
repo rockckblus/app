@@ -70,15 +70,26 @@
     function _memberIndexNav() {
         return [{
             'name': '资料编辑',
-            'url': 'member/memberInfo',
+            'url': 'memberInfo',
             'id': 1,
+            'hrefId': 'hrefMemberMemberInfo',
             'icon': 'fa fa-pencil-square-o fa-1x'
-        }, {
-            'name': '退出登录',
-            'url': 'member/loginOut',
-            'id': 2,
-            'icon': 'fa fa-sign-out fa-1x'
-        }];
+        },
+            {
+                'name': '退出登录',
+                'url': 'loginOut',
+                'id': 2,
+                'hrefId': 'hrefMemberLoginOut',
+                'icon': 'fa fa-sign-out fa-1x'
+            },
+            {
+                'name': '测试snsArticle添加',
+                'url': 'member_addArticle',
+                'hrefId': 'hrefMemberAddArticle',
+                'id': 3,
+                'icon': 'fa fa-sign-out fa-1x'
+            }
+        ];
     }
 
     /**
@@ -95,10 +106,6 @@
                 return true;
             case '/login':
                 return true;
-            case '/area':
-                return false;
-            case '/search':
-                return false;
             default:
                 return false;
         }
@@ -122,26 +129,22 @@
         switch (url) {
             case '/home':
                 _obj = [{
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: _objDefaulOne.thisItem, //高亮
                     name: '供', //名称
                     route: 'home' //routeUrl
                 }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
                     name: '需', //名称
                     route: 'memberIndex' //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '评', //名称
-                    route: 'memberIndex' //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
-                    route: 'memberIndex' //routeUrl
-                },];
+                },
+                    {
+                        colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: false, //高亮
+                        name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                        route: 'memberIndex' //routeUrl
+                    }];
                 return _obj;
             case '/memberIndex':
                 _obj = [{

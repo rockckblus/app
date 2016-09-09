@@ -1,0 +1,25 @@
+<div class="clear viewContent" style="margin-top: 44px">
+    <div class="mui-table-view mui-table-view-chevron clear" style="margin-top: 10px">
+        <form name="addFrom" id="myAddForm" novalidate>
+            <fieldset>
+                <div class="form-group ">
+                    <input type="text" name="title" required ng-model="form.title"
+                           class="form-control"
+                           placeholder="标题">
+                </div>
+                <div class="form-group ">
+                    <textarea type="text" name="content" required ng-model="form.content"
+                              class="form-control"
+                              placeholder="内容"></textarea>
+                </div>
+                <div class="clearThis"></div>
+                <div class="clear"></div>
+                <button style="width:100%;font-size: 17px;font-weight: bold" ng-click="formSub()"
+                        class="btn btn-danger btn-block btn-lg">
+                    提交
+                </button>
+            </fieldset>
+
+        </form>
+    </div>
+</div>

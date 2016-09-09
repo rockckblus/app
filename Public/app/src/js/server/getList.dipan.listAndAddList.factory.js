@@ -49,7 +49,7 @@
                 url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             case 'home':
-                url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                url = 'http://dipan.so:3082/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'login':
                 url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
@@ -85,9 +85,7 @@
             _tools.getJsp(url).then(call, err);//测试 todo
         }
 
-
         function call(re) {
-
             //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
             _addNewListToOldList(re.list, function (reAllList) {
                 _timeout(function () {
@@ -134,17 +132,14 @@
                     _call(allList);
                 }, 400);
             }
-
         }
 
-
         function err() {
-            tools.alert({
+            _tools.alert({
                 title: '网络请求失败',
                 content: '请检查网络'
             });
         }
-
 
         /**
          * save到数据库之前的 编辑 ,只缓存20条数据

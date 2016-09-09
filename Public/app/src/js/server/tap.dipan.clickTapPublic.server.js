@@ -27,9 +27,15 @@
             'hrefHome',//主页
             'hrefMaster',//地主
             'hrefMember',//我的首页
+            'hrefMemberAddArticle',//test添加文章
         ];
 
         var idsIsBind = [];//已经在服务绑定过的 id,就不去绑定了
+
+        //排除 加入 绑定的 id
+        var noIdIsBing = [
+            'hrefMemberAddArticle'
+        ];
 
         function plus(callBack) {
             // H5 plus事件处理
@@ -121,7 +127,9 @@
                 if (idsIsBind.indexOf(id) == -1) {
                     var doc = document.getElementById(id);
                     if (doc) {
-                        idsIsBind.push(id);
+                        if (noIdIsBing.indexOf(id) == -1) {//排除 不绑定的 id
+                            idsIsBind.push(id);
+                        }
                         return doc;
                     }
                 }

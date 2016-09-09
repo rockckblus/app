@@ -35,7 +35,6 @@
         init();
 
         function init() {
-
             //function testLocalStroageBig() {
             //    if (!window.localStorage) {
             //        console.log('浏览器不支持localStorage');
@@ -53,14 +52,12 @@
             //
             //testLocalStroageBig();
 
-
             var localData = tools.getLocalStorageObj($state.current.name);
             if (localData) {//如果缓存的 数据存在,先读缓存数据
                 var re = {
                     list: localData
                 };
                 call(re);
-
                 var scrollTopName = $state.current.name + '_scrollTop';
                 if (localStorage.getItem(scrollTopName) === '0') {
                     getList.getList($state.current.name, false, false, $scope, 'list', _bind);
@@ -85,16 +82,11 @@
 
         function plusInit() {
             mui.plusReady(function () {
-
                 //滚动到底事件
                 document.addEventListener('plusscrollbottom', function () {
-                    tools.alert({
-                        title: '底部'
-                    });
+                    getList.getList($state.current.name, false, false, $scope, 'list', _bind);
                 }, false);
-
                 _bind();
-
             });
         }
 
@@ -148,15 +140,8 @@
             });
         }
 
-        /*************************
-         * // 滚动到 底部 的 触发动作 test todo
-         * 16/8/19 上午7:47 ByRockBlus
-         *************************/
-        $scope.a = function () {
-            tools.alert({
-                title: '这是标题',
-                content: '内容 '
-            });
-        };
+
+
+
     }
 })();

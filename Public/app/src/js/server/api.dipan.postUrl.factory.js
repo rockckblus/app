@@ -9,7 +9,6 @@
     /** api接口,nodejs,php  */
     var apiUrl = {};
 
-
     angular.module('dipan').factory('api', api);
     api.$inject = ['$http', '$q', 'config'];
 

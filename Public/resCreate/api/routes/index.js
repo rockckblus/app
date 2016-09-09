@@ -3,6 +3,7 @@ var router = express.Router();
 var cityCtrl = require('../db/controller/city.g.controller');//城市Ctrl
 var sessionCtrl = require('../db/controller/session.g.controller');//session Ctrl
 var categoryServiceCtrl = require('../db/controller/category_service.g.controller');//category_service Ctrl
+var snsArticleServiceCtrl = require('../db/controller/snsArticle.g.controller');//sns文章 Ctrl
 var all = require('./default');//公共路由all方法
 //var oeoeSchema = new mongoose.Schema(
 ////    _id:mongoose.Schema.ObjectId,
@@ -90,6 +91,14 @@ router.post('/system/:fun', function (req, res) {
 router.post('/category/:fun', function (req, res) {
     postCategory(req, res);
 });
+
+/**
+ * post sns:fun 社区相关api
+ * 16/3/8 */
+router.post('/sns/:fun', function (req, res) {
+    postSns(req, res);
+});
+
 
 router.get('/', function (req, res) {
     res.json(11);
@@ -202,6 +211,53 @@ function postCategory(req, res) {
     }
 }
 
+/**
+ * post sns Aip sns相关
+ * 16/3/8 */
+function postSns(req, res) {
+    var fun = req.params.fun;
+    switch (fun) {
+        case 'test_article' :
+            _testArticle();
+            break;
+        case 'addOneArticle' ://添加一条记录
+            _addArticle(req.body);
+            break;
+    }
+
+    /**
+     * 测试下拉文章 list 接口
+     * @private
+     */
+    function _testArticle() {
+        snsArticleServiceCtrl.testArticle({}, _callback);
+        function _callback(err, doc) {
+            res.json({err: err, doc: doc});
+        }
+    }
+
+    /**
+     * 添加一条文章
+     * @param { Object }postObj
+     title: String,//标题
+     type: {type: Number, default: 3},//供 1,需 2,其他 3
+     sort: {type: Number, default: 0},//排序
+     state: {type: Number, default: 1},//状态 1.正常
+     sendTime: {type: Date, default: Date.now},//发布时间
+     editTime: {type: Date, default: Date.now},//修改时间 (无修改时间的时候与发布时间相同)
+     tags: [{keyId: ObjectId}],//标签数组
+     content: [{key: String, val: String}],//内容 键值对
+     * @param {function 回调}callBack
+     * @param {function 错误回调}errCallBack
+     *
+     */
+    function _addArticle(postObj) {
+        snsArticleServiceCtrl.addOneArticle(postObj, _callback);
+        function _callback(err, doc) {
+            res.json({err: err, doc: doc});
+        }
+    }
+}
 
 /** curl  */
 function curl(req, res) {

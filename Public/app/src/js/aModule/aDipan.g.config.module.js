@@ -24,8 +24,8 @@
      *
      * 此处是hackpost 到 node 转 对象格式问题, 如果是 请求node ,post的 需要传入 queryType = true; todo 默认不hackpost格式
      * 16/2/1 */
-        //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'mobile-angular-ui', 'block'], hackPost).config(uiRouter);
-    angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block'], hackPost).config(uiRouter);
+    //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block'], hackPost).config(uiRouter);
+    angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block']).config(uiRouter);
 
     /**
      * config 定义 全局变量 ,并且保留到window全局变量
@@ -79,11 +79,18 @@
 
             //member 退出登录
             .state('member/loginOut', {
-                url: '/member/loginOut',
+                url: 'member/loginOut',
                 templateUrl: window.tplPath + 'route/member/loginOut.html'
             })
 
-            //member 退出登录
+            //member 测试snsArt 添加
+            .state('member_addArticle', {
+                url: '/member_addArticle',
+                templateUrl: window.tplPath + 'route/member/addArticle.html'
+            })
+
+
+            //member 登录
             .state('login', {
                 url: '/login',
                 templateUrl: window.tplPath + 'route/login.html'
@@ -100,10 +107,11 @@
          * 如果传入的 queryType 包含 node,就最后 还原 $httpProvider post 格式,否则 被认为是 php请求,格式化 为 php的数组post格式
          * 16/3/14 */
         var _oldHttpProvider = $httpProvider;
+        var httpProvider = $httpProvider;
 
         // Use x-www-form-urlencoded Content-Type
-        $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
-        $httpProvider.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+        httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+        httpProvider.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 
         /**
          * The workhorse; converts an object to x-www-form-urlencoded serialization.
@@ -142,9 +150,9 @@
         };
 
         // Override $http service's default transformRequest todo 返回的 空对象
-        $httpProvider.defaults.transformRequest = [function (data) {
+        httpProvider.defaults.transformRequest = [function (data) {
             if (data && data.queryNode) {
-                return _oldHttpProvider;
+                return data;
             } else {
                 return angular.isObject(data) && String(data) !== '[object File]' ? param(data) : data;
             }
