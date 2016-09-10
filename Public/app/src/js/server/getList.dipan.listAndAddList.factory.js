@@ -46,19 +46,19 @@
         var type = 1;//1上啦,2下拉
         switch (name) {
             case 'memberIndex':
-                url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             case 'home':
                 url = 'http://dipan.so:3082/sns/getList?' + _tools.getRoundCode(8);
-                break;
+                  break;
             case 'login':
-                url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             case 'area':
-                url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             case 'search':
-                url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             default:
                 return false;
