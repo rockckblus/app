@@ -9,7 +9,7 @@
     function top() {
         return {
             restrict: 'A',
-            replace: false,
+            replace: true,
             //scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/block/top.block.topNav.html',

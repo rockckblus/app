@@ -17,15 +17,17 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config'];
 
-    function thisController($scope, $rootScope, $timeout, localData) {
+    function thisController($scope, $rootScope, $timeout, localData, config) {
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
         });
 
         //我的 导航list > 本地数据
         $scope.listNav = localData.memberIndexNav;
+        //版本
+        $scope.version = config.version.default;
 
         /*************************
          * 判断数据赋值成功 关闭 loading

@@ -41,7 +41,6 @@ function saveSession(post) {
      * 添加一条新记录
      * 16/3/14 */
     function _add(post) {
-        console.log(111);
         sessionModel.create({
             sessionId: post.session.id,
             content: post.session

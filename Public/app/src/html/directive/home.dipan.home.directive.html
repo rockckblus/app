@@ -1,7 +1,42 @@
-<div class="scrollable-content" ui-scroll-bottom="a()">
-    <div class="list-group">
-        <a class="list-group-item " ng-repeat="vo in list" style="height: 100px">
-            <span style="font-size: 1.4em">{{vo.branch_name}}</span> <i class="fa fa-chevron-right pull-right"></i>
-        </a>
+<div class="clear viewContent" style="background-color: #777;margin-top: 44px">
+    <style>
+        .mui-navigate-right:after, .mui-push-right:after {
+            right: 0px;
+            content: '';
+        }
+
+        .mui-table-view-chevron .mui-table-view-cell {
+            padding-right: 30px;
+        }
+
+    </style>
+    <div class="titleInfo clear" ng-show="false">
+        <div id="titleInfo">
+            <i class="fa fa-user"></i>
+            刚刚有{{peopleNum}}3人访问了你
+        </div>
+    </div>
+
+
+    <div id="list" class="mui-table-view mui-table-view-chevron clear" style="background-color:#777;margin-top: 10px">
+    </div>
+    <div class="mui-btn" bindonce bo-show="isWeb" id="isWeb"
+         style="width:140px;left: 50%;margin-left: -70px;margin-top: 20px;margin-bottom: 20px">加载更多...
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

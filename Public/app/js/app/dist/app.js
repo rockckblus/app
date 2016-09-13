@@ -4136,7 +4136,8 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      *
      * 此处是hackpost 到 node 转 对象格式问题, 如果是 请求node ,post的 需要传入 queryType = true; todo 默认不hackpost格式
      * 16/2/1 */
-    angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'mobile-angular-ui', 'block'], hackPost).config(uiRouter);
+    //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block'], hackPost).config(uiRouter);
+    angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block']).config(uiRouter);
 
     /**
      * config 定义 全局变量 ,并且保留到window全局变量
@@ -4170,6 +4171,12 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 templateUrl: window.tplPath + 'route/block/area.html'
             })
 
+            //search 页面
+            .state('search', {
+                url: '/search',
+                templateUrl: window.tplPath + 'route/block/search.html'
+            })
+
             //memberIndex 我的 member
             .state('memberIndex', {
                 url: '/memberIndex',
@@ -4184,11 +4191,18 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
             //member 退出登录
             .state('member/loginOut', {
-                url: '/member/loginOut',
+                url: 'member/loginOut',
                 templateUrl: window.tplPath + 'route/member/loginOut.html'
             })
 
-            //member 退出登录
+            //member 测试snsArt 添加
+            .state('member_addArticle', {
+                url: '/member_addArticle',
+                templateUrl: window.tplPath + 'route/member/addArticle.html'
+            })
+
+
+            //member 登录
             .state('login', {
                 url: '/login',
                 templateUrl: window.tplPath + 'route/login.html'
@@ -4205,10 +4219,11 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * 如果传入的 queryType 包含 node,就最后 还原 $httpProvider post 格式,否则 被认为是 php请求,格式化 为 php的数组post格式
          * 16/3/14 */
         var _oldHttpProvider = $httpProvider;
+        var httpProvider = $httpProvider;
 
         // Use x-www-form-urlencoded Content-Type
-        $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
-        $httpProvider.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+        httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+        httpProvider.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 
         /**
          * The workhorse; converts an object to x-www-form-urlencoded serialization.
@@ -4247,9 +4262,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         };
 
         // Override $http service's default transformRequest todo 返回的 空对象
-        $httpProvider.defaults.transformRequest = [function (data) {
+        httpProvider.defaults.transformRequest = [function (data) {
             if (data && data.queryNode) {
-                return _oldHttpProvider;
+                return data;
             } else {
                 return angular.isObject(data) && String(data) !== '[object File]' ? param(data) : data;
             }
@@ -4335,20 +4350,97 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     /**
      * 手动注入
      * 16/2/1 */
-    body.$inject = ['$scope', '$rootScope', '$timeout', 'localData', '$location', 'touchScroll'];
+    body.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tap', '$state', 'tools', 'getList'];
 
     /**
      * controllerFun
      * 16/2/1 */
-    function body($scope, $rootScope, $timeout, localData, $location, touchScroll) {
+    function body($scope, $rootScope, $timeout, localData, tap, $state, tools, getList) {
         $scope.$on('changeBody', function () {
             $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
-            var _url = $location.url();
+            var _url = '/' + $state.current.name;
+            console.log('state',$state);
             $timeout(function () {
                 $scope.title = localData.getTitle(_url);//getTitle
                 $scope.showTab = localData.showTab(_url);//是否显示 tab
                 $scope.tabList = localData.tab(_url);//tablist body 控制器
                 $scope.url = _url;//url变量,判断 top 模板 显示图标用
+
+                /**
+                 * 变换list 到 滚动记录的位置,判断 不同状态来 确定 是否 请求新的list数据
+                 */
+                mui.plusReady(function () {
+                    function _init() {
+                        changeScroll();
+                        trueGetNew();
+                    }
+
+                    _init();
+
+                    //变换到记录的 滚动位置
+                    function changeScroll() {
+                        var scrollTopNum = $state.current.name + '_scrollTop';
+                        var num = parseInt(localStorage.getItem(scrollTopNum));
+                        try {
+                            document.body.scrollTop = num;
+                        } catch (e) {
+                            try {
+                                window.pageYOffset = num;
+                            } catch (e) {
+                                document.documentElement.scrollTop = num;
+                            }
+                        }
+                    }
+
+
+                    /**
+                     * 判断scroll 位置,是需要 请求 url
+                     * @param name
+                     * @param postUrl
+                     */
+                    function trueGetNew() {
+
+                        //监听滚动 事件
+                        window.onscroll = function () {
+                            _trueGetNew();
+                        };
+
+                        function _trueGetNew() {
+
+                            //判断当前url 是否需要 newList
+                            if (!trueNeedNewList()) {
+                                return false;
+                            }
+
+                            //var scrollTopName = $state.current.name + '_scrollTop';
+                            //if ((localStorage.getItem(scrollTopName) === '0') && localStorage.getItem($state.current.name)) {
+                            //    //如果记录的 缓存有位置信息,并且 位置 是0, && 有缓存数据信息就去请求最新数据
+                            //}
+
+                            var num = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+                            if (num === 0) {//当滚动到0的时候
+                                tools.alert({
+                                    title: '请求最新数据'
+                                });
+                            }
+                        }
+                    }
+
+                    /**
+                     * 判断是否需要获取newlist
+                     * @returns {布尔} 需要就 是true
+                     */
+                    function trueNeedNewList() {
+                        switch ($state.current.name) {
+                            case 'home':
+                                return true;
+                        }
+                    }
+
+
+                });
+
+                tap.init();//判断手机网页 手机 绑定 tap 事件, 网页绑定 click事件,(点击跳转url)
             }, 0);
         });
 
@@ -4433,6 +4525,35 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
 })();
 /**
+ * 命名注释：directive简称_area. 父模块_dipan. 功能_选择地区页面 类型_directive .js
+ * 使用 ：<div area></div>
+ */
+(function () {
+    'use strict';
+    angular.module('block').directive('area', area);
+
+    function area() {
+        return {
+            restrict: 'A',
+            replace: true,
+            //scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/block/area.dipan.areaSelect.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools'];
+
+    function thisController($scope, $rootScope, $timeout, tools) {
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');
+        });
+
+    }
+})();
+/**
  * 命名注释：directive简称_loading. 父模块_block. 功能_顶部导航 类型_directive .js
  * 使用 ：<div loading></div>
  */
@@ -4481,6 +4602,35 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 })();
 
 /**
+ * 命名注释：directive简称_search. 父模块_dipan. 功能_搜索 类型_directive .js
+ * 使用 ：<div area></div>
+ */
+(function () {
+    'use strict';
+    angular.module('block').directive('search', search);
+
+    function search() {
+        return {
+            restrict: 'A',
+            replace: true,
+            //scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/block/search.dipan.search.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools'];
+
+    function thisController($scope, $rootScope, $timeout, tools) {
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');
+        });
+
+    }
+})();
+/**
  * 命名注释：directive简称_tab. 父模块_block. 功能_顶部tan导航 类型_directive .js
  * 使用 ：<div tab></div>
  */
@@ -4518,7 +4668,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     function top() {
         return {
             restrict: 'A',
-            replace: false,
+            replace: true,
             //scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/block/top.block.topNav.html',
@@ -4547,7 +4697,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         return {
             restrict: 'A',
             replace: true,
-            //scope: {},
+            scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/home.dipan.home.directive.html',
             link: function (scope, element, attrs) {
@@ -4555,9 +4705,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config', 'compile', '$state', 'getList'];
 
-    function thisController($scope, $rootScope, $timeout, tools, update, config) {
+    function thisController($scope, $rootScope, $timeout, tools, update, config, compile, $state, getList) {
 
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
@@ -4566,18 +4716,84 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         $scope.list = []; //默认首页 列表 数据,
 
         /*************************
-         * todo
          * 默认读取上次的缓存 数据, 然后 再异步更新 到 最新数据
          * 16/8/19 上午7:45 ByRockBlus
          *************************/
-        giveDefaultList();
+        init();
 
-        //var url = 'http://city.5656111.com/Member/GetAjax/get_union_user_list/begin_city/%E5%A4%A9%E6%B4%A5';
-        //tools.postJsp(url, {}).then(call, err);
+        function init() {
+            //function testLocalStroageBig() {
+            //    if (!window.localStorage) {
+            //        console.log('浏览器不支持localStorage');
+            //    }
+            //    var size = 0;
+            //    for (var item in window.localStorage) {
+            //        if (window.localStorage.hasOwnProperty(item)) {
+            //            size += window.localStorage.getItem(item).length;
+            //        }
+            //    }
+            //    setTimeout(function(){
+            //        console.log('当前localStorage剩余容量为' + (size / 1024).toFixed(2) + 'KB');
+            //    },5000);
+            //}
+            //
+            //testLocalStroageBig();
+
+            var localData = tools.getLocalStorageObj($state.current.name);
+            if (localData) {//如果缓存的 数据存在,先读缓存数据
+                var re = {
+                    list: localData
+                };
+                call(re);
+                var scrollTopName = $state.current.name + '_scrollTop';
+                if (localStorage.getItem(scrollTopName) === '0') {
+                    getList.getList($state.current.name, false, false, $scope, 'list', _bind);
+                    ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
+                    //tools.alert({
+                    //    title: '请求NewData'
+                    //})
+                    console.log('请求带缓存数据');
+                }
+            } else {
+                getList.getList($state.current.name, false, false, $scope, 'list', _bind);
+                //_getList();
+                console.log('请求全新数据');
+            }
+
+            //function _getList() {
+            //    var url = 'http://192.168.0.7:8080/homeListOne.json?' + tools.getRoundCode(8);
+            //    //var url = 'http://127.0.0.1:8080/homeListOne.json?' + tools.getRoundCode(8);
+            //    tools.getJsp(url).then(call, err);
+            //}
+        }
+
+        function plusInit() {
+            mui.plusReady(function () {
+                //滚动到底事件
+                document.addEventListener('plusscrollbottom', function () {
+                    getList.getList($state.current.name, false, false, $scope, 'list', _bind);
+                }, false);
+                _bind();
+            });
+        }
+
+
+        function _bind() {
+            mui('#list').on('tap', '.iconStar', function () {
+                var _this = angular.element(this);
+                var id = _this.attr('iconId');
+                reForList(id);
+            });
+        }
+
 
         function call(re) {
             $timeout(function () {
-                $scope.list = re.data.list;
+                $scope.list = re.list;
+                var name = $state.current.name;
+                var obj = $scope.list;
+                tools.saveLocalStorageObj(name, obj);//存储obj
+                plusInit();//绑定点击事件
             }, 0);
         }
 
@@ -4588,25 +4804,32 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             });
         }
 
-        /*************************
-         * 默认读取上次的缓存 1数据, 然后 再异步更新 到 最新数据 todo
-         * 16/8/19 上午7:48 ByRockBlus
-         *************************/
-        function giveDefaultList() {
+        /**
+         * 重新给 list
+         * @param id
+         */
+        function reForList(id) {
+            angular.forEach($scope.list, function (vo) {
+                if (vo.id == id) {
+                    if (vo.iconStar == 'fa-star-o') {
+                        $timeout(function () {
+                            vo.iconStar = 'fa-star';
+                        }, 0);
+                    } else if (vo.iconStar == 'fa-star') {
+                        $timeout(function () {
+                            vo.iconStar = 'fa-star-o';
+                        }, 0);
+                    }
 
+                    var name = $state.current.name;
+                    tools.saveLocalStorageObj(name, $scope.list);//存储obj
+                }
+            });
         }
 
 
-        /*************************
-         * // 滚动到 底部 的 触发动作 test todo
-         * 16/8/19 上午7:47 ByRockBlus
-         *************************/
-        $scope.a = function () {
-            tools.alert({
-                title: '这是标题',
-                content: '内容 '
-            });
-        };
+
+
     }
 })();
 /**
@@ -4748,6 +4971,58 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 })();
 
 /**
+ * 命名注释：directive简称_add. 父模块_dipan . 功能_add公共表单 类型_directive .js
+ * 使用 ：<div add></div>
+ */
+(function () {
+    'use strict';
+    angular.module('dipan').directive('add', add);
+    function add() {
+        return {
+            restrict: 'A',
+            replace: false,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/member/add.dipan.addFrom.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools'];
+
+    function thisController($scope, $rootScope, $timeout, tools) {
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');
+            setTimeout(function () {
+                $rootScope.$broadcast('closeLoading');
+            }, 0);
+        });
+
+
+        $scope.form = {};
+
+        $scope.formSub = function () {
+            var url = 'http://dipan.so:3082/sns/addOneArticle';
+            tools.postJsp(url, $scope.form).then(function () {
+                tools.alert({
+                    title: '添加成功'
+                });
+            }, function (err) {
+                tools.alert({
+                    title: '添加失败',
+                    content: err
+                });
+            });
+        };
+
+
+    }
+
+
+})();
+
+/**
  * 命名注释：directive简称_my. 父模块_dipan . 功能_我的功能导航IndexList 类型_directive .js
  * 使用 ：<div my></div>
  */
@@ -4796,15 +5071,17 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config'];
 
-    function thisController($scope, $rootScope, $timeout, localData) {
+    function thisController($scope, $rootScope, $timeout, localData, config) {
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
         });
 
         //我的 导航list > 本地数据
         $scope.listNav = localData.memberIndexNav;
+        //版本
+        $scope.version = config.version.default;
 
         /*************************
          * 判断数据赋值成功 关闭 loading
@@ -4898,7 +5175,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     /** api接口,nodejs,php  */
     var apiUrl = {};
 
-
     angular.module('dipan').factory('api', api);
     api.$inject = ['$http', '$q', 'config'];
 
@@ -4951,6 +5227,185 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
 
 /**
+ * getList.dipan.listAndAddList.factory.js
+ * 命名注释：server简称_getList. 父模块 dipan . 功能_获取不同板块的数据 , && 判断状态,来新加数据到最前面,或者 最后面 . 类型_factory.js
+ */
+
+(function () {
+    'use strict';
+    angular.module('dipan').factory('getList', getList);
+
+    getList.$inject = ['tools', 'config', '$timeout'];
+
+    var thisObj = {};
+    var _tools;
+    var _config;
+    var _timeout;
+
+    function getList(tools, config, $timeout) {
+        /**
+         * 遍历不同url,返回 list 数据 ,
+         * @param {$state.current.name} name
+         * @param {获取最新数据的本地缓存的 最新id} frontId
+         * @param {获取最新数据的本地缓存的 最后id} endId
+         */
+        thisObj.getList = _getList;//swith name  , 去不同接口拿数据 ,&& 判断状态,来新加数据到最前面,或者 最后面,存储到 本地 20条缓存数据.(上啦 最新20条,下拉最后20条)
+        thisObj._init = function () {
+            _tools = tools;
+            _config = config;
+            _timeout = $timeout;
+        };
+
+        //start
+        thisObj._init();
+        return thisObj;
+    }
+
+    /**
+     * 遍历不同url,返回 list 数据 ,
+     * @param {$state.current.name} name
+     * @param {获取最新数据的本地缓存的 最新id} frontId
+     * @param {获取最新数据的本地缓存的 最后id} endId
+     * @param {作用域变量} scope.list
+     * @param {function 成功后的回调} callBack
+     */
+    function _getList(name, frontId, endId, scope, listNam, callBack) {
+        var url;
+        var type = 1;//1上啦,2下拉
+        switch (name) {
+            case 'memberIndex':
+                url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                break;
+            case 'home':
+                url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                break;
+            case 'login':
+                url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                break;
+            case 'area':
+                url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                break;
+            case 'search':
+                url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                break;
+            default:
+                return false;
+        }
+
+        if (url) {
+            var _frontId = 0;
+            if (frontId) {
+                _frontId = frontId;
+            }
+
+            var _endId = 0;
+            if (endId) {
+                _endId = endId;
+                type = 2;
+            }
+
+            var postData = {
+                'frontId': _frontId,
+                'endId': _endId,
+            };
+
+            //_tools.postJsp(url,postData).then(call, err);//正式
+            _tools.getJsp(url).then(call, err);//测试 todo
+        }
+
+        function call(re) {
+            //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
+            _addNewListToOldList(re.list, function (reAllList) {
+                _timeout(function () {
+                    eval("scope." + listNam + "= reAllList");
+                    callBack();//回调去绑定点击事件
+                }, 0);
+            });
+
+            function _addNewListToOldList(newlist, _call) {
+                var allList = [];
+                var tempNewList = [];//下拉用
+
+                angular.forEach(newlist, function (vo) {
+                    if (type == 2) {//下拉
+                        tempNewList.push(vo);
+                    } else {//上啦
+                        allList.push(vo);
+                    }
+                });
+
+                //数据库的 数据 push
+                setTimeout(function () {
+                    var oldList = _tools.getLocalStorageObj(name);
+                    if (oldList) {
+                        angular.forEach(oldList, function (vo2) {
+                            delete vo2.$$hashKey;
+                            allList.push(vo2);
+                        });
+                    }
+
+                }, 200);
+
+                if (type == 2) {//下拉
+                    setTimeout(function () {
+                        angular.forEach(tempNewList, function (vo3) {
+                            allList.push(vo3);
+                        });
+                    }, 300);
+                }
+
+                setTimeout(function () {
+                    var saveList = saveLocalObjEdit(allList);
+                    _tools.saveLocalStorageObj(name, saveList);//存储obj 20条
+                    _call(allList);
+                }, 400);
+            }
+        }
+
+        function err() {
+            _tools.alert({
+                title: '网络请求失败',
+                content: '请检查网络'
+            });
+        }
+
+        /**
+         * save到数据库之前的 编辑 ,只缓存20条数据
+         * @param {obj}obj
+         * @param {NUmber 1上滑 2下滑}type
+         * @returns {obj 过滤后的数据}
+         */
+        function saveLocalObjEdit(obj) {
+            var re = [];
+            var tempCount = 0;
+            angular.forEach(obj, function (vo) {
+                tempCount++;
+
+                if (obj.length < 20) {
+                    re.push(vo);
+                } else {
+                    if (type == 1) {// 上啦条件 小于20
+                        if (tempCount < 20) {
+                            re.push(vo);
+                        }
+                    }
+
+                    if (type == 2) {//下拉条件 大于总数量 - 20
+                        if (tempCount > (obj.length - 20)) {
+                            re.push(vo);
+                        }
+                    }
+                }
+
+
+            });
+            return re;
+        }
+    }
+
+
+})();
+/**
  * localData.dipan.localDataNav.factory.js
  * 命名注释：server简称_localData. 父模块 dipan . 功能_本地 & app 默认数据. 类型_factory.js
  */
@@ -4975,10 +5430,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         thisLocalData.tab = _tab; //根据 url 遍历 给tab数据
         thisLocalData.showTab = _showTab; //遍历url 返回true false ,控制是否显示tab
         thisLocalData.getTitle = _getTitle; //getTitle
+        thisLocalData.giveRoundCode = _giveRoundCode;// 给一个8位随机码,验证短信用
         thisLocalData.gps = {
             isHaveGps: false, //判断
         };
-        thisLocalData.giveRoundCode = _giveRoundCode;//第一次后给一个随机码,验证用户发送短信用
         thisLocalData._init = function () {
             thisTools = tools;
             _config = config;
@@ -4991,11 +5446,12 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         return thisLocalData;
     }
 
-
-    /*************************
-     * getTitle
-     * 16/8/17 上午10:18 ByRockBlus
-     *************************/
+    /**
+     * getTitle 获取标题
+     * @param {网址}url
+     * @returns {*}
+     * @private
+     */
     function _getTitle(url) {
         switch (url) {
             case '/memberIndex':
@@ -5004,32 +5460,52 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 return 'Home';
             case '/login':
                 return '我的';
+            case '/area':
+                return '地区选择';
+            case '/search':
+                return '搜索';
             default:
                 return false;
         }
     }
 
-    /*************************
+    /**
      * 我的 首页 导航 list
-     * 16/8/15 上午9:02 ByRockBlus
-     *************************/
+     * @returns {*[]}
+     * @private
+     */
     function _memberIndexNav() {
         return [{
             'name': '资料编辑',
-            'url': 'member/memberInfo'
-        }, {
-            'name': '退出登录',
-            'url': 'member/loginOut'
-        }];
+            'url': 'memberInfo',
+            'id': 1,
+            'hrefId': 'hrefMemberMemberInfo',
+            'icon': 'fa fa-pencil-square-o fa-1x'
+        },
+            {
+                'name': '退出登录',
+                'url': 'loginOut',
+                'id': 2,
+                'hrefId': 'hrefMemberLoginOut',
+                'icon': 'fa fa-sign-out fa-1x'
+            },
+            {
+                'name': '测试snsArticle添加',
+                'url': 'member_addArticle',
+                'hrefId': 'hrefMemberAddArticle',
+                'id': 3,
+                'icon': 'fa fa-sign-out fa-1x'
+            }
+        ];
     }
 
-
-    /*************************
+    /**
      * 遍历url 返回true false ,控制是否显示tab
-     * 16/8/17 上午9:31 ByRockBlus
-     *************************/
+     * @param url
+     * @returns {boolean}
+     * @private
+     */
     function _showTab(url) {
-        console.log('rul', url);
         switch (url) {
             case '/home':
                 return true;
@@ -5042,13 +5518,14 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         }
     }
 
-    /*************************
+    /**
      * 根据 url 遍历 给tab数据
-     * 16/8/17 上午7:47 ByRockBlus
-     *************************/
+     * @param url
+     * @returns {Array}
+     * @private
+     */
     function _tab(url) {
         var _obj = [];
-        //var title = _getTitle();
         var title = _getTitle();
         var _objDefaulOne = {
             colNumCss: 'twoTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
@@ -5059,26 +5536,22 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         switch (url) {
             case '/home':
                 _obj = [{
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: _objDefaulOne.thisItem, //高亮
                     name: '供', //名称
                     route: 'home' //routeUrl
                 }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
                     name: '需', //名称
                     route: 'memberIndex' //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '评', //名称
-                    route: 'memberIndex' //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
-                    route: 'memberIndex' //routeUrl
-                },];
+                },
+                    {
+                        colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: false, //高亮
+                        name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                        route: 'memberIndex' //routeUrl
+                    }];
                 return _obj;
             case '/memberIndex':
                 _obj = [{
@@ -5109,16 +5582,12 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             default:
                 return [];
         }
-
-
     }
 
-
-    /**************************
+    /**
      * get gps 获取gps 或者 ip定位 拿到 gps(web), 给到 gpsObj
      * 广播全局 gps 事件.
-     * 16/8/21 上午9:53 ByRockBlus
-     **************************/
+     */
     function getGps() {
         thisTools.trueWeb(_web, _app);//判断手机 或者 app 来判断 定位 ,获取地理位置数据
 
@@ -5130,102 +5599,266 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         function _web() {
             var url = _config.host.phpHost + '/Api/Jsonp/getIP/from/web';
 
-            thisTools.getJsp(url,true).then(_s,_f);
+            thisTools.getJsp(url, true).then(_s, _f);
 
 
-            function _s(re){
-                thisTools.alert({title:re.ip});
+            function _s(re) {
+                thisTools.alert({title: re.ip});
             }
-            function _f(){
+
+            function _f() {
 
             }
+
             //获取 ip地址,去反查地址数据
         }
 
         /*************************
-         * todo
          *获取手机导航gps,去soso拿地址数据
          * 16/8/19 上午7:43 ByRockBlus
          *************************/
         function _app() {
-            alert('app');
             var gpsObj = {};
-            document.addEventListener('plusready', function (e) {
-                plus.geolocation.getCurrentPosition(_success, _err, _option);
 
-                //定位成功回调
-                function _success(p) {
-                    console.log('p', p);
-                    gpsObj.lat = p.coords.latitude;
-                    gpsObj.lng = p.coords.longitude;
-                    thisTools.alert({
-                        'title': gpsObj.lat,
-                        'content': gpsObj.lng
-                    });
+            // H5 plus事件处理
+            function plusReady() {
+                if (!window.plus) {
+                    return;
                 }
+                setTimeout(function () {
+                    //todo ios 真机调试
+                    plus.geolocation.getCurrentPosition(_success, _err, _option);
+                }, 0);
+            }
 
-                //失败回调
-                function _err(e) {
-                    thisTools.alert({
-                        title: '获取位置失败',
-                        content: ''
-                    });
+            if (window.plus) {
+                plusReady();
+            } else {
+                document.addEventListener("plusready", plusReady, false);
+            }
 
-                }
 
-                //参数配置
-                /**************************
-                 * enableHighAccuracy: (Boolean 类型 )是否高精确度获取位置信息
-                 高精度获取表示需要使用更多的系统资源，默认值为false。
+            //定位成功回调
+            function _success(p) {
+                gpsObj.lat = p.coords.latitude;
+                gpsObj.lng = p.coords.longitude;
+                thisTools.alert({
+                    'title': 'title' + gpsObj.lat,
+                    'content': gpsObj.lng
+                });
+            }
 
-                 timeout: (Number 类型 )获取位置信息的超时时间
-                 单位为毫秒（ms），默认值为不超时。如果在指定的时间内没有获取到位置信息则触发错误回调函数。
+            //失败回调
+            function _err(e) {
 
-                 maximumAge: (Number 类型 )获取位置信息的缓存时间
-                 单位为毫秒（ms），默认值为0（立即更新获取）。如果设备缓存的位置信息超过指定的缓存时间，将重新更新位置信息后再返回。
+                console.log(e);
+                thisTools.alert({
+                    title: '获取位置失败',
+                    content: e.message
+                });
+            }
 
-                 provider: (String 类型 )优先使用的定位模块
-                 可取以下供应者： "system"：表示系统定位模块，支持wgs84坐标系；
-                 "baidu"：表示百度定位模块，支持gcj02/bd09/bd09ll坐标系；
-                 "amap"：表示高德定位模板，支持gcj02坐标系。
-                 默认值按以下优先顺序获取（amap>baidu>system），若指定的provider不存在或无效则返回错误回调。
-                 注意：百度/高德定位模块需要配置百度/高德地图相关参数才能正常使用。
-                 * 16/8/21 上午7:43 ByRockBlus
-                 **************************/
+            //参数配置
+            /**************************
+             * enableHighAccuracy: (Boolean 类型 )是否高精确度获取位置信息
+             高精度获取表示需要使用更多的系统资源，默认值为false。
 
-                function _option() {
-                    return {
-                        enableHightAccuracy: false,
-                        timeout: 10000,
-                        maximumAge: 600000,
-                    };
-                }
-            });
+             timeout: (Number 类型 )获取位置信息的超时时间
+             单位为毫秒（ms），默认值为不超时。如果在指定的时间内没有获取到位置信息则触发错误回调函数。
+
+             maximumAge: (Number 类型 )获取位置信息的缓存时间
+             单位为毫秒（ms），默认值为0（立即更新获取）。如果设备缓存的位置信息超过指定的缓存时间，将重新更新位置信息后再返回。
+
+             provider: (String 类型 )优先使用的定位模块
+             可取以下供应者： "system"：表示系统定位模块，支持wgs84坐标系；
+             "baidu"：表示百度定位模块，支持gcj02/bd09/bd09ll坐标系；
+             "amap"：表示高德定位模板，支持gcj02坐标系。
+             默认值按以下优先顺序获取（amap>baidu>system），若指定的provider不存在或无效则返回错误回调。
+             注意：百度/高德定位模块需要配置百度/高德地图相关参数才能正常使用。
+             * 16/8/21 上午7:43 ByRockBlus
+             **************************/
+
+            function _option() {
+                return {
+                    enableHightAccuracy: false,
+                    timeout: 10000,
+                    maximumAge: 600000,
+                };
+            }
         }
 
     }
 
     /*************************
-     * 第一次后给localStorage一个随机码,验证用户发送短信用
-     * 16/8/31 上午8:05 ByRockBlus
+     * 根据 ip 定位城市
+     * 16/9/2 上午8:09 ByRockBlus
      *************************/
-    function _giveRoundCode() {
-        localStorage.clear(_config.localSaveName.user.roundCodeId);
-        setTimeout(function () {
-            var roundCode = rndNum(8);
-            localStorage.setItem(_config.localSaveName.user.roundCodeId, roundCode);
-        }, 200);
+    function ipToCity() {
+        console.log('arg', arguments);
 
-        function rndNum(n) {
-            var rnd = "";
-            for (var i = 0; i < n; i++) {
-                rnd += Math.floor(Math.random() * 10);
-            }
-            return rnd;
-        }
     }
 
+    /*************************
+     * 根据gps 定位城市,并返回 具体信息 (app)
+     * 16/9/2 上午8:10 ByRockBlus
+     *************************/
+
+    /**
+     * 第一次后给localStorage一个随机码,验证用户发送短信用
+     * @private
+     */
+    function _giveRoundCode() {
+        localStorage.removeItem(_config.localSaveName.user.roundCodeId);
+        setTimeout(function () {
+            var roundCode = thisTools.getRoundCode(8);
+            localStorage.setItem(_config.localSaveName.user.roundCodeId, roundCode);
+        }, 200);
+    }
 })();
+/**
+ * tap.dipan.clickTapPublic.server.js
+ * 命名注释：directive简称_tap. 父模块_dipan . 功能_原生mui点击tap事件 bind id.
+ * 取跳转值url  , 事件点击,tap ,写在 单独的页面里面,这里是导航路由跳转 , 带url 属性的 才生效
+ * . 类型_directive .js
+ * 使用 ：class='angular'
+ * Created by rockblus on 16-2-5.
+ */
+(function () {
+    'use strict';
+    angular.module('dipan').factory('tap', tap);
+    tap.$inject = ['$state', 'tools'];
+
+
+    /**
+     * angular 载入完成后。显示modle值
+     * 15-12-26 */
+    function tap($state, tools) {
+        var re = {
+            init: init
+        };
+
+        var ids = [
+            'goHistory',//返回上一页
+            'hrefArea',//地区选择
+            'hrefSearch',//搜索
+            'hrefHome',//主页
+            'hrefMaster',//地主
+            'hrefMember',//我的首页
+            'hrefMemberAddArticle',//test添加文章
+        ];
+
+        var idsIsBind = [];//已经在服务绑定过的 id,就不去绑定了
+
+        //排除 加入 绑定的 id
+        var noIdIsBing = [
+            'hrefMemberAddArticle'
+        ];
+
+        function plus(callBack) {
+            // H5 plus事件处理
+            function plusReady() {
+                if (!window.plus) {
+                    return;
+                }
+                setTimeout(function () {
+                    callBack();
+                }, 0);
+
+            }
+
+            if (window.plus) {
+                plusReady();
+            } else {
+                document.addEventListener("plusready", plusReady, false);
+            }
+
+        }
+
+        function init() {
+
+            tools.trueWeb(_call,
+                function () {
+                    plus(_call);
+                });//判断手机网页 手机 绑定 tap 事件, 网页绑定 click事件
+
+            function _call() {
+                angular.forEach(ids, function (vo) {
+                    var doc = _trueIsSetId(vo);
+                    if (doc) {//判断id存在
+                        var _doc = angular.element(doc);
+                        var url = _doc.attr('url');
+                        _goUrl(doc, url);
+                    }
+                });
+            }
+        }
+
+
+        /**
+         * 跳转url
+         * @param {document}doc
+         * @param {String}url
+         * @private
+         */
+        function _goUrl(doc, url) {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+            });
+
+
+            doc.addEventListener(type, function () {
+                __saveScrollTop();
+                if (url == 'goHistory') {//判断是 返回上页的点击事件
+                    history.go(-1);
+                } else {
+                    $state.go(url);
+                }
+            });
+
+
+            /**
+             * 记录body滚动位置,对应url 去存储
+             * @private
+             */
+            function __saveScrollTop() {
+                var url = $state.current.name;
+                var saveStr = url + '_scrollTop';
+                var num = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+                localStorage.removeItem(saveStr);
+                localStorage.setItem(saveStr, num);
+            }
+
+        }
+
+
+        /**
+         * 判断id 是否存在,存在的话,返回 true
+         * @param {传入id} id
+         * @returns {document}
+         * @private
+         */
+        function _trueIsSetId(id) {
+            if (id) {
+                if (idsIsBind.indexOf(id) == -1) {
+                    var doc = document.getElementById(id);
+                    if (doc) {
+                        if (noIdIsBing.indexOf(id) == -1) {//排除 不绑定的 id
+                            idsIsBind.push(id);
+                        }
+                        return doc;
+                    }
+                }
+            }
+        }
+
+        return re;
+    }
+
+
+})();
+
 /**
  *tools.dipan.block.factory.js
  * 命名注释：server简称_tools. 父模块 dipan . 功能_tools 相关服务:otherDiv. 类型_factory.js
@@ -5289,7 +5922,28 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
              * function trueWeb(web,app) 判断手机,还是 wap,回调函数
              * 16/8/19 上午7:32 ByRockBlus
              *************************/
-            trueWeb: trueWeb
+            trueWeb: trueWeb,
+
+            /**
+             * 根据名称 存储obj
+             * @param localName
+             * @param obj
+             */
+            saveLocalStorageObj: saveLocalStorageObj,
+
+            /**
+             * 根据名称 getobj
+             * @param localName
+             * @param obj
+             */
+            getLocalStorageObj: getLocalStorageObj,
+
+            /**
+             * 返回一个 随机数
+             * @param {位数}n
+             * @returns {string}
+             */
+            getRoundCode: getRoundCode
         };
 
         /**
@@ -5330,8 +5984,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         }
 
         /**
-         * 删除数组中的元素,传入数组，和第一个
-         * 16/2/18 */
+         * 删除数组中的元素,传入数组，和第几个
+         * @param {Array} arr
+         * @param {Number} num
+         */
         function arrDel(arr, num) {
             if (!Array.prototype.remove) {
                 Array.prototype.remove = function (from, to) {
@@ -5392,6 +6048,8 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * isNoLoading (可选 true:不显示loading动画)
          * 15-3-27 */
         function postJsp(getMoreUrl, data, isNoLoading) {
+            console.log('data',data);
+            //data.queryNode = true
             if (!isNoLoading) {
                 $rootScope.$broadcast('openLoading'); //http请求前 显示loading
             }
@@ -5451,7 +6109,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
         /**
          * 判断是 function
-         * 16/2/19 */
+         * @param {Function} fn
+         * @returns {boolean}
+         */
         function isFunction(fn) {
             return Object.prototype.toString.call(fn) === '[object Function]';
         }
@@ -5479,6 +6139,45 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
         }
 
+        /**
+         * 根据名称 存储obj
+         * @param localName
+         * @param obj
+         */
+        function saveLocalStorageObj(localName, obj) {
+            localStorage.removeItem(localName);
+            setTimeout(function () {
+                var objStr = JSON.stringify(obj);
+                localStorage.setItem(localName, objStr);
+            }, 200);
+        }
+
+        /**
+         * 根据名称 getObj
+         * @param localName
+         * @return obj
+         */
+        function getLocalStorageObj(localName) {
+            var obj = localStorage.getItem(localName);
+            if (obj) {
+                var objStr = JSON.parse(obj);
+                return objStr;
+            }
+        }
+
+        /**
+         * 返回一个 随机数
+         * @param {位数}n
+         * @returns {string}
+         */
+        function getRoundCode(n) {
+            var rnd = "";
+            for (var i = 0; i < n; i++) {
+                rnd += Math.floor(Math.random() * 10);
+            }
+            return rnd;
+        }
+
         return re;
     }
 })(window);
@@ -5495,7 +6194,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     touchScroll.$inject = ['$rootScope'];
 
     function touchScroll($rootScope) {
-
 
         /**
          * ji禁止滚动
@@ -5516,15 +6214,34 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 document.removeEventListener('touchmove', preventDefault, false);//恢复浏览器滚动
             }
         };
+        //
+        //document.addEventListener('touchstart', touch, false);
+        //document.addEventListener('touchmove', touch, false);
+        //document.addEventListener('touchend', touch, false);
+        //document.addEventListener('onclick', function () {
+        //    alert(1);
+        //}, false);
+
+        //function touch(event) {
+        //    var event = event || window.event;
+        //
+        //
+        //    switch (event.type) {
+        //        case "touchstart":
+        //            //console.log('start', event.touches[0].clientX + "," + event.touches[0].clientY);
+        //            break;
+        //        case "touchend":
+        //            //console.log('end', event.changedTouches[0].clientX + "," + event.changedTouches[0].clientY);
+        //            break;
+        //        case "touchmove":
+        //            //console.log('end', event.changedTouches[0].clientX + "," + event.changedTouches[0].clientY);
+        //            //event.preventDefault();
+        //            break;
+        //    }
+        //
+        //}
 
 
-        document.addEventListener('touchend', function () {
-            console.log('end');
-        });
-
-        document.addEventListener('touchstart', function () {
-            console.log('start');
-        });
     }
 
 })();
@@ -5824,7 +6541,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "<div id=\"alertUi\" ng-if=\"showAlertUi\">\n" +
     "    <div style=\"width: 100%;height: 100%;\" ng-class=\"alertUiClass\">\n" +
     "        <div class=\"left\" style=\"margin-left: 30px;width:50px;overflow: hidden\">\n" +
-    "            <i class=\"fa fa-ban fa-4x\" style=\"color: #f4f4f4;margin-top: 7px\"></i>\n" +
+    "            <i class=\"fa fa-ban fa-3x\" style=\"color: #f4f4f4;margin-top: 7px\"></i>\n" +
     "        </div>\n" +
     "        <div class=\"left\" style=\"width:60%;overflow: hidden\">\n" +
     "            <div class=\"clear\" style=\"margin-left: 20px;font-size: 1.2em;margin-top: 10px \">{{title}}</div>\n" +
@@ -5834,130 +6551,331 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   );
 
 
+  $templateCache.put('directive/block/area.dipan.areaSelect.directive.html',
+    "<div class=\"clear viewContent\">\n" +
+    "    <div class=\"title\">area</div>\n" +
+    "</div>\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n"
+  );
+
+
   $templateCache.put('directive/block/loading.dipan.loanding.directive.html',
     "<i ng-show=\"loading\"  class=\"fa fa-spinner fa-spin fa-3x fa-fw loading\"></i>"
   );
 
 
+  $templateCache.put('directive/block/search.dipan.search.directive.html',
+    "<div class=\"clear viewContent\">\n" +
+    "    <div class=\"title\">search</div>\n" +
+    "</div>\n" +
+    "\n"
+  );
+
+
   $templateCache.put('directive/block/tab.block.tabNav.directive.html',
     "<div id=\"tab\" class=\"clear\" style=\"\">\n" +
-    "    <div ng-class=\"vo.colNumCss\" ng-repeat=\"vo in tabList\">\n" +
+    "    <div ng-class=\"vo.colNumCss\"  class=\"linkMouse\" ng-repeat=\"vo in tabList\">\n" +
     "        <span ui-sref=\"{{vo.route}}\" ng-class=\"vo.thisItem\" class=\"btn\" ng-bind-html=\"vo.name|toHtml\"></span>\n" +
     "    </div>\n" +
-    "    <style>\n" +
-    "        .has-navbar-top .app-body {\n" +
-    "            padding-top: 104px;\n" +
-    "        }\n" +
-    "    </style>\n" +
     "</div>"
   );
 
 
   $templateCache.put('directive/block/top.block.topNav.html',
-    "<!--topNav-->\n" +
-    "<div class=\"navbar navbar-app navbar-absolute-top\">\n" +
-    "    <div class=\"navbar-brand navbar-brand-center\">\n" +
-    "        <!--top中间title-->\n" +
-    "        {{title}}\n" +
-    "    </div>\n" +
-    "    <div class=\"btn-group pull-left\">\n" +
-    "\n" +
-    "        <!--home-->\n" +
-    "        <div class=\"btn\" ng-if=\"url !== '/home'\" onclick=\"history.go(-1);\">\n" +
-    "            <!--top导航左侧图标-->\n" +
-    "            <i class=\"fa fa-angle-left fa-lg\"></i>\n" +
-    "        </div>\n" +
-    "\n" +
-    "        <!--default-->\n" +
-    "        <div class=\"btn\" ng-if=\"url == '/home'\" ui-sref=\"memberIndex\">\n" +
-    "            <!--top导航左侧图标-->\n" +
-    "            <i ui-sref=\"area\" class=\"fa fa-location-arrow fa-lg\" aria-hidden=\"true\"></i>\n" +
-    "            <!--<i class=\"fa fa-caret-down fa-1\" aria-hidden=\"true\" ></i>-->\n" +
-    "        </div>\n" +
-    "    </div>\n" +
-    "    <div class=\"btn-group pull-right\">\n" +
-    "        <div class=\"btn\">\n" +
-    "            <!--top导航右侧图标-->\n" +
-    "            <i class=\"fa fa-search fa-lg\"></i>\n" +
-    "        </div>\n" +
-    "    </div>\n" +
-    "    <div tab ng-if=\"showTab\"></div>\n" +
-    "</div>\n"
+    "<header class=\"mui-bar mui-bar-nav\">\n" +
+    "    <i ng-if=\"url !== '/home'\" onclick=\"history.go(-1);\" id=\"goHistory\" url=\"goHistory\" class=\"fa fa-angle-left linkMouse  mui-pull-left mui-btn icon-btn\"></i>\n" +
+    "    <i ng-if=\"url == '/home'\" id=\"hrefArea\" url=\"area\" class=\"fa fa-location-arrow  mui-pull-left mui-btn icon-btn linkMouse\"></i>\n" +
+    "    <i id=\"hrefSearch\" url=\"search\" class=\"fa fa-search fa-1  mui-pull-right mui-icon icon-btn\"\n" +
+    "       style=\"padding-right: 17px;padding-top: 13px;\"></i>\n" +
+    "    <h1 class=\"mui-title\">{{title}}</h1>\n" +
+    "</header>\n"
   );
 
 
   $templateCache.put('directive/home.dipan.home.directive.html',
-    "<div class=\"scrollable-content\" ui-scroll-bottom=\"a()\">\n" +
-    "    <div class=\"list-group\">\n" +
-    "        <a class=\"list-group-item \" ng-repeat=\"vo in list\" style=\"height: 100px\">\n" +
-    "            <span style=\"font-size: 1.4em\">{{vo.branch_name}}</span> <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
-    "        </a>\n" +
+    "<div class=\"clear viewContent\" style=\"background-color: #777;margin-top: 44px\">\n" +
+    "    <style>\n" +
+    "        .mui-navigate-right:after, .mui-push-right:after {\n" +
+    "            right: 0px;\n" +
+    "            content: '';\n" +
+    "        }\n" +
+    "\n" +
+    "        .mui-table-view-chevron .mui-table-view-cell {\n" +
+    "            padding-right: 30px;\n" +
+    "        }\n" +
+    "\n" +
+    "    </style>\n" +
+    "    <div class=\"titleInfo clear\" ng-show=\"false\">\n" +
+    "        <div id=\"titleInfo\">\n" +
+    "            <i class=\"fa fa-user\"></i>\n" +
+    "            刚刚有{{peopleNum}}3人访问了你\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <div id=\"list\" class=\"mui-table-view mui-table-view-chevron clear\" style=\"background-color:#777;margin-top: 10px\">\n" +
+    "        <li class=\"mui-table-view-cell item\" url=\"content#{{vo.id}}\" bindonce ng-repeat=\"vo in list\"\n" +
+    "            style=\"background-color: #fff;margin-top: 10px\">\n" +
+    "            <div class=\"clear\">\n" +
+    "                <div class=\"left listHeader\">\n" +
+    "                    <img bo-src=\"vo.listHeader\"/>\n" +
+    "                </div>\n" +
+    "                <div class=\"left listTitle\">\n" +
+    "                    <span bo-text=\"vo.title\"></span>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "            <div class=\"mui-navigate-right\" style=\"font-size:14px;color: #777;margin-top: 5px\" bindonce\n" +
+    "                 ng-repeat=\"(key,vo2) in vo.content\">\n" +
+    "                <span style=\"color:#bd0000\" bo-text=\"key + ':'\"></span>\n" +
+    "                <span bo-text=\"vo2\"></span>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <div class=\"panle\">\n" +
+    "                <div class=\"mui-btn fa fa-weixin fa-1x icon-btn\"></div>\n" +
+    "                <div class=\"mui-btn fa  fa-1x icon-btn-noBack iconStar\" ng-class=\"vo.iconStar\" bo-attr\n" +
+    "                     bo-attr-iconId=\"vo.id\"></div>\n" +
+    "            </div>\n" +
+    "        </li>\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n"
+  );
+
+
+  $templateCache.put('directive/login.dipan.login.directive.html',
+    "<div class=\"scrollable-content section viewContent\">\n" +
+    "    <style>\n" +
+    "        .btn-danger {\n" +
+    "            background-color: #bd0000;\n" +
+    "            border-color: #bd0000;\n" +
+    "        }\n" +
+    "\n" +
+    "        .has-success .form-control:focus {\n" +
+    "            border-color: #000000;\n" +
+    "            -ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #aeafb1;\n" +
+    "            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #a8a6b1;\n" +
+    "        }\n" +
+    "\n" +
+    "        .has-success .form-control {\n" +
+    "            border-color: #000000;\n" +
+    "            -ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n" +
+    "            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n" +
+    "        }\n" +
+    "\n" +
+    "        fieldset {\n" +
+    "            border: 0px;\n" +
+    "        }\n" +
+    "    </style>\n" +
+    "\n" +
+    "    <form name=\"myForm\" id=\"myForm\" novalidate>\n" +
+    "        <fieldset>\n" +
+    "            <div class=\"form-group has-success has-feedback \">\n" +
+    "                <input type=\"number\" name=\"tel\" required ng-model=\"tel\"\n" +
+    "                       class=\"form-control\"\n" +
+    "                       placeholder=\"手机号\">\n" +
+    "            </div>\n" +
+    "            <div class=\"clearThis\"></div>\n" +
+    "            <div class=\"form-group has-success has-feedback left\" style=\"width:60%\">\n" +
+    "                <input type=\"number\" ng-model=\"code\" class=\"form-control \" placeholder=\"验证码\">\n" +
+    "            </div>\n" +
+    "            <div class=\"mui-btn right\" ng-class=\"codeClass\" ng-click=\"getCode()\"\n" +
+    "                 style=\"width:38%;background-color: #f4f4f4;border-color:#000;color:#000;font-size: 17px \">\n" +
+    "                {{codeText}}\n" +
+    "            </div>\n" +
+    "            <div class=\"clear\"></div>\n" +
+    "            <button style=\"width:100%;color:#fff;font-size: 17px;font-weight: bold\" ng-click=\"formSub()\"\n" +
+    "                    class=\"btn btn-danger btn-block btn-lg\">\n" +
+    "                登录\n" +
+    "            </button>\n" +
+    "        </fieldset>\n" +
+    "\n" +
+    "\n" +
+    "    </form>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('directive/member/add.dipan.addFrom.directive.html',
+    "<div class=\"clear viewContent\" style=\"margin-top: 44px\">\n" +
+    "    <div class=\"mui-table-view mui-table-view-chevron clear\" style=\"margin-top: 10px\">\n" +
+    "        <form name=\"addFrom\" id=\"myAddForm\" novalidate>\n" +
+    "            <fieldset>\n" +
+    "                <div class=\"form-group \">\n" +
+    "                    <input type=\"text\" name=\"title\" required ng-model=\"form.title\"\n" +
+    "                           class=\"form-control\"\n" +
+    "                           placeholder=\"标题\">\n" +
+    "                </div>\n" +
+    "                <div class=\"form-group \">\n" +
+    "                    <textarea type=\"text\" name=\"content\" required ng-model=\"form.content\"\n" +
+    "                              class=\"form-control\"\n" +
+    "                              placeholder=\"内容\"></textarea>\n" +
+    "                </div>\n" +
+    "                <div class=\"clearThis\"></div>\n" +
+    "                <div class=\"clear\"></div>\n" +
+    "                <button style=\"width:100%;font-size: 17px;font-weight: bold\" ng-click=\"formSub()\"\n" +
+    "                        class=\"btn btn-danger btn-block btn-lg\">\n" +
+    "                    提交\n" +
+    "                </button>\n" +
+    "            </fieldset>\n" +
+    "\n" +
+    "        </form>\n" +
     "    </div>\n" +
     "</div>\n"
   );
 
 
-  $templateCache.put('directive/login.dipan.login.directive.html',
-    "        <div class=\"scrollable-content section\">\n" +
-    "            <style>\n" +
-    "                .btn-danger{\n" +
-    "                    background-color: #bd0000;\n" +
-    "                    border-color: #bd0000;\n" +
-    "                }\n" +
-    "                .has-success .form-control:focus{\n" +
-    "                    border-color: #000000;\n" +
-    "                    -ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #aeafb1;\n" +
-    "                    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #a8a6b1;\n" +
-    "                }\n" +
-    "                .has-success .form-control{\n" +
-    "                    border-color: #000000;\n" +
-    "                    -ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n" +
-    "                    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n" +
-    "                }\n" +
-    "            </style>\n" +
-    "\n" +
-    "            <form name=\"myForm\" id=\"myForm\" novalidate>\n" +
-    "                <fieldset>\n" +
-    "                    <div class=\"form-group has-success has-feedback \" >\n" +
-    "                        <input  type=\"number\" name=\"tel\" required ng-model=\"tel\"\n" +
-    "                               class=\"form-control\"\n" +
-    "                               placeholder=\"手机号\">\n" +
-    "                    </div>\n" +
-    "\n" +
-    "\n" +
-    "                    <div class=\"clearThis\"></div>\n" +
-    "                    <div class=\"form-group has-success has-feedback left\" style=\"width:60%\">\n" +
-    "                        <input type=\"number\" ng-model=\"code\" class=\"form-control \" placeholder=\"验证码\">\n" +
-    "                    </div>\n" +
-    "\n" +
-    "                    <div class=\"btn right\" ng-class=\"codeClass\" ng-click=\"getCode()\" style=\"margin-top: 10px;width:38%;background-color: #f4f4f4;border-color:#000;color:#000; \">\n" +
-    "                        {{codeText}}\n" +
-    "                    </div>\n" +
-    "\n" +
-    "                </fieldset>\n" +
-    "                <hr>\n" +
-    "\n" +
-    "                <button ng-click=\"formSub()\" class=\"btn btn-danger btn-block btn-lg\">\n" +
-    "                    登录\n" +
-    "                </button>\n" +
-    "\n" +
-    "            </form>\n" +
-    "        </div>\n"
-  );
-
-
   $templateCache.put('directive/member/my.dipan.myIndexNav.html',
-    "<div class=\"scrollable-content\" ui-scroll-bottom=\"bottomReached()\">\n" +
-    "    <div class=\"list-group\">\n" +
-    "        <a ui-sref=\"{{vo.url}}\" class=\"list-group-item ng-binding ng-scope\" ng-repeat=\"vo in listNav\">\n" +
-    "           <span style=\"font-size: 1.4em\">{{vo.name}}</span>  <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
-    "        </a>\n" +
-    "    </div>\n" +
+    "<div class=\"clear viewContent\" style=\"text-align: center ;margin-top: 130px\">\n" +
+    "    <ul id=\"{{vo.hrefId}}\" url=\"{{vo.url}}\" class=\"mui-table-view mui-table-view-chevron\" style=\"text-align: left\" bindonce ng-repeat=\"vo in listNav\">\n" +
+    "        <div class=\"mui-table-view-cell linkMouse clear\"\n" +
+    "             style=\"padding-right: 26px;height: 50px;padding-top: 16px;\">\n" +
+    "            <i class=\"{{vo.icon}} pull-left\" style=\"color:#888;margin-top: 3px\"></i>\n" +
+    "            <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
+    "            <span style=\"font-size: 1.4em;margin-left: 20px\">{{vo.name}}</span>\n" +
+    "        </div>\n" +
+    "    </ul>\n" +
+    "    <div class=\"clear\" style=\"margin-top: 40px\"></div>\n" +
+    "    <div class=\"clear\" style=\"font-size: 12px\">当前版本:<span style=\"color: #bd0000\">{{version}}</span></div>\n" +
     "</div>\n"
   );
 
 
   $templateCache.put('index.html',
+    "<!DOCTYPE html>\n" +
+    "<html>\n" +
+    "<head>\n" +
+    "    <meta charset=\"utf-8\"/>\n" +
+    "    <title>dipan.so</title>\n" +
+    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no\">\n" +
+    "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n" +
+    "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\">\n" +
+    "\n" +
+    "    <script>\n" +
+    "\n" +
+    "        (function (window) {\n" +
+    "            //判断web 还是 app\n" +
+    "            window.trueWeb = trueWeb;\n" +
+    "            function trueWeb() {\n" +
+    "                var url = window.location.href;\n" +
+    "                url = url.split(':');\n" +
+    "                if (url[0] === 'http') {\n" +
+    "                    return true;\n" +
+    "                }\n" +
+    "            }\n" +
+    "\n" +
+    "            //web端\n" +
+    "            if (trueWeb()) {\n" +
+    "                document.write('<script src=\"/Public/app/dist/js/init.js\"><\\/script>');\n" +
+    "            } else {\n" +
+    "\n" +
+    "                //app 端\n" +
+    "                document.write('<script src=\"../../dist/js/init.js\"><\\/script>');\n" +
+    "\n" +
+    "            }\n" +
+    "        })(window);\n" +
+    "\n" +
+    "    </script>\n" +
+    "</head>\n" +
+    "\n" +
+    "<body ng-app=\"dipan\" class=\"angularEnd\" ng-controller=\"body\">\n" +
+    "\n" +
+    "<!--顶部-->\n" +
+    "<div top></div>\n" +
+    "\n" +
+    "<!--<div tab ng-if=\"showTab\"></div>-->\n" +
+    "\n" +
+    "<!--底部-->\n" +
+    "<nav class=\"mui-bar mui-bar-tab\" style=\"padding-top: 0px;\">\n" +
+    "    <div id=\"hrefHome\" url=\"home\" class=\"bottomBar mui-btn  icon-btn\">\n" +
+    "        <span class=\"mui-icon fa fa-home fa-navbar\"></span>\n" +
+    "    </div>\n" +
+    "    <div id=\"hrefMaster\" url=\"master\" class=\"bottomBar  mui-btn icon-btn\">\n" +
+    "        <span class=\"mui-icon fa fa-map-marker fa-navbar\"></span>\n" +
+    "    </div>\n" +
+    "    <div id=\"hrefMember\" url=\"memberIndex\" class=\"bottomBar mui-btn icon-btn\">\n" +
+    "        <span class=\"mui-icon fa fa-user fa-navbar \">\n" +
+    "        </span>\n" +
+    "        <i class=\"fa fa-ellipsis-h fa-2x\" style=\"\n" +
+    "width: 7px;\n" +
+    "overflow-x: hidden;\n" +
+    "color: #bd0000;\n" +
+    "position: absolute;\n" +
+    "bottom:13px;\n" +
+    "margin-left: -2px;\n" +
+    "\"></i>\n" +
+    "    </div>\n" +
+    "</nav>\n" +
+    "\n" +
+    "\n" +
+    "<!--内容-->\n" +
+    "<div class=\"mui-content\">\n" +
+    "    <div loading></div>\n" +
+    "    <div alert></div>\n" +
+    "    <div tab ng-if=\"showTab\"></div>\n" +
+    "    <ui-view></ui-view>\n" +
+    "</div>\n" +
+    "<!--<div class=\"app\">-->\n" +
+    "<!--&lt;!&ndash; topNavbars &ndash;&gt;-->\n" +
+    "<!--<div top></div>-->\n" +
+    "\n" +
+    "<!--<div class=\"navbar navbar-app navbar-absolute-bottom\">-->\n" +
+    "<!--<div class=\"btn-group justified\">-->\n" +
+    "<!--&lt;!&ndash;底部连接&ndash;&gt;-->\n" +
+    "<!--<a ui-sref=\"home\" class=\"btn btn-navbar\"><i class=\"fa fa-home fa-navbar fa-lg\"></i> </a>-->\n" +
+    "<!--<a href=\"#\" class=\"btn btn-navbar\"><i-->\n" +
+    "<!--class=\"fa fa-map-marker fa-navbar fa-lg\"></i> </a>-->\n" +
+    "<!--<a ui-sref=\"memberIndex\" class=\"btn btn-navbar\"><i-->\n" +
+    "<!--class=\"fa fa-user fa-navbar fa-lg\"></i> </a>-->\n" +
+    "<!--</div>-->\n" +
+    "<!--</div>-->\n" +
+    "\n" +
+    "<!--&lt;!&ndash; App Body &ndash;&gt;-->\n" +
+    "<!--<div class=\"app-body\">-->\n" +
+    "<!--&lt;!&ndash;loading directive&ndash;&gt;-->\n" +
+    "<!--<div loading></div>-->\n" +
+    "<!--<div alert></div>-->\n" +
+    "<!--<ui-view></ui-view>-->\n" +
+    "<!--</div>-->\n" +
+    "\n" +
+    "<!--</div>&lt;!&ndash; ~ .app &ndash;&gt;-->\n" +
+    "\n" +
+    "<!--数据div-->\n" +
+    "<!--<div url-parse={{$indexAllRe}}></div>-->\n" +
+    "\n" +
+    "</body>\n" +
+    "</html>\n"
+  );
+
+
+  $templateCache.put('indexBak.html',
     "<!DOCTYPE html>\n" +
     "<html>\n" +
     "<head>\n" +
@@ -6031,7 +6949,13 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('route/block/area.html',
     "<div area>\n" +
-    "    area\n" +
+    "\n" +
+    "</div>"
+  );
+
+
+  $templateCache.put('route/block/search.html',
+    "<div search>\n" +
     "</div>"
   );
 
@@ -6049,11 +6973,13 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   );
 
 
+  $templateCache.put('route/member/addArticle.html',
+    "<div add></div>"
+  );
+
+
   $templateCache.put('route/member/loginOut.html',
-    "<div login-out></div>\n" +
-    "<script>\n" +
-    "\n" +
-    "</script>"
+    "<div login-out></div>\n"
   );
 
 

@@ -12,7 +12,6 @@
 
     function touchScroll($rootScope) {
 
-
         /**
          * ji禁止滚动
          * 15/12/22 */
@@ -32,15 +31,34 @@
                 document.removeEventListener('touchmove', preventDefault, false);//恢复浏览器滚动
             }
         };
+        //
+        //document.addEventListener('touchstart', touch, false);
+        //document.addEventListener('touchmove', touch, false);
+        //document.addEventListener('touchend', touch, false);
+        //document.addEventListener('onclick', function () {
+        //    alert(1);
+        //}, false);
+
+        //function touch(event) {
+        //    var event = event || window.event;
+        //
+        //
+        //    switch (event.type) {
+        //        case "touchstart":
+        //            //console.log('start', event.touches[0].clientX + "," + event.touches[0].clientY);
+        //            break;
+        //        case "touchend":
+        //            //console.log('end', event.changedTouches[0].clientX + "," + event.changedTouches[0].clientY);
+        //            break;
+        //        case "touchmove":
+        //            //console.log('end', event.changedTouches[0].clientX + "," + event.changedTouches[0].clientY);
+        //            //event.preventDefault();
+        //            break;
+        //    }
+        //
+        //}
 
 
-        document.addEventListener('touchend', function () {
-            console.log('end');
-        });
-
-        document.addEventListener('touchstart', function () {
-            console.log('start');
-        });
     }
 
 })();

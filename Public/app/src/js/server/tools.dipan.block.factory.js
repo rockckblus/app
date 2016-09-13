@@ -61,7 +61,28 @@
              * function trueWeb(web,app) 判断手机,还是 wap,回调函数
              * 16/8/19 上午7:32 ByRockBlus
              *************************/
-            trueWeb: trueWeb
+            trueWeb: trueWeb,
+
+            /**
+             * 根据名称 存储obj
+             * @param localName
+             * @param obj
+             */
+            saveLocalStorageObj: saveLocalStorageObj,
+
+            /**
+             * 根据名称 getobj
+             * @param localName
+             * @param obj
+             */
+            getLocalStorageObj: getLocalStorageObj,
+
+            /**
+             * 返回一个 随机数
+             * @param {位数}n
+             * @returns {string}
+             */
+            getRoundCode: getRoundCode
         };
 
         /**
@@ -102,8 +123,10 @@
         }
 
         /**
-         * 删除数组中的元素,传入数组，和第一个
-         * 16/2/18 */
+         * 删除数组中的元素,传入数组，和第几个
+         * @param {Array} arr
+         * @param {Number} num
+         */
         function arrDel(arr, num) {
             if (!Array.prototype.remove) {
                 Array.prototype.remove = function (from, to) {
@@ -164,6 +187,8 @@
          * isNoLoading (可选 true:不显示loading动画)
          * 15-3-27 */
         function postJsp(getMoreUrl, data, isNoLoading) {
+            console.log('data',data);
+            //data.queryNode = true
             if (!isNoLoading) {
                 $rootScope.$broadcast('openLoading'); //http请求前 显示loading
             }
@@ -223,7 +248,9 @@
 
         /**
          * 判断是 function
-         * 16/2/19 */
+         * @param {Function} fn
+         * @returns {boolean}
+         */
         function isFunction(fn) {
             return Object.prototype.toString.call(fn) === '[object Function]';
         }
@@ -249,6 +276,45 @@
                 }
             }, 0);
 
+        }
+
+        /**
+         * 根据名称 存储obj
+         * @param localName
+         * @param obj
+         */
+        function saveLocalStorageObj(localName, obj) {
+            localStorage.removeItem(localName);
+            setTimeout(function () {
+                var objStr = JSON.stringify(obj);
+                localStorage.setItem(localName, objStr);
+            }, 200);
+        }
+
+        /**
+         * 根据名称 getObj
+         * @param localName
+         * @return obj
+         */
+        function getLocalStorageObj(localName) {
+            var obj = localStorage.getItem(localName);
+            if (obj) {
+                var objStr = JSON.parse(obj);
+                return objStr;
+            }
+        }
+
+        /**
+         * 返回一个 随机数
+         * @param {位数}n
+         * @returns {string}
+         */
+        function getRoundCode(n) {
+            var rnd = "";
+            for (var i = 0; i < n; i++) {
+                rnd += Math.floor(Math.random() * 10);
+            }
+            return rnd;
         }
 
         return re;

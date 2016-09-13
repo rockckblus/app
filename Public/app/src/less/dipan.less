@@ -6,22 +6,59 @@
   margin-left: -30px;
 }
 
-//圆角阴影
-
-.yuan {
+//圆角btn
+.yuanBtn {
   -moz-border-radius: 0.2em;
   -webkit-border-radius: 0.2em;
   border-radius: 0.2em;
+}
+
+//圆角阴影
+.yuan {
+  .yuanBtn();
   -webkit-box-shadow: 0px 0px 3px 1px #777;
   -moz-box-shadow: 0px 0px 3px 1px #777;
   box-shadow: 0px 0px 3px 1px #777;
-  padding: 3px;
+}
+
+.mui-bar-tab .mui-tab-item.mui-active {
+  color: #000;
+}
+
+.mui-bar-tab .mui-tab-item {
+  color: #000;
+  .mui-icon {
+    font-size: 22px;
+  }
+}
+
+.mui-bar-nav {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.mui-bar {
+  background-color: #fff;
+  height: 50px;
+  border-bottom: 1px solid #000;
+  padding-top: 4px;
+  .mui-icon {
+    font-size: 18px;
+  }
+}
+
+.mui-bar-tab ~ .mui-content {
+  padding-top: 50px;
+  padding-bottom: 0px;
+  background-color: #fff;
 }
 
 //公共style .mt .ml .all .clear .left .right .c .linkMouse .hide .angualrEnd
 html, body {
   height: 100%;
   font-family: "Microsoft YaHei", tahoma, arial, "Hiragino Sans GB", "\5b8b\4f53", sans-serif;
+  background-color: #777;
+  color: #000;
 }
 
 .c {
@@ -96,22 +133,37 @@ html, body {
   .clear;
 }
 
+//mui
+.icon-btn {
+  background-color: transparent;
+  border: 0px;
+  &:active {
+    background-color: #bd0000;
+  }
+}
+
 #tab {
-  margin-top: 50px;
+  position: fixed;
+  top: 50px;
+  height: 44px;
+  width: 100%;
+  z-index: 9999;
   background-color: #fff;
-  border-top: 1px solid #000;
+  padding-top: 10px;
+  border-bottom: 1px solid #000;
   .btn {
     .mt(11);
     margin-bottom: 12px;
-    padding-top: 1px;
+    padding-top: 3px;
     line-height: 24px;
-    padding-bottom: 1px;
+    padding-bottom: 3px;
     padding-left: 10px;
     padding-right: 10px;
   }
   .thisItem {
     background-color: #bd0000;
     color: #fff;
+    .yuanBtn();
   }
   .threeTab {
     text-align: center;
@@ -136,7 +188,7 @@ html, body {
   top: 10px;
   height: 70px;
   .all(10, 8, 1);
-  z-index: 9000;
+  z-index: 90000;
   .showThis {
     .yuan;
     background-color: #fff;
@@ -150,3 +202,80 @@ html, body {
     .animation(fadeOut 1s ease-in-out);
   }
 }
+
+.viewContent {
+  margin-top: 50px;
+  padding-bottom: 50px;
+}
+
+#titleInfo {
+  margin: 0 auto;
+  width: 194px;
+  text-align: center;
+  padding: 3px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin-top: 10px;
+  font-size: 14px;
+  background-color: #000;
+  color: #fff;
+  .yuanBtn();
+}
+
+.listHeader {
+  .all(10, 1);
+  overflow-y: hidden;
+  img {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.listTitle {
+  .all(10, 9);
+}
+
+//list 操作面板
+.panle {
+  margin-top: 10px;
+  text-align: left;
+  .icon-btn {
+    color: #d8d8d8;
+    &:active {
+      color: #fff;
+      background-color: #bd0000;
+    }
+  }
+  .icon-btn-noBack {
+    background-color: transparent;
+    border: 0px;
+    &:active {
+      background-color: #bd0000;
+      color: #fff;
+    }
+  }
+  .fa-star-o {
+    color: #d8d8d8;
+  }
+  .fa-star {
+    color: #bd0000;
+  }
+}
+
+.bottomBar {
+  .all(9, 3);
+  .fa-navbar {
+    font-size: 23px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
