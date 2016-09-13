@@ -5,9 +5,10 @@
   font-size: 12px;
   left: 50%;
   margin-left: -55px;
+  margin-top: 32px;
 }
-#beian a {
-  color: #333333;
+#beiana {
+  color: #bd0000;
 }
 .loading {
   position: absolute;
