@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8"/>
-    <title>dipan.so</title>
+    <title>地盘 dipan.so</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -22,6 +22,7 @@
 
             //web端
             if (trueWeb()) {
+                document.getElementById('beian').style.display = 'block';
                 document.write('<script src="/Public/app/dist/js/init.js"><\/script>');
             } else {
 
@@ -99,5 +100,6 @@ margin-left: -2px;
 <!--数据div-->
 <!--<div url-parse={{$indexAllRe}}></div>-->
 
+<div id="beian" style="display:none"><a href="http://www.miitbeian.gov.cn/">津ICP备14005697号</a></div>
 </body>
 </html>

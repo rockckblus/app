@@ -26,7 +26,8 @@
             $rootScope.$broadcast('changeBody');
         });
 
-        $scope.list = []; //默认首页 列表 数据,
+        $scope.list = []; //默认首页 列表 数据,每次刷新请求后 push list变量名称
+        var listCount = 0;//list数组统计变量
         $scope.isWeb = true;//加载更多按钮
         tools.trueWeb(function () {
         }, function () {
@@ -44,6 +45,7 @@
 
         function init() {
             _init();//判断缓存,去执行响应逻辑(变换滚动位置,获取最新数据)
+            plusInit();//bind plus 滚动到底部事件
             bindLoadMoreClick();//bind 加载 更多点击事件
         }
 
@@ -53,24 +55,26 @@
          */
         function _init() {
             var localData = tools.getLocalStorageObj($state.current.name);
-            if (localData) {//如果缓存的 数据存在,先读缓存数据
-                var re = {
-                    list: localData
-                };
-                call(re);
-                var scrollTopName = $state.current.name + '_scrollTop';
-                if (localStorage.getItem(scrollTopName) === '0') {
-                    getList.getList($state.current.name, false, false, $scope, 'list', _bind);
-                    ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
-                    //tools.alert({
-                    //    title: '请求NewData'
-                    //})
-                    console.log('请求带缓存数据');
-                }
-            } else {
-                getList.getList($state.current.name, false, false, $scope, 'list', _bind);
-                console.log('请求全新数据');
-            }
+            //if (localData) {//如果缓存的 数据存在,先读缓存数据
+            //    var re = {
+            //        list: localData
+            //    };
+            //    call(re);
+            //    var scrollTopName = $state.current.name + '_scrollTop';
+            //    if (localStorage.getItem(scrollTopName) === '0') {
+            //        listCount++;
+            //        getList.getList($state.current.name, false, false, $scope, 'list_' + listCount, _bind);
+            //        ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
+            //        //tools.alert({
+            //        //    title: '请求NewData'
+            //        //})
+            //        console.log('请求带缓存数据');
+            //    }
+            //} else {
+            getList.getList($state.current.name, false, false, $scope, 'list[' + listCount + ']', _bind);
+            listCount ++;
+            console.log('请求全新数据');
+            //}
         }
 
 
@@ -113,28 +117,34 @@
         //底部下拉,去请求数据
         function downGetList() {
             var endId = _getLastId();
-            getList.getList($state.current.name, false, endId, $scope, 'list', _bind);
+            getList.getList($state.current.name, false, endId, $scope, 'list_' + listCount, _bind);
+            listCount++;
 
             /**
              * 遍历list 取最后一条的 id
              * @return {String} _id
              */
             function _getLastId() {
-                var endNum = $scope.list.length - 1;
-                return $scope.list[endNum]._id;
+                console.log('listcount', listCount);
+                console.log('listcount', $scope.list);
+                var endNum = $scope.list[listCount-1].length - 1;
+                return $scope.list[listCount-1][endNum]._id;
             }
         }
 
         /**
          * 请求成功后重新给list 赋值
+         * 记录list模型名称
          * @param re
          */
         function call(re) {
             $timeout(function () {
-                $scope.list = re.list;
-                var name = $state.current.name;
-                var obj = $scope.list;
-                tools.saveLocalStorageObj(name, obj);//存储obj
+                console.log('re', re);
+                //$scope.list[listCount] = re.list;
+                listCount++;
+                //var name = $state.current.name;
+                //var obj = $scope.list;
+                //tools.saveLocalStorageObj(name, obj);//存储obj
                 plusInit();//绑定点击事件
             }, 0);
         }

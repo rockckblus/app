@@ -32,7 +32,8 @@
 
         $scope.formSub = function () {
             $scope.form.title += '&|';
-            var url = 'http://dipan.so:3082/sns/addOneArticle';
+            //var url = 'http://dipan.so:3082/sns/addOneArticle';
+            var url = 'http://192.168.1.114:3082/sns/addOneArticle';
             tools.postJsp(url, $scope.form).then(function () {
                 tools.alert({
                     title: '添加成功'

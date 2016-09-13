@@ -16,30 +16,12 @@
             刚刚有{{peopleNum}}3人访问了你
         </div>
     </div>
-    <div id="list" class="mui-table-view mui-table-view-chevron clear" style="background-color:#777;margin-top: 10px">
-        <li class="mui-table-view-cell item" url="content#{{vo.id}}" bindonce ng-repeat="vo in list"
-            style="background-color: #fff;margin-top: 10px">
-            <div class="clear">
-                <div class="left listHeader">
-                    <img bo-src="vo.listHeader"/>
-                </div>
-                <div class="left listTitle">
-                    <span bo-text="vo.title"></span>
-                </div>
-            </div>
-            <div class="mui-navigate-right" style="font-size:14px;color: #777;margin-top: 5px" bindonce
-                 ng-repeat="(key,vo2) in vo.content">
-                <span style="color:#bd0000" bo-text="key + ':'"></span>
-                <span bo-text="vo2"></span>
-            </div>
 
-            <div class="panle">
-                <div class="mui-btn fa fa-weixin fa-1x icon-btn"></div>
-                <div class="mui-btn fa  fa-1x icon-btn-noBack iconStar" ng-class="vo.iconStar" bo-attr
-                     bo-attr-iconId="vo.id"></div>
-            </div>
-        </li>
-        <div class="mui-btn" bindonce bo-show="isWeb" id="isWeb" style="width:140px;left: 50%;margin-left: -70px;margin-top: 20px;margin-bottom: 20px" >加载更多...</div>
+
+    <div id="list" class="mui-table-view mui-table-view-chevron clear" style="background-color:#777;margin-top: 10px">
+    </div>
+    <div class="mui-btn" bindonce bo-show="isWeb" id="isWeb"
+         style="width:140px;left: 50%;margin-left: -70px;margin-top: 20px;margin-bottom: 20px">加载更多...
     </div>
 </div>
 

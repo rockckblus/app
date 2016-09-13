@@ -7,14 +7,16 @@
     'use strict';
     angular.module('dipan').factory('getList', getList);
 
-    getList.$inject = ['tools', 'config', '$timeout'];
+    getList.$inject = ['tools', 'config', '$timeout', 'compile'];
 
     var thisObj = {};
     var _tools;
     var _config;
     var _timeout;
+    var _compile;
 
-    function getList(tools, config, $timeout) {
+
+    function getList(tools, config, $timeout, compile) {
         /**
          * 遍历不同url,返回 list 数据 ,
          * @param {$state.current.name} name
@@ -26,6 +28,7 @@
             _tools = tools;
             _config = config;
             _timeout = $timeout;
+            _compile = compile;
         };
 
         //start
@@ -49,8 +52,8 @@
                 url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             case 'home':
-                url = 'http://dipan.so:3082/sns/getList?' + _tools.getRoundCode(8);
-                  break;
+                url = 'http://192.168.1.115:3082/sns/getList?' + _tools.getRoundCode(8);
+                break;
             case 'login':
                 url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
@@ -81,57 +84,103 @@
                 'endId': _endId,
             };
 
-            _tools.postJsp(url,postData).then(call, err);//正式
+            _tools.postJsp(url, postData).then(call, err);//正式
             //_tools.getJsp(url).then(call, err);//测试 todo
         }
 
         function call(re) {
             //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
-            _addNewListToOldList(re.doc, function (reAllList) {
+            _addNewListToOldList(re.doc, function (reList) {
                 _timeout(function () {
-                    eval("scope." + listNam + "= reAllList");
-                    callBack();//回调去绑定点击事件
+                    eval("scope." + listNam + "= reList");
+                    callBack(reList);//回调去绑定点击事件
                 }, 0);
             });
 
+            //function _addNewListToOldList(newlist, _call) {
+            //    var allList = [];
+            //    var tempNewList = [];//下拉用
+            //
+            //    angular.forEach(newlist, function (vo) {
+            //        if (type == 2) {//下拉
+            //            tempNewList.push(vo);
+            //        } else {//上啦
+            //            allList.push(vo);
+            //        }
+            //    });
+            //
+            //    //数据库的 数据 push
+            //    setTimeout(function () {
+            //        var oldList = _tools.getLocalStorageObj(name);
+            //        if (oldList) {
+            //            angular.forEach(oldList, function (vo2) {
+            //                delete vo2.$$hashKey;
+            //                allList.push(vo2);
+            //            });
+            //        }
+            //
+            //    }, 200);
+            //
+            //    if (type == 2) {//下拉
+            //        setTimeout(function () {
+            //            angular.forEach(tempNewList, function (vo3) {
+            //                allList.push(vo3);
+            //            });
+            //        }, 300);
+            //    }
+            //
+            //    setTimeout(function () {
+            //        var saveList = saveLocalObjEdit(allList);
+            //        _tools.saveLocalStorageObj(name, saveList);//存储obj 20条
+            //        _call(allList);
+            //    }, 400);
+            //}
+
+
+            /**************************
+             * 复写call成功之后逻辑,
+             *
+             * 思路:每一次请求回来的数据,独立成为一个 list 模型,不去更新原有list,只是判断上拉下拉,来
+             * 放置不同的位置
+             *
+             * 16/9/12 下午12:30 ByRockBlus
+             **************************/
+
+
+
             function _addNewListToOldList(newlist, _call) {
-                var allList = [];
-                var tempNewList = [];//下拉用
+                var strVar = "";
+                strVar += "        <li id=\"repListLi\"  class=\"mui-table-view-cell item\" url=\"content#{{vo.id}}\" bindonce ng-repeat=\"\"";
+                strVar += "            style=\"background-color: #fff;margin-top: 10px\">";
+                strVar += "            <div class=\"clear\">";
+                strVar += "                <div class=\"left listHeader\">";
+                strVar += "                    <img bo-src=\"vo.listHeader\"/>";
+                strVar += "                <\/div>";
+                strVar += "                <div class=\"left listTitle\">";
+                strVar += "                    <span bo-text=\"vo.title\"><\/span>";
+                strVar += "                <\/div>";
+                strVar += "            <\/div>";
+                strVar += "            <div class=\"mui-navigate-right\" style=\"font-size:14px;color: #777;margin-top: 5px\" bindonce";
+                strVar += "                 ng-repeat=\"(key,vo2) in vo.content\">";
+                strVar += "                <span style=\"color:#bd0000\" bo-text=\"key + ':'\"><\/span>";
+                strVar += "                <span bo-text=\"vo2\"><\/span>";
+                strVar += "            <\/div>";
+                strVar += "";
+                strVar += "            <div class=\"panle\">";
+                strVar += "                <div class=\"mui-btn fa fa-weixin fa-1x icon-btn\"><\/div>";
+                strVar += "                <div class=\"mui-btn fa  fa-1x icon-btn-noBack iconStar\" ng-class=\"vo.iconStar\" bo-attr";
+                strVar += "                     bo-attr-iconId=\"vo.id\"><\/div>";
+                strVar += "            <\/div>";
+                strVar += "        <\/li>";
 
-                angular.forEach(newlist, function (vo) {
-                    if (type == 2) {//下拉
-                        tempNewList.push(vo);
-                    } else {//上啦
-                        allList.push(vo);
-                    }
-                });
-
-                //数据库的 数据 push
-                setTimeout(function () {
-                    var oldList = _tools.getLocalStorageObj(name);
-                    if (oldList) {
-                        angular.forEach(oldList, function (vo2) {
-                            delete vo2.$$hashKey;
-                            allList.push(vo2);
-                        });
-                    }
-
-                }, 200);
-
-                if (type == 2) {//下拉
-                    setTimeout(function () {
-                        angular.forEach(tempNewList, function (vo3) {
-                            allList.push(vo3);
-                        });
-                    }, 300);
-                }
-
-                setTimeout(function () {
-                    var saveList = saveLocalObjEdit(allList);
-                    _tools.saveLocalStorageObj(name, saveList);//存储obj 20条
-                    _call(allList);
-                }, 400);
+                var repListHtml = angular.element(strVar);
+                repListHtml.attr('ng-repeat', "vo in " + listNam);
+                repListHtml.attr('bo-id', 'vo._id');
+                _compile('list', repListHtml[0], scope, true);
+                _call(newlist);
             }
+
+
         }
 
         function err() {
@@ -168,7 +217,6 @@
                         }
                     }
                 }
-
 
             });
             return re;
