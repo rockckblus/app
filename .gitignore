@@ -17,7 +17,7 @@ app/dev/node_modules/*
 app/dev/*
 
 
-
+Public/resCreate/js/app/dist/app.js
 
 
 
@@ -43,11 +43,11 @@ Public/app/.idea/.name
 
 *.iml
 
-
+Public/app/dist/js/app.js
 
 Public/app/dist/js/app.templates.js
 
-
+Public/app/js/app/dist/app.js
 
 .DS_Store
 

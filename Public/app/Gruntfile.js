@@ -39,7 +39,6 @@ module.exports = function (grunt) {
             }
         },
 
-
         /** js 文件合并 测试从头2 */
         concat: {
             option: {
