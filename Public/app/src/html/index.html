@@ -22,9 +22,6 @@
 
             //web端
             if (trueWeb()) {
-                setTimeout(function () {
-                    document.getElementById('beian').style.display = 'block';
-                }, 0);
                 document.write('<script src="/Public/app/dist/js/init.js"><\/script>');
             } else {
                 //app 端
@@ -102,5 +99,10 @@ margin-left: -2px;
 <!--<div url-parse={{$indexAllRe}}></div>-->
 
 <div id="beian"><a href="http://www.miitbeian.gov.cn/">津ICP备14005697号</a></div>
+<script>
+    if (trueWeb()) {
+        document.getElementById('beian').style.display = 'block';
+    }
+</script>
 </body>
 </html>
