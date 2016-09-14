@@ -44,6 +44,9 @@
      * @param {作用域变量} scope.list
      * @param {function 成功后的回调} callBack
      */
+
+    var callSucessCount = 0;
+
     function _getList(name, frontId, endId, scope, listNam, callBack) {
         var url;
         var type = 1;//1上啦,2下拉
@@ -52,6 +55,9 @@
                 url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             case 'home':
+                url = 'http://192.168.1.115:3082/sns/getList?' + _tools.getRoundCode(8);
+                break;
+            case 'need':
                 url = 'http://192.168.1.115:3082/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'login':
@@ -88,12 +94,27 @@
             //_tools.getJsp(url).then(call, err);//测试 todo
         }
 
+
         function call(re) {
             //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
             _addNewListToOldList(re.doc, function (reList) {
+                if (!re.doc[0]) {
+                    callSucessCount++;
+                    setTimeout(function () {
+                        if (callSucessCount > 1) {
+                            _tools.alert({
+                                title: '没有更多数据啦! ^_^'
+                            })
+                        }
+                    }, 0);
+                    return false;
+                } else {
+                    callSucessCount = 0;
+                }
+
                 _timeout(function () {
                     eval("scope." + listNam + "= reList");
-                    callBack(reList);//回调去绑定点击事件
+                    callBack(reList, listNam);//回调去绑定点击事件
                 }, 0);
             });
 
@@ -150,7 +171,7 @@
 
             function _addNewListToOldList(newlist, _call) {
                 var strVar = "";
-                strVar += "        <li id=\"repListLi\"  class=\"mui-table-view-cell item\" url=\"content#{{vo.id}}\" bindonce ng-repeat=\"\"";
+                strVar += "        <li id=\"repListLi\"  class=\"mui-table-view-cell item\" url=\"content#{{vo.id}}\" bindonce bo-attr ng-repeat=\"\"";
                 strVar += "            style=\"background-color: #fff;margin-top: 10px\">";
                 strVar += "            <div class=\"clear\">";
                 strVar += "                <div class=\"left listHeader\">";
@@ -169,12 +190,13 @@
                 strVar += "            <div class=\"panle\">";
                 strVar += "                <div class=\"mui-btn fa fa-weixin fa-1x icon-btn\"><\/div>";
                 strVar += "                <div class=\"mui-btn fa  fa-1x icon-btn-noBack iconStar\" ng-class=\"vo.iconStar\" bo-attr";
-                strVar += "                     bo-attr-iconId=\"vo.id\"><\/div>";
+                strVar += "                     bo-attr-iconId=\"vo._id\"><\/div>";
                 strVar += "            <\/div>";
                 strVar += "        <\/li>";
 
                 var repListHtml = angular.element(strVar);
                 repListHtml.attr('ng-repeat', "vo in " + listNam);
+                repListHtml.attr('listName', listNam);
                 repListHtml.attr('bo-id', 'vo._id');
                 _compile('list', repListHtml[0], scope, true);
                 _call(newlist);

@@ -19,12 +19,13 @@
     document.addEventListener('plusready', function () {
         window.config = config();
     });
+
     /**
      * 声明module
      *
      * 此处是hackpost 到 node 转 对象格式问题, 如果是 请求node ,post的 需要传入 queryType = true; todo 默认不hackpost格式
      * 16/2/1 */
-    //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block'], hackPost).config(uiRouter);
+        //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block'], hackPost).config(uiRouter);
     angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block']).config(uiRouter);
 
     /**
@@ -47,9 +48,15 @@
         $urlRouterProvider.when('', "/home");
 
         $stateProvider
-        //首页
+        //首页 供
             .state('home', {
                 url: '/home',
+                templateUrl: window.tplPath + 'route/home.html'
+            })
+
+            //需
+            .state('need', {
+                url: '/need',
                 templateUrl: window.tplPath + 'route/home.html'
             })
 
@@ -88,7 +95,6 @@
                 url: '/member_addArticle',
                 templateUrl: window.tplPath + 'route/member/addArticle.html'
             })
-
 
             //member 登录
             .state('login', {
@@ -158,7 +164,6 @@
             }
         }];
     }
-
 
     /**
      * 定义系统常量config

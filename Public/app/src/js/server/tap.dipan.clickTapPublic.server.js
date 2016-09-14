@@ -24,7 +24,9 @@
             'goHistory',//返回上一页
             'hrefArea',//地区选择
             'hrefSearch',//搜索
-            'hrefHome',//主页
+            'hrefHome',//主页 供
+            'hrefTabHome',//主页 供
+            'hrefTabNeed',//需
             'hrefMaster',//地主
             'hrefMember',//我的首页
             'hrefMemberAddArticle',//test添加文章
@@ -34,6 +36,8 @@
 
         //排除 加入 绑定的 id
         var noIdIsBing = [
+            'hrefTabHome',
+            'hrefTabNeed',
             'hrefMemberAddArticle'
         ];
 

@@ -18,7 +18,7 @@
         $scope.$on('changeBody', function () {
             $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
             var _url = '/' + $state.current.name;
-            console.log('state',$state);
+            console.log('state', $state);
             $timeout(function () {
                 $scope.title = localData.getTitle(_url);//getTitle
                 $scope.showTab = localData.showTab(_url);//是否显示 tab
@@ -50,7 +50,6 @@
                             }
                         }
                     }
-
 
                     /**
                      * 判断scroll 位置,是需要 请求 url
@@ -95,8 +94,6 @@
                                 return true;
                         }
                     }
-
-
                 });
 
                 tap.init();//判断手机网页 手机 绑定 tap 事件, 网页绑定 click事件,(点击跳转url)

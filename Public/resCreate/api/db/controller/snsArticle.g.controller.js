@@ -40,6 +40,7 @@ function addOneArticle(postObj, callBack, errCallBack) {
             //sort: postObj.sort,
             //state: postObj.state,
             //tags: postObj.tags,
+            iconStar: 'fa-star-o',
             content: [{'key': postObj.content}]
         }, function (err, small) {
             if (err) {
@@ -60,7 +61,28 @@ function addOneArticle(postObj, callBack, errCallBack) {
  * @param callBack
  */
 function getList(postObj, callBack) {
-    snsArticleModel.find().limit(10).sort('-editTime').exec(callBack);
+
+    var whereCondition = {};
+    if (postObj.endId) {//下拉 find next 查出当前 的 上一条数据
+        whereCondition = {
+            '_id': {
+                '$lt': postObj.endId
+            }
+        };
+    }
+
+    if (postObj.frontId) {//下拉 find next 查出当前 的 上一条数据
+        whereCondition = {
+            '_id': {
+                '$gt': postObj.frontId
+            }
+        };
+    }
+
+    snsArticleModel.find(whereCondition)
+        .limit(10)
+        .sort('-editTime')
+        .exec(callBack);
 };
 
 

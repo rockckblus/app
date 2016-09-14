@@ -218,7 +218,7 @@ function postSns(req, res) {
     var fun = req.params.fun;
     switch (fun) {
         case 'getList' :
-            _getList();
+            _getList(req.body);
             break;
         case 'addOneArticle' ://添加一条记录
             _addArticle(req.body);
@@ -229,8 +229,8 @@ function postSns(req, res) {
      * 测试下拉文章 list 接口
      * @private
      */
-    function _getList() {
-        snsArticleServiceCtrl.getList({}, _callback);
+    function _getList(body) {
+        snsArticleServiceCtrl.getList(body, _callback);
 
         function _callback(err, doc) {
             res.json({err: err, doc: doc});

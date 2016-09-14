@@ -50,7 +50,9 @@
             case '/memberIndex':
                 return '我的';
             case '/home':
-                return 'Home';
+                return '天津武清河西务唐庄村';
+            case '/need':
+                return '天津武清河西务唐庄村';
             case '/login':
                 return '我的';
             case '/area':
@@ -58,7 +60,7 @@
             case '/search':
                 return '搜索';
             default:
-                return false;
+                return '地盘 dipan.so';
         }
     }
 
@@ -102,6 +104,8 @@
         switch (url) {
             case '/home':
                 return true;
+            case '/need':
+                return true;
             case '/memberIndex':
                 return true;
             case '/login':
@@ -129,22 +133,54 @@
         switch (url) {
             case '/home':
                 _obj = [{
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: _objDefaulOne.thisItem, //高亮
                     name: '供', //名称
-                    route: 'home' //routeUrl
+                    route: 'hrefTabHome', //routeUrl
+                    stateName: 'home', //routeUrl
                 }, {
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
                     name: '需', //名称
-                    route: 'memberIndex' //routeUrl
-                },
-                    {
-                        colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: false, //高亮
-                        name: '<i class="fa fa-ellipsis-h"></i>', //名称
-                        route: 'memberIndex' //routeUrl
-                    }];
+                    route: 'hrefTabNeed', //routeUrl
+                    stateName: 'need', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                    route: 'hrefTabmemberIndex', //routeUrl
+                    stateName: 'memberIndex', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '<i class="fa fa-star-o"></i>', //名称
+                    route: 'hrefTabStar', //routeUrl
+                    stateName: 'star', //routeUrl
+                }];
+                return _obj;
+            case '/need':
+                _obj = [{
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '供', //名称
+                    route: 'hrefTabHome', //routeUrl
+                    stateName: 'home', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: 'thisItem', //高亮
+                    name: '需', //名称
+                    route: 'hrefTabNeed' //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                    route: 'hrefTabMemberIndex' //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '<i class="fa fa-star-o"></i>', //名称
+                    route: 'hrefTabStar' //routeUrl
+                }];
                 return _obj;
             case '/memberIndex':
                 _obj = [{
