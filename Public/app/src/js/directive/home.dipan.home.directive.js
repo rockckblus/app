@@ -69,16 +69,23 @@
             //} else {
             getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
             //}
+
         }
 
         /**
          * bind 加载 更多点击事件
          */
         function bindLoadMoreClick() {
-            var bindBtn = document.getElementById('isWeb');
-            bindBtn.addEventListener('tap', function () {
-                downGetList(true);//请求下拉更多数据,
-            })
+            try {
+                var bindBtn = document.getElementById('isWeb');
+
+                bindBtn.addEventListener('tap', function () {
+                    downGetList(true);//请求下拉更多数据,
+                });
+
+            } catch (e) {
+                console.log('没找到isWebId');
+            }
         }
 
         /**
@@ -98,7 +105,7 @@
         function _bind(doc, listName) {
 
             if (type == 'down') {
-
+                console.log('down', type);
             }
 
             if (!firstId) {//如果没有 firstId,就给 firstId
@@ -182,7 +189,8 @@
                             if (vo._id == _id) {
                                 _getStartFromCatch(function () {
                                     star.push(vo);
-                                    var stateName = $state.current.name + '_star';
+                                    //var stateName = $state.current.name + '_star';
+                                    var stateName = 'star';
                                     tools.saveLocalStorageObj(stateName, star);
                                 });
                             }
@@ -205,11 +213,10 @@
 
                             var stateName = $state.current.name + '_star';
                             tools.saveLocalStorageObj(stateName, tempStar);
-
                         });
                     }
 
-                })
+                });
             }
 
 
@@ -219,7 +226,10 @@
          *底部下拉,去请求数据,
          * @param {布尔 判断是点击来的} isClickBtn
          */
-        function downGetList(isClickBtn) {
+        function downGetList() {
+            if ($state.current.name == 'star') {//如果 是标记分类 底部下拉事件 没有任何 操作
+                return false;
+            }
             type = 'down';
             getList.getList($state.current.name, false, endId, $scope, 'list[' + $scope.list.length + ']', _bind);
         }
@@ -233,7 +243,7 @@
             $timeout(function () {
                 console.log('re', re);
                 //$scope.list[listCount] = re.list;
-                listCount++;
+                //listCount++;
                 //var name = $state.current.name;
                 //var obj = $scope.list;
                 //tools.saveLocalStorageObj(name, obj);//存储obj

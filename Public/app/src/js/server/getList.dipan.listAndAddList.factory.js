@@ -7,16 +7,18 @@
     'use strict';
     angular.module('dipan').factory('getList', getList);
 
-    getList.$inject = ['tools', 'config', '$timeout', 'compile'];
+    getList.$inject = ['tools', 'config', '$timeout', 'compile', '$state', '$rootScope'];
 
     var thisObj = {};
     var _tools;
     var _config;
     var _timeout;
     var _compile;
+    var _state;
+    var _rootScope;
 
 
-    function getList(tools, config, $timeout, compile) {
+    function getList(tools, config, $timeout, compile, $state, $rootScope) {
         /**
          * 遍历不同url,返回 list 数据 ,
          * @param {$state.current.name} name
@@ -29,6 +31,8 @@
             _config = config;
             _timeout = $timeout;
             _compile = compile;
+            _state = $state;
+            _rootScope = $rootScope;
         };
 
         //start
@@ -60,6 +64,9 @@
             case 'need':
                 url = 'http://192.168.18.15:3082/sns/getList?' + _tools.getRoundCode(8);
                 break;
+            case 'star':
+                url = true;
+                break;
             case 'login':
                 url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
@@ -90,22 +97,71 @@
                 'endId': _endId,
             };
 
-            _tools.postJsp(url, postData).then(call, err);
-
-
             /**************************
-             * 先去执行读取缓存逻辑,再回调,网络请求
-             * 遍历url 执行不同逻辑,供,需,其他 都执行相同逻辑, 标记 直接 读取缓存数据,
-             * 16/9/16 上午8:12 ByRockBlus
+             * @returns {Obj 缓存的list对象} catchObj
+             * @returns {getNext 布尔} getNext true 进行下面的 http 请求
+             * 16/9/16 上午11:27 ByRockBlus
              **************************/
-            //function _getCatchList() {
-            //    switch ($state.current.name){
-            //
-            //    }
-            //};
+
+            _getCatchList(function (catchObj, getNext) {
+                console.log('catObj', catchObj, getNext);
+                if (getNext) {
+                    _tools.postJsp(url, postData).then(call, err);
+                } else {
+                    call(catchObj);
+                }
+            });
 
         }
 
+        /**************************
+         * 先去执行读取缓存逻辑,再回调,网络请求
+         * 遍历url 执行不同逻辑,供,需,其他 都执行相同逻辑, 标记 直接 读取缓存数据,
+         * 16/9/16 上午8:12 ByRockBlus
+         **************************/
+        function _getCatchList(__call) {
+            switch (_state.current.name) {
+                case 'star' :
+                    console.log('111111111', 1111111111);
+                    _logicStar(__call);//星标的逻辑
+                    break;
+                default:
+                    _logicHome(__call);//供`需`其他 的逻辑
+                    break;
+            }
+        };
+
+        /**************************
+         * 星标的逻辑
+         * 读取缓存的 星标 list对象返回,如果 为空  提示alert
+         *
+         * 16/9/16 上午11:10 ByRockBlus
+         **************************/
+        function _logicStar(___call) {
+
+            var starCatchList = _tools.getLocalStorageObj('star');
+            if (!starCatchList[0]) {
+                _tools.alert({
+                    title: '没有标记过的信息'
+                })
+                _rootScope.$broadcast('closeLoading');
+                return;
+            } else {
+                var re = {
+                    doc: starCatchList
+                };
+                _rootScope.$broadcast('closeLoading');
+                ___call(re);
+            }
+        }
+
+        /**************************
+         * home  供`需`其他 的逻辑
+         * 16/9/16 上午11:10 ByRockBlus
+         **************************/
+        function _logicHome(___call) {
+            ___call('', true);
+        }
 
         function call(re) {
             //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
@@ -116,7 +172,7 @@
                         if (callSucessCount > 1) {
                             _tools.alert({
                                 title: '没有更多数据啦! ^_^'
-                            })
+                            });
                         }
                     }, 0);
                     return false;

@@ -4131,12 +4131,13 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     document.addEventListener('plusready', function () {
         window.config = config();
     });
+
     /**
      * 声明module
      *
      * 此处是hackpost 到 node 转 对象格式问题, 如果是 请求node ,post的 需要传入 queryType = true; todo 默认不hackpost格式
      * 16/2/1 */
-    //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block'], hackPost).config(uiRouter);
+        //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block'], hackPost).config(uiRouter);
     angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block']).config(uiRouter);
 
     /**
@@ -4159,9 +4160,21 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         $urlRouterProvider.when('', "/home");
 
         $stateProvider
-        //首页
+        //首页 供
             .state('home', {
                 url: '/home',
+                templateUrl: window.tplPath + 'route/home.html'
+            })
+
+            //需
+            .state('need', {
+                url: '/need',
+                templateUrl: window.tplPath + 'route/home.html'
+            })
+
+            //标记
+            .state('star', {
+                url: '/star',
                 templateUrl: window.tplPath + 'route/home.html'
             })
 
@@ -4200,7 +4213,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 url: '/member_addArticle',
                 templateUrl: window.tplPath + 'route/member/addArticle.html'
             })
-
 
             //member 登录
             .state('login', {
@@ -4271,7 +4283,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         }];
     }
 
-
     /**
      * 定义系统常量config
      * 16/3/8 */
@@ -4286,7 +4297,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
             //host 配置
             host: {
-                nodeHost: 'http://192.168.0.7:3082',//nodejsApi hostUrl
+                nodeHost: 'http://192.168.1.117:3082',//nodejsApi hostUrl
                 phpHost: 'http://dipan.so:8080',//php host
                 //appPath: 'http://dipan.so:8080/Public/App/'//app 静态路径
                 appPath: 'http://127.0.0.1:8080/Public/App/'//app 静态路径
@@ -4359,7 +4370,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         $scope.$on('changeBody', function () {
             $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
             var _url = '/' + $state.current.name;
-            console.log('state',$state);
+            console.log('state', $state);
             $timeout(function () {
                 $scope.title = localData.getTitle(_url);//getTitle
                 $scope.showTab = localData.showTab(_url);//是否显示 tab
@@ -4391,7 +4402,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                             }
                         }
                     }
-
 
                     /**
                      * 判断scroll 位置,是需要 请求 url
@@ -4436,8 +4446,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                                 return true;
                         }
                     }
-
-
                 });
 
                 tap.init();//判断手机网页 手机 绑定 tap 事件, 网页绑定 click事件,(点击跳转url)
@@ -4713,86 +4721,222 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             $rootScope.$broadcast('changeBody');
         });
 
-        $scope.list = []; //默认首页 列表 数据,
+        $scope.urlName = $state.current.name;//当前url Name
+        $scope.list = []; //默认首页 列表 数据,每次刷新请求后 push list变量名称
+        var endId;//下拉后 得到 的 最后一条id
+        var firstId;//第一条id,上拉时候用
+        var type = 'up';//当前请求方式 up down
+        var star = [];//标记数组 ,
+
 
         /*************************
-         * 默认读取上次的缓存 数据, 然后 再异步更新 到 最新数据
+         * 默认读取上次的缓存 数据, 然后 再异步更新 到 最新数据,
+         * bind 点击事件
          * 16/8/19 上午7:45 ByRockBlus
          *************************/
         init();
-
         function init() {
-            //function testLocalStroageBig() {
-            //    if (!window.localStorage) {
-            //        console.log('浏览器不支持localStorage');
-            //    }
-            //    var size = 0;
-            //    for (var item in window.localStorage) {
-            //        if (window.localStorage.hasOwnProperty(item)) {
-            //            size += window.localStorage.getItem(item).length;
-            //        }
-            //    }
-            //    setTimeout(function(){
-            //        console.log('当前localStorage剩余容量为' + (size / 1024).toFixed(2) + 'KB');
-            //    },5000);
-            //}
-            //
-            //testLocalStroageBig();
-
-            var localData = tools.getLocalStorageObj($state.current.name);
-            if (localData) {//如果缓存的 数据存在,先读缓存数据
-                var re = {
-                    list: localData
-                };
-                call(re);
-                var scrollTopName = $state.current.name + '_scrollTop';
-                if (localStorage.getItem(scrollTopName) === '0') {
-                    getList.getList($state.current.name, false, false, $scope, 'list', _bind);
-                    ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
-                    //tools.alert({
-                    //    title: '请求NewData'
-                    //})
-                    console.log('请求带缓存数据');
-                }
-            } else {
-                getList.getList($state.current.name, false, false, $scope, 'list', _bind);
-                //_getList();
-                console.log('请求全新数据');
-            }
-
-            //function _getList() {
-            //    var url = 'http://192.168.0.7:8080/homeListOne.json?' + tools.getRoundCode(8);
-            //    //var url = 'http://127.0.0.1:8080/homeListOne.json?' + tools.getRoundCode(8);
-            //    tools.getJsp(url).then(call, err);
-            //}
+            _init();//判断缓存,去执行响应逻辑(变换滚动位置,获取最新数据)
+            plusInit();//bind plus 滚动到底部事件
+            bindLoadMoreClick();//bind 加载 更多点击事件
         }
 
+        /**
+         * 判断缓存,去执行响应逻辑(变换滚动位置,获取最新数据)
+         */
+        function _init() {
+            var localData = tools.getLocalStorageObj($state.current.name);
+            //if (localData) {//如果缓存的 数据存在,先读缓存数据
+            //    var re = {
+            //        list: localData
+            //    };
+            //    call(re);
+            //    var scrollTopName = $state.current.name + '_scrollTop';
+            //    if (localStorage.getItem(scrollTopName) === '0') {
+            //        listCount++;
+            //        getList.getList($state.current.name, false, false, $scope, 'list_' + listCount, _bind);
+            //        ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
+            //        //tools.alert({
+            //        //    title: '请求NewData'
+            //        //})
+            //        console.log('请求带缓存数据');
+            //    }
+            //} else {
+            getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
+            //}
+
+        }
+
+        /**
+         * bind 加载 更多点击事件
+         */
+        function bindLoadMoreClick() {
+            try {
+                var bindBtn = document.getElementById('isWeb');
+                bindBtn.addEventListener('tap', function () {
+                    downGetList(true);//请求下拉更多数据,
+                });
+            } catch (e) {
+                console.log('没找到isWebId');
+            }
+        }
+
+        /**
+         * plus App 绑定滚动到底部事件
+         */
         function plusInit() {
             mui.plusReady(function () {
                 //滚动到底事件
                 document.addEventListener('plusscrollbottom', function () {
-                    getList.getList($state.current.name, false, false, $scope, 'list', _bind);
+                    downGetList();
                 }, false);
                 _bind();
             });
         }
 
+        //bind 星标 点击事件
+        function _bind(doc, listName) {
 
-        function _bind() {
-            mui('#list').on('tap', '.iconStar', function () {
-                var _this = angular.element(this);
-                var id = _this.attr('iconId');
-                reForList(id);
-            });
+            if (type == 'down') {
+                console.log('down',type);
+            }
+
+            if (!firstId) {//如果没有 firstId,就给 firstId
+                try {
+                    firstId = doc[0]._id;
+                } catch (e) {
+                    console.log('error');
+                }
+            }
+            try {
+                endId = _getLastId(doc);//给最后一条id
+            } catch (e) {
+                console.log('error');
+            }
+
+
+            _bindTapIcon();
+
+
+            /**
+             * 遍历list 取最后一条的 id
+             * @return {String} _id
+             */
+            function _getLastId(re) {
+                var endNum = re.length - 1;
+                return re[endNum]._id;
+            }
+
+            //bind 星标 点击事件
+            function _bindTapIcon() {
+                angular.forEach(eval("$scope." + listName), function (vo) {
+                    var idStr = '#' + vo._id;
+                    $timeout(function () {
+                        mui(idStr).on('tap', '.iconStar', function () {
+                            if (vo.iconStar == 'fa-star-o') {
+                                $timeout(function () {
+                                    vo.iconStar = 'fa-star';
+                                    _saveStarArr(vo._id);
+                                }, 0);
+                            } else if (vo.iconStar == 'fa-star') {
+                                $timeout(function () {
+                                    vo.iconStar = 'fa-star-o';
+                                    _delStarArr(vo._id);
+                                }, 0);
+                            }
+                            //reForList(liId, thisScope);
+                        });
+                    }, 400);
+
+
+                    /**************************
+                     * 从缓存 读取 star 数组
+                     *
+                     * star 缓存命名 state.name + '_star'
+                     * @param callBack
+                     *
+                     * 16/9/14 下午9:21 ByRockBlus
+                     **************************/
+                    function _getStartFromCatch(callBack) {
+                        var stateName = $state.current.name + '_star';
+                        star = tools.getLocalStorageObj(stateName);
+                        if (!star) {
+                            star = [];
+                        }
+                        $timeout(function () {
+                            callBack();
+                        }, 200);
+                    }
+
+
+                    /**************************
+                     * 存储标记对象 到 缓存的 标记数组
+                     * 16/9/14 下午7:37 ByRockBlus
+                     **************************/
+                    function _saveStarArr(_id) {
+                        var idDom = document.getElementById(_id);
+                        idDom = angular.element(idDom);
+                        var listName = idDom.attr('listName');
+                        var thisScope = eval('$scope.' + listName);
+                        angular.forEach(thisScope, function (vo) {
+                            if (vo._id == _id) {
+                                _getStartFromCatch(function () {
+                                    star.push(vo);
+                                    var stateName = $state.current.name + '_star';
+                                    tools.saveLocalStorageObj(stateName, star);
+                                });
+                            }
+                        });
+
+                    }
+
+                    /**************************
+                     * 删除存储标记对象 到 缓存的 标记数组
+                     * 16/9/14 下午7:37 ByRockBlus
+                     **************************/
+                    function _delStarArr(_id) {
+                        _getStartFromCatch(function () {
+                            var tempStar = [];
+                            angular.forEach(star, function (vo) {
+                                if (vo._id !== _id) {
+                                    tempStar.push(vo);
+                                }
+                            });
+
+                            var stateName = $state.current.name + '_star';
+                            tools.saveLocalStorageObj(stateName, tempStar);
+
+                        });
+                    }
+
+                });
+            }
+
+
         }
 
+        /**
+         *底部下拉,去请求数据,
+         * @param {布尔 判断是点击来的} isClickBtn
+         */
+        function downGetList(isClickBtn) {
+            type = 'down';
+            getList.getList($state.current.name, false, endId, $scope, 'list[' + $scope.list.length + ']', _bind);
+        }
 
+        /**
+         * 请求成功后重新给list 赋值
+         * 记录list模型名称
+         * @param re
+         */
         function call(re) {
             $timeout(function () {
-                $scope.list = re.list;
-                var name = $state.current.name;
-                var obj = $scope.list;
-                tools.saveLocalStorageObj(name, obj);//存储obj
+                console.log('re', re);
+                //$scope.list[listCount] = re.list;
+                //listCount++;
+                //var name = $state.current.name;
+                //var obj = $scope.list;
+                //tools.saveLocalStorageObj(name, obj);//存储obj
                 plusInit();//绑定点击事件
             }, 0);
         }
@@ -4808,9 +4952,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * 重新给 list
          * @param id
          */
-        function reForList(id) {
-            angular.forEach($scope.list, function (vo) {
-                if (vo.id == id) {
+        function reForList(id, thisScope) {
+            angular.forEach(thisScope, function (vo) {
+                if (vo._id == id) {
                     if (vo.iconStar == 'fa-star-o') {
                         $timeout(function () {
                             vo.iconStar = 'fa-star';
@@ -4821,14 +4965,11 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                         }, 0);
                     }
 
-                    var name = $state.current.name;
-                    tools.saveLocalStorageObj(name, $scope.list);//存储obj
+                    //var name = $state.current.name;
+                    //tools.saveLocalStorageObj(name, $scope.list);//存储obj
                 }
             });
         }
-
-
-
 
     }
 })();
@@ -5003,7 +5144,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         $scope.form = {};
 
         $scope.formSub = function () {
-            var url = 'http://dipan.so:3082/sns/addOneArticle';
+            $scope.form.title += '&|';
+            //var url = 'http://dipan.so:3082/sns/addOneArticle';
+            var url = 'http://192.168.1.115:3082/sns/addOneArticle';
             tools.postJsp(url, $scope.form).then(function () {
                 tools.alert({
                     title: '添加成功'
@@ -5015,11 +5158,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 });
             });
         };
-
-
     }
-
-
 })();
 
 /**
@@ -5210,17 +5349,36 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     compile.$inject = ['$compile'];
 
     function compile($compile) {
-        function _compile(domId, htmlStr, scope) {
+        /**
+         * 动态绑定html元素到angular
+         * @param {需要compile的 外层domid} parentDomId
+         * @param {需要compile的domId}domId
+         * @param {$scope}scope
+         * @param {是否动态增加到外层domid里面,而不是清空 ,可选,此时domId 为 html字符串}scope
+         * @private
+         */
+        function _compile(parentDomId, domId, scope, add) {
             try {
+                var parentDom = document.getElementById(parentDomId);
+                parentDom = angular.element(parentDom);//外层angualr element
+
                 var reBindContent = document.getElementById(domId);
-                reBindContent = angular.element(reBindContent);
-                reBindContent.html('');
+                reBindContent = angular.element(reBindContent);//需要动态绑定的 angular element
+
+                var htmlStr = reBindContent[0];
+
+                if (add) {//如果是 直接传来的 htmlSTr 而且 是追加的方式
+                    htmlStr = domId;
+                } else {
+                    reBindContent.html('');
+                }
                 var el = $compile(htmlStr)(scope);
-                reBindContent.append(el);
+                parentDom.append(el);
             } catch (e) {
                 console.error(e);
             }
         }
+
         return _compile;
     }
 })();
@@ -5235,14 +5393,16 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     'use strict';
     angular.module('dipan').factory('getList', getList);
 
-    getList.$inject = ['tools', 'config', '$timeout'];
+    getList.$inject = ['tools', 'config', '$timeout', 'compile'];
 
     var thisObj = {};
     var _tools;
     var _config;
     var _timeout;
+    var _compile;
 
-    function getList(tools, config, $timeout) {
+
+    function getList(tools, config, $timeout, compile) {
         /**
          * 遍历不同url,返回 list 数据 ,
          * @param {$state.current.name} name
@@ -5254,6 +5414,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             _tools = tools;
             _config = config;
             _timeout = $timeout;
+            _compile = compile;
         };
 
         //start
@@ -5269,24 +5430,30 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      * @param {作用域变量} scope.list
      * @param {function 成功后的回调} callBack
      */
+
+    var callSucessCount = 0;
+
     function _getList(name, frontId, endId, scope, listNam, callBack) {
         var url;
         var type = 1;//1上啦,2下拉
         switch (name) {
             case 'memberIndex':
-                url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             case 'home':
-                url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                url = 'http://192.168.18.15:3082/sns/getList?' + _tools.getRoundCode(8);
+                break;
+            case 'need':
+                url = 'http://192.168.18.15:3082/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'login':
-                url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             case 'area':
-                url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             case 'search':
-                url = 'http://192.168.0.7:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             default:
                 return false;
@@ -5309,57 +5476,131 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 'endId': _endId,
             };
 
-            //_tools.postJsp(url,postData).then(call, err);//正式
-            _tools.getJsp(url).then(call, err);//测试 todo
+            _tools.postJsp(url, postData).then(call, err);
+
+
+            /**************************
+             * 先去执行读取缓存逻辑,再回调,网络请求
+             * 遍历url 执行不同逻辑,供,需,其他 都执行相同逻辑, 标记 直接 读取缓存数据,
+             * 16/9/16 上午8:12 ByRockBlus
+             **************************/
+            //function _getCatchList() {
+            //    switch ($state.current.name){
+            //
+            //    }
+            //};
+
         }
+
 
         function call(re) {
             //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
-            _addNewListToOldList(re.list, function (reAllList) {
+            _addNewListToOldList(re.doc, function (reList) {
+                if (!re.doc[0]) {
+                    callSucessCount++;
+                    setTimeout(function () {
+                        if (callSucessCount > 1) {
+                            _tools.alert({
+                                title: '没有更多数据啦! ^_^'
+                            });
+                        }
+                    }, 0);
+                    return false;
+                } else {
+                    callSucessCount = 0;
+                }
+
                 _timeout(function () {
-                    eval("scope." + listNam + "= reAllList");
-                    callBack();//回调去绑定点击事件
+                    eval("scope." + listNam + "= reList");
+                    callBack(reList, listNam);//回调去绑定点击事件
                 }, 0);
             });
 
+            //function _addNewListToOldList(newlist, _call) {
+            //    var allList = [];
+            //    var tempNewList = [];//下拉用
+            //
+            //    angular.forEach(newlist, function (vo) {
+            //        if (type == 2) {//下拉
+            //            tempNewList.push(vo);
+            //        } else {//上啦
+            //            allList.push(vo);
+            //        }
+            //    });
+            //
+            //    //数据库的 数据 push
+            //    setTimeout(function () {
+            //        var oldList = _tools.getLocalStorageObj(name);
+            //        if (oldList) {
+            //            angular.forEach(oldList, function (vo2) {
+            //                delete vo2.$$hashKey;
+            //                allList.push(vo2);
+            //            });
+            //        }
+            //
+            //    }, 200);
+            //
+            //    if (type == 2) {//下拉
+            //        setTimeout(function () {
+            //            angular.forEach(tempNewList, function (vo3) {
+            //                allList.push(vo3);
+            //            });
+            //        }, 300);
+            //    }
+            //
+            //    setTimeout(function () {
+            //        var saveList = saveLocalObjEdit(allList);
+            //        _tools.saveLocalStorageObj(name, saveList);//存储obj 20条
+            //        _call(allList);
+            //    }, 400);
+            //}
+
+
+            /**************************
+             * 复写call成功之后逻辑,
+             *
+             * 思路:每一次请求回来的数据,独立成为一个 list 模型,不去更新原有list,只是判断上拉下拉,来
+             * 放置不同的位置
+             *
+             * 16/9/12 下午12:30 ByRockBlus
+             **************************/
+
+
+
             function _addNewListToOldList(newlist, _call) {
-                var allList = [];
-                var tempNewList = [];//下拉用
+                var strVar = "";
+                strVar += "        <li id=\"repListLi\"  class=\"mui-table-view-cell item\" url=\"content#{{vo.id}}\" bindonce bo-attr ng-repeat=\"\"";
+                strVar += "            style=\"background-color: #fff;margin-top: 10px\">";
+                strVar += "            <div class=\"clear\">";
+                strVar += "                <div class=\"left listHeader\">";
+                strVar += "                    <img bo-src=\"vo.listHeader\"/>";
+                strVar += "                <\/div>";
+                strVar += "                <div class=\"left listTitle\">";
+                strVar += "                    <span bo-text=\"vo.title\"><\/span>";
+                strVar += "                <\/div>";
+                strVar += "            <\/div>";
+                strVar += "            <div class=\"mui-navigate-right\" style=\"font-size:14px;color: #777;margin-top: 5px\" bindonce";
+                strVar += "                 ng-repeat=\"(key,vo2) in vo.content\">";
+                strVar += "                <span style=\"color:#bd0000\" bo-text=\"key + ':'\"><\/span>";
+                strVar += "                <span bo-text=\"vo2\"><\/span>";
+                strVar += "            <\/div>";
+                strVar += "";
+                strVar += "            <div class=\"panle\">";
+                strVar += "                <div class=\"mui-btn fa fa-weixin fa-1x icon-btn\"><\/div>";
+                strVar += "                <div class=\"mui-btn fa  fa-1x icon-btn-noBack iconStar\" ng-class=\"vo.iconStar\" bo-attr";
+                strVar += "                     bo-attr-iconId=\"vo._id\"><\/div>";
+                strVar += "            <\/div>";
+                strVar += "        <\/li>";
 
-                angular.forEach(newlist, function (vo) {
-                    if (type == 2) {//下拉
-                        tempNewList.push(vo);
-                    } else {//上啦
-                        allList.push(vo);
-                    }
-                });
-
-                //数据库的 数据 push
-                setTimeout(function () {
-                    var oldList = _tools.getLocalStorageObj(name);
-                    if (oldList) {
-                        angular.forEach(oldList, function (vo2) {
-                            delete vo2.$$hashKey;
-                            allList.push(vo2);
-                        });
-                    }
-
-                }, 200);
-
-                if (type == 2) {//下拉
-                    setTimeout(function () {
-                        angular.forEach(tempNewList, function (vo3) {
-                            allList.push(vo3);
-                        });
-                    }, 300);
-                }
-
-                setTimeout(function () {
-                    var saveList = saveLocalObjEdit(allList);
-                    _tools.saveLocalStorageObj(name, saveList);//存储obj 20条
-                    _call(allList);
-                }, 400);
+                var repListHtml = angular.element(strVar);
+                repListHtml.attr('ng-repeat', "vo in " + listNam);
+                repListHtml.attr('listName', listNam);
+                repListHtml.attr('bo-id', 'vo._id');
+                _compile('list', repListHtml[0], scope, true);
+                _call(newlist);
             }
+
+
         }
 
         function err() {
@@ -5396,7 +5637,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                         }
                     }
                 }
-
 
             });
             return re;
@@ -5457,7 +5697,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             case '/memberIndex':
                 return '我的';
             case '/home':
-                return 'Home';
+                return '天津武清河西务唐庄村';
+            case '/need':
+                return '天津武清河西务唐庄村';
             case '/login':
                 return '我的';
             case '/area':
@@ -5465,7 +5707,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             case '/search':
                 return '搜索';
             default:
-                return false;
+                return '地盘 dipan.so';
         }
     }
 
@@ -5509,6 +5751,8 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         switch (url) {
             case '/home':
                 return true;
+            case '/need':
+                return true;
             case '/memberIndex':
                 return true;
             case '/login':
@@ -5536,23 +5780,87 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         switch (url) {
             case '/home':
                 _obj = [{
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: _objDefaulOne.thisItem, //高亮
                     name: '供', //名称
-                    route: 'home' //routeUrl
+                    route: 'hrefTabHome', //routeUrl
+                    stateName: 'home', //routeUrl
                 }, {
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
                     name: '需', //名称
-                    route: 'memberIndex' //routeUrl
-                },
-                    {
-                        colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: false, //高亮
-                        name: '<i class="fa fa-ellipsis-h"></i>', //名称
-                        route: 'memberIndex' //routeUrl
-                    }];
+                    route: 'hrefTabNeed', //routeUrl
+                    stateName: 'need', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                    route: 'hrefTabmemberIndex', //routeUrl
+                    stateName: 'memberIndex', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    //name: '<i class="fa fa-star-o"></i>', //名称
+                    name: '标记', //名称
+                    route: 'hrefTabStar', //routeUrl
+                    stateName: 'star', //routeUrl
+                }];
                 return _obj;
+            case '/need':
+                _obj = [{
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '供', //名称
+                    route: 'hrefTabHome', //routeUrl
+                    stateName: 'home', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: 'thisItem', //高亮
+                    name: '需', //名称
+                    route: 'hrefTabNeed', //routeUrl
+                    stateName: 'need', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                    route: 'hrefTabMemberIndex', //routeUrl
+                    stateName: 'memberIndex', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '<i class="fa fa-star-o"></i>', //名称
+                    route: 'hrefTabStar', //routeUrl
+                    stateName: 'star', //routeUrl
+                }];
+                return _obj;
+            case '/star':
+                _obj = [{
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '供', //名称
+                    route: 'hrefTabHome', //routeUrl
+                    stateName: 'home', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '需', //名称
+                    route: 'hrefTabNeed', //routeUrl
+                    stateName: 'need', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                    route: 'hrefTabMemberIndex', //routeUrl
+                    stateName: 'memberIndex', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: 'thisItem', //高亮
+                    name: '<i class="fa fa-star-o"></i>', //名称
+                    route: 'hrefTabStar',//routeUrl
+                    stateName: 'star', //routeUrl
+                }];
+                return _obj;
+
             case '/memberIndex':
                 _obj = [{
                     colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
@@ -5741,7 +6049,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             'goHistory',//返回上一页
             'hrefArea',//地区选择
             'hrefSearch',//搜索
-            'hrefHome',//主页
+            'hrefHome',//主页 供
+            'hrefTabHome',//主页 供
+            'hrefTabNeed',//需
+            'hrefTabStar',//标记
             'hrefMaster',//地主
             'hrefMember',//我的首页
             'hrefMemberAddArticle',//test添加文章
@@ -5751,6 +6062,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
         //排除 加入 绑定的 id
         var noIdIsBing = [
+            'hrefTabHome',
+            'hrefTabNeed',
+            'hrefTabStar',
             'hrefMemberAddArticle'
         ];
 
@@ -6589,8 +6903,8 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('directive/block/tab.block.tabNav.directive.html',
     "<div id=\"tab\" class=\"clear\" style=\"\">\n" +
-    "    <div ng-class=\"vo.colNumCss\"  class=\"linkMouse\" ng-repeat=\"vo in tabList\">\n" +
-    "        <span ui-sref=\"{{vo.route}}\" ng-class=\"vo.thisItem\" class=\"btn\" ng-bind-html=\"vo.name|toHtml\"></span>\n" +
+    "    <div id=\"{{vo.route}}\" url=\"{{vo.stateName}}\" ng-class=\"vo.colNumCss\" class=\"linkMouse\" ng-repeat=\"vo in tabList\">\n" +
+    "        <span ng-class=\"vo.thisItem\" class=\"btn\" ng-bind-html=\"vo.name|toHtml\"></span>\n" +
     "    </div>\n" +
     "</div>"
   );
@@ -6626,29 +6940,12 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "            刚刚有{{peopleNum}}3人访问了你\n" +
     "        </div>\n" +
     "    </div>\n" +
-    "    <div id=\"list\" class=\"mui-table-view mui-table-view-chevron clear\" style=\"background-color:#777;margin-top: 10px\">\n" +
-    "        <li class=\"mui-table-view-cell item\" url=\"content#{{vo.id}}\" bindonce ng-repeat=\"vo in list\"\n" +
-    "            style=\"background-color: #fff;margin-top: 10px\">\n" +
-    "            <div class=\"clear\">\n" +
-    "                <div class=\"left listHeader\">\n" +
-    "                    <img bo-src=\"vo.listHeader\"/>\n" +
-    "                </div>\n" +
-    "                <div class=\"left listTitle\">\n" +
-    "                    <span bo-text=\"vo.title\"></span>\n" +
-    "                </div>\n" +
-    "            </div>\n" +
-    "            <div class=\"mui-navigate-right\" style=\"font-size:14px;color: #777;margin-top: 5px\" bindonce\n" +
-    "                 ng-repeat=\"(key,vo2) in vo.content\">\n" +
-    "                <span style=\"color:#bd0000\" bo-text=\"key + ':'\"></span>\n" +
-    "                <span bo-text=\"vo2\"></span>\n" +
-    "            </div>\n" +
     "\n" +
-    "            <div class=\"panle\">\n" +
-    "                <div class=\"mui-btn fa fa-weixin fa-1x icon-btn\"></div>\n" +
-    "                <div class=\"mui-btn fa  fa-1x icon-btn-noBack iconStar\" ng-class=\"vo.iconStar\" bo-attr\n" +
-    "                     bo-attr-iconId=\"vo.id\"></div>\n" +
-    "            </div>\n" +
-    "        </li>\n" +
+    "\n" +
+    "    <div id=\"list\" class=\"mui-table-view mui-table-view-chevron clear\" style=\"background-color:#777;margin-top: 10px\">\n" +
+    "    </div>\n" +
+    "    <div class=\"mui-btn\"  ng-if=\"urlName != 'star'\" id=\"isWeb\"\n" +
+    "         style=\"width:140px;left: 50%;margin-left: -70px;margin-top: 20px;margin-bottom: 20px\">加载更多...\n" +
     "    </div>\n" +
     "</div>\n" +
     "\n" +
@@ -6773,7 +7070,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "<html>\n" +
     "<head>\n" +
     "    <meta charset=\"utf-8\"/>\n" +
-    "    <title>dipan.so</title>\n" +
+    "    <title>地盘 dipan.so</title>\n" +
     "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no\">\n" +
     "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n" +
     "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\">\n" +
@@ -6795,7 +7092,6 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "            if (trueWeb()) {\n" +
     "                document.write('<script src=\"/Public/app/dist/js/init.js\"><\\/script>');\n" +
     "            } else {\n" +
-    "\n" +
     "                //app 端\n" +
     "                document.write('<script src=\"../../dist/js/init.js\"><\\/script>');\n" +
     "\n" +
@@ -6832,6 +7128,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "margin-left: -2px;\n" +
     "\"></i>\n" +
     "    </div>\n" +
+    "    <div id=\"beian\"><a href=\"http://www.miitbeian.gov.cn/\">津ICP备14005697号</a></div>\n" +
     "</nav>\n" +
     "\n" +
     "\n" +
@@ -6870,6 +7167,11 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "<!--数据div-->\n" +
     "<!--<div url-parse={{$indexAllRe}}></div>-->\n" +
     "\n" +
+    "<script>\n" +
+    "    if (trueWeb()) {\n" +
+    "        document.getElementById('beian').style.display = 'block';\n" +
+    "    }\n" +
+    "</script>\n" +
     "</body>\n" +
     "</html>\n"
   );

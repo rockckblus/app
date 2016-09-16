@@ -53,6 +53,8 @@
                 return '天津武清河西务唐庄村';
             case '/need':
                 return '天津武清河西务唐庄村';
+            case '/star':
+                return '标记';
             case '/login':
                 return '我的';
             case '/area':
@@ -105,6 +107,8 @@
             case '/home':
                 return true;
             case '/need':
+                return true;
+            case '/star':
                 return true;
             case '/memberIndex':
                 return true;
