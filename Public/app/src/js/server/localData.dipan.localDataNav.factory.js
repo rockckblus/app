@@ -153,7 +153,8 @@
                 }, {
                     colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
-                    name: '<i class="fa fa-star-o"></i>', //名称
+                    //name: '<i class="fa fa-star-o"></i>', //名称
+                    name: '标记', //名称
                     route: 'hrefTabStar', //routeUrl
                     stateName: 'star', //routeUrl
                 }];
@@ -169,19 +170,50 @@
                     colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: 'thisItem', //高亮
                     name: '需', //名称
-                    route: 'hrefTabNeed' //routeUrl
+                    route: 'hrefTabNeed', //routeUrl
+                    stateName: 'need', //routeUrl
                 }, {
                     colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
                     name: '<i class="fa fa-ellipsis-h"></i>', //名称
-                    route: 'hrefTabMemberIndex' //routeUrl
+                    route: 'hrefTabMemberIndex', //routeUrl
+                    stateName: 'memberIndex', //routeUrl
                 }, {
                     colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
                     name: '<i class="fa fa-star-o"></i>', //名称
-                    route: 'hrefTabStar' //routeUrl
+                    route: 'hrefTabStar', //routeUrl
+                    stateName: 'star', //routeUrl
                 }];
                 return _obj;
+            case '/star':
+                _obj = [{
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '供', //名称
+                    route: 'hrefTabHome', //routeUrl
+                    stateName: 'home', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '需', //名称
+                    route: 'hrefTabNeed', //routeUrl
+                    stateName: 'need', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                    route: 'hrefTabMemberIndex', //routeUrl
+                    stateName: 'memberIndex', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: 'thisItem', //高亮
+                    name: '<i class="fa fa-star-o"></i>', //名称
+                    route: 'hrefTabStar',//routeUrl
+                    stateName: 'star', //routeUrl
+                }];
+                return _obj;
+
             case '/memberIndex':
                 _obj = [{
                     colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab

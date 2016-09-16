@@ -60,6 +60,12 @@
                 templateUrl: window.tplPath + 'route/home.html'
             })
 
+            //标记
+            .state('star', {
+                url: '/star',
+                templateUrl: window.tplPath + 'route/home.html'
+            })
+
             //block 地区选择页面
             .state('area', {
                 url: '/area',

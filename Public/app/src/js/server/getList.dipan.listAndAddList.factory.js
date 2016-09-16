@@ -55,10 +55,10 @@
                 url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             case 'home':
-                url = 'http://192.168.1.115:3082/sns/getList?' + _tools.getRoundCode(8);
+                url = 'http://192.168.18.15:3082/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'need':
-                url = 'http://192.168.1.115:3082/sns/getList?' + _tools.getRoundCode(8);
+                url = 'http://192.168.18.15:3082/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'login':
                 url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
@@ -90,8 +90,20 @@
                 'endId': _endId,
             };
 
-            _tools.postJsp(url, postData).then(call, err);//正式
-            //_tools.getJsp(url).then(call, err);//测试 todo
+            _tools.postJsp(url, postData).then(call, err);
+
+
+            /**************************
+             * 先去执行读取缓存逻辑,再回调,网络请求
+             * 遍历url 执行不同逻辑,供,需,其他 都执行相同逻辑, 标记 直接 读取缓存数据,
+             * 16/9/16 上午8:12 ByRockBlus
+             **************************/
+            //function _getCatchList() {
+            //    switch ($state.current.name){
+            //
+            //    }
+            //};
+
         }
 
 

@@ -27,6 +27,7 @@
             'hrefHome',//主页 供
             'hrefTabHome',//主页 供
             'hrefTabNeed',//需
+            'hrefTabStar',//标记
             'hrefMaster',//地主
             'hrefMember',//我的首页
             'hrefMemberAddArticle',//test添加文章
@@ -38,6 +39,7 @@
         var noIdIsBing = [
             'hrefTabHome',
             'hrefTabNeed',
+            'hrefTabStar',
             'hrefMemberAddArticle'
         ];
 

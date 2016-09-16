@@ -26,11 +26,13 @@
             $rootScope.$broadcast('changeBody');
         });
 
+        $scope.urlName = $state.current.name;//当前url Name
         $scope.list = []; //默认首页 列表 数据,每次刷新请求后 push list变量名称
         var endId;//下拉后 得到 的 最后一条id
         var firstId;//第一条id,上拉时候用
         var type = 'up';//当前请求方式 up down
         var star = [];//标记数组 ,
+
 
         /*************************
          * 默认读取上次的缓存 数据, 然后 再异步更新 到 最新数据,
@@ -184,7 +186,8 @@
                                     tools.saveLocalStorageObj(stateName, star);
                                 });
                             }
-                        })
+                        });
+
                     }
 
                     /**************************
