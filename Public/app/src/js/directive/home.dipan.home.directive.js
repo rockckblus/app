@@ -52,9 +52,7 @@
          */
         function _init() {
 
-            tools.getAllCatchList();
 
-            var localData = tools.getLocalStorageObj($state.current.name);
             //if (localData) {//如果缓存的 数据存在,先读缓存数据 (只取当天浏览的数据,遍历不是今天浏览的 数据,并删除)
             //    var re = {
             //        list: localData
@@ -74,8 +72,14 @@
             getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
             //}
 
-
         }
+
+
+
+
+
+
+
 
         /**
          * bind 加载 更多点击事件

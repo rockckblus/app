@@ -283,6 +283,15 @@
         }
 
 
+        /**************************
+         * 遍历catchname, 删除 过期的 缓存数据,返回 当前日期的 缓存数据
+         * 16/9/17 下午1:45 ByRockBlus
+         **************************/
+        function delDataReturnThisData(stateCurrentName, callBack) {
+            var localData = tools.getLocalStorageObj($state.current.name);
+            var allList = _tools.getAllCatchList();
+        }
+
     }
 
 
