@@ -25,7 +25,7 @@
          * @param {获取最新数据的本地缓存的 最新id} frontId
          * @param {获取最新数据的本地缓存的 最后id} endId
          */
-        thisObj.getList = _getList;//swith name  , 去不同接口拿数据 ,&& 判断状态,来新加数据到最前面,或者 最后面,存储到 本地 20条缓存数据.(上啦 最新20条,下拉最后20条)
+        thisObj.getList = _getList;//swith name  , 去不同接口拿数据 ,&& 判断状态,来新加数据到最前面,或者 最后面,存储到 本地 最新20条缓存数据.(上啦 最新20条,下拉最后20条)
         thisObj._init = function () {
             _tools = tools;
             _config = config;
@@ -122,14 +122,13 @@
         function _getCatchList(__call) {
             switch (_state.current.name) {
                 case 'star' :
-                    console.log('111111111', 1111111111);
                     _logicStar(__call);//星标的逻辑
                     break;
                 default:
                     _logicHome(__call);//供`需`其他 的逻辑
                     break;
             }
-        };
+        }
 
         /**************************
          * 星标的逻辑
@@ -140,10 +139,10 @@
         function _logicStar(___call) {
 
             var starCatchList = _tools.getLocalStorageObj('star');
-            if (!starCatchList[0]) {
+            if (!starCatchList || !starCatchList [0]) {
                 _tools.alert({
                     title: '没有标记过的信息'
-                })
+                });
                 _rootScope.$broadcast('closeLoading');
                 return;
             } else {
@@ -160,8 +159,10 @@
          * 16/9/16 上午11:10 ByRockBlus
          **************************/
         function _logicHome(___call) {
+
             ___call('', true);
         }
+
 
         function call(re) {
             //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
@@ -186,51 +187,12 @@
                 }, 0);
             });
 
-            //function _addNewListToOldList(newlist, _call) {
-            //    var allList = [];
-            //    var tempNewList = [];//下拉用
-            //
-            //    angular.forEach(newlist, function (vo) {
-            //        if (type == 2) {//下拉
-            //            tempNewList.push(vo);
-            //        } else {//上啦
-            //            allList.push(vo);
-            //        }
-            //    });
-            //
-            //    //数据库的 数据 push
-            //    setTimeout(function () {
-            //        var oldList = _tools.getLocalStorageObj(name);
-            //        if (oldList) {
-            //            angular.forEach(oldList, function (vo2) {
-            //                delete vo2.$$hashKey;
-            //                allList.push(vo2);
-            //            });
-            //        }
-            //
-            //    }, 200);
-            //
-            //    if (type == 2) {//下拉
-            //        setTimeout(function () {
-            //            angular.forEach(tempNewList, function (vo3) {
-            //                allList.push(vo3);
-            //            });
-            //        }, 300);
-            //    }
-            //
-            //    setTimeout(function () {
-            //        var saveList = saveLocalObjEdit(allList);
-            //        _tools.saveLocalStorageObj(name, saveList);//存储obj 20条
-            //        _call(allList);
-            //    }, 400);
-            //}
-
 
             /**************************
              * 复写call成功之后逻辑,
              *
-             * 思路:每一次请求回来的数据,独立成为一个 list 模型,不去更新原有list,只是判断上拉下拉,来
-             * 放置不同的位置
+             * 思路:每一次请求回来的数据,独立成为一个 list 模型,不去更新原有list,
+             * 存储到缓存,覆盖原有的缓存
              *
              * 16/9/12 下午12:30 ByRockBlus
              **************************/
@@ -311,6 +273,16 @@
             });
             return re;
         }
+
+        /**************************
+         *  只去存储 当天 浏览 的 数据 ,加入日期标记
+         * 16/9/17 上午10:23 ByRockBlus
+         **************************/
+        function saveCatecNewList(obj) {
+
+        }
+
+
     }
 
 

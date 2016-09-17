@@ -46,12 +46,16 @@
             bindLoadMoreClick();//bind 加载 更多点击事件
         }
 
+
         /**
          * 判断缓存,去执行响应逻辑(变换滚动位置,获取最新数据)
          */
         function _init() {
+
+            tools.getAllCatchList();
+
             var localData = tools.getLocalStorageObj($state.current.name);
-            //if (localData) {//如果缓存的 数据存在,先读缓存数据
+            //if (localData) {//如果缓存的 数据存在,先读缓存数据 (只取当天浏览的数据,遍历不是今天浏览的 数据,并删除)
             //    var re = {
             //        list: localData
             //    };
@@ -69,6 +73,7 @@
             //} else {
             getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
             //}
+
 
         }
 
@@ -165,7 +170,7 @@
                      * 16/9/14 下午9:21 ByRockBlus
                      **************************/
                     function _getStartFromCatch(callBack) {
-                        var stateName = $state.current.name + '_star';
+                        var stateName = 'star';
                         star = tools.getLocalStorageObj(stateName);
                         if (!star) {
                             star = [];
@@ -174,7 +179,6 @@
                             callBack();
                         }, 200);
                     }
-
 
                     /**************************
                      * 存储标记对象 到 缓存的 标记数组
@@ -211,11 +215,10 @@
                                 }
                             });
 
-                            var stateName = $state.current.name + '_star';
+                            var stateName = 'star';
                             tools.saveLocalStorageObj(stateName, tempStar);
                         });
                     }
-
                 });
             }
 

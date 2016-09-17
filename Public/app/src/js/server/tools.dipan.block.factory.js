@@ -77,6 +77,12 @@
              */
             getLocalStorageObj: getLocalStorageObj,
 
+            /**************************
+             *  遍历所有localStorage,返回一个 键名数组对象
+             * 16/9/17 上午10:40 ByRockBlus
+             **************************/
+            getAllCatchListName: getAllCatchListName,
+
             /**
              * 返回一个 随机数
              * @param {位数}n
@@ -187,7 +193,7 @@
          * isNoLoading (可选 true:不显示loading动画)
          * 15-3-27 */
         function postJsp(getMoreUrl, data, isNoLoading) {
-            console.log('data',data);
+            console.log('data', data);
             //data.queryNode = true
             if (!isNoLoading) {
                 $rootScope.$broadcast('openLoading'); //http请求前 显示loading
@@ -303,6 +309,19 @@
                 return objStr;
             }
         }
+
+        /**************************
+         * 遍历所有localStorage,返回一个 键名数组对象
+         * 16/9/17 上午10:37 ByRockBlus
+         **************************/
+        function getAllCatchListName() {
+            var nameArr = [];
+            angular.forEach(localStorage, function (k, v) {
+                nameArr.push(v);
+            });
+            return nameArr;
+        }
+
 
         /**
          * 返回一个 随机数
