@@ -17,7 +17,6 @@
     var _state;
     var _rootScope;
 
-
     function getList(tools, config, $timeout, compile, $state, $rootScope) {
         /**
          * 遍历不同url,返回 list 数据 ,
@@ -133,7 +132,7 @@
         /**************************
          * 星标的逻辑
          * 读取缓存的 星标 list对象返回,如果 为空  提示alert
-         *
+         * 622848 0028556483072
          * 16/9/16 上午11:10 ByRockBlus
          **************************/
         function _logicStar(___call) {
@@ -162,7 +161,6 @@
 
             ___call('', true);
         }
-
 
         function call(re) {
             //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
@@ -196,7 +194,6 @@
              *
              * 16/9/12 下午12:30 ByRockBlus
              **************************/
-
 
 
             function _addNewListToOldList(newlist, _call) {
@@ -293,6 +290,5 @@
         }
 
     }
-
 
 })();
