@@ -7,7 +7,7 @@
     'use strict';
     angular.module('dipan').factory('getList', getList);
 
-    getList.$inject = ['tools', 'config', '$timeout', 'compile', '$state', '$rootScope'];
+    getList.$inject = ['tools', 'config', '$timeout', 'compile', '$state', '$rootScope', '$filter'];
 
     var thisObj = {};
     var _tools;
@@ -16,8 +16,10 @@
     var _compile;
     var _state;
     var _rootScope;
+    var _filter;
 
-    function getList(tools, config, $timeout, compile, $state, $rootScope) {
+
+    function getList(tools, config, $timeout, compile, $state, $rootScope, $filter) {
         /**
          * 遍历不同url,返回 list 数据 ,
          * @param {$state.current.name} name
@@ -32,6 +34,7 @@
             _compile = compile;
             _state = $state;
             _rootScope = $rootScope;
+            _filter = $filter;
         };
 
         //start
@@ -58,10 +61,10 @@
                 url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             case 'home':
-                url = 'http://192.168.18.15:3082/sns/getList?' + _tools.getRoundCode(8);
+                url = 'http://192.168.0.56:3082/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'need':
-                url = 'http://192.168.18.15:3082/sns/getList?' + _tools.getRoundCode(8);
+                url = 'http://192.168.0.56:3082/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'star':
                 url = true;
@@ -103,8 +106,8 @@
              **************************/
 
             _getCatchList(function (catchObj, getNext) {
-                console.log('catObj', catchObj, getNext);
                 if (getNext) {
+                    //call(catchObj);
                     _tools.postJsp(url, postData).then(call, err);
                 } else {
                     call(catchObj);
@@ -132,7 +135,6 @@
         /**************************
          * 星标的逻辑
          * 读取缓存的 星标 list对象返回,如果 为空  提示alert
-         * 622848 0028556483072
          * 16/9/16 上午11:10 ByRockBlus
          **************************/
         function _logicStar(___call) {
@@ -158,7 +160,7 @@
          * 16/9/16 上午11:10 ByRockBlus
          **************************/
         function _logicHome(___call) {
-
+            delDataReturnThisData();
             ___call('', true);
         }
 
@@ -185,7 +187,6 @@
                 }, 0);
             });
 
-
             /**************************
              * 复写call成功之后逻辑,
              *
@@ -194,7 +195,6 @@
              *
              * 16/9/12 下午12:30 ByRockBlus
              **************************/
-
 
             function _addNewListToOldList(newlist, _call) {
                 var strVar = "";
@@ -226,6 +226,7 @@
                 repListHtml.attr('listName', listNam);
                 repListHtml.attr('bo-id', 'vo._id');
                 _compile('list', repListHtml[0], scope, true);
+                saveCatecNewList(newlist);//合并存储到缓存
                 _call(newlist);
             }
 
@@ -275,20 +276,68 @@
          *  只去存储 当天 浏览 的 数据 ,加入日期标记
          * 16/9/17 上午10:23 ByRockBlus
          **************************/
-        function saveCatecNewList(obj) {
+        function saveCatecNewList(newList) {
+            var oldArr = [];
+            var thisLogName = 'catchList_' + _state.current.name + '-' + __getTody();
+            var oldObj = _tools.getLocalStorageObj(thisLogName);
 
+            //合并新老数据
+            if (oldObj) {
+                angular.forEach(oldObj, function (vo) {
+                    oldArr.push(vo);
+                });
+            }
+            angular.forEach(newList, function (voNew) {
+                oldArr.push(voNew);
+            });
+
+            //存储 catch
+            _tools.saveLocalStorageObj(thisLogName, oldArr);
         }
-
 
         /**************************
-         * 遍历catchname, 删除 过期的 缓存数据,返回 当前日期的 缓存数据
+         * 遍历catchname, 删除 过期的 缓存数据,
          * 16/9/17 下午1:45 ByRockBlus
          **************************/
-        function delDataReturnThisData(stateCurrentName, callBack) {
-            var localData = tools.getLocalStorageObj($state.current.name);
-            var allList = _tools.getAllCatchList();
+        function delDataReturnThisData() {
+            var allList = _tools.getAllCatchListName();//所有缓存的 key
+            _init();
+            function _init() {
+                _delNoTodyCatchList();//删除不需要缓存的 list 数据
+            }
+
+            /**
+             * 删除不是 今天的缓存list 数据
+             * @private
+             */
+            function _delNoTodyCatchList() {
+                angular.forEach(allList, function (vo) {
+                    __delCatchListName(vo);
+                });
+                /**
+                 * 判断是不是需要删除的listName,如果是就删除
+                 * @parme {catchName}
+                 * @private
+                 */
+                function __delCatchListName(catchName) {
+                    var chaName = catchName.split('_');
+                    if (chaName[0] == 'catchList') {//判断 是 list对象
+                        var _chaName = catchName.split('-');
+                        var thisToday = __getTody();
+                        if (_chaName !== thisToday) {
+                            localStorage.removeItem(catchName);
+                        }
+                    }
+                }
+            }
         }
 
+        /**
+         * 获取当天 时间字符串 标示 2016_09_18
+         */
+        function __getTody() {
+            var today = new Date();
+            return _filter('date')(today, 'yyyy_MM_dd');//当天的 日期 2016_09_18
+        }
     }
-
 })();

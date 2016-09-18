@@ -304,7 +304,7 @@
          */
         function getLocalStorageObj(localName) {
             var obj = localStorage.getItem(localName);
-            if (obj) {
+            if (obj !== 'undefined') {
                 var objStr = JSON.parse(obj);
                 return objStr;
             }
@@ -321,7 +321,6 @@
             });
             return nameArr;
         }
-
 
         /**
          * 返回一个 随机数

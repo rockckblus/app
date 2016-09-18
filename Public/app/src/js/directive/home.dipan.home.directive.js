@@ -52,34 +52,38 @@
          */
         function _init() {
 
+            /**
+             *
+             * @return 当前url 的 缓存 list 数据
+             * @private
+             */
+            function _getThisCatceList() {
+                var thisLogName = 'catchList_' + _state.current.name + '-' + __getTody();
+                return _tools.getLocalStorageObj(thisLogName);
+            }
 
-            //if (localData) {//如果缓存的 数据存在,先读缓存数据 (只取当天浏览的数据,遍历不是今天浏览的 数据,并删除)
-            //    var re = {
-            //        list: localData
-            //    };
-            //    call(re);
-            //    var scrollTopName = $state.current.name + '_scrollTop';
-            //    if (localStorage.getItem(scrollTopName) === '0') {
-            //        listCount++;
-            //        getList.getList($state.current.name, false, false, $scope, 'list_' + listCount, _bind);
-            //        ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
-            //        //tools.alert({
-            //        //    title: '请求NewData'
-            //        //})
-            //        console.log('请求带缓存数据');
-            //    }
-            //} else {
-            getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
-            //}
+
+            if (_getThisCatceList()) {//如果缓存的 数据存在,先读缓存数据 (只取当天浏览的数据,遍历不是今天浏览的 数据,并删除)
+                var re = {
+                    list: _getThisCatceList()
+                };
+
+                _bind();
+
+
+                var scrollTopName = $state.current.name + '_scrollTop';
+                if (localStorage.getItem(scrollTopName) === '0') {
+                    getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
+                    ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
+                    tools.alert({
+                        title: '请求NewData'
+                    })
+                }
+            } else {
+                getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
+            }
 
         }
-
-
-
-
-
-
-
 
         /**
          * bind 加载 更多点击事件
