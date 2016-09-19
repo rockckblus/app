@@ -58,27 +58,37 @@
              * @private
              */
             function _getThisCatceList() {
-                var thisLogName = 'catchList_' + _state.current.name + '-' + __getTody();
-                return _tools.getLocalStorageObj(thisLogName);
+                var thisLogName = 'catchList_' + $state.current.name + '-' + tools.getToday();
+                return tools.getLocalStorageObj(thisLogName);
             }
 
-
             if (_getThisCatceList()) {//如果缓存的 数据存在,先读缓存数据 (只取当天浏览的数据,遍历不是今天浏览的 数据,并删除)
-                var re = {
-                    list: _getThisCatceList()
-                };
 
-                _bind();
+                /**
+                 * 读缓存 作为list[0] push到 缓存数组 ,绑定点击事件,
+                 */
+                getList.giveFirstCatchList(_getThisCatceList(), function (reList) {
 
+                    $timeout(function () {
+                        $scope.list.push(reList);
+                        console.log($scope.list);
+                        _bind(reList, 'list[0]');//回调去绑定点击事件
+                    }, 0);
+                }, 'list[0]', $scope, true);
 
-                var scrollTopName = $state.current.name + '_scrollTop';
-                if (localStorage.getItem(scrollTopName) === '0') {
-                    getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
-                    ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
-                    tools.alert({
-                        title: '请求NewData'
-                    })
-                }
+                //$timeout(function () {
+                //    _bind($scope.list[0], 'list[0]');
+                //}, 200);
+
+                //var scrollTopName = $state.current.name + '_scrollTop';
+                //if (localStorage.getItem(scrollTopName) === '0') {
+                //    getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
+                //    ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
+                //    tools.alert({
+                //        title: '请求NewData'
+                //    })
+                //}
+
             } else {
                 getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
             }
@@ -110,7 +120,7 @@
                 document.addEventListener('plusscrollbottom', function () {
                     downGetList();
                 }, false);
-                _bind();
+                //_bind();
             });
         }
 
@@ -138,10 +148,10 @@
             _bindTapIcon();
 
 
-            /**
-             * 遍历list 取最后一条的 id
-             * @return {String} _id
-             */
+            ///**
+            // * 遍历list 取最后一条的 id
+            // * @return {String} _id
+            // */
             function _getLastId(re) {
                 var endNum = re.length - 1;
                 return re[endNum]._id;
@@ -149,6 +159,7 @@
 
             //bind 星标 点击事件
             function _bindTapIcon() {
+                console.log('listName',listName);
                 angular.forEach(eval("$scope." + listName), function (vo) {
                     var idStr = '#' + vo._id;
                     $timeout(function () {
@@ -167,7 +178,6 @@
                             //reForList(liId, thisScope);
                         });
                     }, 400);
-
 
                     /**************************
                      * 从缓存 读取 star 数组

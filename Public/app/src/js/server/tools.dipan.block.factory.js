@@ -9,9 +9,9 @@
     'use strict';
     angular.module('dipan').factory('tools', tools);
 
-    tools.$inject = ['$http', '$rootScope', '$q', 'ui'];
+    tools.$inject = ['$http', '$rootScope', '$q', 'ui', '$filter'];
 
-    function tools($http, $rootScope, $q, ui) {
+    function tools($http, $rootScope, $q, ui, $filter) {
 
         var re;
 
@@ -88,7 +88,13 @@
              * @param {位数}n
              * @returns {string}
              */
-            getRoundCode: getRoundCode
+            getRoundCode: getRoundCode,
+
+            /**
+             * 获取当天 时间字符串 标示 2016_09_18
+             */
+            getToday: getToday
+
         };
 
         /**
@@ -333,6 +339,15 @@
                 rnd += Math.floor(Math.random() * 10);
             }
             return rnd;
+        }
+
+        /**
+         * 获取当天 时间字符串 标示 2016_09_18
+         * @return {string} 2016_09_18
+         */
+        function getToday() {
+            var today = new Date();
+            return $filter('date')(today, 'yyyy_MM_dd');//当天的 日期 2016_09_18
         }
 
         return re;

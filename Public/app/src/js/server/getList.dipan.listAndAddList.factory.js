@@ -27,6 +27,7 @@
          * @param {获取最新数据的本地缓存的 最后id} endId
          */
         thisObj.getList = _getList;//swith name  , 去不同接口拿数据 ,&& 判断状态,来新加数据到最前面,或者 最后面,存储到 本地 最新20条缓存数据.(上啦 最新20条,下拉最后20条)
+        thisObj.giveFirstCatchList = _addNewListToOldList;//第一次 绑定缓存的情况 供外部调用
         thisObj._init = function () {
             _tools = tools;
             _config = config;
@@ -180,57 +181,11 @@
                 } else {
                     callSucessCount = 0;
                 }
-
                 _timeout(function () {
                     eval("scope." + listNam + "= reList");
                     callBack(reList, listNam);//回调去绑定点击事件
                 }, 0);
-            });
-
-            /**************************
-             * 复写call成功之后逻辑,
-             *
-             * 思路:每一次请求回来的数据,独立成为一个 list 模型,不去更新原有list,
-             * 存储到缓存,覆盖原有的缓存
-             *
-             * 16/9/12 下午12:30 ByRockBlus
-             **************************/
-
-            function _addNewListToOldList(newlist, _call) {
-                var strVar = "";
-                strVar += "        <li id=\"repListLi\"  class=\"mui-table-view-cell item\" url=\"content#{{vo.id}}\" bindonce bo-attr ng-repeat=\"\"";
-                strVar += "            style=\"background-color: #fff;margin-top: 10px\">";
-                strVar += "            <div class=\"clear\">";
-                strVar += "                <div class=\"left listHeader\">";
-                strVar += "                    <img bo-src=\"vo.listHeader\"/>";
-                strVar += "                <\/div>";
-                strVar += "                <div class=\"left listTitle\">";
-                strVar += "                    <span bo-text=\"vo.title\"><\/span>";
-                strVar += "                <\/div>";
-                strVar += "            <\/div>";
-                strVar += "            <div class=\"mui-navigate-right\" style=\"font-size:14px;color: #777;margin-top: 5px\" bindonce";
-                strVar += "                 ng-repeat=\"(key,vo2) in vo.content\">";
-                strVar += "                <span style=\"color:#bd0000\" bo-text=\"key + ':'\"><\/span>";
-                strVar += "                <span bo-text=\"vo2\"><\/span>";
-                strVar += "            <\/div>";
-                strVar += "";
-                strVar += "            <div class=\"panle\">";
-                strVar += "                <div class=\"mui-btn fa fa-weixin fa-1x icon-btn\"><\/div>";
-                strVar += "                <div class=\"mui-btn fa  fa-1x icon-btn-noBack iconStar\" ng-class=\"vo.iconStar\" bo-attr";
-                strVar += "                     bo-attr-iconId=\"vo._id\"><\/div>";
-                strVar += "            <\/div>";
-                strVar += "        <\/li>";
-
-                var repListHtml = angular.element(strVar);
-                repListHtml.attr('ng-repeat', "vo in " + listNam);
-                repListHtml.attr('listName', listNam);
-                repListHtml.attr('bo-id', 'vo._id');
-                _compile('list', repListHtml[0], scope, true);
-                saveCatecNewList(newlist);//合并存储到缓存
-                _call(newlist);
-            }
-
-
+            }, listNam, scope);
         }
 
         function err() {
@@ -273,29 +228,6 @@
         }
 
         /**************************
-         *  只去存储 当天 浏览 的 数据 ,加入日期标记
-         * 16/9/17 上午10:23 ByRockBlus
-         **************************/
-        function saveCatecNewList(newList) {
-            var oldArr = [];
-            var thisLogName = 'catchList_' + _state.current.name + '-' + __getTody();
-            var oldObj = _tools.getLocalStorageObj(thisLogName);
-
-            //合并新老数据
-            if (oldObj) {
-                angular.forEach(oldObj, function (vo) {
-                    oldArr.push(vo);
-                });
-            }
-            angular.forEach(newList, function (voNew) {
-                oldArr.push(voNew);
-            });
-
-            //存储 catch
-            _tools.saveLocalStorageObj(thisLogName, oldArr);
-        }
-
-        /**************************
          * 遍历catchname, 删除 过期的 缓存数据,
          * 16/9/17 下午1:45 ByRockBlus
          **************************/
@@ -320,11 +252,12 @@
                  * @private
                  */
                 function __delCatchListName(catchName) {
+
                     var chaName = catchName.split('_');
                     if (chaName[0] == 'catchList') {//判断 是 list对象
                         var _chaName = catchName.split('-');
-                        var thisToday = __getTody();
-                        if (_chaName !== thisToday) {
+                        var thisToday = _tools.getToday();
+                        if (_chaName[1] !== thisToday) {
                             localStorage.removeItem(catchName);
                         }
                     }
@@ -332,12 +265,88 @@
             }
         }
 
-        /**
-         * 获取当天 时间字符串 标示 2016_09_18
-         */
-        function __getTody() {
-            var today = new Date();
-            return _filter('date')(today, 'yyyy_MM_dd');//当天的 日期 2016_09_18
+    }
+
+    /**
+     * 复写call成功之后逻辑,
+     *
+     * 思路:每一次请求回来的数据,独立成为一个 list 模型,不去更新原有list,
+     * 存储到缓存,覆盖原有的缓存
+     *
+     * @param newlist
+     * @param _call
+     * @param listNam
+     * @param scope
+     * @param  {布尔}isCatch 判断是缓存调用的
+     *
+     * */
+    function _addNewListToOldList(newlist, _call, listNam, scope, isCatch) {
+        var strVar = "";
+        strVar += "        <li id=\"repListLi\"  class=\"mui-table-view-cell item\" url=\"content#{{vo.id}}\" bindonce bo-attr ng-repeat=\"\"";
+        strVar += "            style=\"background-color: #fff;margin-top: 10px\">";
+        strVar += "            <div class=\"clear\">";
+        strVar += "                <div class=\"left listHeader\">";
+        strVar += "                    <img bo-src=\"vo.listHeader\"/>";
+        strVar += "                <\/div>";
+        strVar += "                <div class=\"left listTitle\">";
+        strVar += "                    <span bo-text=\"vo.title\"><\/span>";
+        strVar += "                <\/div>";
+        strVar += "            <\/div>";
+        strVar += "            <div class=\"mui-navigate-right\" style=\"font-size:14px;color: #777;margin-top: 5px\" bindonce";
+        strVar += "                 ng-repeat=\"(key,vo2) in vo.content\">";
+        strVar += "                <span style=\"color:#bd0000\" bo-text=\"key + ':'\"><\/span>";
+        strVar += "                <span bo-text=\"vo2\"><\/span>";
+        strVar += "            <\/div>";
+        strVar += "";
+        strVar += "            <div class=\"panle\">";
+        strVar += "                <div class=\"mui-btn fa fa-weixin fa-1x icon-btn\"><\/div>";
+        strVar += "                <div class=\"mui-btn fa  fa-1x icon-btn-noBack iconStar\" ng-class=\"vo.iconStar\" bo-attr";
+        strVar += "                     bo-attr-iconId=\"vo._id\"><\/div>";
+        strVar += "            <\/div>";
+        strVar += "        <\/li>";
+
+        var repListHtml = angular.element(strVar);
+        repListHtml.attr('ng-repeat', "vo in " + listNam);
+        repListHtml.attr('listName', listNam);
+        repListHtml.attr('bo-id', 'vo._id');
+        _compile('list', repListHtml[0], scope, true);
+        if (!isCatch) {//如果不是 缓存请求
+            saveCatecNewList(newlist);//合并存储到缓存
         }
+        _call(newlist);
+    }
+
+    /**************************
+     *  只去存储 当天 浏览 的 数据 ,加入日期标记
+     * 16/9/17 上午10:23 ByRockBlus
+     **************************/
+    function saveCatecNewList(newList) {
+        var oldArr = [];
+        var thisLogName = 'catchList_' + _state.current.name + '-' + _tools.getToday();
+        var oldObj = _tools.getLocalStorageObj(thisLogName);
+
+        setTimeout(function () {
+            console.log('thisLogname', thisLogName);
+            console.log('old1', oldObj);
+        }, 1000);
+        //合并新老数据
+        if (oldObj) {
+            angular.forEach(oldObj, function (vo) {
+                oldArr.push(vo);
+            });
+        }
+
+        angular.forEach(newList, function (voNew) {
+            try {
+                delete(voNew.$$hashKey);
+            } catch (e) {
+                console.error('删除hashKey失败');
+            }
+            oldArr.push(voNew);
+        });
+        console.log('oldArr', oldArr);
+
+        //存储 catch
+        _tools.saveLocalStorageObj(thisLogName, oldArr);
     }
 })();
