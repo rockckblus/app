@@ -4754,7 +4754,8 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 return tools.getLocalStorageObj(thisLogName);
             }
 
-            if (_getThisCatceList()) {//如果缓存的 数据存在,先读缓存数据 (只取当天浏览的数据,遍历不是今天浏览的 数据,并删除)
+            var thisCatchList = _getThisCatceList();
+            if (thisCatchList && thisCatchList[0]) {//如果缓存的 数据存在,先读缓存数据 (只取当天浏览的数据,遍历不是今天浏览的 数据,并删除)
 
                 /**
                  * 读缓存 作为list[0] push到 缓存数组 ,绑定点击事件,
@@ -4851,7 +4852,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
             //bind 星标 点击事件
             function _bindTapIcon() {
-                console.log('listName',listName);
+                console.log('listName', listName);
                 angular.forEach(eval("$scope." + listName), function (vo) {
                     var idStr = '#' + vo._id;
                     $timeout(function () {
@@ -5430,6 +5431,18 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
     function getList(tools, config, $timeout, compile, $state, $rootScope, $filter) {
         /**
+         * 全局缓存变量对象
+         * @type {{home: Array, need: Array}}
+         */
+        thisObj.globalCatchList = {
+            home: [],
+            need: []
+        };
+        thisObj.pushToGoldCatcth = pushToGoldCatcth;//push 到全局变量数组 ,传入 newList
+        thisObj.delGoldCatcth = delGoldCatcth;//del 全局变量数组
+        thisObj.saveCatecNewList = saveCatecNewList;//存储全局变量数组 到本地localStroe 传入listObj
+
+        /**
          * 遍历不同url,返回 list 数据 ,
          * @param {$state.current.name} name
          * @param {获取最新数据的本地缓存的 最新id} frontId
@@ -5720,30 +5733,44 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         repListHtml.attr('bo-id', 'vo._id');
         _compile('list', repListHtml[0], scope, true);
         if (!isCatch) {//如果不是 缓存请求
-            saveCatecNewList(newlist);//合并存储到缓存
+            pushToGoldCatcth(newlist);//push 到全局变量数组
+            //saveCatecNewList(newlist);//合并存储到缓存
         }
         _call(newlist);
     }
 
     /**************************
      *  只去存储 当天 浏览 的 数据 ,加入日期标记
+     *  传入 list对象
      * 16/9/17 上午10:23 ByRockBlus
      **************************/
-    function saveCatecNewList(newList) {
+    function saveCatecNewList() {
+
+        var newList;
+        var thisUrl = _state.current.name;
+        switch (thisUrl) {
+            case 'home':
+                newList = thisObj.globalCatchList.home;
+                break;
+            case 'need':
+                newList = thisObj.globalCatchList.need;
+                break;
+        }
+
+        if (!newList) {
+            return false;
+        }
+
         var oldArr = [];
         var thisLogName = 'catchList_' + _state.current.name + '-' + _tools.getToday();
-        var oldObj = _tools.getLocalStorageObj(thisLogName);
-
-        setTimeout(function () {
-            console.log('thisLogname', thisLogName);
-            console.log('old1', oldObj);
-        }, 1000);
-        //合并新老数据
-        if (oldObj) {
-            angular.forEach(oldObj, function (vo) {
-                oldArr.push(vo);
-            });
-        }
+        //var oldObj = _tools.getLocalStorageObj(thisLogName);
+        //
+        ////合并新老数据
+        //if (oldObj) {
+        //    angular.forEach(oldObj, function (vo) {
+        //        oldArr.push(vo);
+        //    });
+        //}
 
         angular.forEach(newList, function (voNew) {
             try {
@@ -5753,11 +5780,43 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             }
             oldArr.push(voNew);
         });
-        console.log('oldArr', oldArr);
 
         //存储 catch
         _tools.saveLocalStorageObj(thisLogName, oldArr);
+        delGoldCatcth();//删除当前url的全局缓存数组
     }
+
+    /**
+     * push 到全局缓存变量数组
+     */
+    function pushToGoldCatcth(newList) {
+        var thisUrl = _state.current.name;
+        switch (thisUrl) {
+            case 'home':
+                thisObj.globalCatchList.home.push(newList);
+                break;
+            case 'need':
+                thisObj.globalCatchList.need.push(newList);
+                break;
+        }
+    }
+
+
+    /**
+     * 清空 全局缓存变量数组
+     */
+    function delGoldCatcth() {
+        var thisUrl = _state.current.name;
+        switch (thisUrl) {
+            case 'home':
+                thisObj.globalCatchList.home = [];
+                break;
+            case 'need':
+                thisObj.globalCatchList.need = [];
+                break;
+        }
+    }
+
 })();
 /**
  * localData.dipan.localDataNav.factory.js

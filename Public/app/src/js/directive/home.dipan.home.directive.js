@@ -62,7 +62,8 @@
                 return tools.getLocalStorageObj(thisLogName);
             }
 
-            if (_getThisCatceList()) {//如果缓存的 数据存在,先读缓存数据 (只取当天浏览的数据,遍历不是今天浏览的 数据,并删除)
+            var thisCatchList = _getThisCatceList();
+            if (thisCatchList && thisCatchList[0]) {//如果缓存的 数据存在,先读缓存数据 (只取当天浏览的数据,遍历不是今天浏览的 数据,并删除)
 
                 /**
                  * 读缓存 作为list[0] push到 缓存数组 ,绑定点击事件,
@@ -159,7 +160,7 @@
 
             //bind 星标 点击事件
             function _bindTapIcon() {
-                console.log('listName',listName);
+                console.log('listName', listName);
                 angular.forEach(eval("$scope." + listName), function (vo) {
                     var idStr = '#' + vo._id;
                     $timeout(function () {
