@@ -4738,7 +4738,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             bindLoadMoreClick();//bind 加载 更多点击事件
         }
 
-
         /**
          * 判断缓存,去执行响应逻辑(变换滚动位置,获取最新数据)
          */
@@ -4756,12 +4755,12 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
             var thisCatchList = _getThisCatceList();
             if (thisCatchList && thisCatchList[0]) {//如果缓存的 数据存在,先读缓存数据 (只取当天浏览的数据,遍历不是今天浏览的 数据,并删除)
+                getList.pushToGoldCatcth(thisCatchList);//把最新的数据 的缓存,push 到 全局 缓存对象
 
                 /**
                  * 读缓存 作为list[0] push到 缓存数组 ,绑定点击事件,
                  */
                 getList.giveFirstCatchList(_getThisCatceList(), function (reList) {
-
                     $timeout(function () {
                         $scope.list.push(reList);
                         console.log($scope.list);
@@ -5772,13 +5771,21 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         //    });
         //}
 
+        var tempCount = 0;
         angular.forEach(newList, function (voNew) {
-            try {
-                delete(voNew.$$hashKey);
-            } catch (e) {
-                console.error('删除hashKey失败');
-            }
-            oldArr.push(voNew);
+            angular.forEach(voNew, function (vo) {
+                tempCount++;
+                try {
+                    delete(voNew.$$hashKey);
+                } catch (e) {
+                    console.error('删除hashKey失败');
+                }
+                if (tempCount < 30) {
+                    oldArr.push(vo);
+                } else {
+                    return false;
+                }
+            });
         });
 
         //存储 catch
@@ -6211,13 +6218,13 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 (function () {
     'use strict';
     angular.module('dipan').factory('tap', tap);
-    tap.$inject = ['$state', 'tools'];
+    tap.$inject = ['$state', 'tools', 'getList'];
 
 
     /**
      * angular 载入完成后。显示modle值
      * 15-12-26 */
-    function tap($state, tools) {
+    function tap($state, tools, getList) {
         var re = {
             init: init
         };
@@ -6284,7 +6291,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             }
         }
 
-
         /**
          * 跳转url
          * @param {document}doc
@@ -6298,8 +6304,20 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             }, function () {
             });
 
-
             doc.addEventListener(type, function () {
+
+                /**
+                 * 判断url 是home need 去存储 本地 list缓存
+                 */
+                switch ($state.current.name) {
+                    case 'home' :
+                        __saveCatchList();
+                        break;
+                    case 'need' :
+                        __saveCatchList();
+                        break;
+                }
+
                 __saveScrollTop();
                 if (url == 'goHistory') {//判断是 返回上页的点击事件
                     history.go(-1);
@@ -6307,7 +6325,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                     $state.go(url);
                 }
             });
-
 
             /**
              * 记录body滚动位置,对应url 去存储
@@ -6319,6 +6336,14 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 var num = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
                 localStorage.removeItem(saveStr);
                 localStorage.setItem(saveStr, num);
+            }
+
+            /**
+             * 记录全局缓存list 对应url 去存储
+             * @private
+             */
+            function __saveCatchList() {
+                getList.saveCatecNewList();
             }
 
         }
@@ -6668,10 +6693,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             }
         }
 
-        /**************************
+        /**
          * 遍历所有localStorage,返回一个 键名数组对象
-         * 16/9/17 上午10:37 ByRockBlus
-         **************************/
+         * @returns {Array} ['key1','key2']
+         */
         function getAllCatchListName() {
             var nameArr = [];
             angular.forEach(localStorage, function (k, v) {
@@ -6793,6 +6818,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             //obj 格式 {'title':title,'content':content}
             $rootScope.$broadcast('alert', obj);
         }
+
         return re;
     }
 

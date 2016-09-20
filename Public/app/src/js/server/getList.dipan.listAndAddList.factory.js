@@ -362,13 +362,21 @@
         //    });
         //}
 
+        var tempCount = 0;
         angular.forEach(newList, function (voNew) {
-            try {
-                delete(voNew.$$hashKey);
-            } catch (e) {
-                console.error('删除hashKey失败');
-            }
-            oldArr.push(voNew);
+            angular.forEach(voNew, function (vo) {
+                tempCount++;
+                try {
+                    delete(voNew.$$hashKey);
+                } catch (e) {
+                    console.error('删除hashKey失败');
+                }
+                if (tempCount < 30) {
+                    oldArr.push(vo);
+                } else {
+                    return false;
+                }
+            });
         });
 
         //存储 catch

@@ -20,6 +20,8 @@
     3.8 --- 根据名称读取localStorage 返回一个 obj
     3.9 --- 删除数组中的元素
     3.a1 --- 判断是否funcion类型
+    3.a2 --  获取当天 时间字符串 返回 2016_09_18
+    3.a3 --  返回一个localStorage 所有的键名数组
 
 ### 4.本地数据localStorage
 	4.1 ——— app.js 更新后的 下载存储路径  downLoad.appJsPath
@@ -160,6 +162,18 @@
     @returns {boolean}
     demo: tools.isFunction(function(){}); // true
     demo: tools.isFunction([1,2]); // false
+
+#### 3.a2 获取当天 时间字符串 返回 2016_09_18
+    注入名称：tools
+    使用方法：tools.getToday()
+    @returns {String}
+    demo: tools.getToday(); // 2016_09_18
+
+#### 3.a3 遍历所有localStorage,返回一个 键名数组对象
+    注入名称：tools
+    使用方法：tools.getAllCatchListName()
+    @returns {Array} ['key1','key2']
+    demo: tools.getAllCatchListName(); // ['key1','key2']
 
 
 ---

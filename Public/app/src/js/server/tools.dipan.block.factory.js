@@ -316,10 +316,10 @@
             }
         }
 
-        /**************************
+        /**
          * 遍历所有localStorage,返回一个 键名数组对象
-         * 16/9/17 上午10:37 ByRockBlus
-         **************************/
+         * @returns {Array} ['key1','key2']
+         */
         function getAllCatchListName() {
             var nameArr = [];
             angular.forEach(localStorage, function (k, v) {

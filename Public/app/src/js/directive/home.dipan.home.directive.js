@@ -46,7 +46,6 @@
             bindLoadMoreClick();//bind 加载 更多点击事件
         }
 
-
         /**
          * 判断缓存,去执行响应逻辑(变换滚动位置,获取最新数据)
          */
@@ -64,12 +63,12 @@
 
             var thisCatchList = _getThisCatceList();
             if (thisCatchList && thisCatchList[0]) {//如果缓存的 数据存在,先读缓存数据 (只取当天浏览的数据,遍历不是今天浏览的 数据,并删除)
+                getList.pushToGoldCatcth(thisCatchList);//把最新的数据 的缓存,push 到 全局 缓存对象
 
                 /**
                  * 读缓存 作为list[0] push到 缓存数组 ,绑定点击事件,
                  */
                 getList.giveFirstCatchList(_getThisCatceList(), function (reList) {
-
                     $timeout(function () {
                         $scope.list.push(reList);
                         console.log($scope.list);

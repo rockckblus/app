@@ -9,13 +9,13 @@
 (function () {
     'use strict';
     angular.module('dipan').factory('tap', tap);
-    tap.$inject = ['$state', 'tools'];
+    tap.$inject = ['$state', 'tools', 'getList'];
 
 
     /**
      * angular 载入完成后。显示modle值
      * 15-12-26 */
-    function tap($state, tools) {
+    function tap($state, tools, getList) {
         var re = {
             init: init
         };
@@ -82,7 +82,6 @@
             }
         }
 
-
         /**
          * 跳转url
          * @param {document}doc
@@ -96,8 +95,20 @@
             }, function () {
             });
 
-
             doc.addEventListener(type, function () {
+
+                /**
+                 * 判断url 是home need 去存储 本地 list缓存
+                 */
+                switch ($state.current.name) {
+                    case 'home' :
+                        __saveCatchList();
+                        break;
+                    case 'need' :
+                        __saveCatchList();
+                        break;
+                }
+
                 __saveScrollTop();
                 if (url == 'goHistory') {//判断是 返回上页的点击事件
                     history.go(-1);
@@ -105,7 +116,6 @@
                     $state.go(url);
                 }
             });
-
 
             /**
              * 记录body滚动位置,对应url 去存储
@@ -117,6 +127,14 @@
                 var num = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
                 localStorage.removeItem(saveStr);
                 localStorage.setItem(saveStr, num);
+            }
+
+            /**
+             * 记录全局缓存list 对应url 去存储
+             * @private
+             */
+            function __saveCatchList() {
+                getList.saveCatecNewList();
             }
 
         }
