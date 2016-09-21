@@ -98,13 +98,16 @@
             doc.addEventListener(type, function () {
 
                 /**
-                 * 判断url 是home need 去存储 本地 list缓存
+                 * 判断url 是home need  star 去存储 本地 list缓存
                  */
                 switch ($state.current.name) {
                     case 'home' :
                         __saveCatchList();
                         break;
                     case 'need' :
+                        __saveCatchList();
+                        break;
+                    case 'star' :
                         __saveCatchList();
                         break;
                 }

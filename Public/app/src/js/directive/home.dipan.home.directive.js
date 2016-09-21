@@ -61,6 +61,20 @@
                 return tools.getLocalStorageObj(thisLogName);
             }
 
+            /**
+             * 返回 标记star 的 id 数组
+             * @returns {array|*}
+             * @private
+             */
+            function _getThisCatchStarArr() {
+                return tools.getLocalStorageObj('starArr');
+            }
+
+            var strArr = _getThisCatchStarArr();
+            if (strArr && strArr[0]) {//赋值 标记数组
+                getList.globalCatchList.starArr = strArr;
+            }
+
             var thisCatchList = _getThisCatceList();
             if (thisCatchList && thisCatchList[0]) {//如果缓存的 数据存在,先读缓存数据 (只取当天浏览的数据,遍历不是今天浏览的 数据,并删除)
                 getList.pushToGoldCatcth(thisCatchList);//把最新的数据 的缓存,push 到 全局 缓存对象
@@ -69,25 +83,25 @@
                  * 读缓存 作为list[0] push到 缓存数组 ,绑定点击事件,
                  */
                 getList.giveFirstCatchList(_getThisCatceList(), function (reList) {
+                    reList = getList.editShowStar(reList);//赋值星标
                     $timeout(function () {
                         $scope.list.push(reList);
-                        console.log($scope.list);
                         _bind(reList, 'list[0]');//回调去绑定点击事件
+                        $rootScope.$broadcast('closeLoading');//关闭 loading
                     }, 0);
                 }, 'list[0]', $scope, true);
 
-                //$timeout(function () {
-                //    _bind($scope.list[0], 'list[0]');
-                //}, 200);
-
-                //var scrollTopName = $state.current.name + '_scrollTop';
-                //if (localStorage.getItem(scrollTopName) === '0') {
-                //    getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
-                //    ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
-                //    tools.alert({
-                //        title: '请求NewData'
-                //    })
-                //}
+                /**
+                 * 判断如果 是 0 就去取上拉数据
+                 */
+                var scrollTopName = $state.current.name + '_scrollTop';
+                if (localStorage.getItem(scrollTopName) === '0') {
+                    //getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
+                    ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
+                    tools.alert({
+                        title: '请求NewData'
+                    })
+                }
 
             } else {
                 getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
@@ -101,12 +115,14 @@
         function bindLoadMoreClick() {
             try {
                 var bindBtn = document.getElementById('isWeb');
-
+                console.log('binBtn', bindBtn);
                 bindBtn.addEventListener('tap', function () {
                     downGetList(true);//请求下拉更多数据,
                 });
 
             } catch (e) {
+                var bindBtn = document.getElementById('isWeb');
+                console.log('binBtn', bindBtn);
                 console.log('没找到isWebId');
             }
         }
@@ -144,9 +160,7 @@
                 console.log('error');
             }
 
-
             _bindTapIcon();
-
 
             ///**
             // * 遍历list 取最后一条的 id
@@ -159,7 +173,6 @@
 
             //bind 星标 点击事件
             function _bindTapIcon() {
-                console.log('listName', listName);
                 angular.forEach(eval("$scope." + listName), function (vo) {
                     var idStr = '#' + vo._id;
                     $timeout(function () {
@@ -203,12 +216,14 @@
                      * 16/9/14 下午7:37 ByRockBlus
                      **************************/
                     function _saveStarArr(_id) {
+                        getList.globalCatchList.starArr.push(_id);//push 到 全局数组
                         var idDom = document.getElementById(_id);
                         idDom = angular.element(idDom);
                         var listName = idDom.attr('listName');
                         var thisScope = eval('$scope.' + listName);
                         angular.forEach(thisScope, function (vo) {
                             if (vo._id == _id) {
+                                delete(vo.$$hashKey);
                                 _getStartFromCatch(function () {
                                     star.push(vo);
                                     //var stateName = $state.current.name + '_star';
@@ -217,7 +232,6 @@
                                 });
                             }
                         });
-
                     }
 
                     /**************************
@@ -225,6 +239,7 @@
                      * 16/9/14 下午7:37 ByRockBlus
                      **************************/
                     function _delStarArr(_id) {
+                        getList.delStarIdFromStarArr(_id);
                         _getStartFromCatch(function () {
                             var tempStar = [];
                             angular.forEach(star, function (vo) {
