@@ -5,7 +5,7 @@ diguo/*
 FrontApplication/Runtime/*
 Application/Runtime/*
 phpDoc/*
-phpmyadmin/*
+
 rockmongo/*
 Public/resCreate/.idea/*
 Public/resCreate/*/dist
