@@ -90,7 +90,8 @@
 
 ####    2.1  顶部tab 导航 directive
     模板调用：<div tab></div>
-    说明：默认2个 tab按钮，可分 3 4 ，
+    说明：
+    默认2个 tab按钮，可分 3 4 ，
     在 全局 localData.factory 里面 判断网址来配置 ，
     现在 tab 是放在 了 top directive里面，
     css hack了 appBody 的 高度

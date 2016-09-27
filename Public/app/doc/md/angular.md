@@ -42,8 +42,64 @@
 **1. 事件**
 
 <h6 id="1.0"></h6>
-###### 1.0 打开loading 
+###### 1.0 loading动画打开事件 
 >   |事件名称|功能|模板调用|事件代码|  
 >   |:---:|:---:|:-----:|:-----:|
->   |closeLoading|打开loading动画|```<div loading></div>```（默认显示loading）|$rootScope.$broadcast(‘openLoading');|
+>   |openLoading|打开loading动画|```<div loading></div>```（默认显示loading）|$rootScope.$broadcast(‘openLoading');|
+
+<h6 id="1.1"></h6>
+###### 1.1 loading动画关闭事件 
+>   |事件名称|功能|模板调用|事件代码|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |closeLoading|关闭loading动画|```<div loading></div>```（默认显示loading）|$rootScope.$broadcast(‘closeLoading');|
+
+<h6 id="1.2"></h6>
+###### 1.2 更新body全局模型dom（top条，tab导航，打开loading动画） 
+>   |事件名称|功能|模板调用|事件代码|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |changeBody|打开loading 更新top,tab 赋值{{url}}变量以供 模板判断| 无 |$rootScope.$broadcast(‘changeBody');|
+
+<h6 id="2"></h6>
+**2.ui组件**
+
+<h6 id="2.0"></h6>
+###### 2.0 顶部tab 导航 directive 
+>   |模板调用|说明|
+>   |:---:|:---:|
+>   |```<div tab></div>```|默认2个 tab按钮，可分 3 4 ，在 全局 localData.factory 里面 判断网址来配置 ，<br>现在 tab 是放在 了 top directive里面，css hack了 appBody 的 高度|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
