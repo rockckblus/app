@@ -12,7 +12,7 @@
     - 3.2  [post url](#3.2)
     - 3.3  [判断是手机还是 app的 回调函数](#3.3)
     - 3.4  [错误alert 提示框](#3.4)
-    - 3.5  [get url(同postUrl,不传post对象)](#3.5)
+    - 3.5  get url(用法同postUrl,不传post对象)
     - 3.6  [返回一个 随机数](#3.6)
     - 3.7  [根据名称 存储localStorage 一个 obj](#3.7)
     - 3.8  [根据名称读取localStorage 返回一个 obj](#3.8)
@@ -68,21 +68,134 @@
 >   |:---:|:---:|
 >   |```<div tab></div>```|默认2个 tab按钮，可分 3 4 ，在 全局 localData.factory 里面 判断网址来配置 ，<br>现在 tab 是放在 了 top directive里面，css hack了 appBody 的 高度|
 
+<h6 id="3"></h6>
+**3.公共方法_1**
+
+<h6 id="3.0"></h6>
+###### 3.0 获取当天 时间字符串 返回 2016_09_18 
+>   |注入名称|使用方法|@returns|demo|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |tools|tools.getToday()|{String}|tools.getToday(); // 2016_09_18|
+
+<h6 id="3.1"></h6>
+###### 3.1 判断手机 与 web 显示 不同 alert (已弃用)
+>   |注入名称|使用方法|功能|demo|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |tools|tools.alert(msg)|判断手机 与 web 显示 不同 alert||
+
+<h6 id="3.2"></h6>
+###### 3.2 post url
 
 
+>   |注入名称|使用方法|功能|demo|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |tools|tools.postJsp(url,data,noLoadIng).then(callBackOkFun,callBackErrFun,isNoLoading)|post请求url||
 
+>   |传参|类型|必传|说明|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |url|{String}|是|post的 网址|
 
+>   |传参|类型|必传|说明|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |obj|{Object}|是|js对象 格式：{a：1，b：2}|
 
+>   |传参|类型|必传|说明|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |isNoLoading|{Boolean}|否|true:不显示loading动画|
 
+> + **异步编程用法**:	```tools.postJsp(url1,data).then(tools.postJsp(url2,re1.data))```
+```.then(tools.postJsp(url3,re2.data)，callBackErrFun);```
++ **异步编程说明**:	```阻塞式post请求，re1是url1 的回调值，re2是 url2 的回调值，```
+```有一步有错误，直接 调用 callBackErrFun 方法```
 
+<h6 id="3.3"></h6>
+###### 3.3 判断是手机还是 app的 回调函数
+>   |注入名称|使用方法|功能|  |
+>   |:---:|:---:|:-----:|:-----:|
+>   |tools|tools.trueWeb(wap,app)|判断是手机还是app 执行不同回调函数|
 
+>   |传参|类型|必传|说明|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |wap|{Function}|是|wap端执行 的 回调函数|
 
+>   |传参|类型|必传|说明|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |wap|{Function}|是|App端执行 的 回调函数|
 
+<h6 id="3.6"></h6>
+###### 3.6 返回一个 随机数
+>   |注入名称|使用方法|功能|  |
+>   |:---:|:---:|:-----:|:-----:|
+>   |tools|tools.getRoundCode(n)|返回一个随机数||
 
+>   |传参|类型|必传|demo|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |n|{Number}|是|```tools.getRoundCode(8) ; // 12345678```|
 
+<h6 id="3.7"></h6>
+###### 3.7 根据名称 存储localStorage 一个 obj
 
+>   |注入名称|使用方法|功能|  |
+>   |:---:|:---:|:-----:|:-----:|
+>   |tools|tools.saveLocalStorageObj(localName,obj)|根据名称 存储localStorage 一个 obj||
 
+>   |传参|类型|必传|说明|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |localName|{String}|是|需要存储的key|
 
+>   |传参|类型|必传|说明|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |obj|{Object}|是|需要存储的Obj{a:1,b:2}|
+
+<h6 id="3.8"></h6>
+###### 3.8 根据名称读取localStorage 返回一个 obj
+>   |注入名称|使用方法|功能|@return|
+>   |:---:|:---:|:-----:|:-----:|
+>   |tools|tools.getLocalStorageObj(localName)|根据名称 读取localStorage 一个 obj|成功返回{object},失败返回false|
+
+>   |传参|类型|必传|说明|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |localName|{String}|是|需要读取的key|
+
+<h6 id="3.9"></h6>
+###### 3.9 删除数组中的元素
+>   |注入名称|使用方法|功能|@return|
+>   |:---:|:---:|:-----:|:-----:|
+>   |tools|tools.arrDel(arr,num)|删除数组中的元素|无|
+
+>   |传参|类型|必传|说明|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |arr|{Array}|是|需要删除的数组|
+
+>   |传参|类型|必传|说明|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |num|{Number}|是|需要删除的数组元素在数组的中的key(index)|
+
+> + demo ``` tools.arrDel([a,b,c],1); // 数组原型变为 [a,c]```
+
+<h6 id="4"></h6>
+**4.公共方法_2**
+
+<h6 id="4.0"></h6>
+###### 4.0 判断是否funcion类型
+>   |注入名称|使用方法|功能|@return|
+>   |:---:|:---:|:-----:|:-----:|
+>   |tools|tools.isFunction(fn)|判断是否funcion类型|{Boolean}|
+
+>   |传参|类型|必传|说明|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |fun|{*}|是|需要判断的任性类型|
+
+> + demo ``` tools.isFunction(function(){}); // true```
+> + demo ``` tools.isFunction([1,2]); // false```
+
+<h6 id="4.1"></h6>
+###### 4.1 返回一个localStorage 所有的键名数组
+>   |注入名称|使用方法|功能|@return|
+>   |:---:|:---:|:-----:|:-----:|
+>   |tools|tools.getAllCatchListName()|遍历所有localStorage,返回一个 键名数组对象|{Array}|
+
+> + demo ``` tools.getAllCatchListName(); // ['key1','key2']```
 
 
 
