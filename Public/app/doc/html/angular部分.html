@@ -1,0 +1,1032 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<style>
+body {
+  font-family: Helvetica, arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: white;
+  padding: 30px; }
+
+body > *:first-child {
+  margin-top: 0 !important; }
+body > *:last-child {
+  margin-bottom: 0 !important; }
+
+a {
+  color: #4183C4; }
+a.absent {
+  color: #cc0000; }
+a.anchor {
+  display: block;
+  padding-left: 30px;
+  margin-left: -30px;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0; }
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+  cursor: text;
+  position: relative; }
+
+h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor, h5:hover a.anchor, h6:hover a.anchor {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA09pVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoMTMuMCAyMDEyMDMwNS5tLjQxNSAyMDEyLzAzLzA1OjIxOjAwOjAwKSAgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OUM2NjlDQjI4ODBGMTFFMTg1ODlEODNERDJBRjUwQTQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OUM2NjlDQjM4ODBGMTFFMTg1ODlEODNERDJBRjUwQTQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo5QzY2OUNCMDg4MEYxMUUxODU4OUQ4M0REMkFGNTBBNCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo5QzY2OUNCMTg4MEYxMUUxODU4OUQ4M0REMkFGNTBBNCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PsQhXeAAAABfSURBVHjaYvz//z8DJYCRUgMYQAbAMBQIAvEqkBQWXI6sHqwHiwG70TTBxGaiWwjCTGgOUgJiF1J8wMRAIUA34B4Q76HUBelAfJYSA0CuMIEaRP8wGIkGMA54bgQIMACAmkXJi0hKJQAAAABJRU5ErkJggg==) no-repeat 10px center;
+  text-decoration: none; }
+
+h1 tt, h1 code {
+  font-size: inherit; }
+
+h2 tt, h2 code {
+  font-size: inherit; }
+
+h3 tt, h3 code {
+  font-size: inherit; }
+
+h4 tt, h4 code {
+  font-size: inherit; }
+
+h5 tt, h5 code {
+  font-size: inherit; }
+
+h6 tt, h6 code {
+  font-size: inherit; }
+
+h1 {
+  font-size: 28px;
+  color: black; }
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #cccccc;
+  color: black; }
+
+h3 {
+  font-size: 18px; }
+
+h4 {
+  font-size: 16px; }
+
+h5 {
+  font-size: 14px; }
+
+h6 {
+  color: #777777;
+  font-size: 14px; }
+
+p, blockquote, ul, ol, dl, li, table, pre {
+  margin: 15px 0; }
+
+hr {
+  background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAECAYAAACtBE5DAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OENDRjNBN0E2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OENDRjNBN0I2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4Q0NGM0E3ODY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4Q0NGM0E3OTY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqqezsUAAAAfSURBVHjaYmRABcYwBiM2QSA4y4hNEKYDQxAEAAIMAHNGAzhkPOlYAAAAAElFTkSuQmCC) repeat-x 0 0;
+  border: 0 none;
+  color: #cccccc;
+  height: 4px;
+  padding: 0;
+}
+
+body > h2:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+body > h1:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+  body > h1:first-child + h2 {
+    margin-top: 0;
+    padding-top: 0; }
+body > h3:first-child, body > h4:first-child, body > h5:first-child, body > h6:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0; }
+
+h1 p, h2 p, h3 p, h4 p, h5 p, h6 p {
+  margin-top: 0; }
+
+li p.first {
+  display: inline-block; }
+li {
+  margin: 0; }
+ul, ol {
+  padding-left: 30px; }
+
+ul :first-child, ol :first-child {
+  margin-top: 0; }
+
+dl {
+  padding: 0; }
+  dl dt {
+    font-size: 14px;
+    font-weight: bold;
+    font-style: italic;
+    padding: 0;
+    margin: 15px 0 5px; }
+    dl dt:first-child {
+      padding: 0; }
+    dl dt > :first-child {
+      margin-top: 0; }
+    dl dt > :last-child {
+      margin-bottom: 0; }
+  dl dd {
+    margin: 0 0 15px;
+    padding: 0 15px; }
+    dl dd > :first-child {
+      margin-top: 0; }
+    dl dd > :last-child {
+      margin-bottom: 0; }
+
+blockquote {
+  border-left: 4px solid #dddddd;
+  padding: 0 15px;
+  color: #777777; }
+  blockquote > :first-child {
+    margin-top: 0; }
+  blockquote > :last-child {
+    margin-bottom: 0; }
+
+table {
+  padding: 0;border-collapse: collapse; }
+  table tr {
+    border-top: 1px solid #cccccc;
+    background-color: white;
+    margin: 0;
+    padding: 0; }
+    table tr:nth-child(2n) {
+      background-color: #f8f8f8; }
+    table tr th {
+     font-weight: bold;
+border: 1px solid #cccccc;
+color: #fff;
+margin: 0;
+padding: 6px 13px;
+background-color: rgba(26, 30, 32, 0.7) }
+    table tr td {
+      border: 1px solid #cccccc;
+      margin: 0;
+      padding: 6px 13px; }
+    table tr th :first-child, table tr td :first-child {
+      margin-top: 0; }
+    table tr th :last-child, table tr td :last-child {
+      margin-bottom: 0; }
+
+img {
+  max-width: 100%; }
+
+span.frame {
+  display: block;
+  overflow: hidden; }
+  span.frame > span {
+    border: 1px solid #dddddd;
+    display: block;
+    float: left;
+    overflow: hidden;
+    margin: 13px 0 0;
+    padding: 7px;
+    width: auto; }
+  span.frame span img {
+    display: block;
+    float: left; }
+  span.frame span span {
+    clear: both;
+    color: #333333;
+    display: block;
+    padding: 5px 0 0; }
+span.align-center {
+  display: block;
+  overflow: hidden;
+  clear: both; }
+  span.align-center > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px auto 0;
+    text-align: center; }
+  span.align-center span img {
+    margin: 0 auto;
+    text-align: center; }
+span.align-right {
+  display: block;
+  overflow: hidden;
+  clear: both; }
+  span.align-right > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px 0 0;
+    text-align: right; }
+  span.align-right span img {
+    margin: 0;
+    text-align: right; }
+span.float-left {
+  display: block;
+  margin-right: 13px;
+  overflow: hidden;
+  float: left; }
+  span.float-left span {
+    margin: 13px 0 0; }
+span.float-right {
+  display: block;
+  margin-left: 13px;
+  overflow: hidden;
+  float: right; }
+  span.float-right > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px auto 0;
+    text-align: right; }
+
+code, tt {
+  margin: 0 2px;
+  padding: 0 5px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px; }
+
+pre code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent; }
+
+.highlight pre {
+  background-color: #f8f8f8;
+  border: 1px solid #cccccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px; }
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #cccccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px; }
+  pre code, pre tt {
+    background-color: transparent;
+    border: none; }
+
+sup {
+    font-size: 0.83em;
+    vertical-align: super;
+    line-height: 0;
+}
+* {
+	-webkit-print-color-adjust: exact;
+}
+@media screen and (min-width: 914px) {
+    body {
+        width: 854px;
+        margin:0 auto;
+    }
+}
+@media print {
+	table, pre {
+		page-break-inside: avoid;
+	}
+	pre {
+		word-wrap: break-word;
+	}
+}
+</style>
+<title>1.0 loading动画打开事件</title>
+
+</head>
+<body>
+<p>目录(angular部分)</p>
+
+<ol>
+<li><a href="#1">事件</a>
+
+<ul>
+<li>1.0  <a href="#1.0">loading动画打开事件</a></li>
+<li>1.1  <a href="#1.1">loading动画关闭事件</a></li>
+<li>1.2  <a href="#1.2">更新body全局模型dom（top条，tab导航，打开loading动画）</a></li>
+</ul>
+</li>
+<li><a href="#2">ui组件</a>
+
+<ul>
+<li>2.0  <a href="#2.0">顶部tab 导航 directive</a></li>
+</ul>
+</li>
+<li><a href="#3">公共方法_1</a>
+
+<ul>
+<li>3.0  <a href="#3.0">获取当天 时间字符串 返回 2016_09_18</a></li>
+<li>3.1  <a href="#3.1">判断手机 与 web 显示 不同 alert</a></li>
+<li>3.2  <a href="#3.2">post url</a></li>
+<li>3.3  <a href="#3.3">判断是手机还是 app的 回调函数</a></li>
+<li>3.4  <a href="#3.4">错误alert 提示框</a></li>
+<li>3.5  get url(用法同postUrl,不传post对象)</li>
+<li>3.6  <a href="#3.6">返回一个 随机数</a></li>
+<li>3.7  <a href="#3.7">根据名称 存储localStorage 一个 obj</a></li>
+<li>3.8  <a href="#3.8">根据名称读取localStorage 返回一个 obj</a></li>
+<li>3.9  <a href="#3.9">删除数组中的元素</a></li>
+</ul>
+</li>
+<li><a href="#4">公共方法_2</a>
+
+<ul>
+<li>4.0 <a href="#4.0">判断是否funcion类型</a></li>
+<li>4.1 <a href="#4.1">返回一个localStorage 所有的键名数组</a></li>
+</ul>
+</li>
+<li><a href="#5">本地数据localStorage</a>
+
+<ul>
+<li>5.0 app.js 更新后的 下载存储路径  downLoad.appJsPath</li>
+<li>5.1 app.css 更新后的 下载存储路径 downLoad.appCssPath</li>
+<li>5.2 <a href="#5.2">是否第一次更新下载Js  downLoad.isFirstJs</a></li>
+<li>5.3 <a href="#5.3">是否第一次更新下载css  downLoad.isFirstCss</a></li>
+<li>5.4 判断是否升级变量  system.trueUpdate (0:自动升级，1.提示升级，2.永不升级)</li>
+<li>5.5 app端的随机id,启动后生成,判断验证码用 user.roundCodeId</li>
+<li>5.6 版本key值  version.key</li>
+</ul>
+</li>
+<li>config 设置
+
+<ul>
+<li>6.0 检查更新的延时时间  system.timeoutUpData  单位：毫秒</li>
+<li>6.1 nodes api url     host.nodeHost</li>
+<li>6.2 app 静态路径     host.appPath</li>
+<li>6.3 php 静态路径 host.phpHost</li>
+<li>6.4 当前默认版本号,更新版本后需手动修改配置  version.default</li>
+</ul>
+</li>
+</ol>
+
+
+<hr />
+
+<h6 id="1"></h6>
+
+
+<p><strong>1. 事件</strong></p>
+
+<h6 id="1.0"></h6>
+
+
+<h6>1.0 loading动画打开事件</h6>
+
+<blockquote><table>
+<thead>
+<tr>
+<th align="center">事件名称</th>
+<th align="center">功能</th>
+<th align="center">模板调用</th>
+<th align="center">事件代码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">openLoading</td>
+<td align="center">打开loading动画</td>
+<td align="center"><code>&lt;div loading&gt;&lt;/div&gt;</code>（默认显示loading）</td>
+<td align="center">$rootScope.$broadcast(‘openLoading');</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+
+<h6 id="1.1"></h6>
+
+
+<h6>1.1 loading动画关闭事件</h6>
+
+<blockquote><table>
+<thead>
+<tr>
+<th align="center">事件名称</th>
+<th align="center">功能</th>
+<th align="center">模板调用</th>
+<th align="center">事件代码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">closeLoading</td>
+<td align="center">关闭loading动画</td>
+<td align="center"><code>&lt;div loading&gt;&lt;/div&gt;</code>（默认显示loading）</td>
+<td align="center">$rootScope.$broadcast(‘closeLoading');</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+
+<h6 id="1.2"></h6>
+
+
+<h6>1.2 更新body全局模型dom（top条，tab导航，打开loading动画）</h6>
+
+<blockquote><table>
+<thead>
+<tr>
+<th align="center">事件名称</th>
+<th align="center">功能</th>
+<th align="center">模板调用</th>
+<th align="center">事件代码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">changeBody</td>
+<td align="center">打开loading 更新top,tab 赋值{{url}}变量以供 模板判断</td>
+<td align="center"> 无 </td>
+<td align="center">$rootScope.$broadcast(‘changeBody');</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+
+<h6 id="2"></h6>
+
+
+<p><strong>2.ui组件</strong></p>
+
+<h6 id="2.0"></h6>
+
+
+<h6>2.0 顶部tab 导航 directive</h6>
+
+<blockquote><table>
+<thead>
+<tr>
+<th align="center">模板调用</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><code>&lt;div tab&gt;&lt;/div&gt;</code></td>
+<td align="center">默认2个 tab按钮，可分 3 4 ，在 全局 localData.factory 里面 判断网址来配置 ，<br>现在 tab 是放在 了 top directive里面，css hack了 appBody 的 高度</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+
+<h6 id="3"></h6>
+
+
+<p><strong>3.公共方法_1</strong></p>
+
+<h6 id="3.0"></h6>
+
+
+<h6>3.0 获取当天 时间字符串 返回 2016_09_18</h6>
+
+<blockquote><table>
+<thead>
+<tr>
+<th align="center">注入名称</th>
+<th align="center">使用方法</th>
+<th align="center">@returns</th>
+<th align="center">demo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">tools</td>
+<td align="center">tools.getToday()</td>
+<td align="center">{String}</td>
+<td align="center">tools.getToday(); // 2016_09_18</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+
+<h6 id="3.1"></h6>
+
+
+<h6>3.1 判断手机 与 web 显示 不同 alert (已弃用)</h6>
+
+<blockquote><table>
+<thead>
+<tr>
+<th align="center">注入名称</th>
+<th align="center">使用方法</th>
+<th align="center">功能</th>
+<th align="center">demo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">tools</td>
+<td align="center">tools.alert(msg)</td>
+<td align="center">判断手机 与 web 显示 不同 alert</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+
+<h6 id="3.2"></h6>
+
+
+<h6>3.2 post url</h6>
+
+<blockquote><table>
+<thead>
+<tr>
+<th align="center">注入名称</th>
+<th align="center">使用方法</th>
+<th align="center">功能</th>
+<th align="center">demo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">tools</td>
+<td align="center">tools.postJsp(url,data,noLoadIng).then(callBackOkFun,callBackErrFun,isNoLoading)</td>
+<td align="center">post请求url</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
+<tr>
+<th align="center">传参</th>
+<th align="center">类型</th>
+<th align="center">必传</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">url</td>
+<td align="center">{String}</td>
+<td align="center">是</td>
+<td align="center">post的 网址</td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
+<tr>
+<th align="center">传参</th>
+<th align="center">类型</th>
+<th align="center">必传</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">obj</td>
+<td align="center">{Object}</td>
+<td align="center">是</td>
+<td align="center">js对象 格式：{a：1，b：2}</td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
+<tr>
+<th align="center">传参</th>
+<th align="center">类型</th>
+<th align="center">必传</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">isNoLoading</td>
+<td align="center">{Boolean}</td>
+<td align="center">否</td>
+<td align="center">true:不显示loading动画</td>
+</tr>
+</tbody>
+</table>
+
+
+<ul>
+<li><strong>异步编程用法</strong>: <code>tools.postJsp(url1,data).then(tools.postJsp(url2,re1.data))</code>
+<code>.then(tools.postJsp(url3,re2.data)，callBackErrFun);</code></li>
+<li><strong>异步编程说明</strong>:   <code>阻塞式post请求，re1是url1 的回调值，re2是 url2 的回调值，</code>
+<code>有一步有错误，直接 调用 callBackErrFun 方法</code></li>
+</ul>
+</blockquote>
+
+<h6 id="3.3"></h6>
+
+
+<h6>3.3 判断是手机还是 app的 回调函数</h6>
+
+<blockquote><table>
+<thead>
+<tr>
+<th align="center">注入名称</th>
+<th align="center">使用方法</th>
+<th align="center">功能</th>
+<th align="center">  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">tools</td>
+<td align="center">tools.trueWeb(wap,app)</td>
+<td align="center">判断是手机还是app 执行不同回调函数</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
+<tr>
+<th align="center">传参</th>
+<th align="center">类型</th>
+<th align="center">必传</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">wap</td>
+<td align="center">{Function}</td>
+<td align="center">是</td>
+<td align="center">wap端执行 的 回调函数</td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
+<tr>
+<th align="center">传参</th>
+<th align="center">类型</th>
+<th align="center">必传</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">wap</td>
+<td align="center">{Function}</td>
+<td align="center">是</td>
+<td align="center">App端执行 的 回调函数</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+
+<h6 id="3.6"></h6>
+
+
+<h6>3.6 返回一个 随机数</h6>
+
+<blockquote><table>
+<thead>
+<tr>
+<th align="center">注入名称</th>
+<th align="center">使用方法</th>
+<th align="center">功能</th>
+<th align="center">  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">tools</td>
+<td align="center">tools.getRoundCode(n)</td>
+<td align="center">返回一个随机数</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
+<tr>
+<th align="center">传参</th>
+<th align="center">类型</th>
+<th align="center">必传</th>
+<th align="center">demo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">n</td>
+<td align="center">{Number}</td>
+<td align="center">是</td>
+<td align="center"><code>tools.getRoundCode(8) ; // 12345678</code></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+
+<h6 id="3.7"></h6>
+
+
+<h6>3.7 根据名称 存储localStorage 一个 obj</h6>
+
+<blockquote><table>
+<thead>
+<tr>
+<th align="center">注入名称</th>
+<th align="center">使用方法</th>
+<th align="center">功能</th>
+<th align="center">  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">tools</td>
+<td align="center">tools.saveLocalStorageObj(localName,obj)</td>
+<td align="center">根据名称 存储localStorage 一个 obj</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
+<tr>
+<th align="center">传参</th>
+<th align="center">类型</th>
+<th align="center">必传</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">localName</td>
+<td align="center">{String}</td>
+<td align="center">是</td>
+<td align="center">需要存储的key</td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
+<tr>
+<th align="center">传参</th>
+<th align="center">类型</th>
+<th align="center">必传</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">obj</td>
+<td align="center">{Object}</td>
+<td align="center">是</td>
+<td align="center">需要存储的Obj{a:1,b:2}</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+
+<h6 id="3.8"></h6>
+
+
+<h6>3.8 根据名称读取localStorage 返回一个 obj</h6>
+
+<blockquote><table>
+<thead>
+<tr>
+<th align="center">注入名称</th>
+<th align="center">使用方法</th>
+<th align="center">功能</th>
+<th align="center">@return</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">tools</td>
+<td align="center">tools.getLocalStorageObj(localName)</td>
+<td align="center">根据名称 读取localStorage 一个 obj</td>
+<td align="center">成功返回{object},失败返回false</td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
+<tr>
+<th align="center">传参</th>
+<th align="center">类型</th>
+<th align="center">必传</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">localName</td>
+<td align="center">{String}</td>
+<td align="center">是</td>
+<td align="center">需要读取的key</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+
+<h6 id="3.9"></h6>
+
+
+<h6>3.9 删除数组中的元素</h6>
+
+<blockquote><table>
+<thead>
+<tr>
+<th align="center">注入名称</th>
+<th align="center">使用方法</th>
+<th align="center">功能</th>
+<th align="center">@return</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">tools</td>
+<td align="center">tools.arrDel(arr,num)</td>
+<td align="center">删除数组中的元素</td>
+<td align="center">无</td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
+<tr>
+<th align="center">传参</th>
+<th align="center">类型</th>
+<th align="center">必传</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">arr</td>
+<td align="center">{Array}</td>
+<td align="center">是</td>
+<td align="center">需要删除的数组</td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
+<tr>
+<th align="center">传参</th>
+<th align="center">类型</th>
+<th align="center">必传</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">num</td>
+<td align="center">{Number}</td>
+<td align="center">是</td>
+<td align="center">需要删除的数组元素在数组的中的key(index)</td>
+</tr>
+</tbody>
+</table>
+
+
+<ul>
+<li>demo <code>tools.arrDel([a,b,c],1); // 数组原型变为 [a,c]</code></li>
+</ul>
+</blockquote>
+
+<h6 id="4"></h6>
+
+
+<p><strong>4.公共方法_2</strong></p>
+
+<h6 id="4.0"></h6>
+
+
+<h6>4.0 判断是否funcion类型</h6>
+
+<blockquote><table>
+<thead>
+<tr>
+<th align="center">注入名称</th>
+<th align="center">使用方法</th>
+<th align="center">功能</th>
+<th align="center">@return</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">tools</td>
+<td align="center">tools.isFunction(fn)</td>
+<td align="center">判断是否funcion类型</td>
+<td align="center">{Boolean}</td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
+<tr>
+<th align="center">传参</th>
+<th align="center">类型</th>
+<th align="center">必传</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">fun</td>
+<td align="center">{*}</td>
+<td align="center">是</td>
+<td align="center">需要判断的任性类型</td>
+</tr>
+</tbody>
+</table>
+
+
+<ul>
+<li>demo <code>tools.isFunction(function(){}); // true</code></li>
+<li>demo <code>tools.isFunction([1,2]); // false</code></li>
+</ul>
+</blockquote>
+
+<h6 id="4.1"></h6>
+
+
+<h6>4.1 返回一个localStorage 所有的键名数组</h6>
+
+<blockquote><table>
+<thead>
+<tr>
+<th align="center">注入名称</th>
+<th align="center">使用方法</th>
+<th align="center">功能</th>
+<th align="center">@return</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">tools</td>
+<td align="center">tools.getAllCatchListName()</td>
+<td align="center">遍历所有localStorage,返回一个 键名数组对象</td>
+<td align="center">{Array}</td>
+</tr>
+</tbody>
+</table>
+
+
+<ul>
+<li>demo <code>tools.getAllCatchListName(); // ['key1','key2']</code></li>
+</ul>
+</blockquote>
+
+<h6 id="5"></h6>
+
+
+<p><strong>5.本地数据localStorage</strong></p>
+
+<h6 id="5.2"></h6>
+
+
+<h6>5.2 是否第一次更新下载Js  isFirstJs (null,1,2)</h6>
+
+<blockquote><ul>
+<li>说明：默认是 空,第一次 以后就写入localstroe 1 ,第2次以后,就 为 2</li>
+</ul>
+</blockquote>
+
+<h6 id="5.3"></h6>
+
+
+<h6>5.3 是否第一次更新下载css  isFirstCss (null,1,2)</h6>
+
+<blockquote><ul>
+<li>说明：是否第一次下载css, 默认是 空,第一次 以后就写入localstroe 1 ,第2次以后,就 为 2</li>
+</ul>
+</blockquote>
+</body>
+</html>

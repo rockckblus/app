@@ -21,19 +21,19 @@
     - 4.0 [判断是否funcion类型](#4.0)
     - 4.1 [返回一个localStorage 所有的键名数组](#4.1)
 5. [本地数据localStorage](#5)
-    - 5.0 [app.js 更新后的 下载存储路径  downLoad.appJsPath](#5.0)
-    - 5.1 [app.css 更新后的 下载存储路径 downLoad.appCssPath](#5.1)
+    - 5.0 app.js 更新后的 下载存储路径  downLoad.appJsPath
+    - 5.1 app.css 更新后的 下载存储路径 downLoad.appCssPath
     - 5.2 [是否第一次更新下载Js  downLoad.isFirstJs](#5.2)
     - 5.3 [是否第一次更新下载css  downLoad.isFirstCss](#5.3)
-    - 5.4 [判断是否升级变量  system.trueUpdate (0:自动升级，1.提示升级，2.永不升级)](#5.4)
-    - 5.5 [app端的随机id,启动后生成,判断验证码用 user.roundCodeId](#5.5)
-    - 5.6 [版本key值  version.key](#5.6)
-6. [config 设置](#6)
-    - 6.0 [检查更新的延时时间  system.timeoutUpData  单位：毫秒](#6.0)
-    - 6.1 [nodes api url     host.nodeHost](#6.1)
-    - 6.2 [app 静态路径     host.appPath](#6.2)
-    - 6.3 [php 静态路径 host.phpHost](#6.3)
-    - 6.4 [当前默认版本号,更新版本后需手动修改配置   version.default](#6.4)
+    - 5.4 判断是否升级变量  system.trueUpdate (0:自动升级，1.提示升级，2.永不升级)
+    - 5.5 app端的随机id,启动后生成,判断验证码用 user.roundCodeId
+    - 5.6 版本key值  version.key
+6. config 设置
+    - 6.0 检查更新的延时时间  system.timeoutUpData  单位：毫秒
+    - 6.1 nodes api url     host.nodeHost
+    - 6.2 app 静态路径     host.appPath
+    - 6.3 php 静态路径 host.phpHost
+    - 6.4 当前默认版本号,更新版本后需手动修改配置  version.default
     
     
 ***
@@ -197,8 +197,16 @@
 
 > + demo ``` tools.getAllCatchListName(); // ['key1','key2']```
 
+<h6 id="5"></h6>
+**5.本地数据localStorage**
 
+<h6 id="5.2"></h6>
+###### 5.2 是否第一次更新下载Js  isFirstJs (null,1,2)
+> + 说明：默认是 空,第一次 以后就写入localstroe 1 ,第2次以后,就 为 2
 
+<h6 id="5.3"></h6>
+###### 5.3 是否第一次更新下载css  isFirstCss (null,1,2)
+> + 说明：是否第一次下载css, 默认是 空,第一次 以后就写入localstroe 1 ,第2次以后,就 为 2
 
 
 
