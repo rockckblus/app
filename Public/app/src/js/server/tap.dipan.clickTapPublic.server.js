@@ -31,6 +31,7 @@
             'hrefMaster',//地主
             'hrefMember',//我的首页
             'hrefMemberAddArticle',//test添加文章
+            'login',//登录
         ];
 
         var idsIsBind = [];//已经在服务绑定过的 id,就不去绑定了

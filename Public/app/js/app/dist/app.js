@@ -4137,7 +4137,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      *
      * 此处是hackpost 到 node 转 对象格式问题, 如果是 请求node ,post的 需要传入 queryType = true; todo 默认不hackpost格式
      * 16/2/1 */
-        //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block'], hackPost).config(uiRouter);
+    //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block'], hackPost).config(uiRouter);
     angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block']).config(uiRouter);
 
     /**
@@ -4298,7 +4298,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             //host 配置
             host: {
                 nodeHost: 'http://192.168.1.117:3082',//nodejsApi hostUrl
-                phpHost: 'http://dipan.so:8080',//php host
+                // phpHost: 'http://dipan.so:8080',//php host
+                phpHost: 'http://192.168.0.7:8889',//php host
+
                 //appPath: 'http://dipan.so:8080/Public/App/'//app 静态路径
                 appPath: 'http://127.0.0.1:8080/Public/App/'//app 静态路径
             },
@@ -4367,7 +4369,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      * controllerFun
      * 16/2/1 */
     function body($scope, $rootScope, $timeout, localData, tap, $state, tools, getList) {
+
         $scope.$on('changeBody', function () {
+            trueIsLogin();//判断登录
             $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
             var _url = '/' + $state.current.name;
             $timeout(function () {
@@ -4446,12 +4450,33 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                         }
                     }
                 });
-
                 tap.init();//判断手机网页 手机 绑定 tap 事件, 网页绑定 click事件,(点击跳转url)
             }, 0);
         });
 
+        /**
+         * 判断登录
+         */
+        function trueIsLogin() {
+            if (localStorage.getItem('isLogin')) {
+                return true;
+            } else {//跳转到登录
+                _goLogin();
+                return false;
+            }
+
+            /**
+             * 跳转到登录
+             * @private
+             */
+            function _goLogin() {
+                $state.go('login');
+            }
+
+
+        }
     }
+
 
 })();
 
@@ -4753,6 +4778,20 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 return tools.getLocalStorageObj(thisLogName);
             }
 
+            /**
+             * 返回 标记star 的 id 数组
+             * @returns {array|*}
+             * @private
+             */
+            function _getThisCatchStarArr() {
+                return tools.getLocalStorageObj('starArr');
+            }
+
+            var strArr = _getThisCatchStarArr();
+            if (strArr && strArr[0]) {//赋值 标记数组
+                getList.globalCatchList.starArr = strArr;
+            }
+
             var thisCatchList = _getThisCatceList();
             if (thisCatchList && thisCatchList[0]) {//如果缓存的 数据存在,先读缓存数据 (只取当天浏览的数据,遍历不是今天浏览的 数据,并删除)
                 getList.pushToGoldCatcth(thisCatchList);//把最新的数据 的缓存,push 到 全局 缓存对象
@@ -4761,25 +4800,25 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                  * 读缓存 作为list[0] push到 缓存数组 ,绑定点击事件,
                  */
                 getList.giveFirstCatchList(_getThisCatceList(), function (reList) {
+                    reList = getList.editShowStar(reList);//赋值星标
                     $timeout(function () {
                         $scope.list.push(reList);
-                        console.log($scope.list);
                         _bind(reList, 'list[0]');//回调去绑定点击事件
+                        $rootScope.$broadcast('closeLoading');//关闭 loading
                     }, 0);
                 }, 'list[0]', $scope, true);
 
-                //$timeout(function () {
-                //    _bind($scope.list[0], 'list[0]');
-                //}, 200);
-
-                //var scrollTopName = $state.current.name + '_scrollTop';
-                //if (localStorage.getItem(scrollTopName) === '0') {
-                //    getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
-                //    ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
-                //    tools.alert({
-                //        title: '请求NewData'
-                //    })
-                //}
+                /**
+                 * 判断如果 是 0 就去取上拉数据
+                 */
+                var scrollTopName = $state.current.name + '_scrollTop';
+                if (localStorage.getItem(scrollTopName) === '0') {
+                    //getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
+                    ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
+                    tools.alert({
+                        title: '请求NewData'
+                    });
+                }
 
             } else {
                 getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
@@ -4791,14 +4830,15 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * bind 加载 更多点击事件
          */
         function bindLoadMoreClick() {
+            var bindBtn = document.getElementById('isWeb');
             try {
-                var bindBtn = document.getElementById('isWeb');
-
+                console.log('binBtn', bindBtn);
                 bindBtn.addEventListener('tap', function () {
                     downGetList(true);//请求下拉更多数据,
                 });
 
             } catch (e) {
+                console.log('binBtn', bindBtn);
                 console.log('没找到isWebId');
             }
         }
@@ -4836,9 +4876,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 console.log('error');
             }
 
-
             _bindTapIcon();
-
 
             ///**
             // * 遍历list 取最后一条的 id
@@ -4851,7 +4889,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
             //bind 星标 点击事件
             function _bindTapIcon() {
-                console.log('listName', listName);
                 angular.forEach(eval("$scope." + listName), function (vo) {
                     var idStr = '#' + vo._id;
                     $timeout(function () {
@@ -4895,12 +4932,14 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                      * 16/9/14 下午7:37 ByRockBlus
                      **************************/
                     function _saveStarArr(_id) {
+                        getList.globalCatchList.starArr.push(_id);//push 到 全局数组
                         var idDom = document.getElementById(_id);
                         idDom = angular.element(idDom);
                         var listName = idDom.attr('listName');
                         var thisScope = eval('$scope.' + listName);
                         angular.forEach(thisScope, function (vo) {
                             if (vo._id == _id) {
+                                delete(vo.$$hashKey);
                                 _getStartFromCatch(function () {
                                     star.push(vo);
                                     //var stateName = $state.current.name + '_star';
@@ -4909,7 +4948,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                                 });
                             }
                         });
-
                     }
 
                     /**************************
@@ -4917,6 +4955,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                      * 16/9/14 下午7:37 ByRockBlus
                      **************************/
                     function _delStarArr(_id) {
+                        getList.delStarIdFromStarArr(_id);
                         _getStartFromCatch(function () {
                             var tempStar = [];
                             angular.forEach(star, function (vo) {
@@ -5030,7 +5069,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             $rootScope.$broadcast('closeLoading');
         }, 0);
 
-
         $scope.formSub = _formSub;//表单提交事件
         $scope.getCode = _getCode;//获取验证码
         $scope.codeText = '获取验证码';
@@ -5096,7 +5134,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                     tools.alert({
                         title: re
                     });
-                    console.log('re', re);
                 });
                 $timeout(function () {
                     $scope.codeText = 60 + '秒后重发';
@@ -5169,7 +5206,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         $scope.formSub = function () {
             $scope.form.title += '&|';
             //var url = 'http://dipan.so:3082/sns/addOneArticle';
-            var url = 'http://192.168.1.115:3082/sns/addOneArticle';
+            var url = 'http://192.168.0.56:3082/sns/addOneArticle';
             tools.postJsp(url, $scope.form).then(function () {
                 tools.alert({
                     title: '添加成功'
@@ -5435,11 +5472,14 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          */
         thisObj.globalCatchList = {
             home: [],
-            need: []
+            need: [],
+            starArr: [],//标记数组
         };
         thisObj.pushToGoldCatcth = pushToGoldCatcth;//push 到全局变量数组 ,传入 newList
         thisObj.delGoldCatcth = delGoldCatcth;//del 全局变量数组
         thisObj.saveCatecNewList = saveCatecNewList;//存储全局变量数组 到本地localStroe 传入listObj
+        thisObj.delStarIdFromStarArr = delStarIdFromStarArr;//从标记的 全局缓存数组里删除 指定 标记 id
+        thisObj.editShowStar = editShowStar;//从全局缓存数组遍历 标记过的 star, 给list 赋值
 
         /**
          * 遍历不同url,返回 list 数据 ,
@@ -5483,10 +5523,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             case 'home':
-                url = 'http://192.168.0.56:3082/sns/getList?' + _tools.getRoundCode(8);
+                url = 'http://192.168.0.7:3082/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'need':
-                url = 'http://192.168.0.56:3082/sns/getList?' + _tools.getRoundCode(8);
+                url = 'http://192.168.0.7:3082/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'star':
                 url = true;
@@ -5589,6 +5629,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         function call(re) {
             //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
             _addNewListToOldList(re.doc, function (reList) {
+                //标记star
+                reList = editShowStar(reList);
+
+
                 if (!re.doc[0]) {
                     callSucessCount++;
                     setTimeout(function () {
@@ -5702,6 +5746,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      *
      * */
     function _addNewListToOldList(newlist, _call, listNam, scope, isCatch) {
+
+        //判断newList 里面的 id 是否有 标记
+
+
         var strVar = "";
         strVar += "        <li id=\"repListLi\"  class=\"mui-table-view-cell item\" url=\"content#{{vo.id}}\" bindonce bo-attr ng-repeat=\"\"";
         strVar += "            style=\"background-color: #fff;margin-top: 10px\">";
@@ -5730,6 +5778,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         repListHtml.attr('ng-repeat', "vo in " + listNam);
         repListHtml.attr('listName', listNam);
         repListHtml.attr('bo-id', 'vo._id');
+
         _compile('list', repListHtml[0], scope, true);
         if (!isCatch) {//如果不是 缓存请求
             pushToGoldCatcth(newlist);//push 到全局变量数组
@@ -5737,6 +5786,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         }
         _call(newlist);
     }
+
 
     /**************************
      *  只去存储 当天 浏览 的 数据 ,加入日期标记
@@ -5753,6 +5803,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 break;
             case 'need':
                 newList = thisObj.globalCatchList.need;
+                break;
+            case 'star':
+                //存储 star
+                _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
                 break;
         }
 
@@ -5776,7 +5830,8 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             angular.forEach(voNew, function (vo) {
                 tempCount++;
                 try {
-                    delete(voNew.$$hashKey);
+                    vo.iconStar = 'fa-star-o';
+                    delete(vo.$$hashKey);
                 } catch (e) {
                     console.error('删除hashKey失败');
                 }
@@ -5790,6 +5845,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
         //存储 catch
         _tools.saveLocalStorageObj(thisLogName, oldArr);
+
+        //存储 star
+        _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
+
         delGoldCatcth();//删除当前url的全局缓存数组
     }
 
@@ -5808,7 +5867,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         }
     }
 
-
     /**
      * 清空 全局缓存变量数组
      */
@@ -5817,12 +5875,66 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         switch (thisUrl) {
             case 'home':
                 thisObj.globalCatchList.home = [];
+                thisObj.globalCatchList.starArr = [];
                 break;
             case 'need':
                 thisObj.globalCatchList.need = [];
+                thisObj.globalCatchList.starArr = [];
+                break;
+            case 'star':
+                thisObj.globalCatchList.starArr = [];
                 break;
         }
     }
+
+    /**
+     * saveStar 存储star 数组
+     */
+    function saveStarArrToGoldCatch(_id) {
+        thisObj.globalCatchList.starArr.push(_id);
+    }
+
+    /**
+     * 删除star缓存数组
+     */
+    function delStarIdFromStarArr(_id) {
+        var newStarArr = [];
+        angular.forEach(thisObj.globalCatchList.starArr, function (vo) {
+            if (vo != _id) {
+                newStarArr.push(vo);
+            }
+        });
+        thisObj.globalCatchList.starArr = newStarArr;
+    }
+
+    /**
+     * 从全局缓存数组遍历 标记过的 star, 给list 赋值
+     * @parme list
+     * @return list
+     * editShowStar
+     */
+    function editShowStar(list) {
+        var reList = [];
+        angular.forEach(list, function (vo) {
+            vo = _trueStar(vo);
+            reList.push(vo);
+        });
+        return reList;
+
+        /**
+         * 判断star
+         * return vo
+         * @private
+         */
+        function _trueStar(vo) {
+            var trueNum = thisObj.globalCatchList.starArr.indexOf(vo._id);
+            if (trueNum !== -1) {
+                vo.iconStar = "fa-star";
+            }
+            return vo;
+        }
+    }
+
 
 })();
 /**
@@ -6050,12 +6162,14 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                     colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
                     name: '登录', //名称
-                    route: 'login' //routeUrl
+                    route: 'login', //routeUrl
+                    stateName: 'login', //routeUrl
                 }, {
                     colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: _objDefaulOne.thisItem, //高亮
                     name: '设置', //名称
-                    route: 'memberIndex' //routeUrl
+                    route: 'memberIndex', //routeUrl
+                    stateName: 'memberIndex', //routeUrl
                 },];
                 return _obj;
             case '/login':
@@ -6240,6 +6354,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             'hrefMaster',//地主
             'hrefMember',//我的首页
             'hrefMemberAddArticle',//test添加文章
+            'login',//登录
         ];
 
         var idsIsBind = [];//已经在服务绑定过的 id,就不去绑定了
@@ -6307,13 +6422,16 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             doc.addEventListener(type, function () {
 
                 /**
-                 * 判断url 是home need 去存储 本地 list缓存
+                 * 判断url 是home need  star 去存储 本地 list缓存
                  */
                 switch ($state.current.name) {
                     case 'home' :
                         __saveCatchList();
                         break;
                     case 'need' :
+                        __saveCatchList();
+                        break;
+                    case 'star' :
                         __saveCatchList();
                         break;
                 }
@@ -7180,10 +7298,10 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div id=\"list\" class=\"mui-table-view mui-table-view-chevron clear\" style=\"background-color:#777;margin-top: 10px\">\n" +
     "    </div>\n" +
-    "    <div class=\"mui-btn\" ng-if=\"urlName != 'star'\" id=\"isWeb\"\n" +
+    "    <div class=\"mui-btn\" ng-show=\"urlName != 'star'\" id=\"isWeb\"\n" +
     "         style=\"width:140px;left: 50%;margin-left: -70px;margin-top: 20px;margin-bottom: 20px\">加载更多...\n" +
     "    </div>\n" +
-    "    <div class=\"mui-btn\" ng-if=\"urlName == 'star'\" id=\"isStar\"\n" +
+    "    <div class=\"mui-btn\" ng-show=\"urlName == 'star'\" id=\"isStar\"\n" +
     "         style=\"width:140px;left: 50%;margin-left: -70px;margin-top: 20px;margin-bottom: 20px;background-color: #bd0000\">\n" +
     "        清空标记\n" +
     "    </div>\n" +
@@ -7253,8 +7371,6 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "                登录\n" +
     "            </button>\n" +
     "        </fieldset>\n" +
-    "\n" +
-    "\n" +
     "    </form>\n" +
     "</div>\n"
   );
@@ -7511,7 +7627,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('route/login.html',
-    "<div login></div>"
+    "<div login></div>\n"
   );
 
 

@@ -49,7 +49,8 @@
       "src/js/directive/block/area.dipan.areaSelect.directive.js",
       "src/js/server/compile.uiBlock.compile.factory.js",
       "src/js/server/getList.dipan.listAndAddList.factory.js",
-      "src/js/directive/member/add.dipan.addFrom.directive.js"
+      "src/js/directive/member/add.dipan.addFrom.directive.js",
+      "src/html/route/login.html"
     ],
     "refer": [
       "src/html/updata.html"

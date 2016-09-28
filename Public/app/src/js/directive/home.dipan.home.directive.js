@@ -100,7 +100,7 @@
                     ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
                     tools.alert({
                         title: '请求NewData'
-                    })
+                    });
                 }
 
             } else {
@@ -113,15 +113,14 @@
          * bind 加载 更多点击事件
          */
         function bindLoadMoreClick() {
+            var bindBtn = document.getElementById('isWeb');
             try {
-                var bindBtn = document.getElementById('isWeb');
                 console.log('binBtn', bindBtn);
                 bindBtn.addEventListener('tap', function () {
                     downGetList(true);//请求下拉更多数据,
                 });
 
             } catch (e) {
-                var bindBtn = document.getElementById('isWeb');
                 console.log('binBtn', bindBtn);
                 console.log('没找到isWebId');
             }

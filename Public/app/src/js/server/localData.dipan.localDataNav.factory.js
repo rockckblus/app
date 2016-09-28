@@ -223,12 +223,14 @@
                     colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
                     name: '登录', //名称
-                    route: 'login' //routeUrl
+                    route: 'login', //routeUrl
+                    stateName: 'login', //routeUrl
                 }, {
                     colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: _objDefaulOne.thisItem, //高亮
                     name: '设置', //名称
-                    route: 'memberIndex' //routeUrl
+                    route: 'memberIndex', //routeUrl
+                    stateName: 'memberIndex', //routeUrl
                 },];
                 return _obj;
             case '/login':

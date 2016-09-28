@@ -457,7 +457,7 @@
             if (vo != _id) {
                 newStarArr.push(vo);
             }
-        })
+        });
         thisObj.globalCatchList.starArr = newStarArr;
     }
 
@@ -481,7 +481,8 @@
          * @private
          */
         function _trueStar(vo) {
-            if (!(thisObj.globalCatchList.starArr.indexOf(vo._id) == -1)) {
+            var trueNum = thisObj.globalCatchList.starArr.indexOf(vo._id);
+            if (trueNum !== -1) {
                 vo.iconStar = "fa-star";
             }
             return vo;

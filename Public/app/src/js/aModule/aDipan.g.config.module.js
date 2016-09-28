@@ -186,7 +186,9 @@
             //host 配置
             host: {
                 nodeHost: 'http://192.168.1.117:3082',//nodejsApi hostUrl
-                phpHost: 'http://dipan.so:8080',//php host
+                // phpHost: 'http://dipan.so:8080',//php host
+                phpHost: 'http://192.168.0.7:8889',//php host
+
                 //appPath: 'http://dipan.so:8080/Public/App/'//app 静态路径
                 appPath: 'http://127.0.0.1:8080/Public/App/'//app 静态路径
             },

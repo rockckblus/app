@@ -32,7 +32,6 @@
             $rootScope.$broadcast('closeLoading');
         }, 0);
 
-
         $scope.formSub = _formSub;//表单提交事件
         $scope.getCode = _getCode;//获取验证码
         $scope.codeText = '获取验证码';
@@ -98,7 +97,6 @@
                     tools.alert({
                         title: re
                     });
-                    console.log('re', re);
                 });
                 $timeout(function () {
                     $scope.codeText = 60 + '秒后重发';
