@@ -9,20 +9,26 @@
         return {
             restrict: 'A',
             replace: false,
+            scope: {},
             controller: thisController,
             link: function (scope, element, attrs) {
             }
         };
     }
 
-    thisController.$inject = [];
+    thisController.$inject = ['$state', '$timeout'];
 
-    function thisController($scope, $rootScope, $timeout, localData) {
-        document.addEventListener('plusready', function () {
-            var ws = plus.webview.currentWebview();
-            plus.webview.close(ws);
+    function thisController($state, $timeout) {
+        var delCatch = [
+            'isLogin',
+            'userData'
+        ];
+        angular.forEach(delCatch, function (vo) {
+            localStorage.removeItem(vo);
         });
-
+        $timeout(function () {
+            $state.go('login');
+        }, 0);
     }
 
 

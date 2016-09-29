@@ -17,9 +17,9 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tools', 'config'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tools', 'config', '$state'];
 
-    function thisController($scope, $rootScope, $timeout, localData, tools, config) {
+    function thisController($scope, $rootScope, $timeout, localData, tools, config, $state) {
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
         });
@@ -31,7 +31,6 @@
         setTimeout(function () {
             $rootScope.$broadcast('closeLoading');
         }, 0);
-
 
         $scope.formSub = _formSub;//表单提交事件
         $scope.getCode = _getCode;//获取验证码
@@ -98,7 +97,6 @@
                     tools.alert({
                         title: re
                     });
-                    console.log('re', re);
                 });
                 $timeout(function () {
                     $scope.codeText = 60 + '秒后重发';
@@ -126,11 +124,31 @@
                     title: '手机号格式不正确'
                 });
             } else {
+                var url = config.host.phpHost + '/Api/loginIn';
+                tools.postJsp(url, {code: $scope.code, mtNum: $scope.tel})
+                    .then(_success, _faile);
+            }
+
+
+            function _success(re) {
+                if (re.data.code == 'S') {
+                    localStorage.setItem('isLogin', 'true');//缓存登录状态
+                    tools.saveLocalStorageObj('userData', re.data.userData);//缓存用户数据
+                    $state.go('home');
+                } else {
+                    _faile('登录失败');
+                }
+            }
+
+            function _faile() {
                 tools.alert({
-                    title: '提交验证'
+                    title: '登录失败'
                 });
             }
+
         }
+
+
     }
 
 

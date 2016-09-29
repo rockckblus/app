@@ -15,7 +15,9 @@
      * controllerFun
      * 16/2/1 */
     function body($scope, $rootScope, $timeout, localData, tap, $state, tools, getList) {
+
         $scope.$on('changeBody', function () {
+            trueIsLogin();//判断登录
             $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
             var _url = '/' + $state.current.name;
             $timeout(function () {
@@ -94,11 +96,32 @@
                         }
                     }
                 });
-
                 tap.init();//判断手机网页 手机 绑定 tap 事件, 网页绑定 click事件,(点击跳转url)
             }, 0);
         });
 
+        /**
+         * 判断登录
+         */
+        function trueIsLogin() {
+            if (localStorage.getItem('isLogin')) {
+                return true;
+            } else {//跳转到登录
+                _goLogin();
+                return false;
+            }
+
+            /**
+             * 跳转到登录
+             * @private
+             */
+            function _goLogin() {
+                $state.go('login');
+            }
+
+
+        }
     }
+
 
 })();

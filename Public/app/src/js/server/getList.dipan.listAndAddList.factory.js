@@ -77,7 +77,7 @@
                 url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             case 'home':
-                url = 'http://192.168.18.15:3082/sns/getList?' + _tools.getRoundCode(8);
+                url = _config.host.nodeHost + '/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'need':
                 url = 'http://192.168.18.15:3082/sns/getList?' + _tools.getRoundCode(8);
@@ -186,8 +186,7 @@
                 //标记star
                 reList = editShowStar(reList);
 
-
-                if (!re.doc[0]) {
+                if (!re.doc && !re.doc[0]) {
                     callSucessCount++;
                     setTimeout(function () {
                         if (callSucessCount > 1) {
@@ -480,7 +479,8 @@
          * @private
          */
         function _trueStar(vo) {
-            if (!(thisObj.globalCatchList.starArr.indexOf(vo._id) == -1)) {
+            var trueNum = thisObj.globalCatchList.starArr.indexOf(vo._id);
+            if (trueNum !== -1) {
                 vo.iconStar = "fa-star";
             }
             return vo;

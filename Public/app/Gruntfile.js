@@ -14,15 +14,16 @@ module.exports = function (grunt) {
             }
         },
 
+
         /**
          * 自动化
          * 16/1/22 */
         watch: {
             build: {
-                files: ['Gruntfile.js', 'dist/js/*.js', 'src/**/*.js', 'src/**/**/*.js', 'src/**/**/**/*.js', 'src/css/*.css', 'src/**/**/**/*.html', 'src/**/**/html', 'src/**/*.html'],
+                files: ['Gruntfile.js', 'dist/js/*.js', 'src/**/*.js', 'src/**/**/*.js', 'src/**/**/**/*.js', 'src/css/*.css', 'src/**/**/**/*.html', 'src/**/**/html', 'src/**/*.html', 'doc/**/**'],
                 tasks: ['jshint', 'ngtemplates', 'concat', 'uglify', 'cssmin', 'clean'],//dist 配置
-                //tasks: ['jshint', 'ngtemplates', 'concat', 'cssmin', 'clean'],//dist 配置
-                //tasks: ['jshint'],//dev 配置
+                // tasks: ['jshint', 'ngtemplates', 'concat', 'cssmin', 'clean'],//dist 配置
+                // tasks: ['jshint'],//dev 配置
                 options: {
                     spawn: false,
                     livereload: true
