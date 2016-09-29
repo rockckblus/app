@@ -2,6 +2,9 @@
 ###### **nodeJs Api**
 1. [soso接口](#n1)
     - 1.0  [gps转换地址](#n1.0)
+2. [用户相关](#n2)
+    - 1.0  [获取用户数据](#n2.0)
+ 
     
 ###### **php Api**
 1. [用户登录相关](#p1)
@@ -90,6 +93,49 @@
             }
         }
 
+<h6 id="n2"></h6>
+**2. 用户相关**
+
+<h6 id="n2.0"></h6>
+###### 2.0 获取用户数据 
+
+> + url : ```http://dipan.so:3082/member/getUserData```
++ 请求方式: ```post```
+
+>|功能|@return 成功|@return 失败|实现状态|  
+|:---:|:---:|:-----:|:-----:|
+|用户登录|{code:'S',msg:'获取用户数据成功'}|{code:'F',msg:'获取用户数据失败'}|模拟|
+
+> + 成功返回:
+>
+>
+    {
+      "complete": false,
+      "data": {
+        "code": "S",
+        "msg": "获取用户数据成功",
+        "userData": {
+          "uid": "ksdfkkkkkasfasdf",
+          "mt": "15510986492",//手机
+          "headerImg": "data:image/gif;base64,R0lGODlhDAAMAKIAALGXVv////7+/dPGn+zm1bqjadHDm/r49CH5BAAAAAAALAAAAAAMAAwAQAM1GCFkVYYIRYC9uFm1gzXC0HHAIBQYaRXBIQLkcCguZslBBXu7RaApHgCSsoFevdtk0XhElgkAOw==",
+          "fensi": 135,//粉丝
+          "guanzhu": 335,//关注
+          "lianxi": 35//联系count
+        }
+      }
+    }
+> + 失败返回:
+>
+>
+    {
+     code:'F',
+     msg:'获取用户数据失败'
+    }
+    
+>|传参|类型|必传|说明|  
+|:---:|:---:|:-----:|:-----:|
+|uid|{*} |true|用户id|
+
 
 ***
 
@@ -146,8 +192,19 @@
 >
 >
     {
-     code:'S',
-     msg:'登录成功'
+      "complete": false,
+      "data": {
+        "code": "S",
+        "msg": "登录成功",
+        "userData": {
+          "uid": "ksdfkkkkkasfasdf",
+          "mt": "15510986492",
+          "headerImg": "data:image/gif;base64,R0lGODlhDAAMAKIAALGXVv////7+/dPGn+zm1bqjadHDm/r49CH5BAAAAAAALAAAAAAMAAwAQAM1GCFkVYYIRYC9uFm1gzXC0HHAIBQYaRXBIQLkcCguZslBBXu7RaApHgCSsoFevdtk0XhElgkAOw==",
+          "fensi": 135,
+          "guanzhu": 335,
+          "lianxi": 35
+        }
+      }
     }
 > + 失败返回:
 >
