@@ -21,20 +21,24 @@
     - 4.0 [判断是否funcion类型](#4.0)
     - 4.1 [返回一个localStorage 所有的键名数组](#4.1)
 5. [本地数据localStorage](#5)
-    - 5.0 app.js 更新后的 下载存储路径  downLoad.appJsPath
-    - 5.1 app.css 更新后的 下载存储路径 downLoad.appCssPath
-    - 5.2 [是否第一次更新下载Js  downLoad.isFirstJs](#5.2)
-    - 5.3 [是否第一次更新下载css  downLoad.isFirstCss](#5.3)
-    - 5.4 判断是否升级变量  system.trueUpdate (0:自动升级，1.提示升级，2.永不升级)
-    - 5.5 app端的随机id,启动后生成,判断验证码用 user.roundCodeId
-    - 5.6 判断用户登录 user.isLogin
-    - 5.7 版本key值  version.key
+    - 5.0 app.js 更新后的 下载存储路径  `downLoad.appJsPath`
+    - 5.1 app.css 更新后的 下载存储路径 `downLoad.appCssPath`
+    - 5.2 [是否第一次更新下载Js  `downLoad.isFirstJs`](#5.2)
+    - 5.3 [是否第一次更新下载css  `downLoad.isFirstCss`](#5.3)
+    - 5.4 判断是否升级变量  `system.trueUpdate` (0:自动升级，1.提示升级，2.永不升级)
+    - 5.5 app端的随机id,启动后生成,判断验证码用 `user.roundCodeId`
+    - 5.6 判断用户登录 `user.isLogin`
+    - 5.7 用户数据 `user.userData`
+    - 5.8 版本key值  `version.key`
 6. config 设置
-    - 6.0 检查更新的延时时间  system.timeoutUpData  单位：毫秒
-    - 6.1 nodes api url     host.nodeHost
-    - 6.2 app 静态路径     host.appPath
-    - 6.3 php 静态路径 host.phpHost
-    - 6.4 当前默认版本号,更新版本后需手动修改配置  version.default
+    - 6.0 检查更新的延时时间  `system.timeoutUpData`  单位：毫秒
+    - 6.1 nodesApi url     `host.nodeHost`
+    - 6.2 nodesApi 模拟url      `host.nodeHostTest`
+    - 6.3 php 静态路径 `host.phpHost`
+    - 6.4 php 模拟静态路径 `host.phpHostTest`
+    - 6.5 app 静态路径     `host.appPath`
+    - 6.6 当前默认版本号,更新版本后需手动修改配置  `version.default`
+    - 6.7 是否开启模拟调试Api  `debugApi` (true 开启模拟api)
     
     
 ***

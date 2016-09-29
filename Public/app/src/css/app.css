@@ -350,3 +350,10 @@ body {
 .bottomBar .fa-navbar {
   font-size: 23px;
 }
+.hImg {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  margin-left: -22px;
+  margin-top: 11px;
+}

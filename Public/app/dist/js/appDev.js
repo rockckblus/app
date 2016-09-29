@@ -35,6 +35,7 @@ document.write('<script src="' + basePath + '/src/js/directive/block/search.dipa
 
 document.write('<script src="' + basePath + '/src/js/directive/member/my.dipan.myIndexNav.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/member/add.dipan.addFrom.directive.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/directive/member/loginOut.dipan.loginOut.js"><\/script>');
 
 //document.write('<script src="/Public/resCreate/js/app/src/directive/clickRouterUiBlock.uiBlock.router.directive.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/directive/urlParse.dipan.firstNginx.directive.js"><\/script>');

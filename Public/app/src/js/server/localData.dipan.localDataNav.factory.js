@@ -7,16 +7,16 @@
     'use strict';
     angular.module('dipan').factory('localData', localData);
 
-    localData.$inject = ['$location', 'tools', '$rootScope', 'config'];
+    localData.$inject = ['$location', 'tools', '$rootScope', 'config', '$filter'];
 
     var location;
     var thisLocalData = {};
     var thisTools = {};
     var thisRootScope;
     var _config;
+    var _filter;
 
-    function localData($location, tools, $rootScope, config) {
-        console.log('thisTools', tools);
+    function localData($location, tools, $rootScope, config, $filter) {
         thisRootScope = $rootScope;
         location = $location;
         thisLocalData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
@@ -30,6 +30,7 @@
         thisLocalData._init = function () {
             thisTools = tools;
             _config = config;
+            _filter = $filter;
             thisLocalData.giveRoundCode();
             getGps();
         };
@@ -48,22 +49,46 @@
     function _getTitle(url) {
         switch (url) {
             case '/memberIndex':
-                return '我的';
+                return __getUserTitle();
             case '/home':
-                return '天津武清河西务唐庄村';
+                return _filter('toHtml')('天津武清河西务唐庄村');
             case '/need':
-                return '天津武清河西务唐庄村';
+                return _filter('toHtml')('天津武清河西务唐庄村');
             case '/star':
-                return '标记';
+                return _filter('toHtml')('标记');
             case '/login':
-                return '我的';
+                return _filter('toHtml')('地盘');
             case '/area':
-                return '地区选择';
+                return _filter('toHtml')('地区选择');
             case '/search':
-                return '搜索';
+                return _filter('toHtml')('搜索');
             default:
-                return '地盘 dipan.so';
+                return _filter('toHtml')('地盘 dipan.so');
         }
+
+
+        /**
+         * 获取用户手机,头像,昵称
+         * 有昵称显示昵称,没有显示手机号
+         * @private
+         */
+        function __getUserTitle() {
+            var userData = thisTools.getLocalStorageObj('userData');
+            try {
+                var reStr = '';
+                if (userData.headerImg) {
+                    reStr += '<img class="hImg" src="' + userData.headerImg + '" /> &nbsp;';
+                }
+                if (userData.mt) {
+                    reStr += userData.mt;
+                }
+                return _filter('toHtml')(reStr);
+            } catch (e) {
+                return '我的';
+            }
+        }
+
+
     }
 
     /**
@@ -111,8 +136,6 @@
             case '/star':
                 return true;
             case '/memberIndex':
-                return true;
-            case '/login':
                 return true;
             default:
                 return false;
@@ -219,19 +242,31 @@
                 return _obj;
 
             case '/memberIndex':
-                _obj = [{
-                    colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '登录', //名称
-                    route: 'login', //routeUrl
-                    stateName: 'login', //routeUrl
-                }, {
-                    colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: _objDefaulOne.thisItem, //高亮
-                    name: '设置', //名称
-                    route: 'memberIndex', //routeUrl
-                    stateName: 'memberIndex', //routeUrl
-                },];
+                _obj = [
+                    {
+                        colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: false, //高亮
+                        name: '粉丝 ' + _getUserData('fensi'), //名称
+                        route: 'hrefTabFensi', //routeUrl
+                        stateName: 'fensi', //routeUrl
+                    },
+                    {
+                        colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: false, //高亮
+                        name: '关注 ' + _getUserData('guanzhu'), //名称
+                        route: 'hrefTabGuanZhu', //routeUrl
+                        stateName: 'guanzhu', //routeUrl
+                    },
+                    {
+                        colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: false, //高亮
+                        name: '联系 ' + _getUserData('lianxi'), //名称
+                        route: 'hrefTabLianXi', //routeUrl
+                        stateName: 'lianxi', //routeUrl
+                    },
+                ];
+
+
                 return _obj;
             case '/login':
                 _obj = [{
@@ -249,6 +284,24 @@
             default:
                 return [];
         }
+
+
+        /**
+         * 获取用户 粉丝 关注 联系
+         * @param {string 字段名称} field
+         * @return {string} 对应的 统计数量
+         * @private
+         */
+        function _getUserData(field) {
+            var userData = thisTools.getLocalStorageObj('userData');
+            if (userData[field]) {
+                return userData[field];
+            } else {
+                return '';
+            }
+        }
+
+
     }
 
     /**

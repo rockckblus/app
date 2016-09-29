@@ -91,8 +91,8 @@
             })
 
             //member 退出登录
-            .state('member/loginOut', {
-                url: 'member/loginOut',
+            .state('loginOut', {
+                url: '/loginOut',
                 templateUrl: window.tplPath + 'route/member/loginOut.html'
             })
 
@@ -177,20 +177,27 @@
 
     function config() {
         return {
+            //是否开启模拟调试Api
+            debugApi: true,
 
             //版本号默认设置
             version: {
-                default: '1.0',//当前默认版本号,第一次安装,写入local用
+                default: '2.0',//当前默认版本号,第一次安装,写入local用
             },
 
             //host 配置
             host: {
-                nodeHost: 'http://192.168.1.117:3082',//nodejsApi hostUrl
+
+                // nodeHost: 'http://dipan.so:3082',//nodejsApi hostUrl
+                nodeHost: 'http://192.168.0.7:3082',//nodejsApi hostUrl
+                nodeHostTest: 'http://192.168.0.7:8878',//nodejsApi 模拟Api
+
                 // phpHost: 'http://dipan.so:8080',//php host
-                phpHost: 'http://192.168.0.7:8889',//php host
+                phpHost: 'http://dipan.so:8080',//php host
+                phpHostTest: 'http://192.168.0.7:8889',//php host模拟Api
 
                 //appPath: 'http://dipan.so:8080/Public/App/'//app 静态路径
-                appPath: 'http://127.0.0.1:8080/Public/App/'//app 静态路径
+                appPath: 'http://192.168.0.7:8080/Public/App/'//app 静态路径
             },
 
             //localStroe 存储标示 name
@@ -210,6 +217,7 @@
                     //用户数据
                     roundCodeId: 'roundCodeId',//随机id,启动后生成
                     isLogin: 'isLogin',//判断登录
+                    userData:'userData',//用户数据
                 },
                 version: {
                     //版本
