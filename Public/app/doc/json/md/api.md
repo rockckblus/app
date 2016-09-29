@@ -148,12 +148,20 @@
 >
     {
      code:'S',
+     msg:'登录成功'
+    }
+> + 失败返回:
+>
+>
+    {
+     code:'F',
+     msg:'登录失败'
     }
     
 >|传参|类型|必传|说明|  
 |:---:|:---:|:-----:|:-----:|
-|mtNum|{*} |true|随机生成的8位数字|
-|code|{*} |true|手机号码|
+|code|{*} |true|随机生成的8位数字|
+|mtNum|{*} |true|手机号码|
 + demo：```http://dipan.so:8080/Api/Sem/getCode/roundCodeId/12415369/mtNum/15510986492```
 
 

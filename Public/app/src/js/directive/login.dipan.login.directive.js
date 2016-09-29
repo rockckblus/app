@@ -124,11 +124,19 @@
                     title: '手机号格式不正确'
                 });
             } else {
+
+                var url = config.host.phpHost + '/Api/loginIn';
+                tools.postJsp(url, {code: $scope.code, mtNum: $scope.tel})
+                    .then(function (re) {
+                        console.log('re', re);
+                    });
                 tools.alert({
                     title: '提交验证'
                 });
             }
         }
+
+
     }
 
 
