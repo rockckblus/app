@@ -93,7 +93,8 @@
             /**
              * 获取当天 时间字符串 标示 2016_09_18
              */
-            getToday: getToday
+            getToday: getToday,
+
 
         };
 

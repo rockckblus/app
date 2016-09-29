@@ -196,7 +196,7 @@
 ---
 >### 6.soso 接口
 
-####    6.1  判断手机 与 web 显示 不同 alert
+####    6.1 gps 
     url：	http://dipan.so:3082/soso/sosoApi/gpsToStr?lat=39.604509&lng=116.94351
     传参方式：get
     返回值：json 字符串 需要 解析

@@ -77,10 +77,10 @@
                 url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             case 'home':
-                url = 'http://192.168.0.7:3082/sns/getList?' + _tools.getRoundCode(8);
+                url = 'http://192.168.18.15:3082/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'need':
-                url = 'http://192.168.0.7:3082/sns/getList?' + _tools.getRoundCode(8);
+                url = 'http://192.168.18.15:3082/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'star':
                 url = true;
@@ -341,7 +341,6 @@
         _call(newlist);
     }
 
-
     /**************************
      *  只去存储 当天 浏览 的 数据 ,加入日期标记
      *  传入 list对象
@@ -457,7 +456,7 @@
             if (vo != _id) {
                 newStarArr.push(vo);
             }
-        })
+        });
         thisObj.globalCatchList.starArr = newStarArr;
     }
 
