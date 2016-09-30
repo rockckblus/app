@@ -5588,7 +5588,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 url = _config.host.nodeHost + '/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'need':
-                url = 'http://192.168.0.7:3082/sns/getList?' + _tools.getRoundCode(8);
+                url = 'http://192.168.18.15:3082/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'star':
                 url = true;
@@ -5847,7 +5847,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         }
         _call(newlist);
     }
-
 
     /**************************
      *  只去存储 当天 浏览 的 数据 ,加入日期标记
@@ -6295,7 +6294,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         function _getUserData(field) {
             var userData = thisTools.getLocalStorageObj('userData');
             if (userData[field]) {
-                return userData[field];
+                return '<i style="font-size: 12px">' + userData[field] + '</i>';
             } else {
                 return '';
             }

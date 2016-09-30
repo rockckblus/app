@@ -295,7 +295,12 @@
         function _getUserData(field) {
             var userData = thisTools.getLocalStorageObj('userData');
             if (userData[field]) {
-                return userData[field];
+                var endStr = '<i style="font-size: 12px">' + userData[field] + '</i>';
+                if (userData[field + '_height']) {
+                    endStr += '<i class="fa fa-ellipsis-h fa-2x" style="width: 7px;overflow-x: hidden;color: #bd0000;position: absolute;"></i>'
+                }
+                return endStr;
+
             } else {
                 return '';
             }
