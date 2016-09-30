@@ -33,6 +33,7 @@
             'hrefMemberAddArticle',//test添加文章
             'login',//登录
             'hrefMemberLoginOut',//退出登录
+            'hrefMemberSetting',//设置
         ];
 
         var idsIsBind = [];//已经在服务绑定过的 id,就不去绑定了
@@ -44,6 +45,7 @@
             'hrefTabStar',
             'hrefMemberAddArticle',
             'hrefMemberLoginOut',
+            'hrefMemberSetting'
         ];
 
         function plus(callBack) {

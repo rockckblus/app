@@ -8,6 +8,8 @@ document.write('<script src="' + basePath + '/dist/js/res/angular.min.js"><\/scr
 document.write('<script src="' + basePath + '/dist/js/res/angular-ui-router.min.js"><\/script>');
 document.write('<script src="' + basePath + '/dist/js/res/bindonce.min.js"><\/script>');
 document.write('<script src="' + basePath + '/dist/js/res/mui.min.js"><\/script>');
+// document.write('<script src="' + basePath + '/dist/js/res/mui.zoom.js"><\/script>');
+// document.write('<script src="' + basePath + '/dist/js/res/mui.imageViewer.js"><\/script>');
 
 ///** module  */
 document.write('<script src="' + basePath + '/src/js/aModule/aDipan.g.config.module.js"><\/script>');
@@ -36,6 +38,7 @@ document.write('<script src="' + basePath + '/src/js/directive/block/search.dipa
 document.write('<script src="' + basePath + '/src/js/directive/member/my.dipan.myIndexNav.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/member/add.dipan.addFrom.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/member/loginOut.dipan.loginOut.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/directive/member/setting.dipan.setting.directive.js"><\/script>');
 
 //document.write('<script src="/Public/resCreate/js/app/src/directive/clickRouterUiBlock.uiBlock.router.directive.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/directive/urlParse.dipan.firstNginx.directive.js"><\/script>');

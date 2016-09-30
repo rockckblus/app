@@ -20,6 +20,7 @@
         thisRootScope = $rootScope;
         location = $location;
         thisLocalData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
+        thisLocalData.setting = _settingNav(); //设置 导航list
         thisLocalData.tab = _tab; //根据 url 遍历 给tab数据
         thisLocalData.showTab = _showTab; //遍历url 返回true false ,控制是否显示tab
         thisLocalData.getTitle = _getTitle; //getTitle
@@ -27,6 +28,7 @@
         thisLocalData.gps = {
             isHaveGps: false, //判断
         };
+
         thisLocalData._init = function () {
             thisTools = tools;
             _config = config;
@@ -62,6 +64,8 @@
                 return _filter('toHtml')('地区选择');
             case '/search':
                 return _filter('toHtml')('搜索');
+            case '/setting':
+                return _filter('toHtml')('设置');
             default:
                 return _filter('toHtml')('地盘 dipan.so');
         }
@@ -97,17 +101,49 @@
      * @private
      */
     function _memberIndexNav() {
-        return [{
-            'name': '资料编辑',
-            'url': 'memberInfo',
-            'id': 1,
-            'hrefId': 'hrefMemberMemberInfo',
-            'icon': 'fa fa-pencil-square-o fa-1x'
-        },
+        return [
+            {
+                'name': '我的地盘',
+                'url': 'myArea',
+                'id': 1,
+                'hrefId': 'hrefMemberMyArea',
+                'icon': 'fa fa-map-marker fa-1x'
+            },
+            {
+                'name': '我的发布',
+                'url': 'push',
+                'id': 2,
+                'hrefId': 'hrefMemberPush',
+                'icon': 'fa fa-sign-out fa-1x'
+            },
+            {
+                'name': '设置',
+                'url': 'setting',
+                'hrefId': 'hrefMemberSetting',
+                'id': 3,
+                'icon': 'fa fa-sign-out fa-1x'
+            }
+        ];
+    }
+
+    /**
+     * 我的 > 设置 导航 list
+     * @returns {*[]}
+     * @private
+     */
+    function _settingNav() {
+        return [
+            // {
+            //     'name': '资料编辑',
+            //     'url': 'memberInfo',
+            //     'id': 1,
+            //     'hrefId': 'hrefMemberMemberInfo',
+            //     'icon': 'fa fa-pencil-square-o fa-1x'
+            // },
             {
                 'name': '退出登录',
                 'url': 'loginOut',
-                'id': 2,
+                'id': 1,
                 'hrefId': 'hrefMemberLoginOut',
                 'icon': 'fa fa-sign-out fa-1x'
             },
@@ -115,7 +151,7 @@
                 'name': '测试snsArticle添加',
                 'url': 'member_addArticle',
                 'hrefId': 'hrefMemberAddArticle',
-                'id': 3,
+                'id': 2,
                 'icon': 'fa fa-sign-out fa-1x'
             }
         ];
@@ -297,7 +333,7 @@
             if (userData[field]) {
                 var endStr = '<i style="font-size: 12px">' + userData[field] + '</i>';
                 if (userData[field + '_height']) {
-                    endStr += '<i class="fa fa-ellipsis-h fa-2x" style="width: 7px;overflow-x: hidden;color: #bd0000;position: absolute;"></i>'
+                    endStr += '<i class="fa fa-ellipsis-h fa-2x" style="width: 7px;overflow-x: hidden;color:#bd0000;position:absolute;margin-left:-1px;margin-top:-7px;"></i>';
                 }
                 return endStr;
 

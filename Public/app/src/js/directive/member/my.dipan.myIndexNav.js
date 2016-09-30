@@ -20,6 +20,12 @@
     thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config', 'tools'];
 
     function thisController($scope, $rootScope, $timeout, localData, config, tools) {
+
+        mui.plusReady(function () {
+            mui.previewImage();
+        });
+
+
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
             $timeout(function () {
@@ -29,8 +35,6 @@
 
         //我的 导航list > 本地数据
         $scope.listNav = localData.memberIndexNav;
-        //版本
-        $scope.version = config.version.default;
 
         /*************************
          * 判断数据赋值成功 关闭 loading
@@ -64,8 +68,6 @@
                 }
             }
         }
-
-
     }
 
 

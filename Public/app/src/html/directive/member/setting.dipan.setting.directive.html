@@ -1,11 +1,4 @@
 <div class="clear viewContent" style="text-align: center ;margin-top: 130px">
-
-    <div id="myArea">
-        <img src="http://pic.qqtn.com/up/2016-9/2016091415331175622.jpg" data-preview-src="http://pic.qqtn.com/up/2016-9/2016091415331175622.jpg" data-preview-group="1"/>
-        <img src="http://pic.qqtn.com/up/2016-9/2016091415331175622.jpg" data-preview-src="http://pic.qqtn.com/up/2016-9/2016091415331175622.jpg" data-preview-group="1"/>
-    </div>
-
-
     <ul id="{{vo.hrefId}}" url="{{vo.url}}" class="mui-table-view mui-table-view-chevron" style="text-align: left"
         bindonce ng-repeat="vo in listNav">
         <div class="mui-table-view-cell linkMouse clear"
@@ -16,4 +9,5 @@
         </div>
     </ul>
     <div class="clear" style="margin-top: 40px"></div>
+    <div class="clear" style="font-size: 12px">当前版本:<span style="color: #bd0000">{{version}}</span></div>
 </div>

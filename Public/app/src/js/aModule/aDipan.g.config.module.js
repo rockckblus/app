@@ -84,6 +84,12 @@
                 templateUrl: window.tplPath + 'route/member/memberIndex.html'
             })
 
+            //member 设置
+            .state('setting', {
+                url: '/setting',
+                templateUrl: window.tplPath + 'route/member/setting.html'
+            })
+
             //member 资料编辑
             .state('member/memberInfo', {
                 url: 'member/memberInfo',
@@ -217,7 +223,7 @@
                     //用户数据
                     roundCodeId: 'roundCodeId',//随机id,启动后生成
                     isLogin: 'isLogin',//判断登录
-                    userData:'userData',//用户数据
+                    userData: 'userData',//用户数据
                 },
                 version: {
                     //版本

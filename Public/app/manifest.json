@@ -261,7 +261,10 @@
 					"src/js/server/getList.dipan.listAndAddList.factory.js",
 					"src/js/directive/member/add.dipan.addFrom.directive.js",
 					"src/html/route/login.html",
-					"src/js/directive/member/loginOut.dipan.loginOut.js"
+					"src/js/directive/member/loginOut.dipan.loginOut.js",
+					"dist/js/res/mui.imageViewer.js",
+					"dist/js/res/mui.zoom.js",
+					"src/js/directive/member/setting.dipan.setting.directive.js"
 				],
 				"refer": [
 					"src/html/updata.html"

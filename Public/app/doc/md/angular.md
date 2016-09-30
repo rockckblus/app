@@ -20,6 +20,7 @@
 4. [公共方法_2](#4)
     - 4.0 [判断是否funcion类型](#4.0)
     - 4.1 [返回一个localStorage 所有的键名数组](#4.1)
+    - 4.2 [解析Url](#4.2)
 5. [本地数据localStorage](#5)
     - 5.0 app.js 更新后的 下载存储路径  `downLoad.appJsPath`
     - 5.1 app.css 更新后的 下载存储路径 `downLoad.appCssPath`
@@ -199,6 +200,39 @@
 > + 说明：是否第一次下载css, 默认是 空,第一次 以后就写入localstroe 1 ,第2次以后,就 为 2
 
 
+<h6 id="4.2"></h6>
+###### 4.2 解析url 
+>   |注入名称|使用方法|功能|@return|
+>   |:---:|:---:|:-----:|:-----:|
+>   |tools|tools.parseUrl(url)|解析url,返回一个解析后的对象|{Obj}|
+
+>   |传参|类型|必传|说明|  
+>   |:---:|:---:|:-----:|:-----:|
+>   |url|{String}|是|需要解析的 url|
+
+> + demo    ```tools.parseUrl(url); ```
+>
+        
+        {
+         file:'index.html'
+         hash: 'top'
+         host: 'abc.com'
+         query: '?id=255&m=hello'
+         params: { id: 255, m: hello }
+         path: '/dir/index.html'
+         port: '8080'
+        } 
+
+<h6 id="5"></h6>
+**5.本地数据localStorage**
+
+<h6 id="5.2"></h6>
+###### 5.2 是否第一次更新下载Js  isFirstJs (null,1,2)
+> + 说明：默认是 空,第一次 以后就写入localstroe 1 ,第2次以后,就 为 2
+
+<h6 id="5.3"></h6>
+###### 5.3 是否第一次更新下载css  isFirstCss (null,1,2)
+> + 说明：是否第一次下载css, 默认是 空,第一次 以后就写入localstroe 1 ,第2次以后,就 为 2
 
 
 

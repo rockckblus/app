@@ -47,6 +47,7 @@ module.exports = function (grunt) {
             },
             dist: {
                 src: [
+                    'dist/js/res/mui.min.js',
                     'dist/js/res/angular.min.js',
                     'dist/js/res/angular-ui-router.min.js',
                     'dist/js/res/bindonce.min.js',

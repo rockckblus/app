@@ -390,13 +390,8 @@
 
          myURL.path= '/dir/index.html'
 
-         myURL.segments= Array = ['dir', 'index.html']
-
          myURL.port= '8080'
 
-         myURL.protocol= 'http'
-
-         myURL.source= 'http://abc.com:8080/dir/index.html?id=255&m=hello#top'
          */
         function parseUrl(url) {
             var a = document.createElement('a');
