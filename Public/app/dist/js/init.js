@@ -49,7 +49,7 @@
             } else {
                 //app端
                 window.basePath = '../..'; //跟路径
-                document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
+                // document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
                 document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/mui.min.css"/>');
                 if (appPath) { //如果有app下载下来的 地址,就用 下载的
                     document.write('<script src=' + appPath + "?" + jsDate + '><\/script>');
