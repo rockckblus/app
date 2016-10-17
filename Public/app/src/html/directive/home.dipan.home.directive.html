@@ -20,8 +20,12 @@
 
     <div id="list" class="mui-table-view mui-table-view-chevron clear" style="background-color:#777;margin-top: 10px">
     </div>
-    <div class="mui-btn" bindonce bo-show="isWeb" id="isWeb"
+    <div class="mui-btn" ng-show="urlName != 'star'" id="isWeb"
          style="width:140px;left: 50%;margin-left: -70px;margin-top: 20px;margin-bottom: 20px">加载更多...
+    </div>
+    <div class="mui-btn" ng-show="urlName == 'star'" id="isStar"
+         style="width:140px;left: 50%;margin-left: -70px;margin-top: 20px;margin-bottom: 20px;background-color: #bd0000">
+        清空标记
     </div>
 </div>
 

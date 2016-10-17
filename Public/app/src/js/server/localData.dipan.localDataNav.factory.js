@@ -7,19 +7,20 @@
     'use strict';
     angular.module('dipan').factory('localData', localData);
 
-    localData.$inject = ['$location', 'tools', '$rootScope', 'config'];
+    localData.$inject = ['$location', 'tools', '$rootScope', 'config', '$filter'];
 
     var location;
     var thisLocalData = {};
     var thisTools = {};
     var thisRootScope;
     var _config;
+    var _filter;
 
-    function localData($location, tools, $rootScope, config) {
-        console.log('thisTools', tools);
+    function localData($location, tools, $rootScope, config, $filter) {
         thisRootScope = $rootScope;
         location = $location;
         thisLocalData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
+        thisLocalData.setting = _settingNav(); //设置 导航list
         thisLocalData.tab = _tab; //根据 url 遍历 给tab数据
         thisLocalData.showTab = _showTab; //遍历url 返回true false ,控制是否显示tab
         thisLocalData.getTitle = _getTitle; //getTitle
@@ -27,9 +28,11 @@
         thisLocalData.gps = {
             isHaveGps: false, //判断
         };
+
         thisLocalData._init = function () {
             thisTools = tools;
             _config = config;
+            _filter = $filter;
             thisLocalData.giveRoundCode();
             getGps();
         };
@@ -48,18 +51,48 @@
     function _getTitle(url) {
         switch (url) {
             case '/memberIndex':
-                return '我的';
+                return __getUserTitle();
             case '/home':
-                return 'Home';
+                return _filter('toHtml')('天津武清河西务唐庄村');
+            case '/need':
+                return _filter('toHtml')('天津武清河西务唐庄村');
+            case '/star':
+                return _filter('toHtml')('标记');
             case '/login':
-                return '我的';
+                return _filter('toHtml')('地盘');
             case '/area':
-                return '地区选择';
+                return _filter('toHtml')('地区选择');
             case '/search':
-                return '搜索';
+                return _filter('toHtml')('搜索');
+            case '/setting':
+                return _filter('toHtml')('设置');
             default:
-                return false;
+                return _filter('toHtml')('地盘 dipan.so');
         }
+
+
+        /**
+         * 获取用户手机,头像,昵称
+         * 有昵称显示昵称,没有显示手机号
+         * @private
+         */
+        function __getUserTitle() {
+            var userData = thisTools.getLocalStorageObj('userData');
+            try {
+                var reStr = '';
+                if (userData.headerImg) {
+                    reStr += '<img class="hImg" src="' + userData.headerImg + '" /> &nbsp;';
+                }
+                if (userData.mt) {
+                    reStr += userData.mt;
+                }
+                return _filter('toHtml')(reStr);
+            } catch (e) {
+                return '我的';
+            }
+        }
+
+
     }
 
     /**
@@ -68,17 +101,49 @@
      * @private
      */
     function _memberIndexNav() {
-        return [{
-            'name': '资料编辑',
-            'url': 'memberInfo',
-            'id': 1,
-            'hrefId': 'hrefMemberMemberInfo',
-            'icon': 'fa fa-pencil-square-o fa-1x'
-        },
+        return [
+            {
+                'name': '我的地盘',
+                'url': 'myArea',
+                'id': 1,
+                'hrefId': 'hrefMemberMyArea',
+                'icon': 'fa fa-map-marker fa-1x'
+            },
+            {
+                'name': '我的发布',
+                'url': 'push',
+                'id': 2,
+                'hrefId': 'hrefMemberPush',
+                'icon': 'fa fa-sign-out fa-1x'
+            },
+            {
+                'name': '设置',
+                'url': 'setting',
+                'hrefId': 'hrefMemberSetting',
+                'id': 3,
+                'icon': 'fa fa-sign-out fa-1x'
+            }
+        ];
+    }
+
+    /**
+     * 我的 > 设置 导航 list
+     * @returns {*[]}
+     * @private
+     */
+    function _settingNav() {
+        return [
+            // {
+            //     'name': '资料编辑',
+            //     'url': 'memberInfo',
+            //     'id': 1,
+            //     'hrefId': 'hrefMemberMemberInfo',
+            //     'icon': 'fa fa-pencil-square-o fa-1x'
+            // },
             {
                 'name': '退出登录',
                 'url': 'loginOut',
-                'id': 2,
+                'id': 1,
                 'hrefId': 'hrefMemberLoginOut',
                 'icon': 'fa fa-sign-out fa-1x'
             },
@@ -86,7 +151,7 @@
                 'name': '测试snsArticle添加',
                 'url': 'member_addArticle',
                 'hrefId': 'hrefMemberAddArticle',
-                'id': 3,
+                'id': 2,
                 'icon': 'fa fa-sign-out fa-1x'
             }
         ];
@@ -102,9 +167,11 @@
         switch (url) {
             case '/home':
                 return true;
-            case '/memberIndex':
+            case '/need':
                 return true;
-            case '/login':
+            case '/star':
+                return true;
+            case '/memberIndex':
                 return true;
             default:
                 return false;
@@ -129,35 +196,113 @@
         switch (url) {
             case '/home':
                 _obj = [{
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: _objDefaulOne.thisItem, //高亮
                     name: '供', //名称
-                    route: 'home' //routeUrl
+                    route: 'hrefTabHome', //routeUrl
+                    stateName: 'home', //routeUrl
                 }, {
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
                     name: '需', //名称
-                    route: 'memberIndex' //routeUrl
-                },
+                    route: 'hrefTabNeed', //routeUrl
+                    stateName: 'need', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                    route: 'hrefTabmemberIndex', //routeUrl
+                    stateName: 'memberIndex', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    //name: '<i class="fa fa-star-o"></i>', //名称
+                    name: '标记', //名称
+                    route: 'hrefTabStar', //routeUrl
+                    stateName: 'star', //routeUrl
+                }];
+                return _obj;
+            case '/need':
+                _obj = [{
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '供', //名称
+                    route: 'hrefTabHome', //routeUrl
+                    stateName: 'home', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: 'thisItem', //高亮
+                    name: '需', //名称
+                    route: 'hrefTabNeed', //routeUrl
+                    stateName: 'need', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                    route: 'hrefTabMemberIndex', //routeUrl
+                    stateName: 'memberIndex', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '<i class="fa fa-star-o"></i>', //名称
+                    route: 'hrefTabStar', //routeUrl
+                    stateName: 'star', //routeUrl
+                }];
+                return _obj;
+            case '/star':
+                _obj = [{
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '供', //名称
+                    route: 'hrefTabHome', //routeUrl
+                    stateName: 'home', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '需', //名称
+                    route: 'hrefTabNeed', //routeUrl
+                    stateName: 'need', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: false, //高亮
+                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                    route: 'hrefTabMemberIndex', //routeUrl
+                    stateName: 'memberIndex', //routeUrl
+                }, {
+                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    thisItem: 'thisItem', //高亮
+                    name: '<i class="fa fa-star-o"></i>', //名称
+                    route: 'hrefTabStar',//routeUrl
+                    stateName: 'star', //routeUrl
+                }];
+                return _obj;
+
+            case '/memberIndex':
+                _obj = [
                     {
                         colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                         thisItem: false, //高亮
-                        name: '<i class="fa fa-ellipsis-h"></i>', //名称
-                        route: 'memberIndex' //routeUrl
-                    }];
-                return _obj;
-            case '/memberIndex':
-                _obj = [{
-                    colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '登录', //名称
-                    route: 'login' //routeUrl
-                }, {
-                    colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: _objDefaulOne.thisItem, //高亮
-                    name: '设置', //名称
-                    route: 'memberIndex' //routeUrl
-                },];
+                        name: '粉丝 ' + _getUserData('fensi'), //名称
+                        route: 'hrefTabFensi', //routeUrl
+                        stateName: 'fensi', //routeUrl
+                    },
+                    {
+                        colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: false, //高亮
+                        name: '关注 ' + _getUserData('guanzhu'), //名称
+                        route: 'hrefTabGuanZhu', //routeUrl
+                        stateName: 'guanzhu', //routeUrl
+                    },
+                    {
+                        colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: false, //高亮
+                        name: '联系 ' + _getUserData('lianxi'), //名称
+                        route: 'hrefTabLianXi', //routeUrl
+                        stateName: 'lianxi', //routeUrl
+                    },
+                ];
+
+
                 return _obj;
             case '/login':
                 _obj = [{
@@ -175,6 +320,29 @@
             default:
                 return [];
         }
+
+
+        /**
+         * 获取用户 粉丝 关注 联系
+         * @param {string 字段名称} field
+         * @return {string} 对应的 统计数量
+         * @private
+         */
+        function _getUserData(field) {
+            var userData = thisTools.getLocalStorageObj('userData');
+            if (userData[field]) {
+                var endStr = '<i style="font-size: 12px">' + userData[field] + '</i>';
+                if (userData[field + '_height']) {
+                    endStr += '<i class="fa fa-ellipsis-h fa-2x" style="width: 7px;overflow-x: hidden;color:#bd0000;position:absolute;margin-left:-1px;margin-top:-7px;"></i>';
+                }
+                return endStr;
+
+            } else {
+                return '';
+            }
+        }
+
+
     }
 
     /**

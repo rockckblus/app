@@ -158,7 +158,6 @@
          * 16/8/26 下午4:41 ByRockBlus
          *************************/
         function _closeThisWebView() {
-            return;
             var ws = plus.webview.currentWebview();
             plus.webview.close(ws);
         }

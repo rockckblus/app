@@ -9,9 +9,9 @@
     'use strict';
     angular.module('dipan').factory('tools', tools);
 
-    tools.$inject = ['$http', '$rootScope', '$q', 'ui'];
+    tools.$inject = ['$http', '$rootScope', '$q', 'ui', '$filter', 'config'];
 
-    function tools($http, $rootScope, $q, ui) {
+    function tools($http, $rootScope, $q, ui, $filter, config) {
 
         var re;
 
@@ -77,12 +77,29 @@
              */
             getLocalStorageObj: getLocalStorageObj,
 
+            /**************************
+             *  遍历所有localStorage,返回一个 键名数组对象
+             * 16/9/17 上午10:40 ByRockBlus
+             **************************/
+            getAllCatchListName: getAllCatchListName,
+
             /**
              * 返回一个 随机数
              * @param {位数}n
              * @returns {string}
              */
-            getRoundCode: getRoundCode
+            getRoundCode: getRoundCode,
+
+            /**
+             * 获取当天 时间字符串 标示 2016_09_18
+             */
+            getToday: getToday,
+
+            /**
+             * 解析url
+             */
+            parseUrl: parseUrl,
+
         };
 
         /**
@@ -187,8 +204,20 @@
          * isNoLoading (可选 true:不显示loading动画)
          * 15-3-27 */
         function postJsp(getMoreUrl, data, isNoLoading) {
-            console.log('data',data);
-            //data.queryNode = true
+            var oldGetMoreUrl = getMoreUrl;//记录原始地址
+
+            //先解析url , 转换到 测试 url
+            if (config.debugApi) {
+                var urlObj = parseUrl(getMoreUrl);
+                var urlHostStr = 'http://' + urlObj.host + ':' + urlObj.port;
+
+                if (urlHostStr == config.host.nodeHost) {
+                    getMoreUrl = config.host.nodeHostTest + urlObj.path;
+                } else if (urlHostStr == config.host.phpHost) {
+                    getMoreUrl = config.host.phpHostTest + urlObj.path + urlObj.query;
+                }
+            }
+
             if (!isNoLoading) {
                 $rootScope.$broadcast('openLoading'); //http请求前 显示loading
             }
@@ -196,27 +225,9 @@
             for (var vo in data) {
                 endData[vo] = data[vo];
             }
-            //$http({
-            //    url: getMoreUrl,
-            //    method: "POST",
-            //    data: endData,
-            //    timeout: 10000 //超时设置
-            //}).success(function (response) {
-            //    $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
-            //    re(response);
-            //}).error(function (data, status, headers, config, error) {
-            //    if (errRe) {//如果有回调方法,回调错误
-            //        $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
-            //        errRe(error);
-            //    } else {
-            //        $rootScope.$broadcast('closeLoading');//http请求成功 关闭loading
-            //        toolsAlert('http错误:' + error);
-            //    }
-            //    return false;
-            //});
 
 
-            function _post(url, postData) {
+            function _post(url, postData, isComplete) {
                 var defer = $q.defer();
                 $http({
                     url: url,
@@ -225,10 +236,34 @@
                     timeout: 10000
                 })
                     .success(function (doc) {
-                        if (!isNoLoading) {
-                            $rootScope.$broadcast('closeLoading'); //http请求成功 关闭loading
+
+                        /**
+                         * 判断模拟模式如果开启,去判断 当前api是模拟还是已经 完成,
+                         * 如果完成就调用完成的 接口,再从新请求真实数据,
+                         * 如果没完成,就直接返回模拟数据
+                         * @param doc
+                         * @param _success
+                         * @private
+                         */
+                        _editDoc(_success);
+                        function _editDoc(_success) {
+                            if (config.debugApi && !isComplete) {//开启调试模式,判断是否完成api功能
+                                if (doc.complete) {//返回的complete 已经完成,就去真实地址取数据
+                                    _post(oldGetMoreUrl, postData, true);
+                                } else {
+                                    _success();
+                                }
+                            } else {
+                                _success();
+                            }
                         }
-                        defer.resolve(doc);
+
+                        function _success() {
+                            if (!isNoLoading) {
+                                $rootScope.$broadcast('closeLoading'); //http请求成功 关闭loading
+                            }
+                            defer.resolve(doc);
+                        }
                     }).error(function (err) {
                     if (!isNoLoading) {
                         $rootScope.$broadcast('closeLoading'); //http请求成功 关闭loading
@@ -298,10 +333,22 @@
          */
         function getLocalStorageObj(localName) {
             var obj = localStorage.getItem(localName);
-            if (obj) {
+            if (obj !== 'undefined') {
                 var objStr = JSON.parse(obj);
                 return objStr;
             }
+        }
+
+        /**
+         * 遍历所有localStorage,返回一个 键名数组对象
+         * @returns {Array} ['key1','key2']
+         */
+        function getAllCatchListName() {
+            var nameArr = [];
+            angular.forEach(localStorage, function (k, v) {
+                nameArr.push(v);
+            });
+            return nameArr;
         }
 
         /**
@@ -316,6 +363,63 @@
             }
             return rnd;
         }
+
+        /**
+         * 获取当天 时间字符串 标示 2016_09_18
+         * @return {string} 2016_09_18
+         */
+        function getToday() {
+            var today = new Date();
+            return $filter('date')(today, 'yyyy_MM_dd');//当天的 日期 2016_09_18
+        }
+
+        /**
+         *@param {string} url 完整的URL地址
+         *@returns {object} 自定义的对象
+         *@description 用法示例：var myURL = parseURL('http://abc.com:8080/dir/index.html?id=255&m=hello#top');
+         *
+         * myURL.file='index.html'
+
+         myURL.hash= 'top'
+
+         myURL.host= 'abc.com'
+
+         myURL.query= '?id=255&m=hello'
+
+         myURL.params= Object = { id: 255, m: hello }
+
+         myURL.path= '/dir/index.html'
+
+         myURL.port= '8080'
+
+         */
+        function parseUrl(url) {
+            var a = document.createElement('a');
+            a.href = url;
+            return {
+                source: url,
+                protocol: a.protocol.replace(':', ''),
+                host: a.hostname,
+                port: a.port,
+                query: a.search,
+                params: (function () {
+                    var ret = {},
+                        seg = a.search.replace(/^\?/, '').split('&'),
+                        len = seg.length, i = 0, s;
+                    for (; i < len; i++) {
+                        if (!seg[i]) {
+                            continue;
+                        }
+                        s = seg[i].split('=');
+                        ret[s[0]] = s[1];
+                    }
+                    return ret;
+                })(),
+                hash: a.hash.replace('#', ''),
+                path: a.pathname.replace(/^([^\/])/, '/$1'),
+            };
+        }
+
 
         return re;
     }

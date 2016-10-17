@@ -12,6 +12,7 @@ use Think\Controller;
 class IndexController extends Controller
 {
 
+
     /** 会员注册提交地址 */
     function regIn()
     {
@@ -38,7 +39,9 @@ class IndexController extends Controller
                 if ($trueCodeRe == 200) {
                     $userRegIn = $this->sub_RegIn_userRegIn();
                     if ($userRegIn == 200) {
-                        $this->ajaxReturn(200, 'JSON');
+                        $re['state']='S';
+                        $re['msg']='注册成功';
+                        $this->ajaxReturn($re, 'JSON');
                     } else {
 
                         /** 记录错误信息 */

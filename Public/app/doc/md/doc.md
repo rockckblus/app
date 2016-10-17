@@ -20,6 +20,8 @@
     3.8 --- 根据名称读取localStorage 返回一个 obj
     3.9 --- 删除数组中的元素
     3.a1 --- 判断是否funcion类型
+    3.a2 --  获取当天 时间字符串 返回 2016_09_18
+    3.a3 --  返回一个localStorage 所有的键名数组
 
 ### 4.本地数据localStorage
 	4.1 ——— app.js 更新后的 下载存储路径  downLoad.appJsPath
@@ -88,7 +90,8 @@
 
 ####    2.1  顶部tab 导航 directive
     模板调用：<div tab></div>
-    说明：默认2个 tab按钮，可分 3 4 ，
+    说明：
+    默认2个 tab按钮，可分 3 4 ，
     在 全局 localData.factory 里面 判断网址来配置 ，
     现在 tab 是放在 了 top directive里面，
     css hack了 appBody 的 高度
@@ -161,6 +164,18 @@
     demo: tools.isFunction(function(){}); // true
     demo: tools.isFunction([1,2]); // false
 
+#### 3.a2 获取当天 时间字符串 返回 2016_09_18
+    注入名称：tools
+    使用方法：tools.getToday()
+    @returns {String}
+    demo: tools.getToday(); // 2016_09_18
+
+#### 3.a3 遍历所有localStorage,返回一个 键名数组对象
+    注入名称：tools
+    使用方法：tools.getAllCatchListName()
+    @returns {Array} ['key1','key2']
+    demo: tools.getAllCatchListName(); // ['key1','key2']
+
 
 ---
 >### 4.本地数据localStorage
@@ -182,7 +197,7 @@
 ---
 >### 6.soso 接口
 
-####    6.1  判断手机 与 web 显示 不同 alert
+####    6.1 gps 
     url：	http://dipan.so:3082/soso/sosoApi/gpsToStr?lat=39.604509&lng=116.94351
     传参方式：get
     返回值：json 字符串 需要 解析

@@ -259,7 +259,12 @@
 					"src/js/directive/block/area.dipan.areaSelect.directive.js",
 					"src/js/server/compile.uiBlock.compile.factory.js",
 					"src/js/server/getList.dipan.listAndAddList.factory.js",
-					"src/js/directive/member/add.dipan.addFrom.directive.js"
+					"src/js/directive/member/add.dipan.addFrom.directive.js",
+					"src/html/route/login.html",
+					"src/js/directive/member/loginOut.dipan.loginOut.js",
+					"dist/js/res/mui.imageViewer.js",
+					"dist/js/res/mui.zoom.js",
+					"src/js/directive/member/setting.dipan.setting.directive.js"
 				],
 				"refer": [
 					"src/html/updata.html"
@@ -291,7 +296,18 @@
 					"dist/js/res/angular-ui-router.min.js",
 					"src/js/server/tools.dipan.block.factory.js",
 					"dist/js/res/bindonce.min.js",
-					"dist/js/app.js"
+					"dist/js/app.js",
+					"src/css/mui.min.css",
+					"src/js/directive/block/search.dipan.search.directive.js",
+					"src/js/server/getList.dipan.listAndAddList.factory.js",
+					"dist/js/res/mui.min.js",
+					"src/css/font-awesome.min.css",
+					"src/js/directive/block/area.dipan.areaSelect.directive.js",
+					"src/js/directive/member/add.dipan.addFrom.directive.js",
+					"src/js/directive/login.dipan.login.directive.js",
+					"src/js/directive/member/loginOut.dipan.loginOut.js",
+					"src/js/server/tap.dipan.clickTapPublic.server.js",
+					"src/js/server/compile.uiBlock.compile.factory.js"
 				],
 				"refer": [],
 				"priority": 0

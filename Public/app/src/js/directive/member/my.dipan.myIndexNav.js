@@ -4,8 +4,8 @@
  */
 (function () {
     'use strict';
-    angular.module('dipan').directive('my', urlParse);
-    function urlParse() {
+    angular.module('dipan').directive('my', my);
+    function my() {
         return {
             restrict: 'A',
             replace: false,
@@ -17,17 +17,24 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config', 'tools'];
 
-    function thisController($scope, $rootScope, $timeout, localData, config) {
+    function thisController($scope, $rootScope, $timeout, localData, config, tools) {
+
+        mui.plusReady(function () {
+            mui.previewImage();
+        });
+
+
         $scope.$watch('$viewContentLoading', function () {
-            $rootScope.$broadcast('changeBody');
+            $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
+            $timeout(function () {
+                getUserData();// 延时异步去取用户数据
+            }, 400);
         });
 
         //我的 导航list > 本地数据
         $scope.listNav = localData.memberIndexNav;
-        //版本
-        $scope.version = config.version.default;
 
         /*************************
          * 判断数据赋值成功 关闭 loading
@@ -37,6 +44,29 @@
             $timeout(function () {
                 $rootScope.$broadcast('closeLoading');
             }, 0);
+        }
+
+        /**
+         * 拿uid 去服务器取用户数据
+         */
+        function getUserData() {
+            var url = config.host.nodeHost + '/member/getUserData';
+            var uid = tools.getLocalStorageObj('userData');
+            $timeout(function () {
+                uid = uid.uid;
+                tools.postJsp(url, {uid: uid}, true).then(_scuess, function () {
+                });
+            }, 0);
+
+            function _scuess(re) {
+                if (re.data.code == 'S') {
+                    tools.saveLocalStorageObj('userData', re.data.userData);
+                    $timeout(function () {
+                        $rootScope.$broadcast('changeBody');
+                        $rootScope.$broadcast('closeLoading');
+                    }, 200);
+                }
+            }
         }
     }
 

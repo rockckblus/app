@@ -1,7 +1,14 @@
 <header class="mui-bar mui-bar-nav">
-    <i ng-if="url !== '/home'" onclick="history.go(-1);" id="goHistory" url="goHistory" class="fa fa-angle-left linkMouse  mui-pull-left mui-btn icon-btn"></i>
-    <i ng-if="url == '/home'" id="hrefArea" url="area" class="fa fa-location-arrow  mui-pull-left mui-btn icon-btn linkMouse"></i>
-    <i id="hrefSearch" url="search" class="fa fa-search fa-1  mui-pull-right mui-icon icon-btn"
+    <i ng-show="url !== '/login'" ng-if="url !== '/home'" onclick="history.go(-1);" id="goHistory" url="goHistory"
+       class="fa fa-angle-left linkMouse  mui-pull-left mui-btn icon-btn"></i>
+    <i ng-show="url == '/home'" id="hrefArea" url="area"
+       class="fa fa-location-arrow  mui-pull-left mui-btn icon-btn linkMouse"></i>
+    <i ng-show="(url != '/login') && (url != '/memberIndex') && (url != '/setting')" id="hrefSearch" url="search"
+       class="fa fa-search fa-1  mui-pull-right mui-icon icon-btn"
        style="padding-right: 17px;padding-top: 13px;"></i>
-    <h1 class="mui-title">{{title}}</h1>
+    <i ng-show="(url == '/memberIndex')" id="editMemberInfo" url="editMemberInfo"
+       class="fa fa-pencil-square-o fa-1x  mui-pull-right mui-icon icon-btn"
+       style="padding-right: 17px;padding-top: 13px;"></i>
+
+    <h1 class="mui-title" ng-bind-html="title"></h1>
 </header>

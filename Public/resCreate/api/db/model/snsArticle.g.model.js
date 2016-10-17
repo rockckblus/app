@@ -6,6 +6,7 @@
  * type Number 供 1,需 2,其他 3
  * sort Number 排序
  * state Number 状态
+ * iconStar Sting 标记class default fa-star-o    标记:fa-star
  * sendTime Date 发布时间
  * editTime Date 修改时间
  * tags Array 标签 [tagId1,tagId2] 连表标签表
@@ -30,6 +31,7 @@ var articleSchema = new g.Schema({
     state: {type: Number, default: 1},//状态 1.正常
     sendTime: {type: Date, default: Date.now},//发布时间
     editTime: {type: Date, default: Date.now},//修改时间 (无修改时间的时候与发布时间相同)
+    iconStar: {type: String, default: "fa-star-o"},//标记class default fa-star-o    标记:fa-star
     tags: [],//标签数组
     content: [{key: String, val: String}],//内容 键值对
 });

@@ -21,6 +21,7 @@
             //obj 格式 {'title':title,'content':content}
             $rootScope.$broadcast('alert', obj);
         }
+
         return re;
     }
 

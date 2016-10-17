@@ -9,13 +9,13 @@
 (function () {
     'use strict';
     angular.module('dipan').factory('tap', tap);
-    tap.$inject = ['$state', 'tools'];
+    tap.$inject = ['$state', 'tools', 'getList'];
 
 
     /**
      * angular 载入完成后。显示modle值
      * 15-12-26 */
-    function tap($state, tools) {
+    function tap($state, tools, getList) {
         var re = {
             init: init
         };
@@ -24,17 +24,28 @@
             'goHistory',//返回上一页
             'hrefArea',//地区选择
             'hrefSearch',//搜索
-            'hrefHome',//主页
+            'hrefHome',//主页 供
+            'hrefTabHome',//主页 供
+            'hrefTabNeed',//需
+            'hrefTabStar',//标记
             'hrefMaster',//地主
             'hrefMember',//我的首页
             'hrefMemberAddArticle',//test添加文章
+            'login',//登录
+            'hrefMemberLoginOut',//退出登录
+            'hrefMemberSetting',//设置
         ];
 
         var idsIsBind = [];//已经在服务绑定过的 id,就不去绑定了
 
         //排除 加入 绑定的 id
         var noIdIsBing = [
-            'hrefMemberAddArticle'
+            'hrefTabHome',
+            'hrefTabNeed',
+            'hrefTabStar',
+            'hrefMemberAddArticle',
+            'hrefMemberLoginOut',
+            'hrefMemberSetting'
         ];
 
         function plus(callBack) {
@@ -76,7 +87,6 @@
             }
         }
 
-
         /**
          * 跳转url
          * @param {document}doc
@@ -90,8 +100,23 @@
             }, function () {
             });
 
-
             doc.addEventListener(type, function () {
+
+                /**
+                 * 判断url 是home need  star 去存储 本地 list缓存
+                 */
+                switch ($state.current.name) {
+                    case 'home' :
+                        __saveCatchList();
+                        break;
+                    case 'need' :
+                        __saveCatchList();
+                        break;
+                    case 'star' :
+                        __saveCatchList();
+                        break;
+                }
+
                 __saveScrollTop();
                 if (url == 'goHistory') {//判断是 返回上页的点击事件
                     history.go(-1);
@@ -99,7 +124,6 @@
                     $state.go(url);
                 }
             });
-
 
             /**
              * 记录body滚动位置,对应url 去存储
@@ -111,6 +135,14 @@
                 var num = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
                 localStorage.removeItem(saveStr);
                 localStorage.setItem(saveStr, num);
+            }
+
+            /**
+             * 记录全局缓存list 对应url 去存储
+             * @private
+             */
+            function __saveCatchList() {
+                getList.saveCatecNewList();
             }
 
         }
