@@ -40,6 +40,9 @@ document.write('<script src="' + basePath + '/src/js/directive/member/add.dipan.
 document.write('<script src="' + basePath + '/src/js/directive/member/loginOut.dipan.loginOut.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/member/setting.dipan.setting.directive.js"><\/script>');
 
+document.write('<script src="' + basePath + '/src/js/directive/master/master.dipan.masterIndex.directive.js"><\/script>');
+
+
 //document.write('<script src="/Public/resCreate/js/app/src/directive/clickRouterUiBlock.uiBlock.router.directive.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/directive/urlParse.dipan.firstNginx.directive.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/directive/areaKey/areaKey.dipan.topAreaKey.directive.js"><\/script>');

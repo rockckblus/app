@@ -249,20 +249,20 @@
                         function _editDoc(_success) {
                             if (config.debugApi && !isComplete) {//开启调试模式,判断是否完成api功能
                                 if (doc.complete) {//返回的complete 已经完成,就去真实地址取数据
-                                    _post(oldGetMoreUrl, postData, true);
+                                    _post(oldGetMoreUrl, postData, true).then(_success);
                                 } else {
-                                    _success();
+                                    _success(doc);
                                 }
                             } else {
-                                _success();
+                                _success(doc);
                             }
                         }
 
-                        function _success() {
+                        function _success(_doc) {
                             if (!isNoLoading) {
                                 $rootScope.$broadcast('closeLoading'); //http请求成功 关闭loading
                             }
-                            defer.resolve(doc);
+                            defer.resolve(_doc);
                         }
                     }).error(function (err) {
                     if (!isNoLoading) {

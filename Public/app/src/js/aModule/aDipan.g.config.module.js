@@ -113,7 +113,12 @@
                 url: '/login',
                 templateUrl: window.tplPath + 'route/login.html'
             })
-        ;
+
+            //地盘
+            .state('master', {
+                url: '/master',
+                templateUrl: window.tplPath + 'route/master.html'
+            });
     }
 
     /**
@@ -195,15 +200,15 @@
             host: {
 
                 // nodeHost: 'http://dipan.so:3082',//nodejsApi hostUrl
-                nodeHost: 'http://192.168.0.7:3082',//nodejsApi hostUrl
-                nodeHostTest: 'http://192.168.0.7:8878',//nodejsApi 模拟Api
+                nodeHost: 'http://192.168.0.52:3082',//nodejsApi hostUrl
+                nodeHostTest: 'http://192.168.0.52:8878',//nodejsApi 模拟Api
 
                 // phpHost: 'http://dipan.so:8080',//php host
                 phpHost: 'http://dipan.so:8080',//php host
-                phpHostTest: 'http://192.168.0.7:8889',//php host模拟Api
+                phpHostTest: 'http://192.168.0.52:8889',//php host模拟Api
 
                 //appPath: 'http://dipan.so:8080/Public/App/'//app 静态路径
-                appPath: 'http://192.168.0.7:8080/Public/App/'//app 静态路径
+                appPath: 'http://192.168.0.52:8080/Public/App/'//app 静态路径
             },
 
             //localStroe 存储标示 name

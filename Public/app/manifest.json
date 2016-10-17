@@ -264,7 +264,8 @@
 					"src/js/directive/member/loginOut.dipan.loginOut.js",
 					"dist/js/res/mui.imageViewer.js",
 					"dist/js/res/mui.zoom.js",
-					"src/js/directive/member/setting.dipan.setting.directive.js"
+					"src/js/directive/member/setting.dipan.setting.directive.js",
+					"src/js/directive/master/master.dipan.masterIndex.directive.js"
 				],
 				"refer": [
 					"src/html/updata.html"

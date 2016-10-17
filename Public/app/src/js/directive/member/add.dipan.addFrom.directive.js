@@ -17,9 +17,9 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'config'];
 
-    function thisController($scope, $rootScope, $timeout, tools) {
+    function thisController($scope, $rootScope, $timeout, tools, config) {
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
             setTimeout(function () {
@@ -33,7 +33,7 @@
         $scope.formSub = function () {
             $scope.form.title += '&|';
             //var url = 'http://dipan.so:3082/sns/addOneArticle';
-            var url = 'http://192.168.0.56:3082/sns/addOneArticle';
+            var url = config.host.nodeHostTest + '/sns/addOneArticle';
             tools.postJsp(url, $scope.form).then(function () {
                 tools.alert({
                     title: '添加成功'

@@ -28,7 +28,7 @@ var g = {
      * 16/3/7 */
 
     mongo: {
-        url: 'mongodb://localhost:27017/',//分片路由
+        url: 'mongodb://127.0.0.1:27017/',//分片路由
         master: 'dipan',//主库
     },
 
@@ -54,8 +54,10 @@ var g = {
      * 16/3/7 */
 
     var mongoUrl = g.mongo.url + g.mongo.master;
+    console.log('mongoUrl',mongoUrl);
     mongoose.connect(mongoUrl, function (err) {
         if (err) {
+            console.log('err',err);
             g.mongoConnect = false;
         }
     });

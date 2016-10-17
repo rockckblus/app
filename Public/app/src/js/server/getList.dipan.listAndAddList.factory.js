@@ -80,7 +80,7 @@
                 url = _config.host.nodeHost + '/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'need':
-                url = 'http://192.168.18.15:3082/sns/getList?' + _tools.getRoundCode(8);
+                url = 'http://192.168.0.52:3082/sns/getList?' + _tools.getRoundCode(8);
                 break;
             case 'star':
                 url = true;
@@ -181,6 +181,7 @@
         }
 
         function call(re) {
+            console.log('re184', re);
             //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
             _addNewListToOldList(re.doc, function (reList) {
                 //标记star

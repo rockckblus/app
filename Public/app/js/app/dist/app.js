@@ -4234,7 +4234,12 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 url: '/login',
                 templateUrl: window.tplPath + 'route/login.html'
             })
-        ;
+
+            //地盘
+            .state('master', {
+                url: '/master',
+                templateUrl: window.tplPath + 'route/master.html'
+            });
     }
 
     /**
@@ -5208,6 +5213,43 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
         }
 
+
+    }
+
+
+})();
+
+/**
+ * 命名注释：directive简称_master. 父模块_dipan . 功能_地盘地主首页 类型_directive .js
+ * 使用 ：<div my></div>
+ */
+(function () {
+    'use strict';
+    angular.module('dipan').directive('master', master);
+    function master() {
+        return {
+            restrict: 'A',
+            replace: false,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/master.dipan.masterIndex.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tools', 'config', '$state'];
+
+    function thisController($scope, $rootScope, $timeout, localData, tools, config, $state) {
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');
+        });
+
+        /*************************
+         * 判断数据赋值成功 关闭 loading
+         * 16/8/15 下午2:57 ByRockBlus
+         *************************/
+        // $rootScope.$broadcast('closeLoading');
 
     }
 
@@ -7680,6 +7722,11 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   );
 
 
+  $templateCache.put('directive/master/master.dipan.masterIndex.directive.html',
+    "masterDireicet"
+  );
+
+
   $templateCache.put('directive/member/add.dipan.addFrom.directive.html',
     "<div class=\"clear viewContent\" style=\"margin-top: 44px\">\n" +
     "    <div class=\"mui-table-view mui-table-view-chevron clear\" style=\"margin-top: 10px\">\n" +
@@ -7853,6 +7900,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "<script>\n" +
     "    if (trueWeb()) {\n" +
     "        document.getElementById('beian').style.display = 'block';\n" +
+    "        document.write ('<script language=\"javascript\" type=\"text/javascript\" src=\"http://js.users.51.la/17648708.js\">\\<\\/script>');\n" +
     "    }\n" +
     "</script>\n" +
     "</body>\n" +
@@ -7955,6 +8003,11 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('route/login.html',
     "<div login></div>\n"
+  );
+
+
+  $templateCache.put('route/master.html',
+    "<div master></div>\n"
   );
 
 
