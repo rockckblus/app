@@ -116,7 +116,7 @@
              * @private
              */
             function _goLogin() {
-                $state.go('login');
+                // $state.go('login');
             }
 
 
