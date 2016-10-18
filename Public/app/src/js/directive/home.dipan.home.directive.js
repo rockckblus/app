@@ -169,7 +169,7 @@
                 return re[endNum]._id;
             }
 
-            //bind 星标 点击事件
+            //bind 星标 点击事件 todo 循环内不放方法
             function _bindTapIcon() {
                 angular.forEach(eval("$scope." + listName), function (vo) {
                     var idStr = '#' + vo._id;
