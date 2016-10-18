@@ -420,7 +420,6 @@
             };
         }
 
-
         return re;
     }
 })(window);
