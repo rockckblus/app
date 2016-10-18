@@ -409,7 +409,7 @@
         function _saveStarNewAndOld() {
             var endArr = [];
             var oldArr = _tools.getLocalStorageObj('starArr');
-            console.log('oldArr',oldArr);
+            console.log('oldArr', oldArr);
             var newArr = thisObj.globalCatchList.starArr;
             angular.forEach(oldArr, function (vo1) {
                 endArr.push(vo1);
@@ -417,8 +417,8 @@
             angular.forEach(newArr, function (vo2) {
                 endArr.push(vo2);
             });
+
             _tools.saveLocalStorageObj('starArr', endArr);
-            
         }
 
         delGoldCatcth();//删除当前url的全局缓存数组
