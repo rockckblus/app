@@ -1,28 +1,30 @@
 目录(api部分)
-###### **nodeJs Api**
+# **nodeJs Api**
 1. [soso接口](#n1)
-    - 1.0  [gps转换地址](#n1.0)
+    - 1.0  [gps转换地址](#n1_0)
 2. [用户相关](#n2)
-    - 1.0  [获取用户数据](#n2.0)
- 
+    - 1.0  [获取用户数据](#n2_0)
     
-###### **php Api**
+# **php Api**
 1. [用户登录相关](#p1)
-    - 1.0  [获取客户端ip](#p1.0)
-    - 1.1  [获取手机登录验证码](#p1.1)
-    - 1.2  [用户登录提交](#p1.2)
-    
-***
+    - 1.0  [获取客户端ip](#p1_0)
+    - 1.1  [获取手机登录验证码](#p1_1)
+    - 1.2  [用户登录提交](#p1_2)
 
 
-### **nodeJs Api**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-<h6 id="n1"></h6>
-**1. soso接口**
+# **nodeJs Api**
 
-<h6 id="n1.0"></h6>
-###### 1.0 gps转换地址 
-> + url : ```http://dipan.so:3082/soso/sosoApi/gpsToStr```
+<h2 id="n1">**1. soso接口**</h6>
+
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<h3 id="n1_0">1.0 gps转换地址</h6>
+> + url : ```http://localhost:3082/soso/sosoApi/gpsToStr```
 + 请求方式: ```get```
 
 >|功能|@return||实现状态|  
@@ -34,7 +36,7 @@
 |lat|{String}|是|gps 经度度坐标|
 |lng|{String}|是|gps 纬度度坐标|
 
-> + demo:```http://dipan.so:3082/soso/sosoApi/gpsToStr?lat=39.604509&lng=116.94351```
+> + demo:```http://localhost:3082/soso/sosoApi/gpsToStr?lat=39.604509&lng=116.94351```
 + 返回:需解析
 >
         {
@@ -93,13 +95,24 @@
             }
         }
 
-<h6 id="n2"></h6>
-**2. 用户相关**
 
-<h6 id="n2.0"></h6>
-###### 2.0 获取用户数据 
 
-> + url : ```http://dipan.so:3082/member/getUserData```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+<h2 id="n2">2. 用户相关</h6>
+
+
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<h3 id="n2_0">2.0 获取用户数据 </h6>
+
+> + url : ```http://localhost:3082/member/getUserData```
 + 请求方式: ```post```
 
 >|功能|@return 成功|@return 失败|实现状态|  
@@ -135,20 +148,28 @@
      code:'F',
      msg:'获取用户数据失败'
     }
+
+
+
+
     
 
 
-***
 
-### **php Api**
+# **php Api**
 
-<h6 id="p1"></h6>
-**1. 工具接口**
+<h2 id="p1">1. 工具接口</h6>
 
-<h6 id="p1.0"></h6>
-###### 1.0 获取客户端ip 
 
-> + url : ```http://dipan.so:8080/Api/Jsonp/getIP/from/web```
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+<h3 id="p1_0">1.0 获取客户端ip</h6>
+
+> + url : ```http://localhost:8080/Api/Jsonp/getIP/from/web```
 + 请求方式: ```get```
 
 >|功能|@return||实现状态|  
@@ -159,13 +180,12 @@
 |:---:|:---:|:-----:|:-----:|
 |from|{String} web|true|后台判断是web穿过来的|
 
-> + demo : ```http://dipan.so:8080/Api/Jsonp/getIP/from/web //{ip:'127.0.0.1'}```
+> + demo : ```http://localhost:8080/Api/Jsonp/getIP/from/web //{ip:'127.0.0.1'}```
 
 
-<h6 id="p1.1"></h6>
-###### 1.1 获取手机登录验证码 
+<h3 id="p1_1">1.1 获取手机登录验证码 </h6>
 
-> + url : ```http://dipan.so:8080/Api/Sem/getCode```
+> + url : ```http://localhost:8080/Api/Sem/getCode```
 + 请求方式: ```get```
 
 >|功能|@return||实现状态|  
@@ -177,12 +197,20 @@
 |roundCodeId|{*} |true|随机生成的8位数字|
 |mtNum|{*} |true|手机号码|
 
-> + demo：```http://dipan.so:8080/Api/Sem/getCode/roundCodeId/12415369/mtNum/15510986492```
+> + demo：```http://localhost:8080/Api/Sem/getCode/roundCodeId/12415369/mtNum/15510986492```
 
-<h6 id="p1.2"></h6>
-###### 1.2 用户登录提交 
 
-> + url : ```http://dipan.so:8080/Api/loginIn```
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+<h3 id="p1_2">1.2 用户登录提交 </h6>
+
+> + url : ```http://localhost:8080/Api/loginIn```
 + 请求方式: ```post```
 
 >|功能|@return 成功|@return 失败|实现状态|  

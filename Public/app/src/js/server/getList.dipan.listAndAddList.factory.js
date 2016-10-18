@@ -165,7 +165,7 @@
                 return;
             } else {
                 var re = {
-                    doc: starCatchList
+                    list: starCatchList
                 };
                 _rootScope.$broadcast('closeLoading');
                 ___call(re);
@@ -182,30 +182,34 @@
         }
 
         function call(re) {
-            console.log('re184', re);
-            //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
-            _addNewListToOldList(re.doc, function (reList) {
-                //标记star
-                reList = editShowStar(reList);
 
-                if (!re.doc && !re.doc[0]) {
-                    callSucessCount++;
-                    setTimeout(function () {
-                        if (callSucessCount > 1) {
-                            _tools.alert({
-                                title: '没有更多数据啦! ^_^'
-                            });
-                        }
+            try {
+                //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
+                _addNewListToOldList(re.list, function (reList) {
+                    //标记star
+                    reList = editShowStar(reList);
+
+                    if (!re.list && !re.list[0]) {
+                        callSucessCount++;
+                        setTimeout(function () {
+                            if (callSucessCount > 1) {
+                                _tools.alert({
+                                    title: '没有更多数据啦! ^_^'
+                                });
+                            }
+                        }, 0);
+                        return false;
+                    } else {
+                        callSucessCount = 0;
+                    }
+                    _timeout(function () {
+                        eval("scope." + listNam + "= reList");
+                        callBack(reList, listNam);//回调去绑定点击事件
                     }, 0);
-                    return false;
-                } else {
-                    callSucessCount = 0;
-                }
-                _timeout(function () {
-                    eval("scope." + listNam + "= reList");
-                    callBack(reList, listNam);//回调去绑定点击事件
-                }, 0);
-            }, listNam, scope);
+                }, listNam, scope);
+            } catch (e) {
+                console.error('error', e);
+            }
         }
 
         function err() {
@@ -306,7 +310,7 @@
 
 
         var strVar = "";
-        strVar += "        <li id=\"repListLi\"  class=\"mui-table-view-cell item\" url=\"content#{{vo.id}}\" bindonce bo-attr ng-repeat=\"\"";
+        strVar += "        <li class=\"mui-table-view-cell item\" url=\"content#{{vo.id}}\" bindonce bo-id='vo._id' ng-repeat=\"\"";
         strVar += "            style=\"background-color: #fff;margin-top: 10px\">";
         strVar += "            <div class=\"clear\">";
         strVar += "                <div class=\"left listHeader\">";
@@ -332,7 +336,7 @@
         var repListHtml = angular.element(strVar);
         repListHtml.attr('ng-repeat', "vo in " + listNam);
         repListHtml.attr('listName', listNam);
-        repListHtml.attr('bo-id', 'vo._id');
+        // repListHtml.attr('bo-id', 'vo._id');
 
         _compile('list', repListHtml[0], scope, true);
         if (!isCatch) {//如果不是 缓存请求
@@ -400,8 +404,22 @@
         //存储 catch
         _tools.saveLocalStorageObj(thisLogName, oldArr);
 
-        //存储 star
-        _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
+        //存储 star 从本地读取 记录的,加上新加的 ,一起存储
+        _saveStarNewAndOld();
+        function _saveStarNewAndOld() {
+            var endArr = [];
+            var oldArr = _tools.getLocalStorageObj('starArr');
+            console.log('oldArr',oldArr);
+            var newArr = thisObj.globalCatchList.starArr;
+            angular.forEach(oldArr, function (vo1) {
+                endArr.push(vo1);
+            });
+            angular.forEach(newArr, function (vo2) {
+                endArr.push(vo2);
+            });
+            _tools.saveLocalStorageObj('starArr', endArr);
+            
+        }
 
         delGoldCatcth();//删除当前url的全局缓存数组
     }

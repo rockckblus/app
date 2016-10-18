@@ -141,7 +141,6 @@
 
         //bind 星标 点击事件
         function _bind(doc, listName) {
-            console.log('docBind', doc);
             if (type == 'down') {
                 console.log('down', type);
             }
