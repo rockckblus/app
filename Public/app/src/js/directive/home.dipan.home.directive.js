@@ -190,67 +190,72 @@
                         });
                     }, 400);
 
-                    /**************************
-                     * 从缓存 读取 star 数组
-                     *
-                     * star 缓存命名 state.name + '_star'
-                     * @param callBack
-                     *
-                     * 16/9/14 下午9:21 ByRockBlus
-                     **************************/
-                    function _getStartFromCatch(callBack) {
-                        var stateName = 'star';
-                        star = tools.getLocalStorageObj(stateName);
-                        if (!star) {
-                            star = [];
-                        }
-                        $timeout(function () {
-                            callBack();
-                        }, 200);
-                    }
+                });
 
-                    /**************************
-                     * 存储标记对象 到 缓存的 标记数组
-                     * 16/9/14 下午7:37 ByRockBlus
-                     **************************/
-                    function _saveStarArr(_id) {
-                        getList.globalCatchList.starArr.push(_id);//push 到 全局数组
-                        var idDom = document.getElementById(_id);
-                        idDom = angular.element(idDom);
-                        var listName = idDom.attr('listName');
-                        var thisScope = eval('$scope.' + listName);
-                        angular.forEach(thisScope, function (vo) {
-                            if (vo._id == _id) {
-                                delete(vo.$$hashKey);
-                                _getStartFromCatch(function () {
-                                    star.push(vo);
-                                    //var stateName = $state.current.name + '_star';
-                                    var stateName = 'star';
-                                    tools.saveLocalStorageObj(stateName, star);
-                                });
+
+
+                /**************************
+                 * 从缓存 读取 star 数组
+                 *
+                 * star 缓存命名 state.name + '_star'
+                 * @param callBack
+                 *
+                 * 16/9/14 下午9:21 ByRockBlus
+                 **************************/
+                function _getStartFromCatch(callBack) {
+                    var stateName = 'star';
+                    star = tools.getLocalStorageObj(stateName);
+                    if (!star) {
+                        star = [];
+                    }
+                    $timeout(function () {
+                        callBack();
+                    }, 200);
+                }
+
+                /**************************
+                 * 存储标记对象 到 缓存的 标记数组
+                 * 16/9/14 下午7:37 ByRockBlus
+                 **************************/
+                function _saveStarArr(_id) {
+                    getList.globalCatchList.starArr.push(_id);//push 到 全局数组
+                    var idDom = document.getElementById(_id);
+                    idDom = angular.element(idDom);
+                    var listName = idDom.attr('listName');
+                    var thisScope = eval('$scope.' + listName);
+                    angular.forEach(thisScope, function (vo) {
+                        if (vo._id == _id) {
+                            delete(vo.$$hashKey);
+                            _getStartFromCatch(function () {
+                                star.push(vo);
+                                //var stateName = $state.current.name + '_star';
+                                var stateName = 'star';
+                                tools.saveLocalStorageObj(stateName, star);
+                            });
+                        }
+                    });
+                }
+
+                /**************************
+                 * 删除存储标记对象 到 缓存的 标记数组
+                 * 16/9/14 下午7:37 ByRockBlus
+                 **************************/
+                function _delStarArr(_id) {
+                    getList.delStarIdFromStarArr(_id);
+                    _getStartFromCatch(function () {
+                        var tempStar = [];
+                        angular.forEach(star, function (vo) {
+                            if (vo._id !== _id) {
+                                tempStar.push(vo);
                             }
                         });
-                    }
 
-                    /**************************
-                     * 删除存储标记对象 到 缓存的 标记数组
-                     * 16/9/14 下午7:37 ByRockBlus
-                     **************************/
-                    function _delStarArr(_id) {
-                        getList.delStarIdFromStarArr(_id);
-                        _getStartFromCatch(function () {
-                            var tempStar = [];
-                            angular.forEach(star, function (vo) {
-                                if (vo._id !== _id) {
-                                    tempStar.push(vo);
-                                }
-                            });
+                        var stateName = 'star';
+                        tools.saveLocalStorageObj(stateName, tempStar);
+                    });
+                }
 
-                            var stateName = 'star';
-                            tools.saveLocalStorageObj(stateName, tempStar);
-                        });
-                    }
-                });
+
             }
 
 
