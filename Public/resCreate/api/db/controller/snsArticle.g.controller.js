@@ -67,18 +67,26 @@ function getList(postObj, callBack) {
         whereCondition = {
             '_id': {
                 '$lt': postObj.endId
-            }
+            },
+            'type': postObj.type
+
         };
     }
 
-    if (postObj.frontId) {//下拉 find next 查出当前 的 上一条数据
+    else if (postObj.frontId) {//下拉 find next 查出当前 的 上一条数据
         whereCondition = {
             '_id': {
                 '$gt': postObj.frontId
-            }
+            },
+            'type': postObj.type
         };
     }
 
+    else {
+        whereCondition = {
+            'type': postObj.type
+        };
+    }
     snsArticleModel.find(whereCondition)
         .limit(10)
         .sort('-editTime')

@@ -67,7 +67,12 @@
              * @private
              */
             function _getThisCatchStarArr() {
-                return tools.getLocalStorageObj('starArr');
+                var endArr = [];
+                var homeStar = tools.getLocalStorageObj('star');
+                angular.forEach(homeStar, function (vo) {
+                    endArr.push(vo._id);
+                });
+                return endArr;
             }
 
             var strArr = _getThisCatchStarArr();
@@ -191,7 +196,6 @@
                     }, 400);
 
                 });
-
 
 
                 /**************************

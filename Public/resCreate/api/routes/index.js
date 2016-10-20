@@ -99,7 +99,6 @@ router.post('/sns/:fun', function (req, res) {
     postSns(req, res);
 });
 
-
 router.get('/', function (req, res) {
     res.json(11);
 });
@@ -215,9 +214,15 @@ function postCategory(req, res) {
  * post sns Aip sns相关
  * 16/3/8 */
 function postSns(req, res) {
+    console.log('req');
     var fun = req.params.fun;
     switch (fun) {
-        case 'getList' :
+        case 'homeGetList' :
+            req.body.type = 'home';//加入type字段。首页是 供
+            _getList(req.body);
+            break;
+        case 'needGetlist' :
+            req.body.type = 'need';//加入type字段。需
             _getList(req.body);
             break;
         case 'addOneArticle' ://添加一条记录

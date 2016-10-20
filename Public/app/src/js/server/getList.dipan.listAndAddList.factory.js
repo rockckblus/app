@@ -77,11 +77,10 @@
                 url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
                 break;
             case 'home':
-                // url = _config.host.nodeHost + '/sns/getList?' + _tools.getRoundCode(8);
                 url = _config.host.nodeHost + '/sns/homeGetList?' + _tools.getRoundCode(8);
                 break;
             case 'need':
-                url = 'http://192.168.0.52:3082/sns/getList?' + _tools.getRoundCode(8);
+                url = _config.host.nodeHost + '/sns/needGetList?' + _tools.getRoundCode(8);
                 break;
             case 'star':
                 url = true;
@@ -358,9 +357,11 @@
         switch (thisUrl) {
             case 'home':
                 newList = thisObj.globalCatchList.home;
+                _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
                 break;
             case 'need':
                 newList = thisObj.globalCatchList.need;
+                _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
                 break;
             case 'star':
                 //存储 star
@@ -374,14 +375,6 @@
 
         var oldArr = [];
         var thisLogName = 'catchList_' + _state.current.name + '-' + _tools.getToday();
-        //var oldObj = _tools.getLocalStorageObj(thisLogName);
-        //
-        ////合并新老数据
-        //if (oldObj) {
-        //    angular.forEach(oldObj, function (vo) {
-        //        oldArr.push(vo);
-        //    });
-        //}
 
         var tempCount = 0;
         angular.forEach(newList, function (voNew) {
@@ -405,7 +398,7 @@
         _tools.saveLocalStorageObj(thisLogName, oldArr);
 
         //存储 star 从本地读取 记录的,加上新加的 ,一起存储
-        _saveStarNewAndOld();
+        // _saveStarNewAndOld();
         function _saveStarNewAndOld() {
             var endArr = [];
             var oldArr = _tools.getLocalStorageObj('starArr');
