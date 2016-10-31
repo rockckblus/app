@@ -10,10 +10,10 @@
     ],
     "@platforms": ["android", "iPhone", "iPad"],
     "id": "H52D31952",/*应用的标识，创建应用时自动生成，勿手动修改*/
-    "name": "地盘",/*应用名称，程序桌面图标名称*/
+    "name": "兼职鼠",/*应用名称，程序桌面图标名称*/
     "version": {
         "name": "1.0",/*应用版本名称*/
-        "code": ""
+        "code": "85"
     },
     "description": "",/*应用描述信息*/
     "icons": {
@@ -266,7 +266,10 @@
 					"dist/js/res/mui.zoom.js",
 					"src/js/directive/member/setting.dipan.setting.directive.js",
 					"src/js/directive/master/master.dipan.masterIndex.directive.js",
-					null
+					null,
+					"src/js/directive/block/subFrom.block.addFrom.directive.js",
+					"src/html/directive/block/subFrom.block.addFrom.directive.html",
+					"src/js/directive/block/shaiXuan.block.shaiXuan.directive.js"
 				],
 				"refer": [
 					"src/html/updata.html"

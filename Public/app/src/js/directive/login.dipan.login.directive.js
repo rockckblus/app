@@ -38,6 +38,7 @@
         $scope.tel = false;
         $scope.code = false;
         $scope.codeClass = 'btn-danger';//获取验证码 变换背景颜色
+        $scope.loginImg = localData.loginImg;//登录图标
 
         //function hideLeftTop() {
         //    var leftTop = document.getElementById('topLeftBut');

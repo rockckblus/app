@@ -1,4 +1,4 @@
-<div class="scrollable-content section viewContent">
+<div class="scrollable-content section viewContent" style="margin-top: 10px">
     <style>
         .btn-danger {
             background-color: #bd0000;
@@ -20,11 +20,22 @@
         fieldset {
             border: 0px;
         }
+
+        header {
+            display: none;
+        }
+        .mui-bar-tab ~ .mui-content{
+            padding-top: 1px;
+        }
     </style>
 
 
-    <div id="loginLogo"></div>
+    <div id="loginLogo" class="clear">
+        <img class="left" style="margin-left: 10px" ng-src="{{loginImg}}"/>
+    <div style="margin-left: 10px;margin-top: 35px" class="left">偷油 . 从此简单</div>
+    </div>
 
+    <div class="clear"></div>
 
     <form name="myForm" id="myForm" novalidate>
         <fieldset>

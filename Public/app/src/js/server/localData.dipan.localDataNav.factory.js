@@ -28,7 +28,7 @@
         thisLocalData.gps = {
             isHaveGps: false, //判断
         };
-
+        thisLocalData.loginImg = getLoginImg();//登录页面bset64 图标
         thisLocalData._init = function () {
             thisTools = tools;
             _config = config;
@@ -53,13 +53,13 @@
             case '/memberIndex':
                 return __getUserTitle();
             case '/home':
-                return _filter('toHtml')('天津武清河西务唐庄村');
+                return _filter('toHtml')('<span class="fa fa-caret-down" style="margin-left: 10px"></span>');
             case '/need':
-                return _filter('toHtml')('天津武清河西务唐庄村');
+                return _filter('toHtml')('需求');
             case '/star':
                 return _filter('toHtml')('标记');
             case '/login':
-                return _filter('toHtml')('地盘');
+                return _filter('toHtml')('兼职鼠');
             case '/area':
                 return _filter('toHtml')('地区选择');
             case '/search':
@@ -67,7 +67,7 @@
             case '/setting':
                 return _filter('toHtml')('设置');
             default:
-                return _filter('toHtml')('地盘 dipan.so');
+                return _filter('toHtml')('兼职鼠');
         }
 
 
@@ -91,9 +91,15 @@
                 return '我的';
             }
         }
-
-
     }
+
+
+
+
+
+
+
+
 
     /**
      * 我的 首页 导航 list
@@ -198,26 +204,26 @@
                 _obj = [{
                     colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: _objDefaulOne.thisItem, //高亮
-                    name: '供', //名称
+                    name: '需求', //名称
                     route: 'hrefTabHome', //routeUrl
                     stateName: 'home', //routeUrl
                 }, {
                     colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
-                    name: '需', //名称
+                    name: '技能', //名称
                     route: 'hrefTabNeed', //routeUrl
                     stateName: 'need', //routeUrl
                 }, {
                     colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
-                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                    // name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                    name: '榜单', //名称
                     route: 'hrefTabmemberIndex', //routeUrl
                     stateName: 'memberIndex', //routeUrl
                 }, {
                     colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
-                    //name: '<i class="fa fa-star-o"></i>', //名称
-                    name: '标记', //名称
+                    name: '<i class="fa fa-star-o"></i>', //名称
                     route: 'hrefTabStar', //routeUrl
                     stateName: 'star', //routeUrl
                 }];
@@ -226,19 +232,19 @@
                 _obj = [{
                     colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
-                    name: '供', //名称
+                    name: '需求', //名称
                     route: 'hrefTabHome', //routeUrl
                     stateName: 'home', //routeUrl
                 }, {
                     colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: 'thisItem', //高亮
-                    name: '需', //名称
+                    name: '技能', //名称
                     route: 'hrefTabNeed', //routeUrl
                     stateName: 'need', //routeUrl
                 }, {
                     colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
-                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
+                    name: '榜单', //名称
                     route: 'hrefTabMemberIndex', //routeUrl
                     stateName: 'memberIndex', //routeUrl
                 }, {
@@ -475,4 +481,13 @@
             localStorage.setItem(_config.localSaveName.user.roundCodeId, roundCode);
         }, 200);
     }
+
+    /**
+     * login 页面图标
+     */
+    function getLoginImg() {
+        var img = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABJRJREFUeNrsWl1u2kAQNlHes32o1LeAeoDCCWJOEDhB4AQhJwBOAJwAcoLQE2BOgHOAKvStUl+4QbsjfW6nm7W9s2sTtfVIKxSy9uw3/zNLFDXUUEMNNdRQQw2diVo+D3388F7pj4let3p19Trqlei1+vLte1rlATWvtv64Z3z2em01n9NZAOsDEOOdXipny1If5qEisAsI1iQCPvQRbssD7MFh60YfZhwIdq0/RiXbCPRW8t4LoWntHLeP9P5ZANiRA1iiNZRQPWBNC4sZk0nNyacs+6fSw7D4sLD8K4Epc6K968oB60PE+mPAvqKA0dfm1NNrptdQ/92BAEwhSWliCJYE+k7zIH7Eo28A78IiqvNh/UIy5dgAm+bsPSCiZkR7E4F2XxjgsX52k7Nvx/gcIYxwDcN3YyNQFEXHPoTyy7QF2h0wsHMbWCKkpDHj09bnHFRl0vxF2zJt4TBz9lUMobnQLdPYrIQPCX3FvrqrCvCd4U+lpA+zNPxs4GjO2b5HRwEtmZbDNYxDZH6SChP93KK5IuJus3UU7InvRXAN0jAPPo+RjLY5YMp4nYSCfZTwuRBIPZGg9ZD+DcvtEj4JM+ubUMDXRpCQ0uccaynS8N6DT+rIoxRw20e7OVahSvYq1hhIae/IoxSwYsWGmLRV8MN/KmlKogDAx5x3eQet54DGJ3GQvorC6Oj6rovoP6PLczJDxdU1gktiibr/BOAYjcGrNvKcQi8z6SxYXZ3RCtRbAnbOb47VWh37azHpdoC2VM7kQuG93YrcJXKp1C4dNByj31Qeo9Eucw1q5ZbmOxDIyI9H7Blp4Lo2Slpvk/4qbABskqfDdzAKOtmKE0w4s8HBdYDbpKE+nAhbvFcFAWZRpZaBdNSRFiEs1YUDRsMgarCN5zceHZZ0iM/P9Ryq4T9KQ8l00Jc84sS9ZHDgApi3eNO686TQnAcsgxyNZsUPMMzyxNLTokYAlA1mLqMay8DeaSLj2jzw6eCoatOmw+Pi7AUpyiU3L4z6YFMl4KXRE9OdzlPWe2aaCShOaKg+QZTtY+ppLTUhHPOibeNizkQtwcEmJeYsvjE0bhCs16wApxCBrwBUGfV+r3LAYP5UkJ560rkXe988b/DucEX7wC2iasDmnQ4vMDqC98TwP9LeFpdxRfsPOX4ttirRxINyJN0YwqcjSf6Dn5Pv/4DQ1iy/dwVB0xus94gHvjZ0TQmI6gf434Y9m0Jzh5LIbwq07/sLg5CZVpYSCm8KUBys0RL2cNAs4tN1TA/A13mgUX0lri1gXYBvbDMpS2GfgbXdKZ8QXfsMdF5Q3FcxJAgB7DLCnSKFjHNqZMU0OITm1znla/rWgNtlGkbKSS2TyNRsOaHpFYQwKWlV1VkBG7VuUcJXNn9jPjkyInRW0d3mPON8aVaHhrlmimiEhsCci2VV1S4DDVBpgckG/8rPF3DseIAN8+UXysFURFA+RgAbwwoOqM1n0e+fGFonKAHjJnmlZUTftkNKUgA7sVhGi5WOU1aynhDktlEN1IrOQMYPRGMEsp4tNtR91dJQQw019FfRTwEGAAaP9cxn4vHoAAAAAElFTkSuQmCC';
+        return img;
+    }
+
 })();

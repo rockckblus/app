@@ -19,6 +19,7 @@
         $scope.$on('changeBody', function () {
             trueIsLogin();//判断登录
             $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
+            $rootScope.$broadcast('closeAddFrom');//默认 关闭 技能发布按钮面板
             var _url = '/' + $state.current.name;
             $timeout(function () {
                 $scope.title = localData.getTitle(_url);//getTitle
@@ -121,6 +122,30 @@
 
 
         }
+
+        /**
+         * 底部导航 显示 添加需求技能面板 按钮
+         * @type {Element}
+         */
+        var addFromBtn = document.getElementById('addFromBtn');
+        clickBin(addFromBtn);
+
+        /**
+         * bin 添加按钮点击事件
+         */
+        function clickBin(doc) {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+            });
+
+            doc.addEventListener(type, function () {
+                $rootScope.$broadcast('showAddFrom');
+            });
+        }
+
+
     }
 
 

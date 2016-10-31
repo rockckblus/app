@@ -55,7 +55,10 @@
       "dist/js/res/mui.imageViewer.js",
       "dist/js/res/mui.zoom.js",
       "src/js/directive/member/setting.dipan.setting.directive.js",
-      "src/js/directive/master/master.dipan.masterIndex.directive.js"
+      "src/js/directive/master/master.dipan.masterIndex.directive.js",
+      "src/js/directive/block/subFrom.block.addFrom.directive.js",
+      "src/html/directive/block/subFrom.block.addFrom.directive.html",
+      "src/js/directive/block/shaiXuan.block.shaiXuan.directive.js"
     ],
     "refer": [
       "src/html/updata.html"

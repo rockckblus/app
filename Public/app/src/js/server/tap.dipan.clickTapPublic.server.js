@@ -28,12 +28,14 @@
             'hrefTabHome',//主页 供
             'hrefTabNeed',//需
             'hrefTabStar',//标记
-            'hrefMaster',//地主
+            // 'hrefMaster',//地主
             'hrefMember',//我的首页
             'hrefMemberAddArticle',//test添加文章
             'login',//登录
             'hrefMemberLoginOut',//退出登录
             'hrefMemberSetting',//设置
+            'hrefAddFromNeed',//添加需求
+            'hrefAddMyBom',//添加技能
         ];
 
         var idsIsBind = [];//已经在服务绑定过的 id,就不去绑定了
@@ -45,7 +47,9 @@
             'hrefTabStar',
             'hrefMemberAddArticle',
             'hrefMemberLoginOut',
-            'hrefMemberSetting'
+            'hrefMemberSetting',
+            'hrefAddFromNeed',
+            'hrefAddMyBom'
         ];
 
         function plus(callBack) {
