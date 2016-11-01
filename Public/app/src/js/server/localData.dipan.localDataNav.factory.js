@@ -22,6 +22,7 @@
         thisLocalData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
         thisLocalData.setting = _settingNav(); //设置 导航list
         thisLocalData.tab = _tab; //根据 url 遍历 给tab数据
+        thisLocalData.shaiXuan = _shaiXuan; //根据 url 遍历 筛选条件
         thisLocalData.showTab = _showTab; //遍历url 返回true false ,控制是否显示tab
         thisLocalData.getTitle = _getTitle; //getTitle
         thisLocalData.giveRoundCode = _giveRoundCode;// 给一个8位随机码,验证短信用
@@ -55,7 +56,7 @@
             case '/home':
                 return _filter('toHtml')('<span class="fa fa-caret-down" style="margin-left: 10px"></span>');
             case '/need':
-                return _filter('toHtml')('需求');
+                return _filter('toHtml')('<span class="fa fa-caret-down" style="margin-left: 10px"></span>');
             case '/star':
                 return _filter('toHtml')('标记');
             case '/login':
@@ -69,7 +70,6 @@
             default:
                 return _filter('toHtml')('兼职鼠');
         }
-
 
         /**
          * 获取用户手机,头像,昵称
@@ -92,13 +92,6 @@
             }
         }
     }
-
-
-
-
-
-
-
 
 
     /**
@@ -185,6 +178,93 @@
     }
 
     /**
+     * 遍历url 给筛选数据
+     * @param url
+     * @returns {boolean}
+     * @private
+     */
+    function _shaiXuan(url) {
+        switch (url) {
+            case '/home':
+                return [
+                    [
+                        {
+                            id: 'homeShaiXuanOne1',
+                            name: '服务方式(不限)',
+                        },
+                        {
+                            id: 'homeShaiXuanOne2',
+                            name: '线上服务',
+                        },
+                        {
+                            id: 'homeShaiXuanOne3',
+                            name: '线下服务',
+                        }
+                    ],
+                    [
+                        {
+                            id: 'homeShaiXuanTwo1',
+                            name: '最新发布',
+                        },
+                        {
+                            id: 'homeShaiXuanTwo2',
+                            name: '距离最近',
+                        }
+                    ],
+                    [
+                        {
+                            id: 'homeShaiXuanThree1',
+                            name: '认证(不限)',
+                        },
+                        {
+                            id: 'homeShaiXuanThree2',
+                            name: '实名认证',
+                        }
+                    ]
+                ];
+            case '/need':
+                return [
+                    [
+                        {
+                            id: 'needShaiXuanOne1',
+                            name: '在线状态(不限)',
+                        },
+                        {
+                            id: 'needShaiXuanOne2',
+                            name: '手机在线',
+                        }
+                    ],
+                    [
+                        {
+                            id: 'needShaiXuanTwo1',
+                            name: '性别不限',
+                        },
+                        {
+                            id: 'needShaiXuanTwo2',
+                            name: '男',
+                        },
+                        {
+                            id: 'needShaiXuanTwo3',
+                            name: '女',
+                        }
+                    ],
+                    [
+                        {
+                            id: 'needShaiXuanThree1',
+                            name: '人气最高',
+                        },
+                        {
+                            id: 'needShaiXuanThree2',
+                            name: '最近活跃',
+                        }
+                    ]
+                ];
+            default:
+                return false;
+        }
+    }
+
+    /**
      * 根据 url 遍历 给tab数据
      * @param url
      * @returns {Array}
@@ -202,85 +282,69 @@
         switch (url) {
             case '/home':
                 _obj = [{
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: _objDefaulOne.thisItem, //高亮
-                    name: '需求', //名称
+                    name: '技能', //名称
                     route: 'hrefTabHome', //routeUrl
                     stateName: 'home', //routeUrl
                 }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
-                    name: '技能', //名称
+                    name: '需求', //名称
                     route: 'hrefTabNeed', //routeUrl
                     stateName: 'need', //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    // name: '<i class="fa fa-ellipsis-h"></i>', //名称
-                    name: '榜单', //名称
-                    route: 'hrefTabmemberIndex', //routeUrl
-                    stateName: 'memberIndex', //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '<i class="fa fa-star-o"></i>', //名称
-                    route: 'hrefTabStar', //routeUrl
-                    stateName: 'star', //routeUrl
-                }];
+                },
+                    {
+                        colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: false, //高亮
+                        name: '<i class="fa fa-star-o"></i>', //名称
+                        route: 'hrefTabStar', //routeUrl
+                        stateName: 'star', //routeUrl
+                    }];
                 return _obj;
             case '/need':
                 _obj = [{
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
-                    name: '需求', //名称
+                    name: '技能', //名称
                     route: 'hrefTabHome', //routeUrl
                     stateName: 'home', //routeUrl
                 }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: 'thisItem', //高亮
-                    name: '技能', //名称
+                    name: '需求', //名称
                     route: 'hrefTabNeed', //routeUrl
                     stateName: 'need', //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '榜单', //名称
-                    route: 'hrefTabMemberIndex', //routeUrl
-                    stateName: 'memberIndex', //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '<i class="fa fa-star-o"></i>', //名称
-                    route: 'hrefTabStar', //routeUrl
-                    stateName: 'star', //routeUrl
-                }];
+                },
+                    {
+                        colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: false, //高亮
+                        name: '<i class="fa fa-star-o"></i>', //名称
+                        route: 'hrefTabStar', //routeUrl
+                        stateName: 'star', //routeUrl
+                    }];
                 return _obj;
             case '/star':
                 _obj = [{
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
-                    name: '供', //名称
+                    name: '技能', //名称
                     route: 'hrefTabHome', //routeUrl
                     stateName: 'home', //routeUrl
                 }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
-                    name: '需', //名称
+                    name: '需求', //名称
                     route: 'hrefTabNeed', //routeUrl
                     stateName: 'need', //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
-                    route: 'hrefTabMemberIndex', //routeUrl
-                    stateName: 'memberIndex', //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: 'thisItem', //高亮
-                    name: '<i class="fa fa-star-o"></i>', //名称
-                    route: 'hrefTabStar',//routeUrl
-                    stateName: 'star', //routeUrl
-                }];
+                },
+                    {
+                        colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                        thisItem: 'thisItem', //高亮
+                        name: '<i class="fa fa-star-o"></i>', //名称
+                        route: 'hrefTabStar',//routeUrl
+                        stateName: 'star', //routeUrl
+                    }];
                 return _obj;
 
             case '/memberIndex':

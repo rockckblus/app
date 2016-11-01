@@ -42,29 +42,46 @@
             }, 0);
 
             function _getTitle(url) {
-                console.log('url', url);
                 switch (url) {
                     case '/home':
                         $timeout(function () {
-                            $scope.titleText = '分类';
+                            $scope.titleText = '技能分类';
                         }, 0);
                         break;
                     case '/need':
                         $timeout(function () {
-                            $scope.titleText = 'need';
+                            $scope.titleText = '需求分类';
                         }, 0);
                         break;
                     case '/star':
+                        $timeout(function () {
+                            $scope.titleText = '';
+                        }, 0);
                         break;
                     case '/login':
+                        $timeout(function () {
+                            $scope.titleText = '';
+                        }, 0);
                         break;
                     case '/area':
+                        $timeout(function () {
+                            $scope.titleText = '';
+                        }, 0);
                         break;
                     case '/search':
+                        $timeout(function () {
+                            $scope.titleText = '';
+                        }, 0);
                         break;
                     case '/setting':
+                        $timeout(function () {
+                            $scope.titleText = '';
+                        }, 0);
                         break;
                     default:
+                        $timeout(function () {
+                            $scope.titleText = '';
+                        }, 0);
                         return false;
                 }
 
