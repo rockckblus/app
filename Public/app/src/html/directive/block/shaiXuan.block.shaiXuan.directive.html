@@ -1,14 +1,9 @@
-<div class="clear" id="shaiXuanTab">
+<div class="clear" id="shaiXuanTab" ng-show="needShaiXuan">
     <div class="shaiXuan mui-btn shaiXuanIndex{{$index}} {{vo.shaiXuanGaoLiang}}" ng-repeat="vo in shaiXuanList"
          id="shaiXuanClick_{{$index}}" thisid="{{vo.thisId}}">
         <div>
             <span>{{vo.thisName}}</span>
             <span class="fa fa-long-arrow-down"></span>
-            <!--<div class="downShaiXuan">-->
-            <!--<div id="{{vo2.id}}" ng-if="$index != 0" ng-repeat="vo2 in vo">-->
-            <!--<span>{{vo2.name}}</span>-->
-            <!--</div>-->
-            <!--</div>-->
         </div>
 
     </div>

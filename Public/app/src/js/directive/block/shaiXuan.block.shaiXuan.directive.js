@@ -24,21 +24,38 @@
     function thisController($scope, $rootScope, $timeout, localData, $state, tools) {
         $scope.shaiXuanList = '';//筛选list data
         $scope.clickThis = clickThis;//筛选点击事件
+        $scope.needShaiXuan = false;//是否需要筛选面板
         var clcikSaiXuanArr = [];//点击筛选数组
 
-        $scope.show = {
-            one: false,
-            two: false,
-            three: false,
-        };//显示对应面板
         $scope.$on('changeBody', function () {
             init();
         });
 
         init();
         function init() {
-            _getClickSaiXuanDb();//获取筛选数组
-            getList();
+            //判断是否需要筛选,需要的话,回调
+            if (trueNeedShaiXuan()) {
+                $scope.needShaiXuan = true;
+                _getClickSaiXuanDb();//获取筛选数组
+                getList();
+            } else {
+                $scope.needShaiXuan = false;
+            }
+        }
+
+
+        /**
+         * 判断是否需要筛选,需要的话,回调
+         */
+        function trueNeedShaiXuan() {
+            switch ($state.current.name) {
+                case 'home':
+                    return true;
+                case 'need':
+                    return true;
+                default:
+                    return false;
+            }
         }
 
 

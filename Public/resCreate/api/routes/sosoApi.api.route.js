@@ -34,7 +34,7 @@ var api = {
             '17b8b3d7ffc09d97a150d0ce0aa741ec'
         ],
         gpsToStr: 'apis.map.qq.com/ws/geocoder/v1/?location=',//soso gpstostr url
-        gaoDeIpToCity:'restapi.amap.com/v3/ip?ip=',//gaoDe ip定位
+        gaoDeIpToCity: 'restapi.amap.com/v3/ip?ip=',//gaoDe ip定位http://restapi.amap.com/v3/ip?ip=114.247.50.2&output=xml&key=<用户的key>
 
     }
 };
@@ -56,10 +56,9 @@ function sosoApi(req, res) {
             break;
         case 'ipToCity' ://get ip 定位
             /*************************
-             * @请求的 url 传入 lat,lng http://dipan.so:3082/soso/sosoApi/gpsToStr?lat=39.604509&lng=116.943519
-             * 16/7/30 上午11:37 ByRockBlus
+             * gaoDe ip定位http://restapi.amap.com/v3/ip?ip=114.247.50.2&output=xml&key=<用户的key>
              *************************/
-            _gpsToStr();//soso 接口 gps原生格式,转换 地理位置
+            _ipToCity();
             break;
     }
 
@@ -71,7 +70,7 @@ function sosoApi(req, res) {
         var lat = req.query.lat;
         var lng = req.query.lng;
         if (lat && lng) {
-            var sosoApiUrl = api.url.gpsToStr + lat + ',' + lng + '&coord_type=1&key=' + api.url.sosoKey[0];
+            var sosoApiUrl = api.url.gpsToStr + lat + ',' + lng + '&coord_type=1&key=' + _getRoundArr(api.url.sosoKey);
             curlCtrl.get(sosoApiUrl, function (doc) {
                 res.json(doc);
             });
@@ -79,6 +78,33 @@ function sosoApi(req, res) {
             res.json('经纬度为空');
         }
     }
+
+    /**
+     * gaoDe ip定位http://restapi.amap.com/v3/ip?ip=114.247.50.2&output=xml&key=<用户的key>
+     */
+    function _ipToCity() {
+        var ip = req.query.ip;
+        if (ip) {
+            var gaoDeApiUrl = api.url.gaoDeIpToCity + ip + '&key=' + _getRoundArr(api.url.gaodeKey);
+            curlCtrl.get(gaoDeApiUrl, function (doc) {
+                res.json(doc);
+            });
+        } else {
+            res.json('ip为空');
+        }
+    }
+
+
+    /**
+     * 随机返回 数组中一个元素
+     * 传数组
+     */
+
+    function _getRoundArr(arr) {
+        var num = Math.floor(Math.random() * arr.length + 1) - 1;
+        return arr[num] ;
+    }
+
 }
 
 module.exports = router;

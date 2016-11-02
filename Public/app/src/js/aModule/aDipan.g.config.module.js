@@ -231,7 +231,8 @@
                     roundCodeId: 'roundCodeId',//随机id,启动后生成
                     isLogin: 'isLogin',//判断登录
                     userData: 'userData',//用户数据
-                    clickShaiXuan:'clickShaiXuan',//筛选点击id数组
+                    clickShaiXuan: 'clickShaiXuan',//筛选点击id数组
+                    area: 'area',//gps 坐标信息,城市名称
                 },
                 version: {
                     //版本

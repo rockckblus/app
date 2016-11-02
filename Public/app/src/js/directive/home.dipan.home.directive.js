@@ -28,11 +28,11 @@
 
         $scope.urlName = $state.current.name;//当前url Name
         $scope.list = []; //默认首页 列表 数据,每次刷新请求后 push list变量名称
+        $scope.listTop = {'margin-top': '45px'};//homeList 的 style
         var endId;//下拉后 得到 的 最后一条id
         var firstId;//第一条id,上拉时候用
         var type = 'up';//当前请求方式 up down
         var star = [];//标记数组 ,
-
 
         /*************************
          * 默认读取上次的缓存 数据, 然后 再异步更新 到 最新数据,
@@ -44,6 +44,7 @@
             _init();//判断缓存,去执行响应逻辑(变换滚动位置,获取最新数据)
             plusInit();//bind plus 滚动到底部事件
             bindLoadMoreClick();//bind 加载 更多点击事件
+            giveListTop();//根据url 给内容部分marginTop
         }
 
         /**
@@ -323,6 +324,25 @@
                 }
             });
         }
+
+        /**
+         * giveListTop
+         */
+        function giveListTop() {
+            console.log('$', $state.current.name);
+            switch ($state.current.name) {
+                case 'star':
+                    $timeout(function () {
+                        $scope.listTop = {
+                            'margin-top': '10px'
+                        };
+                    }, 0);
+                    break;
+                default:
+                    return;
+            }
+        }
+
 
     }
 })();

@@ -414,20 +414,39 @@
          * 16/8/19 上午7:43 ByRockBlus
          *************************/
         function _web() {
-            var url = _config.host.phpHost + '/Api/Jsonp/getIP/from/web';
+            var url = _config.host.phpHost + '/Api/Jsonp/getIP/from/web';//获取浏览器ip
 
-            thisTools.getJsp(url, true).then(_s, _f);
+            thisTools.getJsp(url, true).then(_s1).then(_s2).then(_s3, _err);
 
-
-            function _s(re) {
-                thisTools.alert({title: re.ip});
+            /**
+             * 获取浏览器ip re.ip
+             * @private
+             */
+            function _s1(re1) {
+                console.log('re1',re1);
+                var url1 = _config.host.nodeHost + '/soso/sosoApi/ipToCity?ip=' + re1.ip;//获取城市
+                thisTools.getJsp(url1, true);
             }
 
-            function _f() {
-
+            function _s2(re2) {
+                console.log('re2',re2);
+                // var city = JSON.parse(JSON.parse(re2));
+                // city = city.city;
+                // var url2 = _config.host.nodeHost + '/soso/sosoApi/strToGps?str=' + city;//获取城市ip
+                // thisTools.getJsp(url2, true);
             }
 
-            //获取 ip地址,去反查地址数据
+            function _s3(re3) {
+                console.log('re3', re3);
+            }
+
+            function _err(e) {
+                console.error('error', e);
+            }
+
+            // console.log('re1', JSON.parse(JSON.parse(re1)));
+
+
         }
 
         /*************************
@@ -467,7 +486,6 @@
 
             //失败回调
             function _err(e) {
-
                 console.log(e);
                 thisTools.alert({
                     title: '获取位置失败',
@@ -504,6 +522,17 @@
             }
         }
 
+        /**
+         * 写入gps数据到 本地数据库
+         * 传gps坐标,城市名称
+         */
+        function writeDbGps(gpsObj, city) {
+            var area = {
+                gpsObj: gpsObj,
+                city: city
+            };
+            tools.saveLocalStorageObj('area', area);
+        }
     }
 
     /*************************
