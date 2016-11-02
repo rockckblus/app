@@ -50,7 +50,7 @@
                         break;
                     case '/need':
                         $timeout(function () {
-                            $scope.titleText = '需求分类';
+                            $scope.titleText = '';
                         }, 0);
                         break;
                     case '/star':

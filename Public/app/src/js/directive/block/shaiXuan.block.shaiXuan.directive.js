@@ -19,11 +19,12 @@
     }
 
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', '$state'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', '$state', 'tools'];
 
-    function thisController($scope, $rootScope, $timeout, localData, $state) {
+    function thisController($scope, $rootScope, $timeout, localData, $state, tools) {
         $scope.shaiXuanList = '';//筛选list data
         $scope.clickThis = clickThis;//筛选点击事件
+        var clcikSaiXuanArr = [];//点击筛选数组
 
         $scope.show = {
             one: false,
@@ -36,8 +37,10 @@
 
         init();
         function init() {
+            _getClickSaiXuanDb();//获取筛选数组
             getList();
         }
+
 
         /**
          * 给筛选赋值
@@ -51,7 +54,12 @@
                         if (index2 === 0) {
                             vo.thisName = vo2.name;
                             vo.thisId = vo2.id;
-                            vo.shaiXuanGaoLiang = '';//筛选高亮,点击一次,就 一直 高亮
+
+                            if (clcikSaiXuanArr.indexOf(vo2.id) == -1) {
+                                vo.shaiXuanGaoLiang = '';//不在记录数组,就不给高亮
+                            } else {
+                                vo.shaiXuanGaoLiang = 'shaiXuanGaoLiang';//在记录数组里面,给高亮
+                            }
                             bindClickId(index, vo.thisId);
                         }
                     });
@@ -60,6 +68,16 @@
             }, 0);
         }
 
+        /**
+         * 获取筛选数组
+         * @private
+         */
+        function _getClickSaiXuanDb() {
+            var clcikSaiXuanArrTemp = tools.getLocalStorageObj('clickShaiXuan');
+            if (clcikSaiXuanArrTemp) {
+                clcikSaiXuanArr = clcikSaiXuanArrTemp;
+            }
+        }
 
         /**
          * bind 筛选点击 dom
@@ -75,7 +93,7 @@
                         console.log('idDom', idDom);
                         var thisId = idDom.attr('thisid');
                         clickThis(index, thisId);
-                    })
+                    });
                 } catch (e) {
                     console.log('id不存在');
                 }
@@ -103,11 +121,34 @@
                     $timeout(function () {
                         $scope.shaiXuanList[index].thisName = $scope.shaiXuanList[index][getIndex].name;
                         $scope.shaiXuanList[index].thisId = $scope.shaiXuanList[index][getIndex].id;
-                        $scope.shaiXuanList[index].shaiXuanGaoLiang = 'shaiXuanGaoLiang';
+                        if ($scope.shaiXuanList[index].shaiXuanGaoLiang == 'shaiXuanGaoLiang') {
+                            $scope.shaiXuanList[index].shaiXuanGaoLiang = '';
+
+                            var tempIndex = clcikSaiXuanArr.indexOf($scope.shaiXuanList[index].thisId);
+                            if (tempIndex != -1) {
+                                clcikSaiXuanArr.splice(tempIndex, 1);
+                                tools.saveLocalStorageObj('clickShaiXuan', clcikSaiXuanArr);//存储本地数据库
+                            }
+                        } else {
+                            var type = $scope.shaiXuanList[index][0].type;
+                            angular.forEach($scope.shaiXuanList, function (vo, index2) {
+                                if (vo[0].type == type) {
+                                    $scope.shaiXuanList[index2].shaiXuanGaoLiang = '';
+                                    var tempIndex = clcikSaiXuanArr.indexOf(vo[0].id);
+                                    if (tempIndex != -1) {
+                                        clcikSaiXuanArr.splice(tempIndex, 1);
+                                        console.log('cl', clcikSaiXuanArr);
+                                    }
+                                }
+                            });
+                            $scope.shaiXuanList[index].shaiXuanGaoLiang = 'shaiXuanGaoLiang';
+                            clcikSaiXuanArr.push($scope.shaiXuanList[index].thisId);
+                            tools.saveLocalStorageObj('clickShaiXuan', clcikSaiXuanArr);//存储本地数据库
+                        }
                     }, 0);
 
                 }
-            })
+            });
         }
 
 

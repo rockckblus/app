@@ -199,16 +199,18 @@
             //host 配置
             host: {
 
-                // nodeHost: 'http://dipan.so:3082',//nodejsApi hostUrl
-                nodeHost: 'http://192.168.0.52:3082',//nodejsApi hostUrl
-                nodeHostTest: 'http://192.168.0.52:8878',//nodejsApi 模拟Api
+                nodeHost: 'http://127.0.0.1:3082',//nodejsApi hostUrl
+                // nodeHost: 'http://192.168.0.52:3082',//nodejsApi hostUrl
+                // nodeHostTest: 'http://192.168.0.52:8878',//nodejsApi 模拟Api
+                nodeHostTest: 'http://127.0.0.1:8878',//nodejsApi 模拟Api
 
                 // phpHost: 'http://dipan.so:8080',//php host
-                phpHost: 'http://dipan.so:8080',//php host
-                phpHostTest: 'http://192.168.0.52:8889',//php host模拟Api
+                phpHost: 'http://127.0.0.1:8080',//php host
+                // phpHostTest: 'http://192.168.0.52:8889',//php host模拟Api
+                phpHostTest: 'http://127.0.0.1:8889',//php host模拟Api
 
-                //appPath: 'http://dipan.so:8080/Public/App/'//app 静态路径
-                appPath: 'http://192.168.0.52:8080/Public/App/'//app 静态路径
+                appPath: 'http://127.0.0.1:8080/Public/App/'//app 静态路径
+                // appPath: 'http://192.168.0.52:8080/Public/App/'//app 静态路径
             },
 
             //localStroe 存储标示 name
@@ -229,6 +231,7 @@
                     roundCodeId: 'roundCodeId',//随机id,启动后生成
                     isLogin: 'isLogin',//判断登录
                     userData: 'userData',//用户数据
+                    clickShaiXuan:'clickShaiXuan',//筛选点击id数组
                 },
                 version: {
                     //版本

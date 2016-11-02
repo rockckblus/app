@@ -56,7 +56,7 @@
             case '/home':
                 return _filter('toHtml')('<span class="fa fa-caret-down" style="margin-left: 10px"></span>');
             case '/need':
-                return _filter('toHtml')('<span class="fa fa-caret-down" style="margin-left: 10px"></span>');
+                return _filter('toHtml')('');
             case '/star':
                 return _filter('toHtml')('标记');
             case '/login':
@@ -92,7 +92,6 @@
             }
         }
     }
-
 
     /**
      * 我的 首页 导航 list
@@ -189,75 +188,62 @@
                 return [
                     [
                         {
-                            id: 'homeShaiXuanOne1',
-                            name: '服务方式(不限)',
-                        },
-                        {
-                            id: 'homeShaiXuanOne2',
-                            name: '线上服务',
-                        },
-                        {
-                            id: 'homeShaiXuanOne3',
-                            name: '线下服务',
-                        }
-                    ],
-                    [
-                        {
-                            id: 'homeShaiXuanTwo1',
-                            name: '最新发布',
-                        },
-                        {
-                            id: 'homeShaiXuanTwo2',
-                            name: '距离最近',
-                        }
-                    ],
-                    [
-                        {
                             id: 'homeShaiXuanThree1',
-                            name: '认证(不限)',
+                            name: '男',
+                            type: 'more',
                         },
+                    ],
+                    [
                         {
                             id: 'homeShaiXuanThree2',
-                            name: '实名认证',
-                        }
-                    ]
+                            name: '女',
+                            type: 'more',
+                        },
+
+                    ],
+                    [
+                        {
+                            id: 'homeShaiXuanOne3',
+                            name: '人气',
+                            type: 'two',
+                        },
+                    ],
+                    [
+                        {
+                            id: 'homeShaiXuanTwo4',
+                            name: '活跃',
+                            type: 'two',
+                        },
+                    ],
                 ];
             case '/need':
                 return [
                     [
                         {
-                            id: 'needShaiXuanOne1',
-                            name: '在线状态(不限)',
+                            id: 'needShaiXuanTwo2',
+                            name: '最新',
+                            type: 'four',
                         },
+                    ],
+                    [
                         {
                             id: 'needShaiXuanOne2',
-                            name: '手机在线',
-                        }
+                            name: '价格',
+                            type: 'three',
+                        },
                     ],
+                    [{
+                        id: 'needShaiXuanThree1',
+                        name: '信誉',
+                        type: 'three',
+                    }],
                     [
-                        {
-                            id: 'needShaiXuanTwo1',
-                            name: '性别不限',
-                        },
-                        {
-                            id: 'needShaiXuanTwo2',
-                            name: '男',
-                        },
                         {
                             id: 'needShaiXuanTwo3',
-                            name: '女',
-                        }
-                    ],
-                    [
-                        {
-                            id: 'needShaiXuanThree1',
-                            name: '人气最高',
+                            name: '线上服务',
+                            type: 'five',
                         },
-                        {
-                            id: 'needShaiXuanThree2',
-                            name: '最近活跃',
-                        }
-                    ]
+                    ],
                 ];
             default:
                 return false;

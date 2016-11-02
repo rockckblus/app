@@ -393,17 +393,17 @@ body {
   border: none;
 }
 #shaiXuanTab .shaiXuan {
-  width: 33%;
+  width: 25%;
   float: left;
   border-right: 1px solid #f4f4f4;
   text-align: center;
-  color: #777;
+  color: #cccccc;
   font-size: 14px;
   padding-top: 11px;
 }
 #shaiXuanTab .shaiXuanGaoLiang {
   color: #bd0000;
 }
-#shaiXuanTab .shaiXuanIndex2 {
+#shaiXuanTab .shaiXuanIndex4 {
   border: none;
 }
