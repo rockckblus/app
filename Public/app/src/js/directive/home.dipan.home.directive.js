@@ -121,7 +121,6 @@
         function bindLoadMoreClick() {
             var bindBtn = document.getElementById('isWeb');
             try {
-                console.log('binBtn', bindBtn);
                 bindBtn.addEventListener('tap', function () {
                     downGetList(true);//请求下拉更多数据,
                 });
@@ -329,7 +328,6 @@
          * giveListTop
          */
         function giveListTop() {
-            console.log('$', $state.current.name);
             switch ($state.current.name) {
                 case 'star':
                     $timeout(function () {

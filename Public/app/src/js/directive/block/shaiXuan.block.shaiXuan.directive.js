@@ -102,12 +102,10 @@
         function bindClickId(index) {
             $timeout(function () {
                 var idStr = "shaiXuanClick_" + index;
-                console.log('idStar', idStr);
                 try {
                     var idClickDom = document.getElementById(idStr);
                     idClickDom.addEventListener('tap', function () {
                         var idDom = angular.element(idClickDom);
-                        console.log('idDom', idDom);
                         var thisId = idDom.attr('thisid');
                         clickThis(index, thisId);
                     });

@@ -1,9 +1,9 @@
 <header class="mui-bar mui-bar-nav">
-    <i ng-show="url !== '/login'" ng-if="url !== '/home'" onclick="history.go(-1);" id="goHistory" url="goHistory"
+    <i ng-show="url !== '/login' && url !== '/need'" ng-if="url !== '/home'" onclick="history.go(-1);" id="goHistory" url="goHistory"
        class="fa fa-angle-left linkMouse  mui-pull-left mui-btn icon-btn"></i>
-    <i ng-show="url == '/home'" id="hrefArea" url="area"
+    <i ng-show="url == '/home'  || url == '/need' " id="hrefArea" url="area"
        class="fa fa-location-arrow  mui-pull-left mui-btn icon-btn linkMouse"></i>
-    <i ng-show="(url != '/login') && (url != '/memberIndex') && (url != '/setting')" id="hrefSearch" url="search"
+    <i ng-show="(url == '/home') && (url != '/memberIndex') && (url != '/setting')" id="hrefSearch" url="search"
        class="fa fa-search fa-1  mui-pull-right mui-icon icon-btn"
        style="padding-right: 17px;padding-top: 13px;"></i>
     <i ng-show="(url == '/memberIndex')" id="editMemberInfo" url="editMemberInfo"
