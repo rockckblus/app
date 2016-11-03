@@ -229,13 +229,13 @@
                         {
                             id: 'needShaiXuanOne2',
                             name: '价格',
-                            type: 'three',
+                            type: 'four',
                         },
                     ],
                     [{
                         id: 'needShaiXuanThree1',
                         name: '信誉',
-                        type: 'three',
+                        type: 'four',
                     }],
                     [
                         {
@@ -423,13 +423,13 @@
              * @private
              */
             function _s1(re1) {
-                console.log('re1',re1);
+                console.log('re1', re1);
                 var url1 = _config.host.nodeHost + '/soso/sosoApi/ipToCity?ip=' + re1.ip;//获取城市
                 thisTools.getJsp(url1, true);
             }
 
             function _s2(re2) {
-                console.log('re2',re2);
+                console.log('re2', re2);
                 // var city = JSON.parse(JSON.parse(re2));
                 // city = city.city;
                 // var url2 = _config.host.nodeHost + '/soso/sosoApi/strToGps?str=' + city;//获取城市ip
@@ -531,7 +531,7 @@
                 gpsObj: gpsObj,
                 city: city
             };
-            tools.saveLocalStorageObj('area', area);
+            thisTools.saveLocalStorageObj('area', area);
         }
     }
 

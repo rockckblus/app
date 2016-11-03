@@ -100,7 +100,8 @@ router.post('/sns/:fun', function (req, res) {
 });
 
 router.get('/', function (req, res) {
-    res.json(11);
+    console.log('111111111111111');
+    res.json(111);
 });
 
 
