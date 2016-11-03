@@ -40,8 +40,8 @@
                 $timeout(function() {
                     $scope.showAlertUi = false;
                     $scope.alertUiClass = 'showThis';
-                }, 800);
-            }, 1000);
+                }, 0);
+            }, 800);
         }
 
     }
