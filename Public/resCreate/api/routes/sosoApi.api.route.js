@@ -25,19 +25,30 @@ router.get('/sosoApi/:fun', function (req, res) {
  * 16/7/30 上午10:13 ByRockBlus
  *************************/
 var api = {
-    url: {
-        sosoKey: [
-            'WGKBZ-YIYRU-3IOVL-B6A3J-HYANJ-BWFUC'
-        ],
-        gaodeKey: [
-            '8bc8bb3d13cc9fdab255b1aeb5d1c533',
-            '17b8b3d7ffc09d97a150d0ce0aa741ec'
-        ],
-        gpsToStr: 'apis.map.qq.com/ws/geocoder/v1/?location=',//soso gpstostr url
-        gaoDeIpToCity: 'restapi.amap.com/v3/ip?ip=',//gaoDe ip定位http://restapi.amap.com/v3/ip?ip=114.247.50.2&output=xml&key=<用户的key>
+        url: {
+            sosoKey: [
+                'WGKBZ-YIYRU-3IOVL-B6A3J-HYANJ-BWFUC',
+                '4RMBZ-AS2R5-6JQIN-QHTBT-NDU25-Y7FTD',
+                'E63BZ-HJPRQ-L6Y5L-GA6Q5-XXWQV-T2BXQ',
+                'I26BZ-CUUW5-25AIJ-QXZRI-A5N46-YSBEZ',
+                'ZBMBZ-CFCA5-INFIM-QH7EC-XOW2K-WCBPU'
+            ],
+            gaodeKey: [
+                '8bc8bb3d13cc9fdab255b1aeb5d1c533',
+                '17b8b3d7ffc09d97a150d0ce0aa741ec'
+            ],
+            baiDuKey: [
+                'Tn3pNaqSUtTr49oujSGfowDZ'
+            ],
+            gpsToStr: 'apis.map.qq.com/ws/geocoder/v1/?location=',//soso gpstostr url
+            gaoDeIpToCity: 'restapi.amap.com/v3/ip?ip=',//gaoDe ip定位http://restapi.amap.com/v3/ip?ip=114.247.50.2&output=xml&key=<用户的key>
+            strToGps: 'http://apis.map.qq.com/ws/geocoder/v1/?address=', //var url = "http://apis.map.qq.com/ws/geocoder/v1/?address=天津市和平区二号桥朝阳小区&key=KFSBZ-RR7H4-5IMUE-X7I67-R6EZS-PWBCK";
+            strToGpsBaidu: 'http://api.map.baidu.com/geocoder/v2/?city=',//百度地址转gps
+            strToGpsGaoDe:'http://restapi.amap.com/v3/geocode/geo?output=JSON&address=',//高德地址转gps
 
+        }
     }
-};
+    ;
 
 
 /**
@@ -61,8 +72,6 @@ function sosoApi(req, res) {
             _ipToCity();
             break;
         case 'strToGps' ://字串传转 gps
-            /*************************
-             *************************/
             _strToGps();
             break;
     }
@@ -92,6 +101,7 @@ function sosoApi(req, res) {
         if (ip) {
             var gaoDeApiUrl = api.url.gaoDeIpToCity + ip + '&key=' + _getRoundArr(api.url.gaodeKey);
             curlCtrl.get(gaoDeApiUrl, function (doc) {
+                console.log(111111111);
                 res.json(doc);
             });
         } else {
@@ -107,7 +117,24 @@ function sosoApi(req, res) {
 
     function _getRoundArr(arr) {
         var num = Math.floor(Math.random() * arr.length + 1) - 1;
-        return arr[num] ;
+        return arr[num];
+    }
+
+
+    /**
+     * _strToGps 字符串转 gps
+     */
+    function _strToGps() {
+        var str = req.query.str;
+        if (str) {
+            
+            var sosoApiUrl = api.url.strToGpsGaoDe + str + '&key=' + _getRoundArr(api.url.gaodeKey);
+            curlCtrl.get(sosoApiUrl, function (doc) {
+                res.json(doc);
+            });
+        } else {
+            res.json('str为空');
+        }
     }
 
 }

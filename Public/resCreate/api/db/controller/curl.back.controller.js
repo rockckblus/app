@@ -4,9 +4,11 @@
 
 var g = require('../../g.config');
 var request = require('request'); //curl 控件
+var curl = require('superagent');
 
 var fun = {
-    get: _get
+    get: _get,
+    curlGet: _curlGet
 };
 
 /**
@@ -18,13 +20,16 @@ var fun = {
  * @return {Sting} '网页内容'
  * 16/3/21 */
 function _get(urlStr, callback) {
+    console.log('urlStr', urlStr);
     request.get({
             url: 'http://' + urlStr,
+            // url: urlStr,
             headers: {
-                'Content-Type': "text/html; charset=utf-8"
+                // 'Content-Type': "application/json; charset=utf-8",
             }
         },
         function (error, response, body) {
+            console.log('res', response);
             try {
                 if (response.statusCode == 200) {
                     callback(body);
@@ -38,5 +43,10 @@ function _get(urlStr, callback) {
         }
     );
 }
-
+function _curlGet(urlStr, callBack) {
+    console.log('http://baidu.com', urlStr);
+    curl.get(urlStr).end(function (err, res) {
+        console.log('res', res);
+    });
+}
 module.exports = fun;

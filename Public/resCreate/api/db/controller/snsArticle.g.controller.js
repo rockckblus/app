@@ -51,7 +51,7 @@ function addOneArticle(postObj, callBack, errCallBack) {
             }
 
         }
-    )
+    );
 }
 
 
@@ -91,7 +91,7 @@ function getList(postObj, callBack) {
         .limit(10)
         .sort('-editTime')
         .exec(callBack);
-};
+}
 
 
 module.exports = fun;

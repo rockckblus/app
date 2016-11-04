@@ -27,7 +27,7 @@ var tempGpsChina = require('../db/controller/tempGpsChina.back.controller');
  * post City:fun 城市相关api
  * 16/3/8 */
 router.post('/caiji/:fun', function (req, res) {
-    admin(req, res)
+    admin(req, res);
 });
 
 //get eachAdd
@@ -94,7 +94,7 @@ function admin(req, res) {
         var url = req.body.url;
         curlCtrl.get(url, function (doc) {
             res.json(doc);
-        })
+        });
     }
 
     /**
@@ -105,7 +105,7 @@ function admin(req, res) {
         curlCtrl.getJson(url, function (doc) {
             console.log('jsonDoc', doc);
             res.json(doc);
-        })
+        });
     }
 
     //添加一条临时统计 {name:'功能',value:Number}
@@ -113,7 +113,7 @@ function admin(req, res) {
         tempCountCtrl.add({
             name: '全部处理完成的3级地址数量',
             value: 0
-        })
+        });
     }
 
     //更新一条临时统计 {name:'功能',value:Number}
@@ -127,7 +127,7 @@ function admin(req, res) {
             } else {
                 res.json('ok');
             }
-        })
+        });
     }
 
     /**
@@ -139,7 +139,7 @@ function admin(req, res) {
             skip: req.body.skip
         }, function (doc) {
             res.json(doc);
-        })
+        });
     }
 
     /**
@@ -150,13 +150,13 @@ function admin(req, res) {
             id: req.body.id
         }, function (doc) {
             res.json(doc);
-        })
+        });
     }
 
     /** 遍历数据库写入gps  */
     function _eachAdd() {
         gpsChinaCtrl.eachAdd(function (doc) {
-            res.json(doc)
+            res.json(doc);
         });
     }
 
@@ -164,7 +164,7 @@ function admin(req, res) {
     function _eachGpsInChina() {
         gpsChinaCtrl.eachGpsInChina(function (doc) {
             res.json(doc);
-        })
+        });
     }
 
     /*************************
@@ -176,7 +176,7 @@ function admin(req, res) {
             gps: req.body.gps,
             address: req.body.address,
             pois: req.body.pois,
-        }
+        };
         console.log('obj', obj);
         tempGpsChina.add(obj);
         res.json(1);

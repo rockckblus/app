@@ -103,7 +103,6 @@ router.get('/', function (req, res) {
     res.json(11123);
 });
 
-
 /**
  * function 详情 ****************************************************
  * 16/3/8 */
@@ -131,7 +130,7 @@ function postCity(req, res) {
     function _getAllOneCity() {
         cityCtrl.getAllOneCity(req.body, function (err, doc) {
             res.json(doc);
-        })
+        });
     }
 
     /**
@@ -140,7 +139,7 @@ function postCity(req, res) {
     function _getTwoCityFromOneId() {
         cityCtrl.getTwoCityFromOneId(req.body.oneId, function (err, doc) {
             res.json(doc);
-        })
+        });
     }
 
     /**
@@ -149,7 +148,7 @@ function postCity(req, res) {
     function _selectHotCity() {
         cityCtrl.selectHotCity(function (err, doc) {
             res.json(doc);
-        })
+        });
     }
 }
 
