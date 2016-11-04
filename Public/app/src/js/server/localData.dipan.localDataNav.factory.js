@@ -7,7 +7,7 @@
     'use strict';
     angular.module('dipan').factory('localData', localData);
 
-    localData.$inject = ['$location', 'tools', '$rootScope', 'config', '$filter'];
+    localData.$inject = ['$location', 'tools', '$rootScope', 'config', '$filter', '$q'];
 
     var location;
     var thisLocalData = {};
@@ -15,8 +15,9 @@
     var thisRootScope;
     var _config;
     var _filter;
+    var q;
 
-    function localData($location, tools, $rootScope, config, $filter) {
+    function localData($location, tools, $rootScope, config, $filter, $q) {
         thisRootScope = $rootScope;
         location = $location;
         thisLocalData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
@@ -34,6 +35,7 @@
             thisTools = tools;
             _config = config;
             _filter = $filter;
+            q = $q;
             thisLocalData.giveRoundCode();
             getGps();
         };
@@ -423,17 +425,30 @@
              * @private
              */
             function _s1(re1) {
-                console.log('re1', re1);
+                re1.ip = '123.150.38.2';//todo 测试用
+
+                var defered = q.defer();
                 var url1 = _config.host.nodeHost + '/soso/sosoApi/ipToCity?ip=' + re1.ip;//获取城市
-                thisTools.getJsp(url1, true);
+                thisTools.getJsp(url1, true).then(function (re2) {
+                    defered.resolve(re2);
+                }, function (err) {
+                    defered.reject(err);
+                });
+
+                return defered.promise;
             }
 
             function _s2(re2) {
-                console.log('re2', re2);
-                // var city = JSON.parse(JSON.parse(re2));
-                // city = city.city;
-                // var url2 = _config.host.nodeHost + '/soso/sosoApi/strToGps?str=' + city;//获取城市ip
-                // thisTools.getJsp(url2, true);
+                var defered = q.defer();
+                var city = JSON.parse(JSON.parse(re2));
+                city = city.city;
+                var url2 = _config.host.nodeHost + '/soso/sosoApi/strToGps?str=' + city;//获取城市ip
+                thisTools.getJsp(url2, true).then(function (re3) {
+                    defered.resolve(re3);
+                }, function (err) {
+                    defered.reject(err);
+                });
+                return defered.promise;
             }
 
             function _s3(re3) {

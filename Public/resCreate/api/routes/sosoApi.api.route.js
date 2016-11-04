@@ -60,6 +60,11 @@ function sosoApi(req, res) {
              *************************/
             _ipToCity();
             break;
+        case 'strToGps' ://字串传转 gps
+            /*************************
+             *************************/
+            _strToGps();
+            break;
     }
 
     /**

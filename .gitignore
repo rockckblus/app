@@ -54,3 +54,5 @@ Public/app/js/app/dist/app.js
 Application/.idea/*
 
 Public/resCreate/api/.idea/*
+
+Public/app/node_modules/*
