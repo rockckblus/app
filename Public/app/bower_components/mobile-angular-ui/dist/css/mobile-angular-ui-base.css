@@ -4254,16 +4254,16 @@ output {
 }
 
 .form-control::-moz-placeholder {
-  color: #999999;
+  color: #993626;
   opacity: 1;
 }
 
 .form-control:-ms-input-placeholder {
-  color: #999999;
+  color: #993626;
 }
 
 .form-control::-webkit-input-placeholder {
-  color: #999999;
+  color: #993626;
 }
 
 .form-control[disabled],

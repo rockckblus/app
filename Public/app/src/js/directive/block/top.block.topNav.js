@@ -23,10 +23,19 @@
     function thisController($scope, $rootScope, $timeout, localData, $state) {
 
         $scope.titleText = '';
-
+        $scope.headerShow = true;//显示 header
+        $scope.$on('hideHeader', function () {
+            $timeout(function () {
+                $scope.headerShow = false;  //关闭header
+            }, 0);
+        });
+        $scope.$on('showHeader', function () {
+            $timeout(function () {
+                $scope.headerShow = true;  //关闭header
+            }, 0);
+        });
 
         $scope.$on('changeBody', changeTitleText);
-
 
         /**
          * getTitle 获取主标题   "分类"
@@ -45,7 +54,7 @@
                 switch (url) {
                     case '/home':
                         $timeout(function () {
-                            $scope.titleText = '技能分类';
+                            $scope.titleText = '';
                         }, 0);
                         break;
                     case '/need':

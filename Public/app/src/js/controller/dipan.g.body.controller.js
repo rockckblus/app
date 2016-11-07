@@ -96,6 +96,10 @@
                                 return true;
                         }
                     }
+
+
+
+
                 });
                 tap.init();//判断手机网页 手机 绑定 tap 事件, 网页绑定 click事件,(点击跳转url)
             }, 0);

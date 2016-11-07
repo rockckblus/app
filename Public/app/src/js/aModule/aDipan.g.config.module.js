@@ -32,9 +32,11 @@
      * config 定义 全局变量 ,并且保留到window全局变量
      * window.config
      * 16/3/8 */
-    angular.module('dipan').factory('config', function () {
+    angular.module('dipan').factory('config', reConfig);
+    function reConfig() {
+
         return config();
-    });
+    }
 
     /**
      * 手动注入
@@ -198,18 +200,14 @@
 
             //host 配置
             host: {
-                nodeHost: 'http://127.0.0.1:3082',//nodejsApi hostUrl
-                // nodeHost: 'http://192.168.0.52:3082',//nodejsApi hostUrl
-                // nodeHostTest: 'http://192.168.0.52:8878',//nodejsApi 模拟Api
-                nodeHostTest: 'http://127.0.0.1:8878',//nodejsApi 模拟Api
+                nodeHost: returnIp() + ':3082',//nodejsApi hostUrl
+                nodeHostTest: returnIp() + ':8878',//nodejsApi 模拟Api
 
-                // phpHost: 'http://dipan.so:8080',//php host
-                phpHost: 'http://127.0.0.1:8080',//php host
-                // phpHostTest: 'http://192.168.0.52:8889',//php host模拟Api
-                phpHostTest: 'http://127.0.0.1:8889',//php host模拟Api
+                phpHost: returnIp() + ':8080',//php host
+                phpHostTest: returnIp() + ':8889',//php host模拟Api
 
-                appPath: 'http://127.0.0.1:8080/Public/App/'//app 静态路径
-                // appPath: 'http://192.168.0.52:8080/Public/App/'//app 静态路径
+                appPath: returnIp() + ':8080/Public/App/',//app 静态路径
+
             },
 
             //localStroe 存储标示 name
@@ -244,6 +242,37 @@
                 timeoutUpData: 10000,//启动app之后 检查升级的 超时时间 单位:毫秒
             }
         };
+
+        //根据web,手机 配置不同ip地址 //
+        function returnIp() {
+
+            var reUrl;
+
+            /*************************
+             * function trueWeb(web,app) 判断手机,还是 wap,回调函数
+             * 16/8/19 上午7:32 ByRockBlus
+             *************************/
+            function trueWeb(web, app) {
+                if (window.trueWeb()) {
+                    web();
+                } else {
+                    app();
+                }
+            }
+
+
+            trueWeb(function () {//web
+                // return 'http://www.dipan.so';// 生产
+                reUrl = 'http://169.254.210.14';//dev
+            }, function () {//app
+                // return 'http://www.dipan.so';// 生产
+                reUrl = 'http://192.168.0.52';//dev
+            });
+
+            return reUrl;
+        }
+
+
     }
 
 

@@ -1,20 +1,21 @@
 <div class="scrollable-content section viewContent" style="margin-top: 10px">
     <style>
         .btn-danger {
-            background-color: #bd0000;
-            border-color: #bd0000;
+            background-color: #30a080;
+            border-color: #30a080;
         }
 
         .has-success .form-control:focus {
-            border-color: #000000;
-            -ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #aeafb1;
-            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #a8a6b1;
+            border-color: #30a080;
+            /*-ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #30a080;*/
+            /*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #30a080;*/
         }
 
         .has-success .form-control {
-            border-color: #000000;
-            -ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            border-color: #DBE5DB;
+            font-size: 14px;
+            /*-ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/
+            /*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/
         }
 
         fieldset {
@@ -24,39 +25,50 @@
         header {
             display: none;
         }
-        .mui-bar-tab ~ .mui-content{
+
+        .mui-bar-tab ~ .mui-content {
             padding-top: 1px;
+        }
+        input [placeholder]{
+            color: #777;
         }
 
     </style>
 
 
     <div id="loginLogo" class="clear">
-        <img class="left" style="margin-left: 10px;" ng-src="{{loginImg}}"/>
-    <div style="margin-left: 10px;margin-top: 35px;color: #aeaeae" class="left">偷油 . 从此简单</div>
+        <img class="left" style="margin-left: 10px;width: 40px;height: 40px;margin-top: 16px" ng-src="{{loginImg}}" />
+        <div style="margin-left: 10px;margin-top: 35px;color: #f7c58e;font-size: 12px;letter-spacing: 3px;
+" class="left">
+            <span style="color:#369a45;">偷</span><span style="color: #f7c58e">油</span>
+            <span style="color: #2496cd;font-size: 12px;">•</span>
+            <span style="color:#369a45;">从</span><span style="color: #2496cd">此</span><span style="color: #f7c58e">简单</span>
+        </div>
     </div>
 
-    <div class="clear"></div>
+    <div class="clear" style="margin-top: 6px"></div>
 
     <form name="myForm" id="myForm" novalidate>
         <fieldset>
             <div class="form-group has-success has-feedback ">
                 <input type="number" name="tel" required ng-model="tel"
                        class="form-control"
-                       placeholder="手机号" style="background-color: #f5f5f5">
+                       placeholder="手机号" style="background-color: #fff">
             </div>
             <div class="clearThis"></div>
             <div class="form-group has-success has-feedback left" style="width:60%">
-                <input type="number" ng-model="code" class="form-control " placeholder="验证码" style="background-color: #f5f5f5">
+                <input type="number" ng-model="code" class="form-control " placeholder="验证码"
+                       style="background-color: #fff">
             </div>
             <div class="mui-btn right" ng-class="codeClass" ng-click="getCode()"
-                 style="width:38%;background-color: #f5f5f5;border-color:#000;color:#000;font-size: 17px ">
+                 style="width:38%; height:40px;background-color: #fff;border-color:#30a080;color:#30a080;font-size: 14px;line-height: 27px ">
                 {{codeText}}
             </div>
             <div class="clear"></div>
-            <button style="width:100%;color:#fff;font-size: 17px;font-weight: bold" ng-click="formSub()"
+            <button style="width:100%;color:#fff;font-size: 14px;line-height:27px;"
+                    ng-click="formSub()"
                     class="btn btn-danger btn-block btn-lg">
-                登录
+                登&nbsp;&nbsp;录
             </button>
         </fieldset>
     </form>

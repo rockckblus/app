@@ -1,4 +1,4 @@
-<header class="mui-bar mui-bar-nav">
+<header class="mui-bar mui-bar-nav" ng-show="headerShow">
     <i ng-show="url !== '/login' && url !== '/need'" ng-if="url !== '/home'" onclick="history.go(-1);" id="goHistory" url="goHistory"
        class="fa fa-angle-left linkMouse  mui-pull-left mui-btn icon-btn"></i>
     <i ng-show="url == '/home'  || url == '/need' " id="hrefArea" url="area"

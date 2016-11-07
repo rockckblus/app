@@ -25,6 +25,7 @@
         $scope.shaiXuanList = '';//筛选list data
         $scope.clickThis = clickThis;//筛选点击事件
         $scope.needShaiXuan = false;//是否需要筛选面板
+        var tempDownCount = 0;// 判断下滑的时候,连续获取到 2 次,下滑事件,再去显示 下拉
         var clcikSaiXuanArr = [];//点击筛选数组
 
         $scope.$on('changeBody', function () {
@@ -41,8 +42,82 @@
             } else {
                 $scope.needShaiXuan = false;
             }
+
+            $timeout(function () {
+                watchSwipe();//监听上滑动,下滑动
+            }, 0);
         }
 
+        /**
+         * 监听list 上滑动,下滑动
+         */
+        function watchSwipe() {
+            mui.plusReady(function () {
+                var listDom = document.getElementById('viewContent');
+                listDom.addEventListener('drag', _swipeDown);
+                listDom.addEventListener('dragstart', _swipeStart);
+                listDom.addEventListener('dragend', _swipeEnd);
+
+
+                function _swipeDown(e) {
+                    var top = listDom.getBoundingClientRect().top;
+                    var state = e.detail.direction;
+                    if (state == 'up') {//向下滑动的时候
+                        tempDownCount = 0;
+                        if ($scope.needShaiXuan && (top < 93)) {//如果是 显示状态.,并且 小于 94就证明移动了,
+                            $timeout(function () {
+                                $scope.needShaiXuan = false;//就关闭
+                                $rootScope.$broadcast('hideHeader');
+                            }, 0);
+                        }
+                    } else if (state == 'down') {//向上滑动的时候
+                        if (!$scope.needShaiXuan || (top >= -57)) {//如果是 关闭状态,就打开
+                            if (top >= -57) {
+                                $timeout(function () {
+                                    $scope.needShaiXuan = true;//就打开
+                                    $rootScope.$broadcast('showHeader');
+                                }, 0);
+                            } else if (tempDownCount >= 1) {
+                                $timeout(function () {
+                                    $scope.needShaiXuan = true;//就打开
+                                    $rootScope.$broadcast('showHeader');
+                                    tempDownCount = 0;
+                                }, 0);
+                            }
+
+                        }
+                    }
+                }
+
+                function _swipeStart(e) {
+                    var state = e.detail.direction;
+                    if (state == 'up') {//向下滑动的时候
+                        tempDownCount = 0;
+                    }
+                    else if (state == 'down') {//向上滑动的时候
+                        tempDownCount++;
+                    }
+                }
+
+                function _swipeEnd(e) {
+                    $timeout(function () {
+                        var top = listDom.getBoundingClientRect().top;
+                        var state = e.detail.direction;
+                        if (state == 'down') {//向上滑动的时候
+                            if (top >= -57) {
+                                $timeout(function () {
+                                    $scope.needShaiXuan = true;//就打开
+                                    $rootScope.$broadcast('showHeader');
+                                    tempDownCount = 0;
+                                })
+                            }
+
+                        }
+                    }, 200);
+                }
+
+            })
+        }
 
         /**
          * 判断是否需要筛选,需要的话,回调
@@ -57,7 +132,6 @@
                     return false;
             }
         }
-
 
         /**
          * 给筛选赋值
@@ -116,12 +190,10 @@
 
         }
 
-
         /**
          * 筛选点击事件,传入 index
          * @param index
          */
-
         function clickThis(index, thisId) {
             angular.forEach($scope.shaiXuanList[index], function (vo, index2) {
                 var long = $scope.shaiXuanList[index].length;
@@ -152,7 +224,6 @@
                                     var tempIndex = clcikSaiXuanArr.indexOf(vo[0].id);
                                     if (tempIndex != -1) {
                                         clcikSaiXuanArr.splice(tempIndex, 1);
-                                        console.log('cl', clcikSaiXuanArr);
                                     }
                                 }
                             });

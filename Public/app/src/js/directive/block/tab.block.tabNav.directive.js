@@ -21,6 +21,24 @@
     thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
 
     function thisController($scope, $rootScope, $timeout, localData) {
+
+        $scope.tabStyle = {
+            'top': '50px'
+        };
+
+        $scope.$on('showHeader', function () {
+            $scope.tabStyle = {
+                'top': '50px'
+            };
+        });
+
+        $scope.$on('hideHeader', function () {
+            $scope.tabStyle = {
+                'top': '0px'
+            };
+        })
+
+
     }
 
 })();
