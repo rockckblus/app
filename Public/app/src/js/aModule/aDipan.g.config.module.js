@@ -198,17 +198,17 @@
 
             //host 配置
             host: {
-                nodeHost: 'http://169.254.210.14:3082',//nodejsApi hostUrl
+                nodeHost: 'http://127.0.0.1:3082',//nodejsApi hostUrl
                 // nodeHost: 'http://192.168.0.52:3082',//nodejsApi hostUrl
                 // nodeHostTest: 'http://192.168.0.52:8878',//nodejsApi 模拟Api
-                nodeHostTest: 'http://169.254.210.14:8878',//nodejsApi 模拟Api
+                nodeHostTest: 'http://127.0.0.1:8878',//nodejsApi 模拟Api
 
                 // phpHost: 'http://dipan.so:8080',//php host
-                phpHost: 'http://169.254.210.14:8080',//php host
+                phpHost: 'http://127.0.0.1:8080',//php host
                 // phpHostTest: 'http://192.168.0.52:8889',//php host模拟Api
-                phpHostTest: 'http://169.254.210.14:8889',//php host模拟Api
+                phpHostTest: 'http://127.0.0.1:8889',//php host模拟Api
 
-                appPath: 'http://169.254.210.14:8080/Public/App/'//app 静态路径
+                appPath: 'http://127.0.0.1:8080/Public/App/'//app 静态路径
                 // appPath: 'http://192.168.0.52:8080/Public/App/'//app 静态路径
             },
 

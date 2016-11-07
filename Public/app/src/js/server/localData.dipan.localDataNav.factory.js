@@ -417,71 +417,72 @@
          *************************/
         function _web() {
 
-            if (window.navigator.geolocation) {
-                var options = {
-                    enableHighAccuracy: true,
-                };
-                window.navigator.geolocation.getCurrentPosition(handleSuccess, handleError, options);
-
-            } else {
-                alert("浏览器不支持html5来获取地理位置信息");
-            }
-
-            function handleSuccess(re) {
-                console.log('re', re);
-            }
-
-            function handleError() {
-
-            }
-
-            return;
-
-            // var url = _config.host.phpHost + '/Api/Jsonp/getIP/from/web';//获取浏览器ip
+            //todo 由于被墙 无法正常使用
+            // if (window.navigator.geolocation) {
+            //     console.log('1111',111);
+            //     var options = {
+            //         enableHighAccuracy: true,
+            //     };
+            //     window.navigator.geolocation.getCurrentPosition(handleSuccess, handleError, options);
             //
-            // thisTools.getJsp(url, true).then(_s1).then(_s2).then(_s3, _err);
-            //
-            // /**
-            //  * 获取浏览器ip re.ip
-            //  * @private
-            //  */
-            // function _s1(re1) {
-            //     re1.ip = '123.150.38.2';//todo 测试用
-            //
-            //     var defered = q.defer();
-            //     var url1 = _config.host.nodeHost + '/soso/sosoApi/ipToCity?ip=' + re1.ip;//获取城市
-            //     thisTools.getJsp(url1, true).then(function (re2) {
-            //         defered.resolve(re2);
-            //     }, function (err) {
-            //         defered.reject(err);
-            //     });
-            //
-            //     return defered.promise;
+            // } else {
+            //     alert("浏览器不支持html5来获取地理位置信息");
             // }
             //
-            // function _s2(re2) {
-            //     var defered = q.defer();
-            //     var city = JSON.parse(JSON.parse(re2));
-            //     city = city.city;
-            //     var url2 = _config.host.nodeHost + '/soso/sosoApi/strToGps?str=' + city;//获取城市ip
-            //     thisTools.getJsp(url2, true).then(function (re3) {
-            //         defered.resolve(re3);
-            //     }, function (err) {
-            //         defered.reject(err);
-            //     });
-            //     return defered.promise;
+            // function handleSuccess(re) {
+            //     console.log('re', re);
             // }
             //
-            // function _s3(re3) {
-            //     console.log('re3', re3);
+            // function handleError(err) {
+            //     console.log('re2', err);
             // }
+            //
+            // return;
+
+            var url = _config.host.phpHost + '/Api/Jsonp/getIP/from/web';//获取浏览器ip
+
+            thisTools.getJsp(url, true).then(_s1).then(_s2).then(_s3, _err);
+
+            /**
+             * 获取浏览器ip re.ip
+             * @private
+             */
+            function _s1(re1) {
+                re1.ip = '123.150.38.2';//todo 测试用
+
+                var defered = q.defer();
+                var url1 = _config.host.nodeHost + '/soso/sosoApi/ipToCity?ip=' + re1.ip;//获取城市
+                thisTools.getJsp(url1, true).then(function (re2) {
+                    defered.resolve(re2);
+                }, function (err) {
+                    defered.reject(err);
+                });
+
+                return defered.promise;
+            }
+
+            function _s2(re2) {
+                var defered = q.defer();
+                var city = JSON.parse(JSON.parse(re2));
+                city = city.city;
+                var url2 = _config.host.nodeHost + '/soso/sosoApi/strToGps?str=' + city;//获取城市ip
+                thisTools.getJsp(url2, true).then(function (re3) {
+                    defered.resolve(re3);
+                }, function (err) {
+                    defered.reject(err);
+                });
+                return defered.promise;
+            }
+
+            function _s3(re3) {
+                console.log('re3', re3);
+            }
             
-            //
-            // function _err(e) {
-            //     console.error('error', e);
-            // }
 
-            // console.log('re1', JSON.parse(JSON.parse(re1)));
+            function _err(e) {
+                console.error('error', e);
+            }
+
 
 
         }

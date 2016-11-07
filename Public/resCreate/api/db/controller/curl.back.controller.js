@@ -4,11 +4,11 @@
 
 var g = require('../../g.config');
 var request = require('request'); //curl 控件
-var curl = require('superagent');
+// var curl = require('superagent');
 
 var fun = {
     get: _get,
-    curlGet: _curlGet
+    // curlGet: _curlGet
 };
 
 /**
@@ -25,7 +25,7 @@ function _get(urlStr, callback) {
             url: 'http://' + urlStr,
             // url: urlStr,
             headers: {
-                // 'Content-Type': "application/json; charset=utf-8",
+                'Content-Type': "application/json; charset=utf-8",
             }
         },
         function (error, response, body) {
@@ -33,7 +33,6 @@ function _get(urlStr, callback) {
             try {
                 if (response.statusCode == 200) {
                     callback(body);
-                    console.log('200', body);
                 } else {
                     console.log('responseCode', response.statusCode);
                 }
@@ -43,10 +42,10 @@ function _get(urlStr, callback) {
         }
     );
 }
-function _curlGet(urlStr, callBack) {
-    console.log('http://baidu.com', urlStr);
-    curl.get(urlStr).end(function (err, res) {
-        console.log('res', res);
-    });
-}
+// function _curlGet(urlStr, callBack) {
+//     console.log('http://baidu.com', urlStr);
+//     curl.get(urlStr).end(function (err, res) {
+//         console.log('res', res);
+//     });
+// }
 module.exports = fun;

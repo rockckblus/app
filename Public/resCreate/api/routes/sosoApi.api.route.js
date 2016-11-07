@@ -130,6 +130,7 @@ function sosoApi(req, res) {
             
             var sosoApiUrl = api.url.strToGpsGaoDe + str + '&key=' + _getRoundArr(api.url.gaodeKey);
             curlCtrl.get(sosoApiUrl, function (doc) {
+                console.log('doc',doc);
                 res.json(doc);
             });
         } else {
