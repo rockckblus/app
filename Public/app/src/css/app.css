@@ -24,6 +24,9 @@
   border-radius: 2px;
   box-shadow: 0px 0px 2px 1px #DBE5DB;
 }
+.hui {
+  color: #dadada;
+}
 .mui-bar-tab .mui-tab-item.mui-active {
   color: #000;
 }
@@ -119,6 +122,7 @@ body {
   background-color: #fff;
   padding-top: 10px;
   border-bottom: 1px solid #000;
+  font-size: 1rem;
 }
 #tab .btn {
   margin-top: 11px;
@@ -130,7 +134,7 @@ body {
   padding-right: 10px;
 }
 #tab .thisItem {
-  background-color: #bd0000;
+  background-color: #30a080;
   color: #fff;
   border-radius: 2px;
 }
@@ -414,5 +418,65 @@ body {
   color: #bd0000;
 }
 #shaiXuanTab .shaiXuanIndex4 {
+  border: none;
+}
+#homeSearch {
+  width: 99%;
+  float: left;
+  margin-left: 0.5%;
+  height: 40px;
+  overflow: hidden;
+}
+#homeSearch #topSearchLeft {
+  width: 10%;
+  float: left;
+  color: #dadada;
+  height: 35px;
+  padding-top: 10px;
+  padding-left: 5%;
+}
+#homeSearch #topSearchCenter {
+  width: 20%;
+  float: left;
+  height: 40px;
+  border-left: none;
+  border-right: none;
+}
+#homeSearch #topSearchCenter #searchTop {
+  border: none;
+  background-color: transparent;
+  font-size: 1rem;
+}
+#homeSearch #topSearchCenter input {
+  color: #777;
+}
+#homeSearch #topSearchCenter input::-webkit-input-placeholder {
+  color: #dadada;
+  text-decoration: underline;
+}
+#homeSearch #topSearchCenter input::-moz-placeholder {
+  color: #dadada;
+  text-decoration: underline;
+}
+#homeSearch #topSearchCenter input:-ms-input-placeholder {
+  color: #dadada;
+  text-decoration: underline;
+}
+#homeSearch #topSearchCenter input::placeholder {
+  color: #dadada;
+  text-decoration: underline;
+}
+#homeSearch #topSearchRight {
+  color: #dadada;
+  width: 10%;
+  float: left;
+  height: 40px;
+  border-left: none;
+  -moz-border-radius-topleft: 0px;
+  -moz-border-radius-bottomleft: 0px;
+  -webkit-border-top-left-radius: 0px;
+  -webkit-border-bottom-left-radius: 0px;
+}
+#searchIconH1 {
   border: none;
 }

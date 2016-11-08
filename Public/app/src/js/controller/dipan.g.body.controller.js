@@ -26,7 +26,7 @@
                 $scope.showTab = localData.showTab(_url);//是否显示 tab
                 $scope.tabList = localData.tab(_url);//tablist body 控制器
                 $scope.url = _url;//url变量,判断 top 模板 显示图标用
-
+                bindH1SearchBtn();
                 /**
                  * 变换list 到 滚动记录的位置,判断 不同状态来 确定 是否 请求新的list数据
                  */
@@ -98,8 +98,6 @@
                     }
 
 
-
-
                 });
                 tap.init();//判断手机网页 手机 绑定 tap 事件, 网页绑定 click事件,(点击跳转url)
             }, 0);
@@ -147,6 +145,27 @@
             doc.addEventListener(type, function () {
                 $rootScope.$broadcast('showAddFrom');
             });
+        }
+
+
+        /**
+         * bindH1SearchBtn 绑定 h1 搜索按钮点击事件
+         */
+        function bindH1SearchBtn() {
+            $timeout(function () {
+                try {
+                    var searchBtnDom = document.getElementById('searchIconH1');
+                    var angularSearchBtnDom = angular.element(searchBtnDom);
+                    searchBtnDom.addEventListener('tap', function () {
+                        $rootScope.$broadcast('focusSearch');//搜索焦点事件
+                        angularSearchBtnDom.css({
+                            'display': 'none'
+                        });
+                    });
+                } catch (e) {
+                    console.log('无searchBtn');
+                }
+            }, 0);
         }
 
 

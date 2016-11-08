@@ -20,16 +20,16 @@ var fun = {
  * @return {Sting} '网页内容'
  * 16/3/21 */
 function _get(urlStr, callback) {
-    console.log('urlStr', urlStr);
+
+    urlStr = encodeURI(urlStr);
     request.get({
-            url: 'http://' + urlStr,
-            // url: urlStr,
+            url: urlStr,
             headers: {
                 'Content-Type': "application/json; charset=utf-8",
             }
         },
         function (error, response, body) {
-            console.log('res', response);
+            console.error('res', response);
             try {
                 if (response.statusCode == 200) {
                     callback(body);
@@ -37,7 +37,7 @@ function _get(urlStr, callback) {
                     console.log('responseCode', response.statusCode);
                 }
             } catch (e) {
-                console.log('e', e);
+                console.log('eeee', e);
             }
         }
     );

@@ -58,7 +58,8 @@
       "src/js/directive/master/master.dipan.masterIndex.directive.js",
       "src/js/directive/block/subFrom.block.addFrom.directive.js",
       "src/html/directive/block/subFrom.block.addFrom.directive.html",
-      "src/js/directive/block/shaiXuan.block.shaiXuan.directive.js"
+      "src/js/directive/block/shaiXuan.block.shaiXuan.directive.js",
+      "src/js/directive/block/searchArea.block.topLeftSearchArea.directive.js"
     ],
     "refer": [
       "src/html/updata.html"

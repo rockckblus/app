@@ -34,6 +34,7 @@ document.write('<script src="' + basePath + '/src/js/directive/block/tab.block.t
 document.write('<script src="' + basePath + '/src/js/directive/block/alert.block.alertUi.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/block/subFrom.block.addFrom.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/block/shaiXuan.block.shaiXuan.directive.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/directive/block/searchArea.block.topLeftSearchArea.directive.js"><\/script>');
 
 document.write('<script src="' + basePath + '/src/js/directive/block/area.dipan.areaSelect.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/block/search.dipan.search.directive.js"><\/script>');

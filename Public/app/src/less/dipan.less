@@ -35,6 +35,11 @@
   box-shadow: 0px 0px 2px 1px #DBE5DB;
 }
 
+//灰
+.hui {
+  color: #dadada;
+}
+
 .mui-bar-tab .mui-tab-item.mui-active {
   color: #000;
 }
@@ -178,6 +183,7 @@ html, body {
   background-color: #fff;
   padding-top: 10px;
   border-bottom: 1px solid #000;
+  font-size: 1rem;
   .btn {
     .mt(11);
     margin-bottom: 12px;
@@ -188,7 +194,7 @@ html, body {
     padding-right: 10px;
   }
   .thisItem {
-    background-color: #bd0000;
+    background-color: #30a080;
     color: #fff;
     .yuanBtn();
   }
@@ -360,6 +366,72 @@ html, body {
 
 }
 
+//search top
+#homeSearch {
+  .all(10, 9.9, 0);
+  height: 40px;
+  overflow: hidden;
+  #topSearchLeft {
+    .all(10, 1);
+    .hui();
+    height: 35px;
+    //border-bottom: 1px solid #dadada;
+    //border-right: none;
+    //.yuanBtn();
+    //padding-bottom: 3px;
+    //border-bottom: 1px solid #dadada;
+    padding-top: 10px;
+    padding-left: 5%;
+    //border-radius: 3px;
+    //-moz-border-radius-topright: 0px;
+    //-moz-border-radius-bottomright: 0px;
+    //-webkit-border-top-right-radius: 0px;
+    //-webkit-border-bottom-right-radius: 0px;
+  }
+  #topSearchCenter {
+    .all(10, 2);
+    height: 40px;
+    //.yuanBtn();
+    //border-bottom: 1px solid #dadada;
+    border-left: none;
+    border-right: none;
+    //background-color: #bd0000;
+    #searchTop {
+      border: none;
+      background-color: transparent;
+      font-size: 1rem;
+    }
+    input {
+      color: #777;
+    }
+    input::placeholder {
+      .hui();
+      //padding-bottom: 3px;
+      //border-bottom: 1px solid #dadada;
+      text-decoration:underline;
+    }
+  }
+  #topSearchRight {
+    .hui();
+    .all(10, 1);
+    height: 40px;
+    //border-bottom: 1px solid #dbdada;
+    border-left: none;
+    //border-radius: 3px;
+    -moz-border-radius-topleft: 0px;
+    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-top-left-radius: 0px;
+    -webkit-border-bottom-left-radius: 0px;
+  }
 
+}
 
+//searchArea
+#searchArea {
 
+}
+
+//searchIconH1 首页搜索btn
+#searchIconH1{
+  border:none;
+}

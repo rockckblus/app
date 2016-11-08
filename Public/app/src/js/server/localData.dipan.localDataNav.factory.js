@@ -56,7 +56,7 @@
             case '/memberIndex':
                 return __getUserTitle();
             case '/home':
-                return _filter('toHtml')('<span class="fa fa-caret-down" style="margin-left: 10px"></span>');
+                return _filter('toHtml')('<i class="fa fa-search linkMouse mui-btn" id="searchIconH1"></i>');
             case '/need':
                 return _filter('toHtml')('');
             case '/star':
@@ -430,7 +430,7 @@
                 thisTools.getJsp(url1, true).then(function (re2) {
                     defered.resolve(re2);
                 }, function (err) {
-                    defered.reject(err);
+                    defered.reject('_s1');
                 });
 
                 return defered.promise;
@@ -444,13 +444,28 @@
                 thisTools.getJsp(url2, true).then(function (re3) {
                     defered.resolve(re3);
                 }, function (err) {
-                    defered.reject(err);
+                    defered.reject('_s2');
                 });
                 return defered.promise;
             }
 
             function _s3(re3) {
-                console.log('re3', re3);
+                var reEdn = JSON.parse(JSON.parse(re3));
+                if (reEdn.status == '1') {
+                    var gps = reEdn.geocodes[0].location;
+                    gps = gps.split(',');
+                    var gpsObj = {
+                        lat: gps[1] * 1,
+                        lng: gps[0] * 1,
+                    };
+
+                    var cityObj = {
+                        city: reEdn.geocodes[0].city,
+                        cityCode: reEdn.geocodes[0].citycode
+                    };
+
+                    writeDbGps(gpsObj, cityObj);//写入缓存
+                }
             }
 
             function _err(e) {
@@ -466,6 +481,7 @@
          *************************/
         function _app() {
             var gpsObj = {};
+            var city = {};
 
             // H5 plus事件处理
             function plusReady() {
@@ -489,10 +505,9 @@
             function _success(p) {
                 gpsObj.lat = p.coords.latitude;
                 gpsObj.lng = p.coords.longitude;
-                thisTools.alert({
-                    'title': 'title' + gpsObj.lat,
-                    'content': gpsObj.lng
-                });
+                city.city = p.address.city;
+                city.cityCode = p.address.cityCode;
+                writeDbGps(gpsObj, city);//写入本地数据库
             }
 
             //失败回调
@@ -536,6 +551,14 @@
         /**
          * 写入gps数据到 本地数据库
          * 传gps坐标,城市名称
+         * gpsObj{
+          *  lat:'', 存monogo 时候 用 Double,建立gps 2d 索引
+          *  lng:''
+         * }
+         * city{
+         *  cityCode:'',存mongo 用 str
+         *  city:'天津市'
+         * {
          */
         function writeDbGps(gpsObj, city) {
             var area = {

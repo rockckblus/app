@@ -13,7 +13,7 @@
 
         .has-success .form-control {
             border-color: #DBE5DB;
-            font-size: 14px;
+            font-size: 1rem;
             /*-ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/
             /*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/
         }
@@ -29,7 +29,8 @@
         .mui-bar-tab ~ .mui-content {
             padding-top: 1px;
         }
-        input [placeholder]{
+
+        input [placeholder] {
             color: #777;
         }
 
@@ -37,12 +38,13 @@
 
 
     <div id="loginLogo" class="clear">
-        <img class="left" style="margin-left: 10px;width: 40px;height: 40px;margin-top: 16px" ng-src="{{loginImg}}" />
-        <div style="margin-left: 10px;margin-top: 35px;color: #f7c58e;font-size: 12px;letter-spacing: 3px;
+        <img class="left" style="margin-left: 10px;width: 40px;height: 40px;margin-top: 16px" ng-src="{{loginImg}}"/>
+        <div style="margin-left: 10px;margin-top: 35px;color: #f7c58e;font-size: 1rem;letter-spacing: 3px;
 " class="left">
             <span style="color:#369a45;">偷</span><span style="color: #f7c58e">油</span>
-            <span style="color: #2496cd;font-size: 12px;">•</span>
-            <span style="color:#369a45;">从</span><span style="color: #2496cd">此</span><span style="color: #f7c58e">简单</span>
+            <span style="color: #2496cd;font-size: 1rem;">•</span>
+            <span style="color:#369a45;">从</span><span style="color: #2496cd">此</span><span
+                style="color: #f7c58e">简单</span>
         </div>
     </div>
 
@@ -61,11 +63,11 @@
                        style="background-color: #fff">
             </div>
             <div class="mui-btn right" ng-class="codeClass" ng-click="getCode()"
-                 style="width:38%; height:40px;background-color: #fff;border-color:#30a080;color:#30a080;font-size: 14px;line-height: 27px ">
+                 style="width:38%; height:40px;background-color: #fff;border-color:#30a080;color:#30a080;font-size: 0.8rem;line-height: 27px ">
                 {{codeText}}
             </div>
             <div class="clear"></div>
-            <button style="width:100%;color:#fff;font-size: 14px;line-height:27px;"
+            <button style="width:100%;color:#fff;font-size: 1.2rem;line-height:27px;"
                     ng-click="formSub()"
                     class="btn btn-danger btn-block btn-lg">
                 登&nbsp;&nbsp;录

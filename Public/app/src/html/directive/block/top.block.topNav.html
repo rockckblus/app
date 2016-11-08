@@ -1,11 +1,29 @@
-<header class="mui-bar mui-bar-nav" ng-show="headerShow">
-    <i ng-show="url !== '/login' && url !== '/need'" ng-if="url !== '/home'" onclick="history.go(-1);" id="goHistory" url="goHistory"
+<header class="mui-bar mui-bar-nav" style="border-bottom: 1px solid #f4f4f4" ng-show="headerShow">
+    <i ng-show="url !== '/login' && url !== '/need'" ng-if="url !== '/home'" onclick="history.go(-1);" id="goHistory"
+       url="goHistory"
        class="fa fa-angle-left linkMouse  mui-pull-left mui-btn icon-btn"></i>
-    <i ng-show="url == '/home'  || url == '/need' " id="hrefArea" url="area"
-       class="fa fa-location-arrow  mui-pull-left mui-btn icon-btn linkMouse"></i>
-    <i ng-show="(url == '/home') && (url != '/memberIndex') && (url != '/setting')" id="hrefSearch" url="search"
-       class="fa fa-search fa-1  mui-pull-right mui-icon icon-btn"
-       style="padding-right: 17px;padding-top: 13px;"></i>
+    <div ng-show="url == '/home'  || url == '/need' " id="homeSearch" url="area"
+         class="">
+        <div class="left" id="topSearchLeft">
+            <i class="fa fa-search" ng-show="searchIcon"></i>
+            <div search-area></div>
+        </div>
+        <div class="left" id="topSearchCenter">
+            <input type="text" id="searchTop" placeholder="{{searchPlace}}" ng-model="search" ng-focus="focusSearch()"
+                   ng-blur="blurSearch()">
+        </div>
+        <div class=" left " id="topSearchRight">
+            <i class="fa linkMouse  mui-pull-left  icon-btn fa-times-circle hui"
+               style="margin-top: 11px;margin-left: 6px;" ng-show="delSearch" id="delSearch"></i>
+        </div>
+        <div class="left linkMouse mui-btn icon-btn" id="cancel" style="width: 10%;font-size: 0.8rem"
+             ng-show="showCancel">
+            取消
+        </div>
+    </div>
+    <!--<i ng-show="(url == '/home') && (url != '/memberIndex') && (url != '/setting')" id="hrefSearch" url="search"-->
+    <!--class="fa fa-search fa-1  mui-pull-right mui-icon icon-btn"-->
+    <!--style="padding-right: 17px;padding-top: 13px;"></i>-->
     <i ng-show="(url == '/memberIndex')" id="editMemberInfo" url="editMemberInfo"
        class="fa fa-pencil-square-o fa-1x  mui-pull-right mui-icon icon-btn"
        style="padding-right: 17px;padding-top: 13px;"></i>

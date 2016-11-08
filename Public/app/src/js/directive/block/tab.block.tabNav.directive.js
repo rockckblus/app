@@ -36,7 +36,7 @@
             $scope.tabStyle = {
                 'top': '0px'
             };
-        })
+        });
 
 
     }

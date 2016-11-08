@@ -109,14 +109,14 @@
                                     $scope.needShaiXuan = true;//就打开
                                     $rootScope.$broadcast('showHeader');
                                     tempDownCount = 0;
-                                })
+                                });
                             }
 
                         }
                     }, 200);
                 }
 
-            })
+            });
         }
 
         /**
