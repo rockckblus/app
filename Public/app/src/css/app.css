@@ -512,6 +512,33 @@ body {
   margin-top: -7px;
   color: #777;
 }
+#area {
+  font-size: 1rem;
+  color: #777;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  overflow-y: scroll;
+  background: #fff;
+  top: 0px;
+  left: 0px;
+  z-index: 9999;
+}
+#area .itemCity {
+  padding-bottom: 5px;
+  border-bottom: 1px solid #f4f4f4;
+}
+#area .itemCity .hotItem {
+  margin-left: 3px;
+  margin-top: 3px;
+  border: none;
+}
+#area .itemCity .titleOne {
+  margin-left: 3px;
+  margin-top: 3px;
+  border: none;
+}
 #searchIconH1 {
   border: none;
 }
