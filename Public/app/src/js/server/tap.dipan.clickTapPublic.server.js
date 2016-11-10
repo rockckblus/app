@@ -9,13 +9,13 @@
 (function () {
     'use strict';
     angular.module('dipan').factory('tap', tap);
-    tap.$inject = ['$state', 'tools', 'getList'];
+    tap.$inject = ['$state', 'tools', 'getList', '$rootScope'];
 
 
     /**
      * angular 载入完成后。显示modle值
      * 15-12-26 */
-    function tap($state, tools, getList) {
+    function tap($state, tools, getList, $rootScope) {
         var re = {
             init: init
         };

@@ -4,19 +4,19 @@
        class="fa fa-angle-left linkMouse  mui-pull-left mui-btn icon-btn"></i>
     <div ng-show="url == '/home'  || url == '/need' " id="homeSearch" url="area"
          class="">
-        <div class="left" id="topSearchLeft">
+        <div class="left" id="topSearchLeft" ng-show="topSearch">
             <i class="fa fa-search" ng-show="searchIcon"></i>
             <div search-area></div>
         </div>
-        <div class="left" id="topSearchCenter">
+        <div class="left" id="topSearchCenter" ng-show="topSearch">
             <input type="text" id="searchTop" placeholder="{{searchPlace}}" ng-model="search" ng-focus="focusSearch()"
                    ng-blur="blurSearch()">
         </div>
-        <div class=" left " id="topSearchRight">
+        <div class="left" id="topSearchRight" ng-show="topSearch">
             <i class="fa linkMouse  mui-pull-left  icon-btn fa-times-circle hui"
-               style="margin-top: 11px;margin-left: 6px;" ng-show="delSearch" id="delSearch"></i>
+               style="margin-top: 5px;margin-left: 2px;font-size: 1.5rem" ng-show="delSearch" id="delSearch"></i>
         </div>
-        <div class="left linkMouse mui-btn icon-btn" id="cancel" style="width: 10%;font-size: 0.8rem"
+        <div class="right linkMouse mui-btn " id="cancel" style="border: none;background: none;font-size: 1rem"
              ng-show="showCancel">
             取消
         </div>

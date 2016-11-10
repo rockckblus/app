@@ -18,6 +18,7 @@
 
         $scope.$on('changeBody', function () {
             trueIsLogin();//判断登录
+            trueShowHeader();//判断是否显示header
             $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
             $rootScope.$broadcast('closeAddFrom');//默认 关闭 技能发布按钮面板
             var _url = '/' + $state.current.name;
@@ -26,7 +27,7 @@
                 $scope.showTab = localData.showTab(_url);//是否显示 tab
                 $scope.tabList = localData.tab(_url);//tablist body 控制器
                 $scope.url = _url;//url变量,判断 top 模板 显示图标用
-                bindH1SearchBtn();
+                bindH1SearchBtn();//首页搜索按钮显示隐藏
                 /**
                  * 变换list 到 滚动记录的位置,判断 不同状态来 确定 是否 请求新的list数据
                  */
@@ -79,9 +80,7 @@
 
                             var num = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
                             if (num === 0) {//当滚动到0的时候
-                                tools.alert({
-                                    title: '请求最新数据'
-                                });
+                                console.log('请求最新数据');
                             }
                         }
                     }
@@ -102,6 +101,9 @@
                 tap.init();//判断手机网页 手机 绑定 tap 事件, 网页绑定 click事件,(点击跳转url)
             }, 0);
         });
+
+        //显示H1SearchBtn 监听事件
+        $scope.$on('showHiSearchBtn', showH1SearchBtn);
 
         /**
          * 判断登录
@@ -147,7 +149,6 @@
             });
         }
 
-
         /**
          * bindH1SearchBtn 绑定 h1 搜索按钮点击事件
          */
@@ -166,6 +167,34 @@
                     console.log('无searchBtn');
                 }
             }, 0);
+        }
+
+        /**
+         * 显示 h1SearchBtn
+         */
+        function showH1SearchBtn() {
+            $timeout(function () {
+                try {
+                    var searchBtnDom = document.getElementById('searchIconH1');
+                    var angularSearchBtnDom = angular.element(searchBtnDom);
+                    angularSearchBtnDom.css({
+                        'display': 'block'
+                    });
+                } catch (e) {
+                    console.log('无searchBtn');
+                }
+            }, 0);
+        }
+
+        /**
+         * 判断是否显示 hedaer trueShowHeader
+         */
+        function trueShowHeader() {
+            if (localData.trueShowHedaer($state.current.name)) {
+                $rootScope.$broadcast('showHeader', true);//广播当前页面需要显示 header
+            } else {
+                $rootScope.$broadcast('hideHeader', true);//广播当前页面需要隐藏 header
+            }
         }
 
 

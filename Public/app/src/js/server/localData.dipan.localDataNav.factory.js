@@ -22,6 +22,7 @@
         location = $location;
         thisLocalData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
         thisLocalData.setting = _settingNav(); //设置 导航list
+        thisLocalData.trueShowHedaer = _trueShowHedaer;//判断当前页面是否需要显示 header
         thisLocalData.tab = _tab; //根据 url 遍历 给tab数据
         thisLocalData.shaiXuan = _shaiXuan; //根据 url 遍历 筛选条件
         thisLocalData.showTab = _showTab; //遍历url 返回true false ,控制是否显示tab
@@ -230,6 +231,18 @@
                     },],
                 ];
             default:
+                return false;
+        }
+    }
+
+    /**
+     * trueShowHedaer 判断当前页面是否需要显示 heade
+     */
+    function _trueShowHedaer(name) {
+        switch (name) {
+            case 'home':
+                return true;
+            default :
                 return false;
         }
     }

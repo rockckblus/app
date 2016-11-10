@@ -56,8 +56,6 @@
                 var listDom = document.getElementById('viewContent');
                 listDom.addEventListener('drag', _swipeDown);
                 listDom.addEventListener('dragstart', _swipeStart);
-                listDom.addEventListener('dragend', _swipeEnd);
-
 
                 function _swipeDown(e) {
                     var top = listDom.getBoundingClientRect().top;

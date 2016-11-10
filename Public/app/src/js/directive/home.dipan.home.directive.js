@@ -105,9 +105,7 @@
                 if (localStorage.getItem(scrollTopName) === '0') {
                     //getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
                     ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
-                    tools.alert({
-                        title: '请求NewData'
-                    });
+                    console.log('请求NewData');
                 }
 
             } else {

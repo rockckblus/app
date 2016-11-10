@@ -386,7 +386,7 @@
                 } catch (e) {
                     console.error('删除hashKey失败');
                 }
-                if (tempCount < 30) {
+                if (tempCount < 10) {
                     oldArr.push(vo);
                 } else {
                     return false;

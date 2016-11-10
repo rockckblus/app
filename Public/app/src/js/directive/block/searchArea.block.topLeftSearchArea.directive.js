@@ -61,7 +61,7 @@
                 });
 
                 searchCenterDom.css({
-                    width: '54%'
+                    width: '44%'
                 });
             } else {
                 searchLeftDom.css({
