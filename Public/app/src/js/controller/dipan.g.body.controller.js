@@ -9,12 +9,13 @@
     /**
      * 手动注入
      * 16/2/1 */
-    body.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tap', '$state', 'tools', 'getList'];
+    body.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tap', '$state', 'tools', 'getList', 'getCity'];
 
     /**
      * controllerFun
      * 16/2/1 */
-    function body($scope, $rootScope, $timeout, localData, tap, $state, tools, getList) {
+    function body($scope, $rootScope, $timeout, localData, tap, $state, tools, getList, getCity) {
+        getCity.init();
 
         $scope.$on('changeBody', function () {
             trueIsLogin();//判断登录
@@ -197,8 +198,5 @@
             }
         }
 
-
     }
-
-
 })();

@@ -121,6 +121,9 @@ function postCity(req, res) {
         case 'selectHotCity' ://返回热门城市
             _selectHotCity();
             break;
+        case 'addOneCity' ://添加一个城市到临时城市表
+            _addOneCity(req.body);
+            break;
 
     }
 
@@ -149,6 +152,14 @@ function postCity(req, res) {
         cityCtrl.selectHotCity(function (err, doc) {
             res.json(doc);
         });
+    }
+
+    /**
+     * addOneCity添加一个城市到临时城市表
+     */
+    function _addOneCity(post) {
+        cityCtrl.addOneCity(post);
+        res.json('ok');
     }
 }
 

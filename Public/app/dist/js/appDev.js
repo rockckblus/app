@@ -8,8 +8,10 @@ document.write('<script src="' + basePath + '/dist/js/res/angular.min.js"><\/scr
 document.write('<script src="' + basePath + '/dist/js/res/angular-ui-router.min.js"><\/script>');
 document.write('<script src="' + basePath + '/dist/js/res/bindonce.min.js"><\/script>');
 document.write('<script src="' + basePath + '/dist/js/res/mui.min.js"><\/script>');
+document.write('<script src="' + basePath + '/dist/js/res/angular-websql.min.js"><\/script>');
 // document.write('<script src="' + basePath + '/dist/js/res/mui.zoom.js"><\/script>');
 // document.write('<script src="' + basePath + '/dist/js/res/mui.imageViewer.js"><\/script>');
+
 
 ///** module  */
 document.write('<script src="' + basePath + '/src/js/aModule/aDipan.g.config.module.js"><\/script>');
@@ -75,6 +77,19 @@ document.write('<script src="' + basePath + '/src/js/server/compile.uiBlock.comp
 //document.write('<script src="/Public/resCreate/js/app/src/server/urlParse.dipan.firstData.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/apiPost.dipan.postUrl.factory.js"><\/script>');
 //
+
+/**
+ * temp 临时使用的 server
+ */
+
+document.write('<script src="' + basePath + '/src/js/server/getCity.dipan.getCity.factory.js"><\/script>');
+
+
+
+
+
+
+
 ///** tpl  */
 //document.write('<script src="/Public/resCreate/js/app/dist/app.templates.js"><\/script>');
 //

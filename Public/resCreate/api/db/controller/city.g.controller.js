@@ -6,6 +6,11 @@
  * 城市模型
  * 16/3/7 */
 var cityModel = require('../model/city.g.model');
+
+/**
+ * 城市临时模型
+ */
+var cityNewModel = require('../model/cityNew.g.model');
 var g = require('../../g.config');
 
 var fun = {
@@ -37,8 +42,17 @@ var fun = {
     /**
      * 查询1级城市byId
      * 16/3/18 */
-    getOneCityFromId: getOneCityFromId
+    getOneCityFromId: getOneCityFromId,
 
+    /**
+     *添加一个临时城市
+     * 16/3/18 */
+    addOneCity: addOneCity,
+
+    /**
+     * 根据省 查 city
+     * 16/3/18 */
+    selectNewCity: selectNewCity
 };
 
 /**
@@ -91,7 +105,6 @@ function getOneCityFromId(obj, callBack) {
         });
 }
 
-
 /**
  * 查询三级
  * @parem {obj} {limit:number,skip:number}
@@ -109,7 +122,6 @@ function getThreeCityArea(numObj, callBack) {
             callBack(doc);
         });
 }
-
 
 /**
  * 查询热门城市
@@ -129,6 +141,27 @@ function selectHotCity(callBack) {
         });
 }
 
+/**
+ * 添加一条cityNew
+ * 16/3/7 */
+function addOneCity(post) {
+    cityNewModel.create(post, function (err, doc) {
+        if (err) {
+            g.alert.err(err);//输出错误信息
+        }
+    })
+}
+
+/**
+ *根据省selet一条多条
+ * 16/3/7 */
+function selectNewCity(post, callBack) {
+    cityNewModel.find()
+        .where('sheng').equals('/.*' + post + '.*/')
+        .exec(function (err, doc) {
+            callBack(doc);
+        })
+}
 module.exports = fun;
 
 
