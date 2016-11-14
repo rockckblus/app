@@ -1,4 +1,4 @@
-<div class="clear" ng-show="showArea" id="area">
+<div class="clear" ng-if="showArea" id="area">
     <div class="itemCity clear">
         <div class="title left"><i class="fa fa-map-marker" style="color: #30a080"></i></div>
         <div class="left thisCityItem" style="margin-left: 10px;color: #30a080">天津市</div>
@@ -22,38 +22,17 @@
     <div class="itemCity clear" style="margin-top: 1rem">
         <div class="title hotLine"></div>
         <div class="contentList">
-            <div class="left">
-                <div class="titleOne mui-btn">广东</div>
-                <div class="titleTwo" style="display: none">
-                    <div class="left hotItem mui-btn">北京</div>
-                    <div class="left hotItem mui-btn">上海</div>
-                    <div class="left hotItem mui-btn">广州</div>
-                    <div class="left hotItem mui-btn">深圳</div>
-                    <div class="left hotItem mui-btn">武汉</div>
-                    <div class="left hotItem mui-btn">成都</div>
-                    <div class="left hotItem mui-btn">南京</div>
-                    <div class="left hotItem mui-btn">天津</div>
-                    <div class="left hotItem mui-btn">重庆</div>
-                    <div class="left hotItem mui-btn">西安</div>
-                    <div class="left hotItem mui-btn">杭州</div>
-                </div>
+            <div class="left" bindonce ng-repeat="vo in shengRep">
+                <div class="titleOne mui-btn" bo-text="vo.name" bo-attr bo-attr-nameId="vo.searchStr"
+                     bo-id="'shengRep_'+vo.id"></div>
             </div>
-            <div class="left">
-                <div class="titleOne mui-btn">江苏</div>
-                <div class="titleTwo" style="display: none">
-                    <div class="left hotItem mui-btn">北京</div>
-                    <div class="left hotItem mui-btn">上海</div>
-                    <div class="left hotItem mui-btn">广州</div>
-                    <div class="left hotItem mui-btn">深圳</div>
-                    <div class="left hotItem mui-btn">武汉</div>
-                    <div class="left hotItem mui-btn">成都</div>
-                    <div class="left hotItem mui-btn">南京</div>
-                    <div class="left hotItem mui-btn">天津</div>
-                    <div class="left hotItem mui-btn">重庆</div>
-                    <div class="left hotItem mui-btn">西安</div>
-                    <div class="left hotItem mui-btn">杭州</div>
-                </div>
+
+
+
+            <div class="titleTwo clear" bo-id="'thisShengContent_' + vo.id ">
+                <div class="left hotItem mui-btn" ng-repeat="vo2 in thisSheng" ng-show="thisSheng">{{vo2}}</div>
             </div>
+
         </div>
     </div>
 </div>

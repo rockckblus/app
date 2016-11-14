@@ -539,6 +539,14 @@ body {
   margin-top: 3px;
   border: none;
 }
+#area .titleTwo {
+  display: none;
+  background-color: #f4f4f4;
+  padding: 5px;
+}
+#area .titleTwo .mui-btn {
+  background-color: #f4f4f4;
+}
 #searchIconH1 {
   border: none;
 }

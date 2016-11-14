@@ -19,6 +19,7 @@
         };
 
         re.inTable = inTable; //判断有没有地址websQl表,没有就添加
+        re.selectByCityCode = selectByCityCode;//根据省查询城市
 
         /**
          * 获取全部城市
@@ -141,7 +142,6 @@
             }, 0);
         }
 
-
         /**
          * 遍历城市json数据,添加到 webSql
          */
@@ -167,11 +167,37 @@
                     angular.forEach(re, function (vo) {
                         areaSql.insert('area', vo).then(function (res) {
                             // console.log('resAdd', res);
-                        })
-                    })
+                        });
+                    });
                 }
             }
         }
+
+
+        /**
+         * selectByCityCode 根据cityCode查询城市
+         */
+        function selectByCityCode(sheng) {
+
+            var defered = $q.defer();
+            var areaSql = $webSql.openDatabase('area');
+            areaSql.select('area', {
+                "sheng": {
+                    "operator": '=',
+                    "value": sheng
+                }
+            }).then(
+                function (res) {
+                    try {
+                        defered.resolve(res.rows);
+                    } catch (err) {
+                        defered.reject(err);
+                    }
+                }
+            );
+            return defered.promise;
+        }
+
 
         return re;
     }
