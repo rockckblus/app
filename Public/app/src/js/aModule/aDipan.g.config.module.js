@@ -266,7 +266,7 @@
                 reUrl = 'http://169.254.210.14';//dev
             }, function () {//app
                 // return 'http://www.dipan.so';// 生产
-                reUrl = 'http://192.168.0.52';//dev
+                reUrl = 'http://192.168.0.50';//dev
             });
 
             return reUrl;

@@ -52,7 +52,12 @@ var fun = {
     /**
      * 根据省 查 city
      * 16/3/18 */
-    selectNewCity: selectNewCity
+    selectNewCity: selectNewCity,
+
+    /**
+     * 查询所有newCity 城市
+     */
+    selectAllCityNew: selectAllCityNew
 };
 
 /**
@@ -149,7 +154,7 @@ function addOneCity(post) {
         if (err) {
             g.alert.err(err);//输出错误信息
         }
-    })
+    });
 }
 
 /**
@@ -160,8 +165,20 @@ function selectNewCity(post, callBack) {
         .where('sheng').equals('/.*' + post + '.*/')
         .exec(function (err, doc) {
             callBack(doc);
-        })
+        });
 }
+
+/**
+ * 查询所有newCity的城市
+ */
+function selectAllCityNew(callBack) {
+    cityNewModel.find()
+        .exec(function (err,doc) {
+            callBack(doc);
+        });
+}
+
+
 module.exports = fun;
 
 

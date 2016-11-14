@@ -15,7 +15,7 @@
      * controllerFun
      * 16/2/1 */
     function body($scope, $rootScope, $timeout, localData, tap, $state, tools, getList, getCity) {
-        getCity.init();
+        getCity.inTable();
 
         $scope.$on('changeBody', function () {
             trueIsLogin();//判断登录

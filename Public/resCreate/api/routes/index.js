@@ -121,8 +121,11 @@ function postCity(req, res) {
         case 'selectHotCity' ://返回热门城市
             _selectHotCity();
             break;
-        case 'addOneCity' ://添加一个城市到临时城市表
+        case 'addOneCity' ://添加一个城市到临时城市表 cityNew
             _addOneCity(req.body);
+            break;
+        case 'selectAllCityNew' ://select全部城市 cityNew
+            _selectAllCityNew();
             break;
 
     }
@@ -160,6 +163,16 @@ function postCity(req, res) {
     function _addOneCity(post) {
         cityCtrl.addOneCity(post);
         res.json('ok');
+    }
+
+    /**
+     * select全部城市 cityNew
+     * @private
+     */
+    function _selectAllCityNew() {
+        cityCtrl.selectAllCityNew(function (doc) {
+            res.json(doc);
+        });
     }
 }
 
