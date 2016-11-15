@@ -325,11 +325,11 @@
         strVar += "                <span bo-text=\"vo2\"><\/span>";
         strVar += "            <\/div>";
         strVar += "";
-        strVar += "            <div class=\"panle\">";
-        strVar += "                <div class=\"mui-btn fa fa-weixin fa-1x icon-btn\"><\/div>";
-        strVar += "                <div class=\"mui-btn fa  fa-1x icon-btn-noBack iconStar\" ng-class=\"vo.iconStar\" bo-attr";
-        strVar += "                     bo-attr-iconId=\"vo._id\"><\/div>";
-        strVar += "            <\/div>";
+        // strVar += "            <div class=\"panle\">";
+        // strVar += "                <div class=\"mui-btn fa fa-weixin fa-1x icon-btn\"><\/div>";
+        // strVar += "                <div class=\"mui-btn fa  fa-1x icon-btn-noBack iconStar\" ng-class=\"vo.iconStar\" bo-attr";
+        // strVar += "                     bo-attr-iconId=\"vo._id\"><\/div>";
+        // strVar += "            <\/div>";
         strVar += "        <\/li>";
 
         var repListHtml = angular.element(strVar);
