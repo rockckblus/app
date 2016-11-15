@@ -22,7 +22,8 @@
 
     function thisController($scope, $rootScope, $timeout, tools, getCity) {
 
-        $scope.showArea = true;//显示地区选择div
+        $scope.thisCity = {'name': '', 'cityCode': '', 'location': ''};
+        $scope.showArea = false;//显示地区选择div
         $scope.shengRep = [
             {id: 1, name: '广东', type: 'sheng', 'searchStr': '广东省'},
             {id: 2, name: '江苏', type: 'sheng', 'searchStr': '江苏省'},
@@ -53,14 +54,37 @@
             {id: 13, name: '黑龙江', type: 'sheng', 'searchStr': '黑龙江省'},
         ];
         $scope.thisSheng = [];
+        $scope.thisShengShow = false;//省下面城市alertDiv
         $scope.$on('showArea', showArea);//监听打开areaDiv事件
         $scope.$on('hideArea', hideArea);//监听关闭areaDiv事件
-        init();
 
+        bindSelectAreaBtn();//绑定选择area点击事件
         function init() {
-            bindSelectAreaBtn();//绑定选择area点击事件
+            getDefault();//获取默认本地存储的地址信息
             $timeout(function () {
                 bindShengDomClick();//绑定省名
+                bindHotCity();//绑定热门城市点击事件
+                bindCloseShengSub();//绑定省下面的子城市面板的 close 按钮
+            }, 0);
+        }
+
+        /**
+         * getDefault 获取默认城市
+         */
+        function getDefault() {
+            var re = {};
+            var area = tools.getLocalStorageObj('area');
+            if (area) {
+                re.name = area.city.city;
+                re.cityCode = area.city.cityCode;
+                re.location = area.gpsObj.lng + ',' + area.gpsObj.lat;
+            } else {
+                re.name = '全国';
+                re.cityCode = '000';
+                re.location = '116.405285,39.904989';
+            }
+            $timeout(function () {
+                $scope.thisCity = re;
             }, 0);
         }
 
@@ -68,8 +92,10 @@
          * 监听打开areaDiv事件
          */
         function showArea() {
+            // getCity.inTable();//接口请求 城市数据,写入数据库
             $timeout(function () {
                 $scope.showArea = true;
+                init();//执行绑定
             }, 0);
         }
 
@@ -100,7 +126,6 @@
             }
         }
 
-
         /**
          * 绑定省份选择点击事件
          */
@@ -114,7 +139,6 @@
                     _bind(dom);
                 }
             });
-
             function _bind(dom) {
                 var type = 'tap';
                 tools.trueWeb(function () {
@@ -122,11 +146,9 @@
                 }, function () {
                     type = 'tap';
                 });
-
                 dom.addEventListener(type, function () {
                     _showSubContent(dom);//显示SubCounte
                 });
-
             }
         }
 
@@ -135,15 +157,141 @@
          */
         function _showSubContent(dom) {
             var aDom = angular.element(dom);
+            $rootScope.$broadcast('openLoading');
             getCity.selectByCityCode(aDom.attr('nameid')).then(_show);
             function _show(row) {
-                console.log('row',row);
-                // $timeout(function () {
-                //     console.log('rew', row);
-                //     $scope.thisSheng = row;
-                // }, 0);
+                $rootScope.$broadcast('closeLoading');
+                $timeout(function () {
+                    $scope.thisShengShow = true;
+                    angular.forEach(row, function (vo) {
+                        vo = _editText(vo);
+                        $scope.thisSheng.push(vo);
+                    });
+
+                    $timeout(function () {
+                        try {
+                            _bindThisShengClick();//绑定点击
+                        } catch (e) {
+                            console.log('无法绑定子城市点击事件');
+                        }
+                    }, 0);
+
+                }, 0);
+            }
+
+            function _bindThisShengClick() {
+                angular.forEach($scope.thisSheng, function (vo2) {
+                    var dom = document.getElementById('shengSubRep_' + vo2._id);
+                    var type = 'tap';
+                    tools.trueWeb(function () {
+                        type = 'click';
+                    }, function () {
+                        type = 'tap';
+                    });
+                    dom.addEventListener(type, function () {
+                        _bindCityClick(dom);
+                    });
+                });
+            }
+
+            function _editText(v) {
+                try {
+                    v.city = v.city.replace('市', '');
+                    v.city = v.city.replace('自治州', '');
+                    v.city = v.city.replace('地区', '');
+                } catch (e) {
+                    console.log('noV.city');
+                }
+                return v;
             }
         }
+
+        /**
+         * 绑定热门城市click
+         */
+        function bindHotCity() {
+            var hostList = document.getElementsByClassName('hotCity');
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+                type = 'tap';
+            });
+            angular.forEach(hostList, function (vo) {
+                vo.addEventListener(type, function () {
+                    _bindCityClick(vo);
+                });
+            });
+        }
+
+        /**
+         * bind城市click (hot & shengSub)
+         * @param vo
+         * @private
+         */
+        function _bindCityClick(vo) {
+            $timeout(function () {
+                $scope.thisCity.name = vo.innerText;
+                $scope.thisCity.cityCode = vo.getAttribute('code');
+                $scope.thisCity.location = vo.getAttribute('location');
+                saveLocalArea();
+                closeThisShengShow();
+            }, 0);
+        }
+
+        /**
+         * 绑定子城市显示div关闭按钮点击事件
+         */
+        function bindCloseShengSub() {
+            var dom = document.getElementById('closeAlertSub');
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+                type = 'tap';
+            });
+            dom.addEventListener(type, function () {
+                closeThisShengShow(true);
+            });
+        }
+
+        /**
+         * 写入本地缓存gps信息
+         */
+        function saveLocalArea() {
+            var location = $scope.thisCity.location;
+            var gpsObj = {};
+            var tempGpsObj = location.split(',');
+            gpsObj.lat = tempGpsObj[1];
+            gpsObj.lng = tempGpsObj[0];
+
+            var obj = {
+                gpsObj: gpsObj,
+                city: {
+                    "city": $scope.thisCity.name,
+                    "cityCode": $scope.thisCity.cityCode
+                }
+            };
+            tools.saveLocalStorageObj('area', obj);//存储
+            $timeout(function () {
+                $rootScope.$broadcast('changeArea');//广播变换地址事件
+            }, 400);
+        }
+
+        /**
+         * 关闭省下面城市显示alertDiv
+         */
+        function closeThisShengShow(sub) {
+            $timeout(function () {
+                $scope.thisSheng = [];
+                $scope.thisShengShow = false;//省下面城市alertDiv
+                if (!sub) {//如果 不是 点击关闭按钮的调用
+                    $rootScope.$broadcast('hideArea');//关闭地区alert
+                    $rootScope.$broadcast('focusSearch');//焦点搜索框
+                }
+            }, 0);
+        }
+
     }
 
 })();

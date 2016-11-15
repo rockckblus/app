@@ -16,8 +16,9 @@
     var _config;
     var _filter;
     var q;
+    var thisTimeout;
 
-    function localData($location, tools, $rootScope, config, $filter, $q) {
+    function localData($location, tools, $rootScope, config, $filter, $q, $timeout) {
         thisRootScope = $rootScope;
         location = $location;
         thisLocalData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
@@ -37,6 +38,7 @@
             _config = config;
             _filter = $filter;
             q = $q;
+            thisTimeout = $timeout;
             thisLocalData.giveRoundCode();
             getGps();
         };
@@ -210,6 +212,11 @@
             case '/need':
                 return [
                     [{
+                        id: 'needShaiXuanThree1',
+                        name: '全国',
+                        type: 'six',
+                    }],
+                    [{
                         id: 'needShaiXuanTwo2',
                         name: '最新',
                         type: 'four',
@@ -219,11 +226,6 @@
                         name: '价格',
                         type: 'four',
                     },],
-                    [{
-                        id: 'needShaiXuanThree1',
-                        name: '信誉',
-                        type: 'four',
-                    }],
                     [{
                         id: 'needShaiXuanTwo3',
                         name: '线上服务',
@@ -265,7 +267,7 @@
         switch (url) {
             case '/home':
                 _obj = [{
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'twoTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: _objDefaulOne.thisItem, //高亮
                     name: '技能', //名称
                     route: 'hrefTabHome', //routeUrl
@@ -276,34 +278,38 @@
                     name: '需求', //名称
                     route: 'hrefTabNeed', //routeUrl
                     stateName: 'need', //routeUrl
-                }, {
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '<i class="fa fa-star-o"></i>', //名称
-                    route: 'hrefTabStar', //routeUrl
-                    stateName: 'star', //routeUrl
-                }];
+                },
+                //     {
+                //     colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                //     thisItem: false, //高亮
+                //     name: '<i class="fa fa-star-o"></i>', //名称
+                //     route: 'hrefTabStar', //routeUrl
+                //     stateName: 'star', //routeUrl
+                // }
+                ];
                 return _obj;
             case '/need':
                 _obj = [{
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'twoTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
                     name: '技能', //名称
                     route: 'hrefTabHome', //routeUrl
                     stateName: 'home', //routeUrl
                 }, {
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'twoTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: 'thisItem', //高亮
                     name: '需求', //名称
                     route: 'hrefTabNeed', //routeUrl
                     stateName: 'need', //routeUrl
-                }, {
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '<i class="fa fa-star-o"></i>', //名称
-                    route: 'hrefTabStar', //routeUrl
-                    stateName: 'star', //routeUrl
-                }];
+                },
+                //     {
+                //     colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                //     thisItem: false, //高亮
+                //     name: '<i class="fa fa-star-o"></i>', //名称
+                //     route: 'hrefTabStar', //routeUrl
+                //     stateName: 'star', //routeUrl
+                // }
+                ];
                 return _obj;
             case '/star':
                 _obj = [{
@@ -521,6 +527,9 @@
                 city.city = p.address.city;
                 city.cityCode = p.address.cityCode;
                 writeDbGps(gpsObj, city);//写入本地数据库
+                thisTimeout(function () {
+                    thisRootScope.$broadcast('changeArea');//广播变换地理位置事件
+                }, 400);
             }
 
             //失败回调

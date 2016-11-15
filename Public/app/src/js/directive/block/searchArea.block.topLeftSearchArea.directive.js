@@ -18,13 +18,30 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', '$state'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', '$state', 'tools'];
 
-    function thisController($scope, $rootScope, $timeout, localData, $state) {
+    function thisController($scope, $rootScope, $timeout, localData, $state, tools) {
         $scope.searchArea = false;
+        $scope.thisCity = '';
         $scope.$on('showSearchArea', showSearchArea);//监听显示 block事件 来显示area block
         $scope.$on('hideSearchArea', hideSearchArea);//监听隐藏 block事件 来隐藏area block
+        $scope.$on('changeArea', giveThisCity);//监听地址变换事件
 
+
+        init();
+        function init() {
+            giveThisCity();
+        }
+
+        /**
+         * 给搜索默认城市
+         */
+        function giveThisCity() {
+            var area = tools.getLocalStorageObj('area');
+            $timeout(function () {
+                $scope.thisCity = area.city.city;
+            }, 0);
+        }
 
         /**
          * 显示地区areaBlock

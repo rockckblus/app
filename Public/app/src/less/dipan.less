@@ -452,7 +452,7 @@ html, body {
 
 //area 地区选择 Div
 #area {
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: #777;
   position: fixed;
   width: 100%;
@@ -467,8 +467,9 @@ html, body {
     padding-bottom: 5px;
     border-bottom: 1px solid #f4f4f4;
     .hotItem {
-      margin-left: 3px;
-      margin-top: 3px;
+      font-size: 1rem;
+      margin-left: 13px;
+      margin-top: 13px;
       border: none;
     }
     .titleOne {
@@ -484,6 +485,42 @@ html, body {
       background-color: #f4f4f4;
     }
   }
+  #subContent {
+    font-size: 1rem;
+    .beijing {
+      .all(10, 10, 1);
+      height: 100%;
+      background-color: #777;
+      ///*:rgba(0,0,0,0.3);*/
+      //opacity: 0.80;
+      //filter: alpha(opacity=80);
+    }
+    .alertSub {
+      position: fixed;
+      .all(10, 9, 1);
+      padding: 0.5rem;
+      background-color: #fff;
+      z-index: 6000;
+      top: 30%;
+      min-height: 10rem;
+      .yuanBtn;
+      .mui-btn {
+        font-size: 1rem;
+        margin-left: 12px;
+        margin-bottom: 12px;
+      }
+      .close {
+        float: right;
+      }
+    }
+    position: fixed;
+    .all(10, 10, 1);
+    height: 100%;
+    z-index: 5000;
+    left: 0px;
+    top: 0px;
+  }
+
 }
 
 //searchIconH1 首页搜索btn

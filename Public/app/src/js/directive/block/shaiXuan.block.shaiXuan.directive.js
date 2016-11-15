@@ -27,6 +27,8 @@
         $scope.needShaiXuan = false;//是否需要筛选面板
         var tempDownCount = 0;// 判断下滑的时候,连续获取到 2 次,下滑事件,再去显示 下拉
         var clcikSaiXuanArr = [];//点击筛选数组
+        $scope.thisCity = '';//获取城市缓存数据
+        $scope.$on('changeArea', giveThisCity);//监听地址变换事件
 
         $scope.$on('changeBody', function () {
             init();
@@ -46,6 +48,10 @@
             $timeout(function () {
                 watchSwipe();//监听上滑动,下滑动
             }, 0);
+
+            giveThisCity();
+
+
         }
 
         /**
@@ -53,9 +59,13 @@
          */
         function watchSwipe() {
             mui.plusReady(function () {
-                var listDom = document.getElementById('viewContent');
-                listDom.addEventListener('drag', _swipeDown);
-                listDom.addEventListener('dragstart', _swipeStart);
+                try {
+                    var listDom = document.getElementById('viewContent');
+                    listDom.addEventListener('drag', _swipeDown);
+                    listDom.addEventListener('dragstart', _swipeStart);
+                } catch (e) {
+                    console.log('无viewContent');
+                }
 
                 function _swipeDown(e) {
                     var top = listDom.getBoundingClientRect().top;
@@ -143,12 +153,18 @@
                         if (index2 === 0) {
                             vo.thisName = vo2.name;
                             vo.thisId = vo2.id;
+                            vo.type = vo2.type;
 
                             if (clcikSaiXuanArr.indexOf(vo2.id) == -1) {
                                 vo.shaiXuanGaoLiang = '';//不在记录数组,就不给高亮
                             } else {
                                 vo.shaiXuanGaoLiang = 'shaiXuanGaoLiang';//在记录数组里面,给高亮
                             }
+
+                            if (vo.type == 'six') {
+                                vo.shaiXuanGaoLiang = 'shaiXuanGaoLiang';//在记录数组里面,给高亮
+                            }
+
                             bindClickId(index, vo.thisId);
                         }
                     });
@@ -172,6 +188,7 @@
          * bind 筛选点击 dom
          */
         function bindClickId(index) {
+            console.log('index', index);
             $timeout(function () {
                 var idStr = "shaiXuanClick_" + index;
                 try {
@@ -229,12 +246,28 @@
                             clcikSaiXuanArr.push($scope.shaiXuanList[index].thisId);
                             tools.saveLocalStorageObj('clickShaiXuan', clcikSaiXuanArr);//存储本地数据库
                         }
+
+                        if ($scope.shaiXuanList[index].type == 'six') {//如果是 全国筛选点击事件
+                            $scope.shaiXuanList[index].shaiXuanGaoLiang = 'shaiXuanGaoLiang';
+                            $rootScope.$broadcast('showArea');//激活地址选择directive
+                        }
+
                     }, 0);
 
                 }
             });
         }
 
+        /**
+         * 获取城市
+         */
+
+        function giveThisCity() {
+            var area = tools.getLocalStorageObj('area');
+            $timeout(function () {
+                $scope.thisCity = area.city.city;
+            }, 0);
+        }
 
     }
 

@@ -513,7 +513,7 @@ body {
   color: #777;
 }
 #area {
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: #777;
   position: fixed;
   width: 100%;
@@ -530,13 +530,15 @@ body {
   border-bottom: 1px solid #f4f4f4;
 }
 #area .itemCity .hotItem {
-  margin-left: 3px;
-  margin-top: 3px;
+  font-size: 1rem;
+  margin-left: 13px;
+  margin-top: 13px;
   border: none;
 }
 #area .itemCity .titleOne {
-  margin-left: 3px;
-  margin-top: 3px;
+  font-size: 1rem;
+  margin-left: 13px;
+  margin-top: 13px;
   border: none;
 }
 #area .titleTwo {
@@ -546,6 +548,44 @@ body {
 }
 #area .titleTwo .mui-btn {
   background-color: #f4f4f4;
+}
+#area #subContent {
+  font-size: 1rem;
+  position: fixed;
+  width: 100%;
+  float: left;
+  margin-left: 0%;
+  height: 100%;
+  z-index: 5000;
+  left: 0px;
+  top: 0px;
+}
+#area #subContent .beijing {
+  width: 100%;
+  float: left;
+  margin-left: 0%;
+  height: 100%;
+  background-color: #777;
+}
+#area #subContent .alertSub {
+  position: fixed;
+  width: 90%;
+  float: left;
+  margin-left: 5%;
+  padding: 0.5rem;
+  background-color: #fff;
+  z-index: 6000;
+  top: 30%;
+  min-height: 10rem;
+  border-radius: 2px;
+}
+#area #subContent .alertSub .mui-btn {
+  font-size: 1rem;
+  margin-left: 12px;
+  margin-bottom: 12px;
+}
+#area #subContent .alertSub .close {
+  float: right;
 }
 #searchIconH1 {
   border: none;

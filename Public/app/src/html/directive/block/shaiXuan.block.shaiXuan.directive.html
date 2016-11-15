@@ -2,9 +2,10 @@
     <div class="shaiXuan mui-btn shaiXuanIndex{{$index}} {{vo.shaiXuanGaoLiang}}" ng-repeat="vo in shaiXuanList"
          id="shaiXuanClick_{{$index}}" thisid="{{vo.thisId}}">
         <div>
-            <span>{{vo.thisName}}</span>
-            <span class="fa fa-long-arrow-down"></span>
+            <span ng-if="vo.type != 'six'">{{vo.thisName}}</span>
+            <span ng-if="vo.type == 'six'">{{thisCity}}</span>
+            <span class="fa fa-long-arrow-down" ng-if="vo.type != 'six'"></span>
+            <span class="fa fa-exchange" ng-if="vo.type == 'six'"></span>
         </div>
-
     </div>
 </div>

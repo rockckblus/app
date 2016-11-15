@@ -162,7 +162,7 @@
                 $scope.search = '';
                 $timeout(function () {
                     document.getElementById('searchTop').focus();
-                }, 0);
+                }, 400);
             }, 0);
             $rootScope.$broadcast('showSearchArea');//显示地区选择面板
             hideSearchIcon();//隐藏搜索icon
