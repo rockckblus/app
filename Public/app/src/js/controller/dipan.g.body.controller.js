@@ -15,12 +15,13 @@
      * controllerFun
      * 16/2/1 */
     function body($scope, $rootScope, $timeout, localData, tap, $state, tools, getList, getCity) {
-
+        $scope.push = 'fa-plus-circle';//发布需求按钮的 图标样式
         $scope.$on('changeBody', function () {
             trueIsLogin();//判断登录
             trueShowHeader();//判断是否显示header
             $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
             $rootScope.$broadcast('closeAddFrom');//默认 关闭 技能发布按钮面板
+            changeSubBtnIcon(true);//默认变换发布按钮为 加号
             var _url = '/' + $state.current.name;
             $timeout(function () {
                 $scope.title = localData.getTitle(_url);//getTitle
@@ -80,6 +81,8 @@
 
                             var num = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
                             if (num === 0) {//当滚动到0的时候
+                                $rootScope.$broadcast('showHeader');//显示header
+                                $rootScope.$broadcast('showShaiXuan');//显示筛选
                                 console.log('请求最新数据');
                             }
                         }
@@ -92,6 +95,8 @@
                     function trueNeedNewList() {
                         switch ($state.current.name) {
                             case 'home':
+                                return true;
+                            case 'need':
                                 return true;
                         }
                     }
@@ -128,6 +133,27 @@
         }
 
         /**
+         * 修改发布按钮图标
+         */
+        function changeSubBtnIcon(def) {
+            if (def) {
+                $timeout(function () {
+                    $scope.push = 'fa-plus-circle';
+                }, 0);
+            } else {
+                if ($scope.push == 'fa-plus-circle') {
+                    $timeout(function () {
+                        $scope.push = 'fa-minus-circle';
+                    }, 0);
+                } else {
+                    $timeout(function () {
+                        $scope.push = 'fa-plus-circle';
+                    }, 0);
+                }
+            }
+        }
+
+        /**
          * 底部导航 显示 添加需求技能面板 按钮
          * @type {Element}
          */
@@ -143,8 +169,8 @@
                 type = 'click';
             }, function () {
             });
-
             doc.addEventListener(type, function () {
+                changeSubBtnIcon();
                 $rootScope.$broadcast('showAddFrom');
             });
         }

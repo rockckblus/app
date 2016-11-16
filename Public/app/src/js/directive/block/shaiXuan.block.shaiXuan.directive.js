@@ -28,6 +28,9 @@
         var tempDownCount = 0;// 判断下滑的时候,连续获取到 2 次,下滑事件,再去显示 下拉
         var clcikSaiXuanArr = [];//点击筛选数组
         $scope.thisCity = '';//获取城市缓存数据
+        $scope.$on('showShaiXuan', showShaiXuan);//监听显示筛选
+
+
         $scope.$on('changeArea', giveThisCity);//监听地址变换事件
 
         $scope.$on('changeBody', function () {
@@ -51,7 +54,15 @@
 
             giveThisCity();
 
+        }
 
+        /**
+         * 监听显示筛选
+         */
+        function showShaiXuan() {
+            $timeout(function () {
+                $scope.needShaiXuan = true;
+            }, 0);
         }
 
         /**
@@ -85,7 +96,7 @@
                                     $scope.needShaiXuan = true;//就打开
                                     $rootScope.$broadcast('showHeader');
                                 }, 0);
-                            } else if (tempDownCount >= 1) {
+                            } else if (tempDownCount >= 2) {
                                 $timeout(function () {
                                     $scope.needShaiXuan = true;//就打开
                                     $rootScope.$broadcast('showHeader');
@@ -188,7 +199,6 @@
          * bind 筛选点击 dom
          */
         function bindClickId(index) {
-            console.log('index', index);
             $timeout(function () {
                 var idStr = "shaiXuanClick_" + index;
                 try {
@@ -202,7 +212,6 @@
                     console.log('id不存在');
                 }
             }, 0);
-
         }
 
         /**
@@ -265,10 +274,13 @@
         function giveThisCity() {
             var area = tools.getLocalStorageObj('area');
             $timeout(function () {
-                $scope.thisCity = area.city.city;
+                try {
+                    $scope.thisCity = area.city.city;
+                } catch (e) {
+                    $scope.thisCity = '全国';
+                }
             }, 0);
         }
-
     }
 
 })();

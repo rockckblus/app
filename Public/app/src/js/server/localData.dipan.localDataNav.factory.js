@@ -59,7 +59,7 @@
             case '/memberIndex':
                 return __getUserTitle();
             case '/home':
-                return _filter('toHtml')('<i class="fa fa-search linkMouse mui-btn" id="searchIconH1"></i>');
+                return _filter('toHtml')('<i class="fa fa-search linkMouse mui-btn qiaokeli" id="searchIconH1"></i>');
             case '/need':
                 return _filter('toHtml')('');
             case '/star':
@@ -279,13 +279,13 @@
                     route: 'hrefTabNeed', //routeUrl
                     stateName: 'need', //routeUrl
                 },
-                //     {
-                //     colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                //     thisItem: false, //高亮
-                //     name: '<i class="fa fa-star-o"></i>', //名称
-                //     route: 'hrefTabStar', //routeUrl
-                //     stateName: 'star', //routeUrl
-                // }
+                    //     {
+                    //     colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    //     thisItem: false, //高亮
+                    //     name: '<i class="fa fa-star-o"></i>', //名称
+                    //     route: 'hrefTabStar', //routeUrl
+                    //     stateName: 'star', //routeUrl
+                    // }
                 ];
                 return _obj;
             case '/need':
@@ -302,13 +302,13 @@
                     route: 'hrefTabNeed', //routeUrl
                     stateName: 'need', //routeUrl
                 },
-                //     {
-                //     colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                //     thisItem: false, //高亮
-                //     name: '<i class="fa fa-star-o"></i>', //名称
-                //     route: 'hrefTabStar', //routeUrl
-                //     stateName: 'star', //routeUrl
-                // }
+                    //     {
+                    //     colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    //     thisItem: false, //高亮
+                    //     name: '<i class="fa fa-star-o"></i>', //名称
+                    //     route: 'hrefTabStar', //routeUrl
+                    //     stateName: 'star', //routeUrl
+                    // }
                 ];
                 return _obj;
             case '/star':
@@ -527,9 +527,6 @@
                 city.city = p.address.city;
                 city.cityCode = p.address.cityCode;
                 writeDbGps(gpsObj, city);//写入本地数据库
-                thisTimeout(function () {
-                    thisRootScope.$broadcast('changeArea');//广播变换地理位置事件
-                }, 400);
             }
 
             //失败回调
@@ -588,6 +585,10 @@
                 city: city
             };
             thisTools.saveLocalStorageObj('area', area);
+            thisTools.saveLocalStorageObj('areaGps', area);
+            thisTimeout(function () {
+                thisRootScope.$broadcast('changeArea');//广播变换地理位置事件
+            }, 400);
         }
     }
 

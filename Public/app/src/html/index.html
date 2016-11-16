@@ -42,19 +42,19 @@
 <!--底部-->
 <nav class="mui-bar mui-bar-tab" style="padding-top: 0px;" ng-show="url != '/login'">
     <div id="hrefHome" url="home" class="bottomBar mui-btn  icon-btn">
-        <span class="mui-icon fa fa-home fa-navbar"></span>
+        <span class="mui-icon fa fa-home fa-navbar qiaokeli"></span>
     </div>
     <div id="addFromBtn" class="bottomBar  mui-btn icon-btn">
-        <span class="mui-icon fa fa-plus-circle fa-navbar "
-              style="color: #bd0000;font-size: 38px;margin-top: -8px"></span>
+        <span class="mui-icon fa fa-navbar"
+              style="color: #db5140;font-size: 38px;margin-top: -8px" ng-class="push"></span>
     </div>
     <div id="hrefMember" url="memberIndex" class="bottomBar mui-btn icon-btn">
-        <span class="mui-icon fa fa-user fa-navbar ">
+        <span class="mui-icon fa fa-user fa-navbar qiaokeli">
         </span>
         <i class="fa fa-ellipsis-h fa-2x" style="
 width: 7px;
 overflow-x: hidden;
-color: #bd0000;
+color: #db5140;
 position: absolute;
 bottom:13px;
 margin-left: -2px;
@@ -72,8 +72,6 @@ margin-left: -2px;
     <div tab ng-show="showTab"></div>
     <ui-view></ui-view>
 </div>
-
-
 
 
 <!--<div class="app">-->

@@ -26,6 +26,7 @@
 
         $scope.$on('isShowHeader', function (e, val) {
             isShowHeader = val;
+            var border = '#f4f4f4';
             $timeout(function () {
                 var tempTop;
                 if (isShowHeader) {
@@ -33,10 +34,12 @@
                     changeViewContent('44px');
                 } else {
                     tempTop = '0px';
+                    border = '#bababa';
                     changeViewContent('0px');
                 }
                 $scope.tabStyle = {
-                    'top': tempTop
+                    'top': tempTop,
+                    'border-bottom-color': border
                 };
             }, 0);
         });
@@ -44,7 +47,8 @@
         $scope.$on('showHeader', function () {
             if (isShowHeader) {
                 $scope.tabStyle = {
-                    'top': '50px'
+                    'top': '50px',
+                    'border-bottom-color': '#f4f4f4'
                 };
             }
         });
@@ -52,7 +56,8 @@
         $scope.$on('hideHeader', function () {
             if (isShowHeader) {
                 $scope.tabStyle = {
-                    'top': '0px'
+                    'top': '0px',
+                    'border-bottom-color': '#bababa'
                 };
             }
         });
@@ -64,7 +69,7 @@
             var viewContent = document.getElementById('viewContent');
             viewContent = angular.element(viewContent);
             viewContent.css({
-                'margin-top':px
+                'margin-top': px
             });
         }
 

@@ -26,6 +26,62 @@
   border-radius: 2px;
 }
 
+.thinner-border {
+  position: relative;
+}
+
+.thinner-border:before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  border: 1px solid #bababa;
+  -webkit-transform-origin: 0 0;
+  -moz-transform-origin: 0 0;
+  -ms-transform-origin: 0 0;
+  -o-transform-origin: 0 0;
+  transform-origin: 0 0;
+  -webkit-transform: scale(0.5, 0.5);
+  -ms-transform: scale(0.5, 0.5);
+  -o-transform: scale(0.5, 0.5);
+  transform: scale(0.5, 0.5);
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  .yuanBtn2();
+}
+
+.line {
+  .thinner-border();
+}
+
+.line:before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  border-bottom: 1px dashed #bababa;
+  -webkit-transform-origin: 0 0;
+  -moz-transform-origin: 0 0;
+  -ms-transform-origin: 0 0;
+  -o-transform-origin: 0 0;
+  transform-origin: 0 0;
+  -webkit-transform: scale(0.5, 0.5);
+  -ms-transform: scale(0.5, 0.5);
+  -o-transform: scale(0.5, 0.5);
+  transform: scale(0.5, 0.5);
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+//圆角btn
+.yuanBtn2 {
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+}
+
 //圆角阴影
 .yuan {
   .yuanBtn();
@@ -40,12 +96,21 @@
   color: #dadada;
 }
 
+//巧克力
+.qiaokeli {
+  color: #4a2f14;
+}
+
+//蓝色字
+.lan {
+  color: #37a;
+}
+
 .mui-bar-tab .mui-tab-item.mui-active {
   color: #000;
 }
 
 .mui-bar-tab .mui-tab-item {
-  color: #000;
   .mui-icon {
     font-size: 22px;
   }
@@ -59,7 +124,10 @@
 .mui-bar {
   background-color: #fff;
   height: 50px;
-  border-bottom: 1px solid #000;
+  border-top: 1px solid #bababa;
+  -webkit-box-shadow: 0px 0px 0px 0px #DBE5DB;
+  -moz-box-shadow: 0px 0px 0px 0px #DBE5DB;
+  box-shadow: 0px 0px 0px 0px #DBE5DB;
   padding-top: 4px;
   .mui-icon {
     font-size: 18px;
@@ -158,10 +226,6 @@ html, body {
   cursor: pointer;
 }
 
-.line {
-  border-bottom: solid 1px #EEE
-}
-
 //.all() 用法 传入
 .allHeight(@all:10,@num:10,@mTop:0) {
   @item: 100% / @all;
@@ -186,7 +250,7 @@ html, body {
   z-index: 9999;
   background-color: #fff;
   padding-top: 10px;
-  border-bottom: 1px solid #000;
+  border-bottom: 1px solid #f4f4f4;
   font-size: 1rem;
   .btn {
     .mt(11);
@@ -319,7 +383,7 @@ html, body {
 #subForm {
   .yuanBtn();
   background-color: #fff;
-  border: 1px #bd0000 solid;
+  border: 1px #30a080 solid;
   position: absolute;
   width: 60%;
   padding: 10px;
@@ -334,7 +398,7 @@ html, body {
     width: 47%;
     font-size: 24px;
     color: #fff;
-    background-color: #bd0000;
+    background-color: #30a080;
     margin-bottom: 10px;
   }
 }
@@ -355,13 +419,19 @@ html, body {
     .all(100, 25);
     float: left;
     border-right: 1px solid #f4f4f4;
+    border-bottom: 1px solid #dadada;
+    border-radius: 0px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
     text-align: center;
     color: #cccccc;
     font-size: 14px;
-    padding-top: 11px;
+    padding-top: 9px;
   }
   .shaiXuanGaoLiang {
-    color: #bd0000;
+    color: #db5140;
   }
 
   .shaiXuanIndex4 {
@@ -527,3 +597,42 @@ html, body {
 #searchIconH1 {
   border: none;
 }
+
+//list 样式
+.homeListItem {
+  .all(10, 9.5, 1);
+  padding: 0px;
+  margin-bottom: 10px;
+  .contentItem {
+    .all(10, 9, 1);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    .contentItemTitle {
+      .lan();
+      font-size: 1rem;
+      font-weight: bold;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -o-text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 90%;
+    }
+    .contentItemTitleCounent {
+      .hui;
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+.marginLine {
+  margin-top: 0.1rem;
+  margin-bottom: 0.5rem;
+}
+
+
+
+
+
+
+

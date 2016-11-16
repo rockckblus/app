@@ -39,7 +39,11 @@
         function giveThisCity() {
             var area = tools.getLocalStorageObj('area');
             $timeout(function () {
-                $scope.thisCity = area.city.city;
+                try {
+                    $scope.thisCity = area.city.city;
+                } catch (e) {
+                    $scope.thisCity = '全国';
+                }
             }, 0);
         }
 

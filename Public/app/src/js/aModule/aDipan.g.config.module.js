@@ -230,6 +230,7 @@
                     userData: 'userData',//用户数据
                     clickShaiXuan: 'clickShaiXuan',//筛选点击id数组
                     area: 'area',//gps 坐标信息,城市名称,邮编
+                    areaGps: 'areaGps',//gps 坐标信息,城市名称,邮编,此处是 第一次运行,手机定位成功的时候 记录的精确位置信息
                 },
                 version: {
                     //版本
@@ -266,7 +267,11 @@
                 reUrl = 'http://169.254.210.14';//dev
             }, function () {//app
                 // return 'http://www.dipan.so';// 生产
-                reUrl = 'http://192.168.0.50';//dev
+                if (mui.os.android) {
+                    reUrl = 'http://192.168.0.50';//dev
+                } else {
+                    reUrl = 'http://127.0.0.1';//dev
+                }
             });
 
             return reUrl;

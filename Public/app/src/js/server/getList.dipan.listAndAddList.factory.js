@@ -306,25 +306,31 @@
     function _addNewListToOldList(newlist, _call, listNam, scope, isCatch) {
 
         //判断newList 里面的 id 是否有 标记
-
-
         var strVar = "";
-        strVar += "        <li class=\"mui-table-view-cell item\" url=\"content#{{vo.id}}\" bindonce bo-id='vo._id' ng-repeat=\"\"";
-        strVar += "            style=\"background-color: #fff;margin-top: 10px\">";
-        strVar += "            <div class=\"clear\">";
-        strVar += "                <div class=\"left listHeader\">";
-        strVar += "                    <img bo-src=\"vo.listHeader\"/>";
+        strVar += "        <li class=\" item homeListItem thinner-border\" bindonce bo-attr bo-attr-url=\"'content#'+vo.id\"  bo-id='vo._id' ";
+        strVar += "            style=\"background-color: #fff;\">";
+        strVar += "            <div class=\"clear contentItem\">";
+        strVar += "                <div class=\"contentItemTitle clear\" bo-text=\"vo.title\"><\/div>";
+        strVar += "                <div class=\"contentItemTitleCounent clear\">";
+        strVar += "                <div class=\"left \">" +
+            "<span class='' style='color:#db5140' bo-text='\"￥\" + vo.price'><\/span>" +
+            "<span class=''>\&nbsp;|&nbsp;</span>" +
+            "<span class='' bo-text='vo.danWei'></span>" +
+            "<span class='fa fa-map-marker' style='margin-left: 1rem'></span>" +
+            "<span class='' style='margin-left: 3px' bo-text='vo.far + \"km\"'></span>" +
+            "<\/div>";
         strVar += "                <\/div>";
-        strVar += "                <div class=\"left listTitle\">";
-        strVar += "                    <span bo-text=\"vo.title\"><\/span>";
-        strVar += "                <\/div>";
+        strVar += "                <div class=\"line clear marginLine\"><\/div>";
+        // strVar += "                <div class=\"left listHeader\">";
+        // strVar += "                    <img bo-src=\"vo.listHeader\"/>";
+        // strVar += "                <\/div>";
         strVar += "            <\/div>";
-        strVar += "            <div class=\"mui-navigate-right\" style=\"font-size:14px;color: #777;margin-top: 5px\" bindonce";
-        strVar += "                 ng-repeat=\"(key,vo2) in vo.content\">";
-        strVar += "                <span style=\"color:#bd0000\" bo-text=\"key + ':'\"><\/span>";
-        strVar += "                <span bo-text=\"vo2\"><\/span>";
-        strVar += "            <\/div>";
-        strVar += "";
+        // strVar += "            <div class=\"mui-navigate-right\" style=\"font-size:14px;color: #777;margin-top: 5px\" bindonce";
+        // strVar += "                 ng-repeat=\"(key,vo2) in vo.content\">";
+        // strVar += "                <span style=\"color:#bd0000\" bo-text=\"key + ':'\"><\/span>";
+        // strVar += "                <span bo-text=\"vo2\"><\/span>";
+        // strVar += "            <\/div>";
+        // strVar += "";
         // strVar += "            <div class=\"panle\">";
         // strVar += "                <div class=\"mui-btn fa fa-weixin fa-1x icon-btn\"><\/div>";
         // strVar += "                <div class=\"mui-btn fa  fa-1x icon-btn-noBack iconStar\" ng-class=\"vo.iconStar\" bo-attr";
