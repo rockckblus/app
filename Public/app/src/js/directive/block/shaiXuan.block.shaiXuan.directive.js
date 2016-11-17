@@ -30,7 +30,6 @@
         $scope.thisCity = '';//获取城市缓存数据
         $scope.$on('showShaiXuan', showShaiXuan);//监听显示筛选
 
-
         $scope.$on('changeArea', giveThisCity);//监听地址变换事件
 
         $scope.$on('changeBody', function () {
@@ -96,7 +95,7 @@
                                     $scope.needShaiXuan = true;//就打开
                                     $rootScope.$broadcast('showHeader');
                                 }, 0);
-                            } else if (tempDownCount >= 2) {
+                            } else if (tempDownCount >= 3) {
                                 $timeout(function () {
                                     $scope.needShaiXuan = true;//就打开
                                     $rootScope.$broadcast('showHeader');

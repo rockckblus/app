@@ -7,7 +7,7 @@
     'use strict';
     angular.module('dipan').factory('localData', localData);
 
-    localData.$inject = ['$location', 'tools', '$rootScope', 'config', '$filter', '$q'];
+    localData.$inject = ['$location', 'tools', '$rootScope', 'config', '$filter', '$q', '$timeout'];
 
     var location;
     var thisLocalData = {};

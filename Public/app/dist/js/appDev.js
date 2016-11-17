@@ -16,6 +16,7 @@ document.write('<script src="' + basePath + '/dist/js/res/angular-websql.min.js"
 ///** module  */
 document.write('<script src="' + basePath + '/src/js/aModule/aDipan.g.config.module.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/aModule/block.dipan.module.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/aModule/from.dipan.module.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/aModule/uiBlock.dipan.uiGroup.module.js"><\/script>');
 //
 //document.write('<script src="/Public/resCreate/js/app/src/aModule/uiBlock/alertDiv.uiBlock.alertUi.module.js"><\/script>');
@@ -36,7 +37,14 @@ document.write('<script src="' + basePath + '/src/js/directive/block/tab.block.t
 document.write('<script src="' + basePath + '/src/js/directive/block/alert.block.alertUi.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/block/subFrom.block.addFrom.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/block/shaiXuan.block.shaiXuan.directive.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/directive/block/lianXiang.block.searchLianXiang.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/block/searchArea.block.topLeftSearchArea.directive.js"><\/script>');
+
+document.write('<script src="' + basePath + '/src/js/directive/from/subkill.from.subkill.directive.js"><\/script>');
+
+
+
+
 
 document.write('<script src="' + basePath + '/src/js/directive/block/area.dipan.areaSelect.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/block/search.dipan.search.directive.js"><\/script>');
@@ -71,23 +79,14 @@ document.write('<script src="' + basePath + '/src/js/server/ui.dipan.ui.factory.
 document.write('<script src="' + basePath + '/src/js/server/update.block.getJsCss.factory.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/server/tap.dipan.clickTapPublic.server.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/server/compile.uiBlock.compile.factory.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/server/getCity.dipan.getCity.factory.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/server/header.dipan.headerDefault.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/alertDiv.uiBlock.alertUi.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/compile.uiBlock.compile.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/tools.dipan.block.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/urlParse.dipan.firstData.factory.js"><\/script>');
 //document.write('<script src="/Public/resCreate/js/app/src/server/apiPost.dipan.postUrl.factory.js"><\/script>');
 //
-
-/**
- * temp 临时使用的 server
- */
-
-document.write('<script src="' + basePath + '/src/js/server/getCity.dipan.getCity.factory.js"><\/script>');
-
-
-
-
-
 
 
 ///** tpl  */

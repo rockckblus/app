@@ -26,7 +26,7 @@
      * 此处是hackpost 到 node 转 对象格式问题, 如果是 请求node ,post的 需要传入 queryType = true; todo 默认不hackpost格式
      * 16/2/1 */
     //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block'], hackPost).config(uiRouter);
-    angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'angular-websql', 'block']).config(uiRouter);
+    angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'angular-websql', 'block', 'from']).config(uiRouter);
 
     /**
      * config 定义 全局变量 ,并且保留到window全局变量
@@ -62,23 +62,20 @@
                 templateUrl: window.tplPath + 'route/home.html'
             })
 
+
+            //发布技能
+            .state('subkill', {
+                url: '/subkill',
+                templateUrl: window.tplPath + 'route/from/subkill.html'
+            })
+
+
             //标记
             .state('star', {
                 url: '/star',
                 templateUrl: window.tplPath + 'route/home.html'
             })
 
-            //block 地区选择页面
-            .state('area', {
-                url: '/area',
-                templateUrl: window.tplPath + 'route/block/area.html'
-            })
-
-            //search 页面
-            .state('search', {
-                url: '/search',
-                templateUrl: window.tplPath + 'route/block/search.html'
-            })
 
             //memberIndex 我的 member
             .state('memberIndex', {

@@ -321,6 +321,25 @@
             "<\/div>";
         strVar += "                <\/div>";
         strVar += "                <div class=\"line clear marginLine\"><\/div>";
+        strVar += "                <div class=\"clear\">" +
+            "<div class='headerLeft left'>" +
+            "<img bo-if='vo.listHeader' bo-src='vo.listHeader' style='width: 30px;height: 30px;border-radius:30px;'/>" +
+            "<img bo-if='!vo.listHeader' bo-src='defaultHeader' style='width: 30px;height: 30px';border-radius:30px;/>" +
+            "</div>" +
+            "<div class='left imagesArr' >" +
+            "<div class='left imagesItem' bo-if='vo.imgs[0]'>" +
+            "<img bo-src='vo.imgs[0]'/>" +
+            "</div>" +
+            "<div class='left imagesItem' bo-if='vo.imgs[1]'>" +
+            "<img bo-src='vo.imgs[1]'/>" +
+            "</div>" +
+            "<div class='left imagesItem' bo-if='vo.imgs[2]'>" +
+            "<img bo-src='vo.imgs[2]'/>" +
+            "</div>" +
+            "<div class='clearThis'></div>" +
+            "<div class='des' bo-text='vo.des'></div>" +
+            "</div>" +
+            "<\/div>";
         // strVar += "                <div class=\"left listHeader\">";
         // strVar += "                    <img bo-src=\"vo.listHeader\"/>";
         // strVar += "                <\/div>";

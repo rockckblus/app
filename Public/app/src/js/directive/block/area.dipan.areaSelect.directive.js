@@ -18,9 +18,9 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'getCity'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'getCity', '$state'];
 
-    function thisController($scope, $rootScope, $timeout, tools, getCity) {
+    function thisController($scope, $rootScope, $timeout, tools, getCity, $state) {
 
         $scope.thisCity = {'name': '', 'cityCode': '', 'location': ''};
         $scope.showArea = false;//显示地区选择div
@@ -119,10 +119,12 @@
             }, function () {
                 type = 'tap';
             });
+
             bindBtn.addEventListener(type, _bind);
 
             function _bind() {
                 $rootScope.$broadcast('showArea');
+                $rootScope.$broadcast('blurSearch');
             }
         }
 
@@ -287,7 +289,9 @@
                 $scope.thisShengShow = false;//省下面城市alertDiv
                 if (!sub) {//如果 不是 点击关闭按钮的调用
                     $rootScope.$broadcast('hideArea');//关闭地区alert
-                    $rootScope.$broadcast('focusSearch');//焦点搜索框
+                    if ($state.current.name == 'home') {
+                        $rootScope.$broadcast('focusSearch');//焦点搜索框
+                    }
                 }
             }, 0);
         }

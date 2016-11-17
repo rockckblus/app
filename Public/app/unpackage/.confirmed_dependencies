@@ -61,7 +61,12 @@
       "src/js/directive/block/shaiXuan.block.shaiXuan.directive.js",
       "src/js/directive/block/searchArea.block.topLeftSearchArea.directive.js",
       "src/js/server/getCity.dipan.getCity.factory.js",
-      "dist/js/res/angular-websql.min.js"
+      "dist/js/res/angular-websql.min.js",
+      "src/js/server/header.dipan.headerDefault.factory.js",
+      "src/js/directive/block/lianXiang.block.searchLianXiang.directive.js",
+      "src/html/directive/block/lianXiang.block.searchLianXiang.directive.html",
+      "src/js/directive/from/subkill.from.subkill.directive.js",
+      "src/js/aModule/from.dipan.module.js"
     ],
     "refer": [
       "src/html/updata.html"

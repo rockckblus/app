@@ -35,7 +35,7 @@
             'hrefMemberLoginOut',//退出登录
             'hrefMemberSetting',//设置
             'hrefAddFromNeed',//添加需求
-            'hrefAddMyBom',//添加技能
+            'hrefSubKill',//添加技能
         ];
 
         var idsIsBind = [];//已经在服务绑定过的 id,就不去绑定了

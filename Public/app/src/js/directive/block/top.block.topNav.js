@@ -35,6 +35,7 @@
         $scope.cancelClick = cancelClick;//取消按钮点击事件
         $scope.focusSearch = focusSearch;//search焦点事件
         $scope.blurSearch = blurSearch;//search失去焦点事件
+        $scope.$on('blurSearch', blurSearch);//监听让搜素事情焦点
 
         $scope.$on('hideHeader', function (e, gold) {
             if (gold) {//如果是全局穿过来的 隐藏header事件,
@@ -71,6 +72,9 @@
 
         //watch search
         $scope.$watch('search', changeSearch);
+
+        //监听外部传来的关键词赋值
+        $scope.$on('giveSearch', giveSearch);
 
 
         init();
@@ -149,6 +153,10 @@
             } else {
                 hideDelSearch();//隐藏删除按钮
             }
+
+            //获取联想搜索
+            $rootScope.$broadcast('getKeyList', e);
+
         }
 
         /**
@@ -165,6 +173,8 @@
                 }, 400);
             }, 0);
             $rootScope.$broadcast('showSearchArea');//显示地区选择面板
+            $rootScope.$broadcast('showLianXianShow');//显示联想选择面板
+            $rootScope.$broadcast('getKeyList', '');//默认去取热门关键词,不传key,就是热门
             hideSearchIcon();//隐藏搜索icon
 
         }
@@ -181,6 +191,7 @@
                 $rootScope.$broadcast('hideSearchArea');//隐藏地区选择面板
                 showSearchIcon();//显示搜索icon
             }
+            $rootScope.$broadcast('hideLianXianShow');//显示联想选择面板
         }
 
         /**
@@ -206,6 +217,9 @@
          */
         function bindDelSearchBtn() {
             var delDom = document.getElementById('topSearchRight');
+            if (!delDom) {
+                return false;
+            }
             delDom.addEventListener('tap', function () {
                 $timeout(function () {
                     $scope.search = '';
@@ -252,9 +266,13 @@
          * bindCancelBtn 绑定取消按钮点击事件
          */
         function bindCancelBtn() {
-            document.getElementById('cancel').addEventListener('tap', function () {
-                cancelClick();
-            });
+            try {
+                document.getElementById('cancel').addEventListener('tap', function () {
+                    cancelClick();
+                });
+            } catch (e) {
+                console.log('no cancel dom');
+            }
         }
 
         /**
@@ -276,6 +294,14 @@
         }
 
 
+        /**
+         * 给 search 赋值 giveSearch
+         */
+        function giveSearch(v, key) {
+            $timeout(function () {
+                $scope.search = key;
+            }, 0);
+        }
     }
 
 

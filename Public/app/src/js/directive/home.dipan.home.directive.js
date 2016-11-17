@@ -18,9 +18,9 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config', 'compile', '$state', 'getList'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config', 'compile', '$state', 'getList', 'header'];
 
-    function thisController($scope, $rootScope, $timeout, tools, update, config, compile, $state, getList) {
+    function thisController($scope, $rootScope, $timeout, tools, update, config, compile, $state, getList, header) {
 
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
@@ -29,6 +29,7 @@
         $scope.urlName = $state.current.name;//当前url Name
         $scope.list = []; //默认首页 列表 数据,每次刷新请求后 push list变量名称
         $scope.listTop = {'margin-top': '45px'};//homeList 的 style
+        $scope.defaultHeader = header.defaultHeader;//默认头像
         var endId;//下拉后 得到 的 最后一条id
         var firstId;//第一条id,上拉时候用
         var type = 'up';//当前请求方式 up down

@@ -22,6 +22,7 @@
             $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
             $rootScope.$broadcast('closeAddFrom');//默认 关闭 技能发布按钮面板
             changeSubBtnIcon(true);//默认变换发布按钮为 加号
+            showBottomNav();//显示底部导航
             var _url = '/' + $state.current.name;
             $timeout(function () {
                 $scope.title = localData.getTitle(_url);//getTitle
@@ -106,6 +107,7 @@
                 tap.init();//判断手机网页 手机 绑定 tap 事件, 网页绑定 click事件,(点击跳转url)
             }, 0);
         });
+
 
         //显示H1SearchBtn 监听事件
         $scope.$on('showHiSearchBtn', showH1SearchBtn);
@@ -223,5 +225,13 @@
             }
         }
 
+        /**
+         * 显示底部导航
+         */
+
+        function showBottomNav() {
+            var dom = document.getElementById('bottomNav');
+            dom.style.display = "block";
+        }
     }
 })();

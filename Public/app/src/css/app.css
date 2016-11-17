@@ -106,13 +106,16 @@ body {
   color: #000;
 }
 .form-control::-moz-placeholder {
+  font-size: 1rem;
   color: #808080;
   opacity: 1;
 }
 .form-control:-ms-input-placeholder {
+  font-size: 1rem;
   color: #808080;
 }
 .form-control::-webkit-input-placeholder {
+  font-size: 1rem;
   color: #808080;
 }
 .c {
@@ -664,7 +667,55 @@ body {
   margin-top: 0.5rem;
   font-size: 0.8rem;
 }
+.homeListItem .contentItem .headerLeft {
+  width: 13%;
+  float: left;
+  height: 100%;
+  overflow-x: hidden;
+}
+.homeListItem .contentItem .imagesArr {
+  margin-left: 5%;
+  width: 80%;
+  float: left;
+  overflow-x: hidden;
+}
+.homeListItem .contentItem .imagesArr .imagesItem {
+  margin-bottom: 1rem;
+  margin-left: 1%;
+  width: 31%;
+  float: left;
+  height: 5rem;
+  overflow-y: hidden;
+}
+.homeListItem .contentItem .imagesArr .imagesItem img {
+  width: 100%;
+}
+.homeListItem .contentItem .imagesArr .des {
+  font-size: 0.8rem;
+  color: #777;
+}
 .marginLine {
   margin-top: 0.1rem;
   margin-bottom: 0.5rem;
+}
+#lianXiang {
+  position: fixed;
+  width: 100%;
+  height: 84px;
+  overflow: hidden;
+  top: 44px;
+  left: 0px;
+  background-color: #fff;
+  z-index: 500000;
+  padding: 5px;
+  border-radius: 2px;
+}
+#lianXiang .item {
+  color: #777;
+  font-size: 12px;
+  margin-left: 6px;
+  margin-bottom: 5px;
+  margin-top: 3px;
+  background-color: #fff;
+  border: hidden;
 }
