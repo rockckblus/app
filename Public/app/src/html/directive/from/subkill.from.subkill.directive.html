@@ -1,21 +1,119 @@
-<div style="margin-top: -50px;padding: 1rem">
-    <div class="title" style="margin-bottom: 20px">发布技能</div>
+<div style="margin-top: -50px;padding: 1rem;color: #777" id="subill">
+    <div class="title " style="margin-bottom: 20px;color: #30a080">发布技能</div>
     <div class="line"></div>
     <div class="mui-table-view mui-table-view-chevron clear" style="margin-top: 40px">
-        <form name="addFrom" novalidate>
-            <div class="left" style="margin-top: 7px;width: 20%">性别:</div>
-            <div class="left">
-                <div class="mui-input-row mui-radio mui-left left" style="width: 100px">
-                    <label style="padding-top: 8px">男</label>
-                    <input name="radio1" type="radio">
+        <form novalidate>
+            <!--技能-->
+            <div class="itemFrom" style="margin-top: 7px">
+                <input type="text" name="title" class="subill thinner-border" ng-model="from.title" id="fromTitle"
+                       ng-focus="titleFocus()"
+                       ng-blur="titleBlur()"
+                       placeholder="我的技能 / 服务"/>
+                <!--推荐技能-->
+                <div commend></div>
+            </div>
+
+            <!--价格-->
+            <div class="clear itemFrom" style="margin-top: 7px">
+                <input type="number" name="title" class="left subill" style="width: 40%" ng-model="from.price"
+                       placeholder="价格 (元)"/>
+                <div style="margin-top: 3px">
+                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff;" id="radio1_0">1小时</div>
+                    <div class="left mui-btn"
+                         style="margin-left: 3px;" id="radio1_1">1次
+                    </div>
+                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff" id="radio1_2">1单</div>
                 </div>
             </div>
-            <div class="left">
-                <div class="mui-input-row mui-radio mui-left left" style="width:100px">
-                    <label style="padding-top: 8px">女</label>
-                    <input name="radio1" type="radio">
+
+
+            <!--服务方式-->
+            <div class="clear itemFrom" style="margin-top: 5px">
+                <div class="left" style="margin-top: 5px;width: 60px;font-size: 12px;">服务方式:</div>
+                <div class="left">
+
+                    <div class="left mui-btn"
+                         style="margin-left: 3px;" id="radio2_0">不限
+                    </div>
+
+                </div>
+                <div class="left">
+                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff;" id="radio2_1">线上</div>
+                </div>
+                <div class="left">
+                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff;" id="radio2_2">线下</div>
                 </div>
             </div>
+
+
+            <!--介绍-->
+            <div class="clear itemFrom " style="margin-top: 1rem">
+                <textarea name="form.content" class="subill" placeholder="用一句话夸夸我自己" cols="30" rows="2"
+                          style="margin-bottom: 0px"></textarea>
+            </div>
+
+            <!--图片-->
+            <div class="clear itemFrom " style="margin-top: 0px">
+                <div class="left" style="margin-top: 5px;width: 40px;font-size: 12px;">图片:</div>
+                <div class="left ">
+                    <div class="left linkMouse" style="width: 50px;height: 50px;">
+                        <div class="fa fa-plus-square-o fa-3x" style="color: #f4f4f4"></div>
+                    </div>
+                    <div class="left" style="width: 50px;height: 50px;">
+                        <div class="fa fa-plus-square-o fa-3x" style="color: #f4f4f4"></div>
+                    </div>
+                    <div class="left" style="width: 50px;height: 50px;">
+                        <div class="fa fa-plus-square-o fa-3x" style="color: #f4f4f4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="line"></div>
+            <!--性别-->
+            <div class="clear itemFrom" style="margin-top: 1rem">
+                <div class="left" style="margin-top: 7px;width: 40px;font-size: 12px;">性别:</div>
+                <div class="left">
+                    <div class="left mui-btn" style="margin-left: 3px;" id="radio3_0">男</div>
+                </div>
+                <div class="left">
+                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff" id="radio3_1">女</div>
+                </div>
+            </div>
+            <!--年龄-->
+            <div class="clear itemFrom" style="margin-top: 1rem">
+                <div class="left" style="margin-top: 7px;width: 40px;font-size: 12px">年龄:</div>
+                <div class="left">
+                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff;" id="radio4_0">16~24</div>
+                </div>
+                <div class="left">
+                    <div class="left mui-btn"
+                         style="margin-left: 3px;" id="radio4_1">25~35
+                    </div>
+                </div>
+                <div class="left">
+                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff;" id="radio4_2">35+</div>
+                </div>
+            </div>
+
+            <!--城市-->
+            <div class="clear itemFrom" style="margin-top: 1rem">
+                <div class="left" style="margin-top: 7px;width: 40px;font-size: 0.8rem">城市:</div>
+                <div class="left mui-btn qiaokeli" style="margin-left: 10px" id="fromCityClick">
+                    {{city}}
+                </div>
+            </div>
+
+
+            <div class="line" style="margin-top: 1rem"></div>
+            <div class="clear"></div>
+            <div class="clear" style="text-align: center;margin-top: 2rem">
+                <div class="mui-btn"
+                     style="width: 90%;background-color: #30a080;color: #fff;font-size: 1rem;border: none"
+                     id="subJiNeng">发&nbsp;&nbsp;布
+                </div>
+            </div>
+
+
             <!--<div class="form-group ">-->
             <!--<input type="text" name="title" required ng-model="form.title"-->
             <!--class="form-control"-->
@@ -35,4 +133,7 @@
 
         </form>
     </div>
+
+    <!--地区选择 directive-->
+    <div area></div>
 </div>

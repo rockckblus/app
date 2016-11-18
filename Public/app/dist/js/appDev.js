@@ -41,6 +41,7 @@ document.write('<script src="' + basePath + '/src/js/directive/block/lianXiang.b
 document.write('<script src="' + basePath + '/src/js/directive/block/searchArea.block.topLeftSearchArea.directive.js"><\/script>');
 
 document.write('<script src="' + basePath + '/src/js/directive/from/subkill.from.subkill.directive.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/directive/from/commend.from.commend.directive.js"><\/script>');
 
 
 

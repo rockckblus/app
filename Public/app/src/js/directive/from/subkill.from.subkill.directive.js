@@ -20,22 +20,33 @@
     thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'config', '$state'];
 
     function thisController($scope, $rootScope, $timeout, tools, config, $state) {
+
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
             $rootScope.$broadcast('closeAddFrom');//关闭底部发布需求技能面板
             $rootScope.$broadcast('closeLoading');//关闭loading
             init();
         });
+        $scope.city = '全国';
+        $scope.$on('changeArea', giveThisCity);//监听地址变换事件
 
+        $scope.from = {
+            title: '',//技能标题
+        };
+        $scope.titleFocus = titleFocus;//当title焦点的事件
+        $scope.titleBlur = titleBlur;//当title失去焦点的事件
+        $scope.$watch('from.title', watchTitle);//watch title, title为空的时候显示推荐技能div
+        $scope.$on('fromTitleFoucs', focusTitle);//监听广播 使title焦点
 
         function init() {
-            hideBottomNav();
+            hideBottomNav();//隐藏底部导航
+            giveThisCity();//给默认城市
+            bindCityClick();//bind 城市按钮click事件
         }
 
         /**
          * 隐藏底部导航
          */
-
         function hideBottomNav() {
             $timeout(function () {
                 var dom = document.getElementById('bottomNav');
@@ -43,7 +54,70 @@
             }, 0);
         }
 
-    }
+        /**
+         * 给默认城市
+         */
+        function giveThisCity() {
+            var area = tools.getLocalStorageObj('area');
+            $timeout(function () {
+                try {
+                    $scope.city = area.city.city;
+                } catch (e) {
+                    $scope.city = '全国';
+                }
+            }, 0);
+        }
 
+        /**
+         * bind 城市按钮click事件
+         */
+        function bindCityClick() {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+            });
+            document.getElementById('fromCityClick').addEventListener(type, _bind);
+            function _bind() {
+                $rootScope.$broadcast('showArea','noFujin');
+            }
+        }
+
+        /**
+         * title 焦点事件
+         */
+        function titleFocus() {
+            watchTitle();
+        }
+
+        /**
+         * title blur 失去焦点事件
+         */
+        function titleBlur() {
+            $rootScope.$broadcast('hideCommendShow');
+        }
+
+        /**
+         * watch title
+         */
+        function watchTitle() {
+            if ($scope.from.title === '') {
+                $rootScope.$broadcast('showCommendShow');
+            } else {
+                $rootScope.$broadcast('hideCommendShow');
+            }
+        }
+
+        /**
+         * 使title焦点
+         * document.getElementById("inputId").focus();
+         */
+        function focusTitle() {
+            $timeout(function () {
+                document.getElementById("fromTitle").focus();
+            }, 0);
+        }
+
+    }
 
 })();

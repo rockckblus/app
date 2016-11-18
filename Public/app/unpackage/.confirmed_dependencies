@@ -66,7 +66,8 @@
       "src/js/directive/block/lianXiang.block.searchLianXiang.directive.js",
       "src/html/directive/block/lianXiang.block.searchLianXiang.directive.html",
       "src/js/directive/from/subkill.from.subkill.directive.js",
-      "src/js/aModule/from.dipan.module.js"
+      "src/js/aModule/from.dipan.module.js",
+      "src/js/directive/from/commend.from.commend.directive.js"
     ],
     "refer": [
       "src/html/updata.html"
