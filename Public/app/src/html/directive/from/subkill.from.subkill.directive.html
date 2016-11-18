@@ -14,7 +14,7 @@
             </div>
 
             <!--价格-->
-            <div class="clear itemFrom" style="margin-top: 7px">
+            <div class="clear itemFrom" style="margin-top: 5px">
                 <input type="number" name="title" class="left subill" style="width: 40%" ng-model="from.price"
                        placeholder="价格 (元)"/>
                 <div style="margin-top: 3px">
@@ -26,9 +26,14 @@
                 </div>
             </div>
 
+            <!--介绍-->
+            <div class="clear itemFrom " style="margin-top: 5px">
+                <textarea name="form.content" class="subill" placeholder="用一句话夸夸我自己" cols="30" rows="2"
+                          style="margin-bottom: 0px"></textarea>
+            </div>
 
             <!--服务方式-->
-            <div class="clear itemFrom" style="margin-top: 5px">
+            <div class="clear itemFrom" style="margin-top: 1rem">
                 <div class="left" style="margin-top: 5px;width: 60px;font-size: 12px;">服务方式:</div>
                 <div class="left">
 
@@ -45,24 +50,17 @@
                 </div>
             </div>
 
-
-            <!--介绍-->
-            <div class="clear itemFrom " style="margin-top: 1rem">
-                <textarea name="form.content" class="subill" placeholder="用一句话夸夸我自己" cols="30" rows="2"
-                          style="margin-bottom: 0px"></textarea>
-            </div>
-
             <!--图片-->
-            <div class="clear itemFrom " style="margin-top: 0px">
-                <div class="left" style="margin-top: 5px;width: 40px;font-size: 12px;">图片:</div>
-                <div class="left ">
-                    <div class="left linkMouse" style="width: 50px;height: 50px;">
+            <div class="clear itemFrom " style="margin-top: 1rem">
+                <div class="left" style="margin-top: 5px;width: 60px;font-size: 12px;">图片靓照:</div>
+                <div class="left " style="margin-left: 3px">
+                    <div class="left linkMouse" style="width: 50px;height: 50px;margin-left: 0px">
                         <div class="fa fa-plus-square-o fa-3x" style="color: #f4f4f4"></div>
                     </div>
-                    <div class="left" style="width: 50px;height: 50px;">
+                    <div class="left" style="width: 50px;height: 50px;margin-left: 7px">
                         <div class="fa fa-plus-square-o fa-3x" style="color: #f4f4f4"></div>
                     </div>
-                    <div class="left" style="width: 50px;height: 50px;">
+                    <div class="left" style="width: 50px;height: 50px;margin-left: 5px">
                         <div class="fa fa-plus-square-o fa-3x" style="color: #f4f4f4"></div>
                     </div>
                 </div>
@@ -71,23 +69,23 @@
             <div class="line"></div>
             <!--性别-->
             <div class="clear itemFrom" style="margin-top: 1rem">
-                <div class="left" style="margin-top: 7px;width: 40px;font-size: 12px;">性别:</div>
+                <div class="left" style="margin-top: 7px;width: 60px;font-size: 12px;">性别:</div>
                 <div class="left">
-                    <div class="left mui-btn" style="margin-left: 3px;" id="radio3_0">男</div>
+                    <div class="left mui-btn" style="margin-left: 3px;" id="radio3_0">女</div>
                 </div>
                 <div class="left">
-                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff" id="radio3_1">女</div>
+                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff" id="radio3_1">男</div>
                 </div>
             </div>
             <!--年龄-->
             <div class="clear itemFrom" style="margin-top: 1rem">
-                <div class="left" style="margin-top: 7px;width: 40px;font-size: 12px">年龄:</div>
+                <div class="left" style="margin-top: 7px;width: 60px;font-size: 12px">年龄:</div>
                 <div class="left">
-                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff;" id="radio4_0">16~24</div>
+                    <div class="left mui-btn" style="margin-left: 3px;" id="radio4_0">16~24</div>
                 </div>
                 <div class="left">
                     <div class="left mui-btn"
-                         style="margin-left: 3px;" id="radio4_1">25~35
+                         style="margin-left: 3px;border-color:#fff;" id="radio4_1">25~35
                     </div>
                 </div>
                 <div class="left">
@@ -97,8 +95,8 @@
 
             <!--城市-->
             <div class="clear itemFrom" style="margin-top: 1rem">
-                <div class="left" style="margin-top: 7px;width: 40px;font-size: 0.8rem">城市:</div>
-                <div class="left mui-btn qiaokeli" style="margin-left: 10px" id="fromCityClick">
+                <div class="left" style="margin-top: 7px;width: 60px;font-size: 12px">城市:</div>
+                <div class="left mui-btn qiaokeli" style="margin-left: 3px" id="fromCityClick">
                     {{city}}
                 </div>
             </div>

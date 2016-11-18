@@ -38,10 +38,17 @@
         $scope.$watch('from.title', watchTitle);//watch title, title为空的时候显示推荐技能div
         $scope.$on('fromTitleFoucs', focusTitle);//监听广播 使title焦点
 
+        var radioArr = {//radio 数组
+            radio1: ['1小时', '1次', '1单'],
+            radio2: ['不限', '线上', '线下'],
+            radio3: ['男', '女'],
+            radio4: ['16', '25', '35']
+        };
         function init() {
             hideBottomNav();//隐藏底部导航
             giveThisCity();//给默认城市
             bindCityClick();//bind 城市按钮click事件
+            bindRadio();//bind radio
         }
 
         /**
@@ -117,6 +124,37 @@
                 document.getElementById("fromTitle").focus();
             }, 0);
         }
+
+
+
+        /**
+         * bind radio 点击
+         */
+        function bindRadio() {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+                type = 'tap';
+            });
+            angular.forEach(radioArr, function (vo, index1) {
+                angular.forEach(vo, function (vo1, index2) {
+                    var domId = index1 + '_' + index2;
+                    document.getElementById(domId).addEventListener(type, clickRadio);
+                })
+            });
+            function clickRadio(dom) {
+                var idS = dom.target.id;
+                idS = idS.split('_');
+                idS = idS[0];
+                angular.forEach(radioArr[idS], function (vo, index) {
+                    document.getElementById(idS + '_' + index).style.borderColor = '#fff';
+                });
+                dom.target.style.borderColor = '#ccc';
+            }
+        }
+
+
 
     }
 

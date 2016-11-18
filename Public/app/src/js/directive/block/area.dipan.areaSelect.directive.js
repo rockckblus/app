@@ -58,15 +58,8 @@
         $scope.thisShengShow = false;//省下面城市alertDiv
         $scope.$on('showArea', showArea);//监听打开areaDiv事件
         $scope.$on('hideArea', hideArea);//监听关闭areaDiv事件
-        var radioArr = {//radio 数组
-            radio1: ['1小时', '1次', '1单'],
-            radio2: ['不限', '线上', '线下'],
-            radio3: ['男', '女'],
-            radio4: ['16', '25', '35']
-        };
 
         bindSelectAreaBtn();//绑定选择area点击事件
-        bindRadio();//bind radio
         function init() {
             getDefault();//获取默认本地存储的地址信息
             $timeout(function () {
@@ -96,35 +89,6 @@
             }, 0);
         }
 
-        /**
-         * bind radio 点击
-         */
-        function bindRadio() {
-            var type = 'tap';
-            tools.trueWeb(function () {
-                type = 'click';
-            }, function () {
-                type = 'tap';
-            });
-            angular.forEach(radioArr, function (vo, index1) {
-                angular.forEach(vo, function (vo1, index2) {
-                    var domId = index1 + '_' + index2;
-                    document.getElementById(domId).addEventListener(type, clickRadio);
-                })
-            });
-
-            function clickRadio(dom) {
-                var idS = dom.target.id;
-                idS = idS.split('_');
-                idS = idS[0];
-                angular.forEach(radioArr[idS], function (vo, index) {
-                    document.getElementById(idS + '_' + index).style.borderColor = '#fff';
-                });
-                dom.target.style.borderColor = '#ccc';
-            }
-
-
-        }
 
         /**
          * 监听打开areaDiv事件
