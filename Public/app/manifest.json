@@ -41,7 +41,7 @@
         
         "Events": {
             "description": "应用扩展事件"
-        },"Webview":{},"Storage":{},"NativeUI":{},"Runtime":{},"Geolocation":{},"Statistic":{}
+        },"Webview":{},"Storage":{},"NativeUI":{},"Runtime":{},"Geolocation":{},"Statistic":{},"Camera":{},"Gallery":{},"File":{}
     },
     "plus": {
         "splashscreen": {
@@ -66,7 +66,7 @@
                 "keystore": "",/*Android应用打包使用的密钥库文件*/
                 "password": "",/*Android应用打包使用密钥库中证书的密码*/
                 "aliasname": "",/*Android应用打包���用密钥库中证书的别名*/
-               "permissions": ["<uses-permission android:name=\"android.permission.READ_LOGS\"/>","<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>","<uses-permission android:name=\"android.permission.RECEIVE_USER_PRESENT\"/>","<uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\"/>"]
+               "permissions": ["<uses-feature android:name=\"android.hardware.camera\"/>","<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>","<uses-permission android:name=\"android.permission.RECEIVE_USER_PRESENT\"/>","<uses-permission android:name=\"android.permission.READ_LOGS\"/>","<uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\"/>","<uses-permission android:name=\"android.permission.CAMERA\"/>"]
 				/*使用Native.js调用原生安卓API需要使用到的系统权限*/
             },
             "orientation": ["portrait-primary"],/*应用支持的方向，portrait-primary：竖屏正方向；portrait-secondary：竖屏反方向；landscape-primary：横屏正方向；landscape-secondary：横屏反方向*/
@@ -209,7 +209,8 @@
 					"src/html/directive/block/lianXiang.block.searchLianXiang.directive.html",
 					"src/js/directive/from/subkill.from.subkill.directive.js",
 					"src/js/aModule/from.dipan.module.js",
-					"src/js/directive/from/commend.from.commend.directive.js"
+					"src/js/directive/from/commend.from.commend.directive.js",
+					"src/js/directive/from/imgUpdate.from.imgUpdate.directive.js"
 				],
 				"refer": [
 					"src/html/updata.html"

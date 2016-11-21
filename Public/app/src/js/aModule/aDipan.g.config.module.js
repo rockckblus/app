@@ -233,6 +233,14 @@
                     //版本
                     key: 'version',//localStroe key
                 },
+                form: {
+                    //表单单相关
+                    killRoundId: 'killRoundId',//随机技能表单id
+                    radio1: 'radio1',//技能价格单位 default:1次
+                    radio2: 'radio2',//技能服务方式 default:不限
+                    radio3: 'radio3',//会员补充资料,男,女 default:女
+                    radio4: 'radio4',//会员补充资料,年龄 default:16~24
+                }
             },
 
             //系统配置

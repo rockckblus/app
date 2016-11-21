@@ -33,6 +33,10 @@
             }, 400);
         });
 
+        $scope.$on('getUserData', function () {
+            getUserData();
+        });//监听获取用户数据事件
+
         //我的 导航list > 本地数据
         $scope.listNav = localData.memberIndexNav;
 

@@ -10,7 +10,11 @@
       "fensi": 135,
       "fensi_height": "true",
       "guanzhu": 335,
-      "lianxi_": 35
+      "lianxi_": 35,
+      "city": "天津",
+      "sex": "男",
+      "age": "16~24",
+      "isUser": "true"
     }
   }
 }

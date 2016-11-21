@@ -208,7 +208,7 @@ body {
   width: 80%;
   float: left;
   margin-left: 10%;
-  z-index: 900000;
+  z-index: 9000000;
 }
 #alertUi .showThis {
   border-radius: 2px;
@@ -772,5 +772,9 @@ body {
 }
 .subill::-webkit-input-placeholder {
   color: #808080;
+  font-size: 14px;
+}
+.subill[disabled]::-webkit-input-placeholder {
+  color: #f4f4f4;
   font-size: 14px;
 }

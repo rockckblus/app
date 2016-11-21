@@ -42,9 +42,7 @@ document.write('<script src="' + basePath + '/src/js/directive/block/searchArea.
 
 document.write('<script src="' + basePath + '/src/js/directive/from/subkill.from.subkill.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/from/commend.from.commend.directive.js"><\/script>');
-
-
-
+document.write('<script src="' + basePath + '/src/js/directive/from/imgUpdate.from.imgUpdate.directive.js"><\/script>');
 
 
 document.write('<script src="' + basePath + '/src/js/directive/block/area.dipan.areaSelect.directive.js"><\/script>');

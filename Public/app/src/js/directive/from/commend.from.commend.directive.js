@@ -59,10 +59,12 @@
             function _res(re) {
                 $timeout(function () {
                     $scope.list = re.list;
+                    $timeout(function () {
+                        bindCommendClick();
+                    }, 0);
                 }, 0);
             }
         }
-
 
         /**
          * 换一换 点击事件
@@ -81,6 +83,30 @@
             }
         }
 
+
+        /**
+         * bind 推荐技能列表点击事件
+         */
+        function bindCommendClick() {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+                type = 'tap';
+            });
+            angular.forEach($scope.list, function (vo) {
+                document.getElementById('comList_' + vo._id).addEventListener(type, function () {
+                    clickCommendKey(vo);
+                });
+            });
+        }
+
+        /**
+         * 技能列表点击事件
+         */
+        function clickCommendKey(vo) {//广播frome.title
+            $rootScope.$broadcast('giveFromTitle', vo.key);
+        }
 
     }
 })();

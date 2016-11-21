@@ -15,20 +15,22 @@
 
             <!--价格-->
             <div class="clear itemFrom" style="margin-top: 5px">
-                <input type="number" name="title" class="left subill" style="width: 40%" ng-model="from.price"
-                       placeholder="价格 (元)"/>
+                <input type="number" name="title" class="left subill" style="width: 30%" ng-model="from.price"
+                       placeholder="价格 (元)" ng-disabled="priceDisabled"/>
                 <div style="margin-top: 3px">
                     <div class="left mui-btn" style="margin-left: 3px;border-color:#fff;" id="radio1_0">1小时</div>
                     <div class="left mui-btn"
                          style="margin-left: 3px;" id="radio1_1">1次
                     </div>
                     <div class="left mui-btn" style="margin-left: 3px;border-color:#fff" id="radio1_2">1单</div>
+                    <div class="left mui-btn" style="color:#dadada;margin-left: 3px;border-color:#fff" id="radio1_3">面议
+                    </div>
                 </div>
             </div>
 
             <!--介绍-->
             <div class="clear itemFrom " style="margin-top: 5px">
-                <textarea name="form.content" class="subill" placeholder="用一句话夸夸我自己" cols="30" rows="2"
+                <textarea ng-model="from.content" class="subill" placeholder="用一句话夸夸我自己" cols="30" rows="2"
                           style="margin-bottom: 0px"></textarea>
             </div>
 
@@ -51,24 +53,15 @@
             </div>
 
             <!--图片-->
-            <div class="clear itemFrom " style="margin-top: 1rem">
+            <div class="clear itemFrom " style="margin-top: 1rem" ng-if="showImgUp">
                 <div class="left" style="margin-top: 5px;width: 60px;font-size: 12px;">图片靓照:</div>
-                <div class="left " style="margin-left: 3px">
-                    <div class="left linkMouse" style="width: 50px;height: 50px;margin-left: 0px">
-                        <div class="fa fa-plus-square-o fa-3x" style="color: #f4f4f4"></div>
-                    </div>
-                    <div class="left" style="width: 50px;height: 50px;margin-left: 7px">
-                        <div class="fa fa-plus-square-o fa-3x" style="color: #f4f4f4"></div>
-                    </div>
-                    <div class="left" style="width: 50px;height: 50px;margin-left: 5px">
-                        <div class="fa fa-plus-square-o fa-3x" style="color: #f4f4f4"></div>
-                    </div>
-                </div>
+                <div img-up-date></div>
             </div>
 
-            <div class="line"></div>
+
+            <div class="line" style="margin-top: 4px"></div>
             <!--性别-->
-            <div class="clear itemFrom" style="margin-top: 1rem">
+            <div class="clear itemFrom" style="margin-top: 1rem" ng-show="!isUser">
                 <div class="left" style="margin-top: 7px;width: 60px;font-size: 12px;">性别:</div>
                 <div class="left">
                     <div class="left mui-btn" style="margin-left: 3px;" id="radio3_0">女</div>
@@ -78,7 +71,7 @@
                 </div>
             </div>
             <!--年龄-->
-            <div class="clear itemFrom" style="margin-top: 1rem">
+            <div class="clear itemFrom" style="margin-top: 1rem" ng-show="!isUser">
                 <div class="left" style="margin-top: 7px;width: 60px;font-size: 12px">年龄:</div>
                 <div class="left">
                     <div class="left mui-btn" style="margin-left: 3px;" id="radio4_0">16~24</div>
@@ -94,7 +87,7 @@
             </div>
 
             <!--城市-->
-            <div class="clear itemFrom" style="margin-top: 1rem">
+            <div class="clear itemFrom" style="margin-top: 1rem" ng-show="!isUser">
                 <div class="left" style="margin-top: 7px;width: 60px;font-size: 12px">城市:</div>
                 <div class="left mui-btn qiaokeli" style="margin-left: 3px" id="fromCityClick">
                     {{city}}
@@ -102,7 +95,7 @@
             </div>
 
 
-            <div class="line" style="margin-top: 1rem"></div>
+            <div class="line" style="margin-top: 1rem" ng-show="!isUser"></div>
             <div class="clear"></div>
             <div class="clear" style="text-align: center;margin-top: 2rem">
                 <div class="mui-btn"

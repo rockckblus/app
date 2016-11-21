@@ -1,7 +1,7 @@
 <div id="commend" ng-show="commendShow">
     <div class="clear lan" style="text-align: center">
         <div style="height: 150px;overflow: hidden;">
-            <div class="listItem" bindonce ng-repeat="vo in list">
+            <div class="listItem" bindonce bo-id="'comList_' + vo._id" ng-repeat="vo in list">
                 <div class="mui-btn left"
                      style="font-size: 12px;color:#777;border: none;background-color: #fff;margin-top: 1px;margin-left: 1px"
                      bo-text="vo.key"></div>
