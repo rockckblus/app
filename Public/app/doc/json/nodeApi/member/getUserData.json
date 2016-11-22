@@ -14,7 +14,8 @@
       "city": "天津",
       "sex": "男",
       "age": "16~24",
-      "isUser": "true"
+      "isUser": "true",
+      "telType": "jinZhi",
     }
   }
 }

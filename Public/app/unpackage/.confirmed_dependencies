@@ -68,7 +68,9 @@
       "src/js/directive/from/subkill.from.subkill.directive.js",
       "src/js/aModule/from.dipan.module.js",
       "src/js/directive/from/commend.from.commend.directive.js",
-      "src/js/directive/from/imgUpdate.from.imgUpdate.directive.js"
+      "src/js/directive/from/imgUpdate.from.imgUpdate.directive.js",
+      "src/js/directive/from/need.from.neesFrom.directive.js",
+      "src/js/directive/member/myNews.dipan.myNews.directive.js"
     ],
     "refer": [
       "src/html/updata.html"

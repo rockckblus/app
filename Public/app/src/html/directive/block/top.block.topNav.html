@@ -1,7 +1,7 @@
 <header class="mui-bar mui-bar-nav" style="border-bottom: 1px solid #f4f4f4" ng-show="headerShow">
-    <i ng-show="url !== '/login' && url !== '/need'" ng-if="url !== '/home'" onclick="history.go(-1);" id="goHistory"
+    <i ng-show="url !== '/login' && url !== '/need'" ng-if="url !== '/home'" onclick="history.go(-1);" id="goHistoryBack"
        url="goHistory"
-       class="fa fa-angle-left linkMouse  mui-pull-left mui-btn icon-btn"></i>
+       class="fa fa-angle-left linkMouse  mui-pull-left mui-btn icon-btn qiaokeli"></i>
     <div ng-show="url == '/home'" id="homeSearch" url="area"
          class="">
         <div class="left linkMouse" id="topSearchLeft" ng-show="topSearch">
@@ -25,7 +25,7 @@
     <!--class="fa fa-search fa-1  mui-pull-right mui-icon icon-btn"-->
     <!--style="padding-right: 17px;padding-top: 13px;"></i>-->
     <i ng-show="(url == '/memberIndex')" id="editMemberInfo" url="editMemberInfo"
-       class="fa fa-pencil-square-o fa-1x  mui-pull-right mui-icon icon-btn"
+       class="fa fa-pencil-square-o fa-1x  mui-pull-right mui-icon icon-btn qiaokeli"
        style="padding-right: 17px;padding-top: 13px;"></i>
 
     <h1 class="mui-title">

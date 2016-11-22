@@ -5,6 +5,40 @@
      * body 控制器
      * 16/2/1 */
     angular.module('dipan').controller('body', body);
+    angular.module('dipan').run(run);//angualr 第一次 启动后,加载一次run,去socket请求最新消息
+
+    run.$inject = ['$rootScope', 'tools', 'config', '$interval'];
+    function run($rootScope, tools, config, $interval) {
+        getNewsData();
+        var timer = $interval(function () {
+            getNewsData();
+        }, 60000);
+
+        /**
+         * 去socket请求最新消息
+         */
+        function getNewsData() {
+            var url = config.host.nodeHost + "/member/getUserNews";
+            var postData = {};
+            try {
+                postData.uid = tools.getLocalStorageObj('userData').uid;
+            } catch (e) {
+                postData.uid = '';
+            }
+            tools.postJsp(url, postData, true).then(_s);
+            function _s(re) {
+                if (re.data.code == 'S') {
+                    if (re.data.haveNews) {
+                        $rootScope.$broadcast('showNews');//广播显示 有新消息
+                    } else {
+                        $rootScope.$broadcast('hideNews');//广播显示 没有有新消息
+                    }
+                }
+            }
+        }
+
+
+    }
 
     /**
      * 手动注入
@@ -15,11 +49,15 @@
      * controllerFun
      * 16/2/1 */
     function body($scope, $rootScope, $timeout, localData, tap, $state, tools, getList, getCity) {
+        $scope.showNews = false;//底部会员有新消息图标显示
+        $scope.$on('showNews', showNews);//监听有新消息图标显示事件
+        $scope.$on('hideNews', hideNews);//监听关闭新消息图标事件
+
         $scope.push = 'fa-plus-circle';//发布需求按钮的 图标样式
         $scope.$on('changeBody', function () {
             trueIsLogin();//判断登录
             trueShowHeader();//判断是否显示header
-            $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
+            // $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
             $rootScope.$broadcast('closeAddFrom');//默认 关闭 技能发布按钮面板
             changeSubBtnIcon(true);//默认变换发布按钮为 加号
             showBottomNav();//显示底部导航
@@ -108,9 +146,33 @@
             }, 0);
         });
 
-
         //显示H1SearchBtn 监听事件
         $scope.$on('showHiSearchBtn', showH1SearchBtn);
+
+        init();
+        function init() {
+            //轮询去请求有没有新消息
+        }
+
+
+        /**
+         * 监听关闭新消息图标事件
+         */
+        function showNews() {
+            $timeout(function () {
+                $scope.showNews = true;
+            }, 0);
+        }
+
+        /**
+         * 监听关闭新消息图标事件
+         */
+        function hideNews() {
+            $timeout(function () {
+                $scope.showNews = false;
+            }, 0);
+        }
+
 
         /**
          * 判断登录
@@ -234,4 +296,5 @@
             dom.style.display = "block";
         }
     }
-})();
+})
+();

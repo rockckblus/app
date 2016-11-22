@@ -22,20 +22,17 @@
 
         var ids = [
             'goHistory',//返回上一页
-            'hrefArea',//地区选择
-            'hrefSearch',//搜索
             'hrefHome',//主页 供
-            'hrefTabHome',//主页 供
+            'hrefTabHome',//主页2 供
             'hrefTabNeed',//需
-            'hrefTabStar',//标记
-            // 'hrefMaster',//地主
             'hrefMember',//我的首页
-            'hrefMemberAddArticle',//test添加文章
             'login',//登录
-            'hrefMemberLoginOut',//退出登录
-            'hrefMemberSetting',//设置
-            'hrefAddFromNeed',//添加需求
             'hrefSubKill',//添加技能
+            'hrefSubNeed',//添加需求
+            'hrefMyNews',//消息
+            'hrefMyJiNeng',//技能管理
+            'hrefMyNeed',//需求管理
+            'hrefMyLoginOut',//需求管理
         ];
 
         var idsIsBind = [];//已经在服务绑定过的 id,就不去绑定了
@@ -44,12 +41,10 @@
         var noIdIsBing = [
             'hrefTabHome',
             'hrefTabNeed',
-            'hrefTabStar',
-            'hrefMemberAddArticle',
-            'hrefMemberLoginOut',
-            'hrefMemberSetting',
-            'hrefAddFromNeed',
-            'hrefAddMyBom'
+            'hrefSubKill',
+            'hrefSubNeed',
+            'hrefMember',
+            'hrefMyNews',//消息
         ];
 
         function plus(callBack) {
@@ -73,7 +68,6 @@
         }
 
         function init() {
-
             tools.trueWeb(_call,
                 function () {
                     plus(_call);
@@ -98,6 +92,7 @@
          * @private
          */
         function _goUrl(doc, url) {
+            console.log('url', url);
             var type = 'tap';
             tools.trueWeb(function () {
                 type = 'click';
@@ -116,14 +111,15 @@
                     case 'need' :
                         __saveCatchList();
                         break;
-                    case 'star' :
-                        __saveCatchList();
-                        break;
+                    // case 'star' :
+                    //     __saveCatchList();
+                    //     break;
                 }
 
                 __saveScrollTop();
                 if (url == 'goHistory') {//判断是 返回上页的点击事件
-                    history.go(-1);
+                    // history.go(-1);
+                    console.log('historyGo');
                 } else {
                     $state.go(url);
                 }

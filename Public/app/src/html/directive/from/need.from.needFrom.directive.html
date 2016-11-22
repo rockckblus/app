@@ -1,0 +1,136 @@
+<div style="margin-top: -50px;padding: 1rem;color: #777" id="need">
+    <div class="title " style="margin-bottom: 20px;color: #30a080">发布需求</div>
+    <div class="line"></div>
+    <div class="mui-table-view mui-table-view-chevron clear" style="margin-top: 40px">
+        <form novalidate>
+            <!--需求-->
+            <div class="itemFrom" style="margin-top: 7px">
+                <input type="text" name="title" class="subill thinner-border" ng-model="from.title" id="fromTitleNeed"
+                       ng-focus="titleFocus()"
+                       ng-blur="titleBlur()"
+                       placeholder="我的需求"
+                       autocomplete="off"
+                />
+                <!--推荐技能-->
+                <div commend></div>
+            </div>
+
+            <!--价格-->
+            <div class="clear itemFrom" style="margin-top: 5px">
+                <input type="number" name="title" class="left subill" style="width: 30%" ng-model="from.price"
+                       placeholder="预算 (元)" autocomplete="off" ng-disabled="priceDisabled"/>
+                <div style="margin-top: 3px">
+                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff;" id="needRadio1_0">1小时</div>
+                    <div class="left mui-btn"
+                         style="margin-left: 3px;" id="needRadio1_1">1次
+                    </div>
+                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff" id="needRadio1_2">1单</div>
+                    <div class="left mui-btn" style="color:#dadada;margin-left: 3px;border-color:#fff"
+                         id="needRadio1_3">面议
+                    </div>
+                </div>
+            </div>
+
+            <!--介绍-->
+            <div class="clear itemFrom" style="margin-top: 5px">
+            <textarea ng-model="from.content" class="subill" placeholder="补充说明(选填)" cols="30" rows="2"
+                      style="margin-bottom: 0px"></textarea>
+            </div>
+
+            <!--服务方式-->
+            <div class="clear itemFrom" style="margin-top: 1rem">
+                <div class="left" style="margin-top: 5px;width: 60px;font-size: 12px;">有效期:</div>
+                <div class="left">
+
+                    <div class="left mui-btn"
+                         style="margin-left: 3px;" id="needRadio2_0">3天
+                    </div>
+
+                </div>
+                <div class="left">
+                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff;" id="needRadio2_1">1周</div>
+                </div>
+                <div class="left">
+                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff;" id="needRadio2_2">1个月</div>
+                </div>
+            </div>
+
+            <!--图片-->
+            <!--<div class="clear itemFrom " style="margin-top: 1rem" ng-if="showImgUp">-->
+            <!--<div class="left" style="margin-top: 5px;width: 60px;font-size: 12px;">图片靓照:</div>-->
+            <!--<div img-up-date></div>-->
+            <!--</div>-->
+
+
+            <!--<div class="line" style="margin-top: 4px"></div>-->
+            <!--性别-->
+            <!--<div class="clear itemFrom" style="margin-top: 1rem" ng-show="!isUser">-->
+            <!--<div class="left" style="margin-top: 7px;width: 60px;font-size: 12px;">性别:</div>-->
+            <!--<div class="left">-->
+            <!--<div class="left mui-btn" style="margin-left: 3px;" id="radio3_0">女</div>-->
+            <!--</div>-->
+            <!--<div class="left">-->
+            <!--<div class="left mui-btn" style="margin-left: 3px;border-color:#fff" id="radio3_1">男</div>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--&lt;!&ndash;年龄&ndash;&gt;-->
+            <!--<div class="clear itemFrom" style="margin-top: 1rem" ng-show="!isUser">-->
+            <!--<div class="left" style="margin-top: 7px;width: 60px;font-size: 12px">年龄:</div>-->
+            <!--<div class="left">-->
+            <!--<div class="left mui-btn" style="margin-left: 3px;" id="radio4_0">16~24</div>-->
+            <!--</div>-->
+            <!--<div class="left">-->
+            <!--<div class="left mui-btn"-->
+            <!--style="margin-left: 3px;border-color:#fff;" id="radio4_1">25~35-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div class="left">-->
+            <!--<div class="left mui-btn" style="margin-left: 3px;border-color:#fff;" id="radio4_2">35+</div>-->
+            <!--</div>-->
+            <!--</div>-->
+
+            <!--城市-->
+            <div class="clear itemFrom" style="margin-top: 1rem">
+                <div class="left" style="margin-top: 7px;width: 60px;font-size: 12px">城市:</div>
+                <div class="left mui-btn qiaokeli" style="margin-left: 3px" id="fromCityClickNeed">
+                    {{city}}
+                </div>
+                <div class="left mui-btn qiaokeli" style="margin-left: 3px;border-color:#fff" id="needBuXian">
+                    不限
+                </div>
+            </div>
+
+
+            <div class="line" style="margin-top: 1rem" ng-show="!isUser"></div>
+            <div class="clear"></div>
+            <div class="clear" style="text-align: center;margin-top: 2rem">
+                <div class="mui-btn"
+                     style="width: 90%;background-color: #30a080;color: #fff;font-size: 1rem;border: none"
+                     id="subNeed">发&nbsp;&nbsp;布
+                </div>
+            </div>
+
+
+            <!--<div class="form-group ">-->
+            <!--<input type="text" name="title" required ng-model="form.title"-->
+            <!--class="form-control"-->
+            <!--placeholder="标题">-->
+            <!--</div>-->
+            <!--<div class="form-group ">-->
+            <!--<textarea type="text" name="content" required ng-model="form.content"-->
+            <!--class="form-control"-->
+            <!--placeholder="内容"></textarea>-->
+            <!--</div>-->
+            <!--<div class="clearThis"></div>-->
+            <!--<div class="clear"></div>-->
+            <!--<button style="width:100%;font-size: 17px;font-weight: bold" ng-click="formSub()"-->
+            <!--class="btn btn-danger btn-block btn-lg">-->
+            <!--提交-->
+            <!--</button>-->
+
+        </form>
+    </div>
+
+    <!--地区选择 directive-->
+    <div area></div>
+</div>

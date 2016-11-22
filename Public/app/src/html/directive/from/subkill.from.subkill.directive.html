@@ -8,6 +8,7 @@
                 <input type="text" name="title" class="subill thinner-border" ng-model="from.title" id="fromTitle"
                        ng-focus="titleFocus()"
                        ng-blur="titleBlur()"
+                       autocomplete="off"
                        placeholder="我的技能 / 服务"/>
                 <!--推荐技能-->
                 <div commend></div>
@@ -16,7 +17,7 @@
             <!--价格-->
             <div class="clear itemFrom" style="margin-top: 5px">
                 <input type="number" name="title" class="left subill" style="width: 30%" ng-model="from.price"
-                       placeholder="价格 (元)" ng-disabled="priceDisabled"/>
+                       placeholder="价格 (元)" autocomplete="off" ng-disabled="priceDisabled"/>
                 <div style="margin-top: 3px">
                     <div class="left mui-btn" style="margin-left: 3px;border-color:#fff;" id="radio1_0">1小时</div>
                     <div class="left mui-btn"

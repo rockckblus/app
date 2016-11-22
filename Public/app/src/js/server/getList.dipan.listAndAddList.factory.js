@@ -124,7 +124,7 @@
             _getCatchList(function (catchObj, getNext) {
                 if (getNext) {
                     //call(catchObj);
-                    _tools.postJsp(url, postData).then(call, err);
+                    _tools.postJsp(url, postData, true).then(call, err);
                 } else {
                     call(catchObj);
                 }

@@ -34,7 +34,6 @@
      * 16/3/8 */
     angular.module('dipan').factory('config', reConfig);
     function reConfig() {
-
         return config();
     }
 
@@ -62,31 +61,35 @@
                 templateUrl: window.tplPath + 'route/home.html'
             })
 
-
             //发布技能
             .state('subkill', {
                 url: '/subkill',
                 templateUrl: window.tplPath + 'route/from/subkill.html'
             })
 
-
-            //标记
-            .state('star', {
-                url: '/star',
-                templateUrl: window.tplPath + 'route/home.html'
+            //发布需求
+            .state('subneed', {
+                url: '/subneed',
+                templateUrl: window.tplPath + 'route/from/subneed.html'
             })
+
+            //我的消息
+            .state('myNews', {
+                url: '/myNews',
+                templateUrl: window.tplPath + 'route/member/myNews.html'
+            })
+
+            // //标记
+            // .state('star', {
+            //     url: '/star',
+            //     templateUrl: window.tplPath + 'route/home.html'
+            // })
 
 
             //memberIndex 我的 member
             .state('memberIndex', {
                 url: '/memberIndex',
                 templateUrl: window.tplPath + 'route/member/memberIndex.html'
-            })
-
-            //member 设置
-            .state('setting', {
-                url: '/setting',
-                templateUrl: window.tplPath + 'route/member/setting.html'
             })
 
             //member 资料编辑

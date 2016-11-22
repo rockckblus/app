@@ -1,19 +1,73 @@
-<div class="clear viewContent" style="text-align: center ;margin-top: 130px">
-
-    <div id="myArea">
-        <img src="http://pic.qqtn.com/up/2016-9/2016091415331175622.jpg" data-preview-src="http://pic.qqtn.com/up/2016-9/2016091415331175622.jpg" data-preview-group="1"/>
-        <img src="http://pic.qqtn.com/up/2016-9/2016091415331175622.jpg" data-preview-src="http://pic.qqtn.com/up/2016-9/2016091415331175622.jpg" data-preview-group="1"/>
+<div class="clear viewContent" style="margin-top: 0px">
+    <!--最新消息-->
+    <div class="clear listItemPublic linkHref" url="myNews" id="hrefMyNews">
+        <span class="left">消息</span>
+        <span class="left">
+        <i class="fa fa-ellipsis-h fa-2x"
+           style="width: 7px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;"
+           ng-show="showNews"></i>
+        </span>
     </div>
+    <div class="line"></div>
 
-
-    <ul id="{{vo.hrefId}}" url="{{vo.url}}" class="mui-table-view mui-table-view-chevron" style="text-align: left"
-        bindonce ng-repeat="vo in listNav">
-        <div class="mui-table-view-cell linkMouse clear"
-             style="padding-right: 26px;height: 50px;padding-top: 16px;">
-            <i class="{{vo.icon}} pull-left" style="color:#888;margin-top: 3px"></i>
-            <i class="fa fa-chevron-right pull-right"></i>
-            <span style="font-size: 1.4em;margin-left: 20px">{{vo.name}}</span>
+    <!--技能-->
+    <div class="clear listItemPublic linkHref" url="myJiNeng" id="hrefMyJiNeng">
+        <div class="left">
+            <span>我的技能</span>
+            <span style="font-size: 12px;" class="hui" bindonce="jiNengCount"
+                  bo-text="jiNengCount"></span>
         </div>
-    </ul>
-    <div class="clear" style="margin-top: 40px"></div>
+        <span class="left">
+        </span>
+    </div>
+    <div class="line"></div>
+
+    <!--需求-->
+    <div class="clear listItemPublic linkHref" url="myNeed" id="hrefMyNeed">
+        <div class="left">
+            <span>我的需求</span>
+            <span bindonce="needCount" style="font-size: 12px;" class="hui"
+                  bo-text="needCount"></span>
+        </div>
+        <span class="left">
+        </span>
+    </div>
+    <div class="line"></div>
+
+    <!--电话咨询-->
+    <div class="clear listItemPublic" id="myTelCall">
+        <div class="left">电话咨询</div>
+        <div class="left" style="margin-left: 20px;margin-top: -7px">
+            <div class="left mui-btn" style="margin-left: 3px;border-color:#ccc;" id="myRadio1_0">允许</div>
+            <div class="left mui-btn" style="margin-left: 3px;border-color:#fff" id="myRadio1_1">禁止</div>
+        </div>
+    </div>
+    <div class="line"></div>
+
+    <!--退出登录-->
+    <div class="clear listItemPublic linkHref" url="loginOut" id="hrefMyLoginOut">
+        <span class="left">退出</span>
+    </div>
+    <div class="line"></div>
+
+    <!--版本-->
+    <div class="clear listItemPublic" id="myVersion">
+        <span style="font-size: 12px;margin-right: 20px" class="hui right" bindonce bo-text="'版本:v '+version"></span>
+    </div>
+    <!--<div style="text-align: left;width: 100%;">-->
+    <!--<div class=" linkMouse clear"-->
+    <!--style="height: 50px;padding-top: 16px;">-->
+    <!--<div class="left" style="font-size: 1rem;margin-left: 20px">我的技能</div>-->
+    <!--<div style="margin-top: 3px">-->
+    <!--<div class="left mui-btn" style="margin-left: 3px;border-color:#fff;" id="radio1_0">1小时</div>-->
+    <!--<div class="left mui-btn"-->
+    <!--style="margin-left: 3px;" id="radio1_1">1次-->
+    <!--</div>-->
+    <!--<div class="left mui-btn" style="margin-left: 3px;border-color:#fff" id="radio1_2">1单</div>-->
+    <!--<div class="left mui-btn" style="color:#dadada;margin-left: 3px;border-color:#fff" id="radio1_3">面议-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<div class="line"></div>-->
+    <!--</div>-->
 </div>

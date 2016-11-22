@@ -18,10 +18,10 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools'];
 
-    function thisController($scope, $rootScope, $timeout) {
-        $scope.loading = true;//默认打开loading
+    function thisController($scope, $rootScope, $timeout, tools) {
+        $scope.loading = false;//默认打开loading
 
         /*************************
          * 监听closeLoading事件,关闭loading动画
@@ -29,7 +29,12 @@
          *************************/
         $scope.$on('closeLoading', function () {
             $timeout(function () {
-                $scope.loading = false;
+                tools.trueWeb(function () {
+                    $scope.loading = false;
+                }, function () {
+                    $scope.loading = false;
+                    plus.nativeUI.closeWaiting();
+                });
             }, 0);
         });
 
@@ -39,7 +44,12 @@
          *************************/
         $scope.$on('openLoading', function () {
             $timeout(function () {
-                $scope.loading = true;
+                tools.trueWeb(function () {
+                    $scope.loading = true;
+                }, function () {
+                    $scope.loading = false;
+                    plus.nativeUI.showWaiting();
+                });
             }, 0);
         });
     }

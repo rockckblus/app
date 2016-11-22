@@ -21,8 +21,6 @@
     function localData($location, tools, $rootScope, config, $filter, $q, $timeout) {
         thisRootScope = $rootScope;
         location = $location;
-        thisLocalData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
-        thisLocalData.setting = _settingNav(); //设置 导航list
         thisLocalData.trueShowHedaer = _trueShowHedaer;//判断当前页面是否需要显示 header
         thisLocalData.tab = _tab; //根据 url 遍历 给tab数据
         thisLocalData.shaiXuan = _shaiXuan; //根据 url 遍历 筛选条件
@@ -62,16 +60,12 @@
                 return _filter('toHtml')('<i class="fa fa-search linkMouse mui-btn qiaokeli" id="searchIconH1"></i>');
             case '/need':
                 return _filter('toHtml')('');
-            case '/star':
-                return _filter('toHtml')('标记');
+            // case '/star':
+            //     return _filter('toHtml')('标记');
             case '/login':
                 return _filter('toHtml')('兼职鼠');
-            case '/area':
-                return _filter('toHtml')('地区选择');
-            case '/search':
-                return _filter('toHtml')('搜索');
-            case '/setting':
-                return _filter('toHtml')('设置');
+            case '/myNews':
+                return _filter('toHtml')('消息');
             default:
                 return _filter('toHtml')('兼职鼠');
         }
@@ -89,7 +83,7 @@
                     reStr += '<img class="hImg" src="' + userData.headerImg + '" /> &nbsp;';
                 }
                 if (userData.mt) {
-                    reStr += userData.mt;
+                    reStr += '<span style="font-size: 1">' + userData.mt + '</span>';
                 }
                 return _filter('toHtml')(reStr);
             } catch (e) {
@@ -98,62 +92,6 @@
         }
     }
 
-    /**
-     * 我的 首页 导航 list
-     * @returns {*[]}
-     * @private
-     */
-    function _memberIndexNav() {
-        return [{
-            'name': '我的地盘',
-            'url': 'myArea',
-            'id': 1,
-            'hrefId': 'hrefMemberMyArea',
-            'icon': 'fa fa-map-marker fa-1x'
-        }, {
-            'name': '我的发布',
-            'url': 'push',
-            'id': 2,
-            'hrefId': 'hrefMemberPush',
-            'icon': 'fa fa-sign-out fa-1x'
-        }, {
-            'name': '设置',
-            'url': 'setting',
-            'hrefId': 'hrefMemberSetting',
-            'id': 3,
-            'icon': 'fa fa-sign-out fa-1x'
-        }];
-    }
-
-    /**
-     * 我的 > 设置 导航 list
-     * @returns {*[]}
-     * @private
-     */
-    function _settingNav() {
-        return [
-            // {
-            //     'name': '资料编辑',
-            //     'url': 'memberInfo',
-            //     'id': 1,
-            //     'hrefId': 'hrefMemberMemberInfo',
-            //     'icon': 'fa fa-pencil-square-o fa-1x'
-            // },
-            {
-                'name': '退出登录',
-                'url': 'loginOut',
-                'id': 1,
-                'hrefId': 'hrefMemberLoginOut',
-                'icon': 'fa fa-sign-out fa-1x'
-            }, {
-                'name': '测试snsArticle添加',
-                'url': 'member_addArticle',
-                'hrefId': 'hrefMemberAddArticle',
-                'id': 2,
-                'icon': 'fa fa-sign-out fa-1x'
-            }
-        ];
-    }
 
     /**
      * 遍历url 返回true false ,控制是否显示tab
@@ -167,10 +105,10 @@
                 return true;
             case '/need':
                 return true;
-            case '/star':
-                return true;
-            case '/memberIndex':
-                return true;
+            // case '/star':
+            //     return true;
+            // case '/memberIndex':
+            //     return true;
             default:
                 return false;
         }
@@ -243,6 +181,10 @@
     function _trueShowHedaer(name) {
         switch (name) {
             case 'home':
+                return true;
+            case 'memberIndex':
+                return true;
+            case 'myNews':
                 return true;
             default :
                 return false;

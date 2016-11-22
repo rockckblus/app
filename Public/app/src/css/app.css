@@ -778,3 +778,11 @@ body {
   color: #f4f4f4;
   font-size: 14px;
 }
+.listItemPublic {
+  padding-top: 1rem;
+  padding-left: 1rem;
+  height: 50px;
+  overflow: hidden;
+  font-size: 1rem;
+  color: #777;
+}
