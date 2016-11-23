@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.wilddog.com/sdk/js/2.3.5/wilddog.js"></script>
+</head>
+<body>
+
+</body>
+<script>
+    // 创建数据库引用。最好自己创建一个应用，把 danmu 即 `appId` 换成你自己的
+    var config = {
+        authDomain: "780807mq.wilddog.com",
+        syncURL: "https://danmu.wilddogio.com"
+    };
+    wilddog.initializeApp(config);
+    var ref = wilddog.sync().ref();
+    console.log('ref',ref);
+    // 获取输入框的数据
+    var text = 'aaaa';
+    // 将数据写到云端 message 节点下，child 用来定位子节点
+    ref.child('message').push(text);
+</script>
+</html>

@@ -37,6 +37,7 @@
         };
         $scope.titleFocus = titleFocus;//当title焦点的事件
         $scope.titleBlur = titleBlur;//当title失去焦点的事件
+        var watchTitleCount = 0;//默认第一次不弹出联想
         $scope.$watch('from.title', watchTitle);//watch title, title为空的时候显示推荐技能div
         $scope.$on('fromTitleFoucs', focusTitle);//监听广播 使title焦点
         $scope.$on('giveFromTitle', giveFromTitle);//监听改变title值
@@ -152,10 +153,13 @@
          * watch title
          */
         function watchTitle() {
-            if ($scope.from.title === '') {
-                $rootScope.$broadcast('showCommendShow');
-            } else {
-                $rootScope.$broadcast('hideCommendShow');
+            watchTitleCount++;
+            if (watchTitleCount > 1) {
+                if ($scope.from.title === '') {
+                    $rootScope.$broadcast('showCommendShow');
+                } else {
+                    $rootScope.$broadcast('hideCommendShow');
+                }
             }
         }
 
@@ -192,7 +196,7 @@
                         $scope.from.price = '';
                         $scope.priceDisabled = true;
                     }, 0);
-                } else {
+                } else if ((idS == 'needRadio1_0') || (idS == 'needRadio1_1') || (idS == 'needRadio1_2')) {
                     $timeout(function () {
                         $scope.priceDisabled = false;
                     }, 0);
@@ -255,7 +259,7 @@
                                 title: "发布成功!",
                                 buttons: [{title: "我的发布"}]
                             }, function (e) {
-                                if (e.index == 2) {
+                                if (e.index == 1) {
                                     $state.go('need');//跳转到我的需求
                                 }
                             });

@@ -4,18 +4,15 @@
     "code": "S",
     "msg": "登录成功",
     "userData": {
+      "userName": "",
       "uid": "ksdfkkkkkasfasdf",
       "mt": "15510986492",
-      "headerImg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAZABkAAD/7AARRHVja3kAAQAEAAAAHgAA/+4AIUFkb2JlAGTAAAAAAQMAEAMCAwYAAAGjAAAByQAAAkT/2wCEABALCwsMCxAMDBAXDw0PFxsUEBAUGx8XFxcXFx8eFxoaGhoXHh4jJSclIx4vLzMzLy9AQEBAQEBAQEBAQEBAQEABEQ8PERMRFRISFRQRFBEUGhQWFhQaJhoaHBoaJjAjHh4eHiMwKy4nJycuKzU1MDA1NUBAP0BAQEBAQEBAQEBAQP/CABEIABQAFAMBIgACEQEDEQH/xACHAAEBAAMAAAAAAAAAAAAAAAAABgEDBAEBAQAAAAAAAAAAAAAAAAAAAgMQAAAEBgMBAAAAAAAAAAAAAAECBBQAEBEDBRUhMSIlEQABAwMCAwkAAAAAAAAAAAABEQISAAMTMTIhQWGRobFSYiMzBBQSAAIDAQAAAAAAAAAAAAAAAAAQMUGBgv/aAAwDAQACEQMRAAAApJWonI37XKR1YBQEf//aAAgBAgABBQA3fM//2gAIAQMAAQUAth5oEDL/2gAIAQEAAQUAzQ3i4xblRJDodCssIrkLQV1b5TWlfNSO2P0NP//aAAgBAgIGPwAxXB//2gAIAQMCBj8AOn//2gAIAQEBBj8AeLYQlzAmkmlwBFYAwEtCu4iv3zE4b+E96RXvp31zcYb6yaJBQRooHEU4WnWhdihtgAuLV0JcEr4TGWbGnJIbaP5dV97zr1oYY50M9Mm4r17a5qvqyRXwr//Z",
-      "fensi": 135,
-      "fensi_height": "true",
-      "guanzhu": 335,
-      "lianxi_": 35,
-      "city": "天津",
-      "sex": "男",
-      "age": "16~24",
-      "isUser": "true",
-      "telType": "jinZhi",
+      "headerImg": "",
+      "city": "",
+      "sex": "",
+      "age": "",
+      "isUser": "",
+      "telType": ""
     }
   }
 }

@@ -32,7 +32,8 @@
             'hrefMyNews',//消息
             'hrefMyJiNeng',//技能管理
             'hrefMyNeed',//需求管理
-            'hrefMyLoginOut',//需求管理
+            'hrefMyLoginOut',//退出
+            'hrefEditMemberInfo',//用户资料编辑
         ];
 
         var idsIsBind = [];//已经在服务绑定过的 id,就不去绑定了
@@ -45,6 +46,7 @@
             'hrefSubNeed',
             'hrefMember',
             'hrefMyNews',//消息
+            'hrefMyLoginOut',//退出
         ];
 
         function plus(callBack) {

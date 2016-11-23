@@ -15,5 +15,8 @@
     "grunt-contrib-uglify": "0.2.0",
     "grunt-contrib-watch": "^0.6.1",
     "request": "^2.69.0"
+  },
+  "dependencies": {
+    "wilddog": "^2.3.5"
   }
 }

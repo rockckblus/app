@@ -212,7 +212,9 @@
 					"src/js/directive/from/commend.from.commend.directive.js",
 					"src/js/directive/from/imgUpdate.from.imgUpdate.directive.js",
 					"src/js/directive/from/need.from.neesFrom.directive.js",
-					"src/js/directive/member/myNews.dipan.myNews.directive.js"
+					"src/js/directive/member/myNews.dipan.myNews.directive.js",
+					"src/js/directive/member/editMemberInfo.dipan.editMemberInfo.js",
+					"src/js/directive/from/editImgUpdate.from.editImgUpdate.directive.js"
 				],
 				"refer": [
 					"src/html/updata.html"

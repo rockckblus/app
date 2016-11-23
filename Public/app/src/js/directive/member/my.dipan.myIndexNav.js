@@ -17,17 +17,23 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config', 'tools'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config', 'tools', 'header'];
 
-    function thisController($scope, $rootScope, $timeout, localData, config, tools) {
+    function thisController($scope, $rootScope, $timeout, localData, config, tools, header) {
+
+        var yunXu, jinZhi;//声明允许禁止的dom全局变量
 
         $scope.$watch('$viewContentLoading', function () {
+            yunXu = document.getElementById('myRadio1_0');//允许
+            jinZhi = document.getElementById('myRadio1_1');//禁止
+
             $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
             $timeout(function () {
-                getUserData();// 延时异步去取用户数据
-                // getCount();// 延时异步去取 技能统计,需求统计
+                getUserData();// 延时异步去取用户数据,并获取 电话咨询状态
+                getCount();// 延时异步去取 技能统计,需求统计
             }, 400);
             bindTelCall();//bind电话咨询选择事件
+            init();
         });
 
         $scope.version = config.version.default;//版本
@@ -41,11 +47,25 @@
             getUserData();
         });
 
-        init();
         function init() {
             getNewsData();//获取有没有新消息,给图片状态
         }
 
+        /**
+         * 获取是否允许电话咨询,如果没有,就是默认允许状态,去改变dom
+         */
+        function getTelType() {
+            var userData = tools.getLocalStorageObj('userData');
+            if (userData) {
+                if (userData.telType == 'yunXu') {
+                    _yunXun();
+                } else if (userData.telType == 'jinZhi') {
+                    _jinZhi();
+                } else {//给默认 允许
+                    _yunXun();
+                }
+            }
+        }
 
         /**
          * 获取有没有新消息,给图片状态
@@ -70,7 +90,6 @@
                 }
             }
         }
-
 
         /**
          * 监听关闭新消息图标事件
@@ -121,18 +140,19 @@
             var url = config.host.nodeHost + '/member/getUserCount';
             var uid = tools.getLocalStorageObj('userData');
             $timeout(function () {
-                uid = uid.uid;
-                tools.postJsp(url, {uid: uid}, true).then(_scuess, function () {
-                });
+                if (uid && uid.uid) {
+                    uid = uid.uid;
+                    tools.postJsp(url, {uid: uid}, true).then(_scuess, function () {
+                    });
+                }
             }, 0);
 
             function _scuess(re) {
-                if (re.data.code == 'S') {
-                    tools.saveLocalStorageObj('userData', re.data.userData);
+                if (re.data && re.data.code == 'S') {
                     $timeout(function () {
-                        $rootScope.$broadcast('changeBody');
-                        $rootScope.$broadcast('closeLoading');
-                    }, 200);
+                        $scope.jiNengCount = re.data.jiNengCount;//技能count
+                        $scope.needCount = re.data.needCount;//需求count
+                    }, 0);
                 }
             }
         }
@@ -166,8 +186,11 @@
             }
 
             function postApi(telType) {
-                var url = config.host.nodeHost + "/member/telType"
-                tools.postJsp(url, {'telType': telType}, true).then(_s);
+                var url = config.host.nodeHost + "/member/telType";
+                tools.postJsp(url, {
+                    'telType': telType,
+                    'uid': tools.getLocalStorageObj('userData').uid
+                }, true).then(_s);
                 function _s(re) {
                     if (re.data.code == 'S') {
                         var userData = tools.getLocalStorageObj('userData');
@@ -182,30 +205,34 @@
          * 给电话咨询状态
          */
         function giveTellCallStatus(telType) {
-            console.log('tel',telType);
-            var yunXu = document.getElementById('myRadio1_0');//允许
-            var jinZhi = document.getElementById('myRadio1_1');//禁止
 
             if (telType == 'yunXu') {
                 _yunXun();
             }
-            if (telType == 'jinZhi') {
+            else if (telType == 'jinZhi') {
                 _jinZhi();
+            } else {
+                _yunXun();
             }
-
-            function _yunXun() {
-                yunXu.style.borderColor = '#ccc';
-                jinZhi.style.borderColor = '#fff';
-            }
-
-            function _jinZhi() {
-                yunXu.style.borderColor = '#fff';
-                jinZhi.style.borderColor = '#ccc';
-            }
-
-
         }
 
+        /**
+         * 允许的dom样式
+         * @private
+         */
+        function _yunXun() {
+            yunXu.style.borderColor = '#ccc';
+            jinZhi.style.borderColor = '#fff';
+        }
+
+        /**
+         * 禁止的dom样式
+         * @private
+         */
+        function _jinZhi() {
+            yunXu.style.borderColor = '#fff';
+            jinZhi.style.borderColor = '#ccc';
+        }
 
     }
 })();

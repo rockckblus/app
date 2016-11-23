@@ -1,0 +1,65 @@
+<div style="color: #777;padding: 1rem" id="editMemberInfo">
+    <div class="mui-table-view mui-table-view-chevron clear" style="margin-top: 40px">
+        <form novalidate>
+            <!--头像-->
+            <div class="clear itemFrom " style="margin-top: 1rem">
+                <div edit-img-up-date></div>
+            </div>
+
+            <!--昵称-->
+            <div class="itemFrom clear" style="margin-top: 20px">
+                <input type="text" name="name" class="subill thinner-border" ng-model="from.name" id="editFromTitle"
+                       autocomplete="off"
+                       placeholder="昵称"/>
+            </div>
+
+            <!--性别-->
+            <div class="clear itemFrom" style="margin-top: 1rem">
+                <div class="left" style="margin-top: 7px;width: 60px;font-size: 12px;">性别:</div>
+                <div class="left">
+                    <div class="left mui-btn" style="margin-left: 3px;" id="editRadio3_0">女</div>
+                </div>
+                <div class="left">
+                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff" id="editRadio3_1">男</div>
+                </div>
+            </div>
+            <!--年龄-->
+            <div class="clear itemFrom" style="margin-top: 1rem">
+                <div class="left" style="margin-top: 7px;width: 60px;font-size: 12px">年龄:</div>
+                <div class="left">
+                    <div class="left mui-btn" style="margin-left: 3px;" id="editRadio4_0">16~24</div>
+                </div>
+                <div class="left">
+                    <div class="left mui-btn"
+                         style="margin-left: 3px;border-color:#fff;" id="editRadio4_1">25~35
+                    </div>
+                </div>
+                <div class="left">
+                    <div class="left mui-btn" style="margin-left: 3px;border-color:#fff;" id="editRadio4_2">35+</div>
+                </div>
+            </div>
+
+            <!--城市-->
+            <div class="clear itemFrom" style="margin-top: 1rem">
+                <div class="left" style="margin-top: 7px;width: 60px;font-size: 12px">城市:</div>
+                <div class="left mui-btn qiaokeli" style="margin-left: 3px" id="editFromCityClick">
+                    {{city}}
+                </div>
+            </div>
+
+
+            <div class="clear" style="text-align: center;margin-top: 2rem">
+                <div class="mui-btn"
+                     style="width: 90%;background-color: #30a080;color: #fff;font-size: 1rem;border: none"
+                     id="editMemberSub">修&nbsp;&nbsp;改
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+
+    <!--地区选择 directive-->
+    <div area></div>
+</div>
+

@@ -93,8 +93,8 @@
             })
 
             //member 资料编辑
-            .state('member/memberInfo', {
-                url: 'member/memberInfo',
+            .state('editMemberInfo', {
+                url: '/editMemberInfo',
                 templateUrl: window.tplPath + 'route/member/memberInfo.html'
             })
 
