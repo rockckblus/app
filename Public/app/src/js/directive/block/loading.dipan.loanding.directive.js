@@ -30,10 +30,15 @@
         $scope.$on('closeLoading', function () {
             $timeout(function () {
                 tools.trueWeb(function () {
-                    $scope.loading = false;
+                    $timeout(function () {
+                        $scope.loading = false;
+                    }, 0);
                 }, function () {
                     $scope.loading = false;
                     plus.nativeUI.closeWaiting();
+                    $timeout(function () {
+                        plus.nativeUI.closeWaiting();
+                    }, 500);
                 });
             }, 0);
         });
@@ -45,7 +50,9 @@
         $scope.$on('openLoading', function () {
             $timeout(function () {
                 tools.trueWeb(function () {
-                    $scope.loading = true;
+                    $timeout(function () {
+                        $scope.loading = true;
+                    }, 0);
                 }, function () {
                     $scope.loading = false;
                     plus.nativeUI.showWaiting();

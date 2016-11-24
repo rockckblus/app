@@ -82,18 +82,18 @@
             case 'need':
                 url = _config.host.nodeHost + '/sns/needGetList?' + _tools.getRoundCode(8);
                 break;
-            case 'star':
-                url = true;
-                break;
-            case 'login':
-                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
-                break;
-            case 'area':
-                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
-                break;
-            case 'search':
-                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
-                break;
+            // case 'star':
+            //     url = true;
+            //     break;
+            // case 'login':
+            //     url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
+            //     break;
+            // case 'area':
+            //     url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
+            //     break;
+            // case 'search':
+            //     url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
+            //     break;
             default:
                 return false;
         }
@@ -307,7 +307,7 @@
 
         //判断newList 里面的 id 是否有 标记
         var strVar = "";
-        strVar += "        <li class=\" item homeListItem thinner-border\" bindonce bo-attr bo-attr-url=\"'content#'+vo.id\"  bo-id='vo._id' ";
+        strVar += "        <li class=\" item homeListItem thinner-border\" bindonce bo-attr bo-attr-url=\"vo.type + 'Content'\" bo-attr-type=\"vo.type\" bo-attr-subid=\"vo._id\"  bo-id='\"homeList_\" + vo._id'";
         strVar += "            style=\"background-color: #fff;\">";
         strVar += "            <div class=\"clear contentItem\">";
         strVar += "                <div class=\"contentItemTitle clear\" bo-text=\"vo.title\"><\/div>";
@@ -336,7 +336,7 @@
             "<div class='left imagesItem' bo-if='vo.imgs[2]'>" +
             "<img bo-src='vo.imgs[2]'/>" +
             "</div>" +
-            "<div class='clearThis'></div>" +
+            "<div class='clear'></div>" +
             "<div class='des' bo-text='vo.des'></div>" +
             "</div>" +
             "<\/div>";
@@ -346,6 +346,7 @@
         strVar += "            <\/div>";
         // strVar += "            <div class=\"mui-navigate-right\" style=\"font-size:14px;color: #777;margin-top: 5px\" bindonce";
         // strVar += "                 ng-repeat=\"(key,vo2) in vo.content\">";
+
         // strVar += "                <span style=\"color:#bd0000\" bo-text=\"key + ':'\"><\/span>";
         // strVar += "                <span bo-text=\"vo2\"><\/span>";
         // strVar += "            <\/div>";

@@ -29,6 +29,16 @@
        class="fa fa-pencil-square-o fa-1x  mui-pull-right mui-icon  qiaokeli"
        style="padding-right: 17px;padding-top: 13px;"></i>
 
+    <!--技能详情返回首页 -->
+    <i ng-if="(url == '/killContent')" id="killContentHrefHome" url="home"
+       class="fa fa-home fa-1x  mui-pull-right mui-icon  qiaokeli"
+       style="padding-right: 17px;padding-top: 13px;"></i>
+
+    <!--需求详情返回首页 -->
+    <i ng-if="(url == '/needContent')" id="needContentHrefHome" url=""
+       class="fa fa-home fa-1x  mui-pull-right mui-icon  qiaokeli"
+       style="padding-right: 17px;padding-top: 13px;"></i>
+
     <h1 class="mui-title">
         <span>{{titleText}}</span>
         <span ng-bind-html="title"></span>

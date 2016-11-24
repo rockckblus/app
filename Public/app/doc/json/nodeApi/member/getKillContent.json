@@ -1,0 +1,45 @@
+{
+  "complete": false,
+  "data": {
+    "code": "S",
+    "msg": "请求成功",
+    "userData": {
+      "userName": "rockblus",
+      "uid": "ksdfkkkkkasfasdf",
+      "mt": "155******92",
+      "headerImg": "http://avatar.csdn.net/2/9/1/1_qinguicheng.jpg",
+      "far": "2000",
+      "city": "天津",
+      "sex": "女",
+      "age": "16~24",
+      "telType": "yunXu"
+    },
+    "thisJiNeng": {
+      "_id": "kdkdkdkdkdkdkd",
+      "title": "叫起床服务",
+      "content": "叫起床服务,叫起床服务,叫起床服务,asdfkk,asfasdfsadfsaf",
+      "price": "200",
+      "priceUnit": "每次",
+      "service": "不限",
+      "imgs": [
+        "http://www.17sucai.com/upload/98055/2015-07-02/af06b5649437de15aed3faf618922d97_big.png",
+        "http://h.hiphotos.baidu.com/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=2ad0a348e71190ef15f69a8daf72f673/4afbfbedab64034fd715b1a3afc379310b551dbe.jpg",
+        "http://b.hiphotos.baidu.com/baike/c0%3Dbaike92%2C5%2C5%2C92%2C30/sign=6605e29276c6a7efad2ba0749c93c434/5bafa40f4bfbfbed2a70713278f0f736afc31f55.jpg"
+      ]
+    },
+    "jiNengList": [
+      {
+        "_id": "kdkdkdkdkdkdkd",
+        "title": "叫起床服务",
+        "price": "200",
+        "priceUnit": "每次"
+      },
+      {
+        "_id": "kdkdkdkdkdkdkd2",
+        "title": "叫起床服务2",
+        "price": "200",
+        "priceUnit": "面议"
+      }
+    ]
+  }
+}

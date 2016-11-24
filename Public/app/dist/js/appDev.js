@@ -55,6 +55,7 @@ document.write('<script src="' + basePath + '/src/js/directive/member/add.dipan.
 document.write('<script src="' + basePath + '/src/js/directive/member/loginOut.dipan.loginOut.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/member/myNews.dipan.myNews.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/member/editMemberInfo.dipan.editMemberInfo.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/directive/member/killContent.dipan.killContent.directive.js"><\/script>');
 
 
 //document.write('<script src="/Public/resCreate/js/app/src/directive/clickRouterUiBlock.uiBlock.router.directive.js"><\/script>');

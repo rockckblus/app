@@ -63,7 +63,7 @@
   box-shadow: 0px 0px 2px 1px #DBE5DB;
 }
 .hui {
-  color: #dadada;
+  color: #c7c7c7;
 }
 .qiaokeli {
   color: #4a2f14;
@@ -485,7 +485,7 @@ body {
 #homeSearch #topSearchLeft {
   width: 10%;
   float: left;
-  color: #dadada;
+  color: #c7c7c7;
   height: 35px;
   border: 1px solid #dadada;
   border-right: none;
@@ -519,31 +519,31 @@ body {
   color: #777;
 }
 #homeSearch #topSearchCenter input::-webkit-input-placeholder {
-  color: #dadada;
+  color: #c7c7c7;
   padding-left: 10px;
   padding-top: 2px;
   font-size: 0.9rem;
 }
 #homeSearch #topSearchCenter input::-moz-placeholder {
-  color: #dadada;
+  color: #c7c7c7;
   padding-left: 10px;
   padding-top: 2px;
   font-size: 0.9rem;
 }
 #homeSearch #topSearchCenter input:-ms-input-placeholder {
-  color: #dadada;
+  color: #c7c7c7;
   padding-left: 10px;
   padding-top: 2px;
   font-size: 0.9rem;
 }
 #homeSearch #topSearchCenter input::placeholder {
-  color: #dadada;
+  color: #c7c7c7;
   padding-left: 10px;
   padding-top: 2px;
   font-size: 0.9rem;
 }
 #homeSearch #topSearchRight {
-  color: #dadada;
+  color: #c7c7c7;
   width: 10%;
   float: left;
   height: 35px;
@@ -666,7 +666,7 @@ body {
   width: 90%;
 }
 .homeListItem .contentItem .contentItemTitleCounent {
-  color: #dadada;
+  color: #c7c7c7;
   margin-top: 0.5rem;
   font-size: 0.8rem;
 }
@@ -687,6 +687,7 @@ body {
   margin-left: 1%;
   width: 31%;
   float: left;
+  max-width: 5rem;
   height: 5rem;
   overflow-y: hidden;
 }

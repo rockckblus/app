@@ -22,6 +22,12 @@
 
     function thisController($scope, $rootScope, $timeout, tools, update, config, compile, $state, getList, header) {
 
+        var clickType = 'tap';
+        tools.trueWeb(function () {
+            clickType = 'click';
+        }, function () {
+            clickType = 'tap';
+        });
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
         });
@@ -55,7 +61,6 @@
         function _init() {
 
             /**
-             *
              * @return 当前url 的 缓存 list 数据
              * @private
              */
@@ -144,8 +149,8 @@
             });
         }
 
-        //bind 星标 点击事件
-        function _bind(doc, listName) {
+        //bind 星标 点击事件, 备份
+        function _bindBak(doc, listName) {
             if (type == 'down') {
                 console.log('down', type);
             }
@@ -264,6 +269,62 @@
 
 
         }
+
+        /**
+         * bind listItem 点击事件
+         * @param doc
+         * @param listName
+         * @private
+         */
+        function _bind(doc, listName) {
+            if (type == 'down') {
+                console.log('down', type);
+            }
+
+            if (!firstId) {//如果没有 firstId,就给 firstId
+                try {
+                    firstId = doc[0]._id;
+                } catch (e) {
+                    console.log('error');
+                }
+            }
+            try {
+                endId = _getLastId(doc);//给最后一条id
+            } catch (e) {
+                console.log('error');
+            }
+
+            $timeout(function () {
+                angular.forEach(doc, function (vo) {
+                    var str = 'homeList_' + vo._id;
+                    var dom = document.getElementById(str);
+                    try {
+                        dom.addEventListener(clickType, __bindClick);
+                    } catch (e) {
+                        console.error('wuHomeList');
+                    }
+                });
+            }, 400);
+
+            function __bindClick(dom) {
+                var goUrl = dom.target.getAttribute('url');
+                var type = dom.target.getAttribute('type');
+                var _id = dom.target.getAttribute('subid');
+                if (type == 'kill') {
+                    $state.go(goUrl, {'jiNengId': _id});
+                }
+                if (type == 'need') {
+                    $state.go(goUrl, {'needId': _id});
+                }
+            }
+
+            function _getLastId(re) {
+                var endNum = re.length - 1;
+                return re[endNum]._id;
+            }
+
+        }
+
 
         /**
          *底部下拉,去请求数据,

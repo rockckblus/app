@@ -34,6 +34,8 @@
             'hrefMyNeed',//需求管理
             'hrefMyLoginOut',//退出
             'hrefEditMemberInfo',//用户资料编辑
+            'killContentHrefHome',//技能详情页面
+            'needContentHrefHome',//需求详情页面
         ];
 
         var idsIsBind = [];//已经在服务绑定过的 id,就不去绑定了
@@ -47,6 +49,8 @@
             'hrefMember',
             'hrefMyNews',//消息
             'hrefMyLoginOut',//退出
+            'killContentHrefHome',//技能详情页面
+            'needContentHrefHome',//需求详情页面
         ];
 
         function plus(callBack) {
@@ -94,7 +98,6 @@
          * @private
          */
         function _goUrl(doc, url) {
-            console.log('url', url);
             var type = 'tap';
             tools.trueWeb(function () {
                 type = 'click';

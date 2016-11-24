@@ -73,17 +73,23 @@
                 templateUrl: window.tplPath + 'route/from/subneed.html'
             })
 
+            //技能详情
+            .state('killContent', {
+                url: '/killContent/:jiNengId',
+                templateUrl: window.tplPath + 'route/member/killContent.html'
+            })
+
+            //需求详情
+            .state('needContent', {
+                url: '/needContent/:needId',
+                templateUrl: window.tplPath + 'route/member/needContent.html'
+            })
+
             //我的消息
             .state('myNews', {
                 url: '/myNews',
                 templateUrl: window.tplPath + 'route/member/myNews.html'
             })
-
-            // //标记
-            // .state('star', {
-            //     url: '/star',
-            //     templateUrl: window.tplPath + 'route/home.html'
-            // })
 
 
             //memberIndex 我的 member
@@ -104,23 +110,13 @@
                 templateUrl: window.tplPath + 'route/member/loginOut.html'
             })
 
-            //member 测试snsArt 添加
-            .state('member_addArticle', {
-                url: '/member_addArticle',
-                templateUrl: window.tplPath + 'route/member/addArticle.html'
-            })
 
             //member 登录
             .state('login', {
                 url: '/login',
                 templateUrl: window.tplPath + 'route/login.html'
-            })
-
-            //地盘
-            .state('master', {
-                url: '/master',
-                templateUrl: window.tplPath + 'route/master.html'
             });
+
     }
 
     /**

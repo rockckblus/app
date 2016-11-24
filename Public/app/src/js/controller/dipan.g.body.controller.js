@@ -43,15 +43,26 @@
     /**
      * 手动注入
      * 16/2/1 */
-    body.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tap', '$state', 'tools', 'getList', 'getCity'];
+    body.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tap', '$state', 'tools', 'getList', 'getCity', 'config'];
 
     /**
      * controllerFun
      * 16/2/1 */
-    function body($scope, $rootScope, $timeout, localData, tap, $state, tools, getList, getCity) {
+    function body($scope, $rootScope, $timeout, localData, tap, $state, tools, getList, getCity, config) {
+
+        var clickType = 'tap';
+        tools.trueWeb(function () {
+            clickType = 'click';
+        }, function () {
+            clickType = 'tap';
+        });
+
         $scope.showNews = false;//底部会员有新消息图标显示
+        $scope.xiaDan = false;//用户是否点击下单按钮,点击了,就隐藏下单,显示电话和在线联系
         $scope.$on('showNews', showNews);//监听有新消息图标显示事件
         $scope.$on('hideNews', hideNews);//监听关闭新消息图标事件
+        $scope.$on('trueXiaDan', trueXiaDan);//监听判断当前用户是否对当前技能id下过单
+
 
         $scope.push = 'fa-plus-circle';//发布需求按钮的 图标样式
         $scope.$on('changeBody', function () {
@@ -143,17 +154,171 @@
 
                 });
                 tap.init();//判断手机网页 手机 绑定 tap 事件, 网页绑定 click事件,(点击跳转url)
+                trueXiaDan();//检测当前技能页面是否已经被下单过
+                $scope.xiaDan = false;//changebody 的时候先默认关闭
             }, 0);
+            init();
         });
 
         //显示H1SearchBtn 监听事件
         $scope.$on('showHiSearchBtn', showH1SearchBtn);
 
-        init();
         function init() {
-            //轮询去请求有没有新消息
+            $timeout(function () {
+                bindXiaDanClick();//bind 下单按钮点击
+                bindCallTel();//bind 打电话点击事件
+            }, 0);
         }
 
+        /**
+         * 打电话点击事件
+         */
+        function bindCallTel() {
+            if ($state.current.name == 'killContent') {
+                document.getElementById('callTel').addEventListener(clickType, _bind);
+            }
+
+            function _bind() {
+                //去请求接口查询是否有打电话权限
+                var jinengId = $state.params.jiNengId;
+                var uid = tools.getLocalStorageObj('userData').uid;
+                if (uid) {
+                    var postData = {
+                        uid: uid,
+                        jiNengId: jinengId
+                    };
+                    var url = config.host.nodeHost + "/member/trueTelCall";
+                    tools.postJsp(url, postData).then(_s, _err);
+                }
+            }
+
+            function _s(re) {
+                if (re.data && re.data.code == 'S') {
+                    tools.trueWeb(function () {
+                        alert('请下载手机app使用此功能');
+                    }, function () {
+                        var postData2 = {
+                            uid: re.data.uid,
+                            jiNengId: re.data.jiNengId
+                        };
+                        var url2 = config.host.nodeHost + "/member/getUserTel";//todo 加密解密
+                        tools.postJsp(url2, postData2, true).then(__s, __err);
+
+                        function __s(re2) {
+                            if (re2.data && re2.data.code == 'S') {
+                                plus.device.dial(re2.data.mt, false);
+                            } else {
+                                __err();
+                            }
+                        }
+
+                        function __err() {
+                            tools.alert({title: '拨打电话失败'});
+                        }
+                    });
+                } else {
+                    _err();
+                }
+            }
+
+            function _err() {
+                tools.alert('此用户禁止了电话服务!');
+            }
+        }
+
+
+        /**
+         *bind 下单按钮点击
+         */
+        function bindXiaDanClick() {
+            try {
+                document.getElementById('xiaDan').addEventListener(clickType, _bind);
+            } catch (e) {
+                console.error('无下单按钮');
+            }
+            function _bind() {
+                //去请求接口标记技能id
+                var jinengId = $state.params.jiNengId;
+                var uid = tools.getLocalStorageObj('userData').uid;
+                if (uid) {
+                    var postData = {
+                        uid: uid,
+                        jiNengId: jinengId
+                    };
+                    var url = config.host.nodeHost + "/member/xiaDan";
+                    tools.postJsp(url, postData, true).then(_s, _err);
+                }
+            }
+
+            function _s(re) {
+                if (re.data && re.data.code == 'S') {
+                    $timeout(function () {
+                        $scope.xiaDan = true;
+                    }, 0);
+                } else {
+                    _err();
+                }
+            }
+
+            function _err() {
+                $timeout(function () {
+                    $scope.xiaDan = false;
+                }, 0);
+            }
+
+        }
+
+        /**
+         * 检测当前技能页面是否已经被下单过,来控制显示和隐藏电话
+         */
+        function trueXiaDan() {
+            if ($state.current.name == 'killContent') {
+                var uid = tools.getLocalStorageObj('userData').uid;
+                var jinengId = $state.params.jiNengId;
+                if (uid) {
+                    var postData = {
+                        uid: uid,
+                        jiNengId: jinengId
+                    };
+                    var url = config.host.nodeHost + "/member/trueXianDan";
+                    tools.postJsp(url, postData, true).then(_s, _err);
+                }
+
+            }
+            function _s(re) {
+                if (re.data && re.data.code == 'S') {
+                    $timeout(function () {
+                        $scope.xiaDan = true;
+                    }, 0);
+                } else {
+                    _err();
+                }
+            }
+
+            function _err() {
+                $timeout(function () {
+                    $scope.xiaDan = false;
+                }, 0);
+            }
+        }
+
+        /**
+         * 隐藏下单
+         */
+        function hideXiaDan() {
+            $timeout(function () {
+                $scope.xiaDan = true;
+            }, 0);
+        }
+
+        /**
+         * 显示下单
+         */
+        function showXiaDan() {
+            $timeout(function () {
+                $scope.xiaDan = false;
+            }, 0);
+        }
 
         /**
          * 监听关闭新消息图标事件
@@ -172,7 +337,6 @@
                 $scope.showNews = false;
             }, 0);
         }
-
 
         /**
          * 判断登录
@@ -233,10 +397,14 @@
                 type = 'click';
             }, function () {
             });
-            doc.addEventListener(type, function () {
-                changeSubBtnIcon();
-                $rootScope.$broadcast('showAddFrom');
-            });
+            try {
+                doc.addEventListener(type, function () {
+                    changeSubBtnIcon();
+                    $rootScope.$broadcast('showAddFrom');
+                });
+            } catch (e) {
+                console.error('无底部');
+            }
         }
 
         /**
@@ -293,7 +461,11 @@
 
         function showBottomNav() {
             var dom = document.getElementById('bottomNav');
-            dom.style.display = "block";
+            try {
+                dom.style.display = "block";
+            } catch (e) {
+                console.error('无底部');
+            }
         }
     }
 })

@@ -17,6 +17,7 @@
     "request": "^2.69.0"
   },
   "dependencies": {
+    "leancloud-realtime": "^3.3.1",
     "wilddog": "^2.3.5"
   }
 }

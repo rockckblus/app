@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8"/>
-    <title>地盘 dipan.so</title>
+    <title>兼职鼠</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -41,7 +41,8 @@
 <!--<div tab ng-if="showTab"></div>-->
 
 <!--底部-->
-<nav class="mui-bar mui-bar-tab" id="bottomNav" style="padding-top: 0px;" ng-show="url != '/login'">
+<nav class="mui-bar mui-bar-tab" id="bottomNav" style="padding-top: 0px;"
+     ng-show="(url != '/login') && (url != '/killContent')">
     <div id="hrefHome" url="home" class="bottomBar mui-btn  icon-btn">
         <span class="mui-icon fa fa-home fa-navbar qiaokeli"></span>
     </div>
@@ -65,6 +66,24 @@ margin-left: -2px;
     <div sub-from></div>
 </nav>
 
+<!--打电话和联系后期下单-->
+<nav class="mui-bar mui-bar-tab" id="bottomNavCall" style="padding-top: 0px;"
+     ng-if="(url == '/killContent')">
+    <div class="bottomBar  icon-btn" style="width: 100%;text-align: center" id="xiaDan" ng-show="!xiaDan">
+        <div class="mui-btn qiaokeli"
+             style="width: 80%;background-color:#30a080;top:5px;font-size: 1rem;margin: 0 auto;color: #fff;">下 单
+            <span style="font-size: 12px;margin-left: 1rem">(免费 在线咨询 打电话)</span>
+        </div>
+
+    </div>
+
+    <div class="bottomBar mui-btn  icon-btn" style="width: 50%" id="callTel" ng-show="xiaDan">
+        <span class="mui-icon  qiaokeli">打电话</span>
+    </div>
+    <div class="bottomBar mui-btn icon-btn" style="width:50%" id="callIm" ng-show="xiaDan">
+        <span class="mui-icon  qiaokeli">聊一聊</span>
+    </div>
+</nav>
 
 <!--内容-->
 <div class="mui-content">

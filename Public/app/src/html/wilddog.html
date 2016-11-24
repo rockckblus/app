@@ -3,23 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="https://cdn.wilddog.com/sdk/js/2.3.5/wilddog.js"></script>
+    <script src="../../node_modules/leancloud-realtime/dist/realtime.browser.js"></script>
+
 </head>
 <body>
 
+<button onclick="send()">send</button>
 </body>
 <script>
-    // 创建数据库引用。最好自己创建一个应用，把 danmu 即 `appId` 换成你自己的
-    var config = {
-        authDomain: "780807mq.wilddog.com",
-        syncURL: "https://danmu.wilddogio.com"
-    };
-    wilddog.initializeApp(config);
-    var ref = wilddog.sync().ref();
-    console.log('ref',ref);
-    // 获取输入框的数据
-    var text = 'aaaa';
-    // 将数据写到云端 message 节点下，child 用来定位子节点
-    ref.child('message').push(text);
+    // 应用 ID，用来识别应用
+    var APP_ID = 'jFnAKF8oIWzB7INn2GpNyPAt-gzGzoHsz';
+
+    // 应用 Key，用来校验权限（Web 端可以配置安全域名来保护数据安全）
+    var APP_KEY = 'OvRQhBzP5fW4Uer1gLfPbpzl';
+
+    var Realtime = AV.Realtime;
+    var TextMessage = AV.TextMessage;
+
+    var realtime = new Realtime({
+        appId: APP_ID,
+        region: 'cn', //美国节点为 "us"
+    });
+
+    var count = 0;
+
+    function send() {
+        // Tom 用自己的名字作为 clientId，获取 IMClient 对象实例
+        realtime.createIMClient('Tom').then(function (tom) {
+            // 创建与Jerry之间的对话
+            return tom.createConversation({
+                members: ['Jerry2'],
+                name: 'Tom & Jerry',
+            });
+        }).then(function (conversation) {
+            count++;
+            // 发送消息
+            return conversation.send(new TextMessage('耗子，起床！' + count));
+        }).then(function (message) {
+            console.log('Tom & Jerry', '发送成功！');
+        }).catch(console.error);
+    }
+
+
 </script>
 </html>

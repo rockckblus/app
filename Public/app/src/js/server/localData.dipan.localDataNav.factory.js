@@ -68,6 +68,8 @@
                 return _filter('toHtml')('兼职鼠');
             case '/myNews':
                 return _filter('toHtml')('消息');
+            case '/killContent':
+                return _filter('toHtml')('技能详情');
             default:
                 return '';
         }
@@ -195,6 +197,8 @@
             case 'myNews':
                 return true;
             case 'editMemberInfo':
+                return true;
+            case 'killContent':
                 return true;
             default :
                 return false;

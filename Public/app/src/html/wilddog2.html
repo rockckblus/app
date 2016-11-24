@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../node_modules/leancloud-realtime/dist/realtime.browser.js"></script>
+
+</head>
+<body>
+
+</body>
+<script>
+    // 应用 ID，用来识别应用
+    var APP_ID = 'jFnAKF8oIWzB7INn2GpNyPAt-gzGzoHsz';
+
+    // 应用 Key，用来校验权限（Web 端可以配置安全域名来保护数据安全）
+    var APP_KEY = 'OvRQhBzP5fW4Uer1gLfPbpzl';
+
+    var Realtime = AV.Realtime;
+    var TextMessage = AV.TextMessage;
+
+    var realtime = new Realtime({
+        appId: APP_ID,
+        pushOfflineMessages: true,
+        region: 'cn', //美国节点为 "us"
+    });
+
+
+    // Jerry 登录
+    realtime.createIMClient('Jerry2').then(function (jerry) {
+//        jerry.on('unreadmessages', function (payload, conversation) {
+//            conversation.queryMessages({
+//                limit: 10, // limit 取值范围 1~1000，默认 20
+//            }).then(function (messages) {
+//                console.log('messageHistory', messages);
+//                // 最新的十条消息，按时间增序排列
+//            }).catch(console.error.bind(console));
+//        })
+
+        jerry.on('message', function (message, conversation) {
+            console.log('Message : ' , message);
+            console.log('Message received: ' + message.text);
+        });
+    }).catch(console.error);
+
+</script>
+</html>
