@@ -30,6 +30,7 @@
         });
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
+            $rootScope.$broadcast('callTelAlertCount0');
         });
 
         init();
@@ -39,7 +40,6 @@
         function init() {
             $timeout(function () {
                 getData();
-                hideBottomNav();
             }, 0);
         }
 
@@ -116,16 +116,15 @@
             }
         }
 
-
         /**
-         * 隐藏底部导航
+         * contentDiv 滚动到页面顶部
          */
-        function hideBottomNav() {
-            // $timeout(function () {
-            //     var dom = document.getElementById('bottomNav');
-            //     dom.style.display = "none";
-            // }, 200);
+        function sollTop() {
+            $timeout(function () {
+                document.getElementById('scrollTop').scrollTop = 0;
+            }, 0);
         }
+
 
     }
 })();

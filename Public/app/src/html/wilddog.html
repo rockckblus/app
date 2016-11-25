@@ -25,7 +25,6 @@
         region: 'cn', //美国节点为 "us"
     });
 
-    var count = 0;
 
     function send() {
         // Tom 用自己的名字作为 clientId，获取 IMClient 对象实例
@@ -36,7 +35,6 @@
                 name: 'Tom & Jerry',
             });
         }).then(function (conversation) {
-            count++;
             // 发送消息
             return conversation.send(new TextMessage('耗子，起床！' + count));
         }).then(function (message) {

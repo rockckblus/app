@@ -6,10 +6,10 @@
     'use strict';
     angular.module('dipan').factory('getCity', getCity);
 
-    getCity.$inject = ['$webSql', '$q', 'tools', 'config', '$timeout'];
+    getCity.$inject = [ '$q', 'tools', 'config', '$timeout'];
 
 
-    function getCity($webSql, $q, tools, config, $timeout) {
+    function getCity( $q, tools, config, $timeout) {
         var re = {};
         re.selectByCityCode = selectByCityCode;//根据省查询城市
         var allCtiy = [{

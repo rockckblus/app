@@ -8,7 +8,6 @@ document.write('<script src="' + basePath + '/dist/js/res/angular.min.js"><\/scr
 document.write('<script src="' + basePath + '/dist/js/res/angular-ui-router.min.js"><\/script>');
 document.write('<script src="' + basePath + '/dist/js/res/bindonce.min.js"><\/script>');
 document.write('<script src="' + basePath + '/dist/js/res/mui.min.js"><\/script>');
-document.write('<script src="' + basePath + '/dist/js/res/angular-websql.min.js"><\/script>');
 // document.write('<script src="' + basePath + '/dist/js/res/mui.zoom.js"><\/script>');
 // document.write('<script src="' + basePath + '/dist/js/res/mui.imageViewer.js"><\/script>');
 

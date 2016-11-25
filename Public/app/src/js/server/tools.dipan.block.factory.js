@@ -100,6 +100,11 @@
              */
             parseUrl: parseUrl,
 
+            /**
+             *事件注册
+             */
+            loginEvent: loginEvent
+
         };
 
         /**
@@ -417,6 +422,64 @@
                 hash: a.hash.replace('#', ''),
                 path: a.pathname.replace(/^([^\/])/, '/$1'),
             };
+        }
+
+        /*
+         * 事件注册
+         * @param Element     ele
+         * @param String      eventType
+         * @param Function    fn
+         * @param Boolean     isRepeat
+         * @param Boolean     isCaptureCatch
+         * @return undefined
+         */
+        function loginEvent(ele, eventType, fn, isRepeat, isCaptureCatch) {
+            if (ele === undefined || eventType === undefined || fn === undefined) {
+                throw new Error('传入的参数错误！');
+            }
+
+            if (typeof ele !== 'object') {
+                throw new TypeError('不是对象！');
+            }
+
+            if (typeof eventType !== 'string') {
+                throw new TypeError('事件类型错误！');
+            }
+
+            if (typeof fn !== 'function') {
+                throw new TypeError('fn 不是函数！');
+            }
+
+            if (isCaptureCatch === undefined || typeof isCaptureCatch !== 'boolean') {
+                isCaptureCatch = false;
+            }
+
+            if (isRepeat === undefined || typeof isRepeat !== 'boolean') {
+                isRepeat = true;
+            }
+
+            if (ele.eventList === undefined) {
+                ele.eventList = {};
+            }
+
+            if (isRepeat === false) {
+                for (var key in ele.eventList) {
+                    if (key === eventType) {
+                        return '该事件已经绑定过！';
+                    }
+                }
+            }
+
+            // 添加事件监听
+            if (ele.addEventListener) {
+                ele.addEventListener(eventType, fn, isCaptureCatch);
+            } else if (ele.attachEvent) {
+                ele.attachEvent('on' + eventType, fn);
+            } else {
+                return false;
+            }
+
+            ele.eventList[eventType] = true;
         }
 
         return re;

@@ -43,12 +43,12 @@
     /**
      * 手动注入
      * 16/2/1 */
-    body.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tap', '$state', 'tools', 'getList', 'getCity', 'config'];
+    body.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tap', '$state', 'tools', 'getList', 'getCity', 'config', 'header'];
 
     /**
      * controllerFun
      * 16/2/1 */
-    function body($scope, $rootScope, $timeout, localData, tap, $state, tools, getList, getCity, config) {
+    function body($scope, $rootScope, $timeout, localData, tap, $state, tools, getList, getCity, config, header) {
 
         var clickType = 'tap';
         tools.trueWeb(function () {
@@ -62,6 +62,7 @@
         $scope.$on('showNews', showNews);//监听有新消息图标显示事件
         $scope.$on('hideNews', hideNews);//监听关闭新消息图标事件
         $scope.$on('trueXiaDan', trueXiaDan);//监听判断当前用户是否对当前技能id下过单
+        $scope.$on('callTelAlertCount0', callTelAlertCount0);//监听使打电话alertCount归0
 
 
         $scope.push = 'fa-plus-circle';//发布需求按钮的 图标样式
@@ -167,15 +168,105 @@
             $timeout(function () {
                 bindXiaDanClick();//bind 下单按钮点击
                 bindCallTel();//bind 打电话点击事件
+                bindCallIm();//bind 聊一聊点击事件
             }, 0);
         }
 
         /**
+         * bind 聊一聊点击事件
+         */
+        function bindCallIm() {
+            if ($state.current.name == 'killContent') {
+                var ele = document.getElementById('callIm');
+                tools.loginEvent(ele, clickType, _bind);
+            }
+
+            function _bind() {
+                getGuest();
+                function getGuest() {//获取技能用户资料
+                    var url = config.host.nodeHost + '/member/getKillContent';
+                    tools.postJsp(url, {jiNengId: $state.params.jiNengId}, true).then(function (re) {
+                        if (re.data && re.data.code == 'S') {
+                            var gHeader = header.defaultHeader;
+                            if (re.data.headerImg) {
+                                gHeader = re.data.userData.headerImg;
+                            }
+                            var userHeader = header.defaultHeader;
+                            var thisHeader = tools.getLocalStorageObj('userData').headerImg;
+                            if (thisHeader) {
+                                userHeader = thisHeader;
+                            }
+                            var uid = tools.getLocalStorageObj('userData').uid;
+                            var gName = re.data.userData.userName;
+                            if (!gName) {
+                                gName = re.data.userData.mt;
+                            }
+
+                            open(gHeader, re.data.userData.uid, gName, userHeader, uid);
+
+
+                        } else {
+                            _err(re.msg);
+                        }
+                    }, _err);
+
+                    function _err(msg) {
+                        var reMsg = '获取该用户的信息失败';
+                        if (msg) {
+                            reMsg = msg;
+                        }
+                        tools.alert({title: reMsg});
+                    }
+                }
+
+
+                /**
+                 * 跳转
+                 * @param gHeader 被联系人的头像
+                 * @param gMt 被联系人的id
+                 * @param userHeader 用户头像
+                 * @param userMt 用户id
+                 */
+                function open(gHeader, gUId, gName, userHeader, userId) {
+
+                    if (gUId && userId) {
+                        mui.openWindow({
+                            url: 'callIm.html',
+                            extras: {
+                                gusetHeader: gHeader,
+                                gusetId: gUId,
+                                userHeader: userHeader,
+                                userId: userId,
+                                gName: gName,
+                            }
+                        });
+                    }
+
+
+                }
+            }
+        }
+
+
+        /**
          * 打电话点击事件
+         */
+        var alertCount = 0;
+
+        /**
+         * 监听使打电话alertCount归0
+         */
+        function callTelAlertCount0() {
+            alertCount = 0;
+        }
+
+        /**
+         * bind 打电话点击事件
          */
         function bindCallTel() {
             if ($state.current.name == 'killContent') {
-                document.getElementById('callTel').addEventListener(clickType, _bind);
+                var ele = document.getElementById('callTel');
+                tools.loginEvent(ele, clickType, _bind);
             }
 
             function _bind() {
@@ -192,10 +283,14 @@
                 }
             }
 
+
             function _s(re) {
                 if (re.data && re.data.code == 'S') {
+                    alertCount++;
                     tools.trueWeb(function () {
-                        alert('请下载手机app使用此功能');
+                        if (alertCount == 1) {
+                            alert('请下载手机app使用此功能');
+                        }
                     }, function () {
                         var postData2 = {
                             uid: re.data.uid,
@@ -206,7 +301,9 @@
 
                         function __s(re2) {
                             if (re2.data && re2.data.code == 'S') {
-                                plus.device.dial(re2.data.mt, false);
+                                if (alertCount > 1) {
+                                    plus.device.dial(re2.data.mt, false);
+                                }
                             } else {
                                 __err();
                             }

@@ -41,7 +41,7 @@
         
         "Events": {
             "description": "应用扩展事件"
-        },"Webview":{},"Storage":{},"NativeUI":{},"Runtime":{},"Geolocation":{},"Statistic":{},"Camera":{},"Gallery":{},"File":{},"Device":{}
+        },"Webview":{},"Storage":{},"NativeUI":{},"Runtime":{},"Geolocation":{},"Statistic":{},"Camera":{},"Gallery":{},"File":{},"Device":{},"Speech":{},"Audio":{}
     },
     "plus": {
         "splashscreen": {
@@ -66,7 +66,7 @@
                 "keystore": "",/*Android应用打包使用的密钥库文件*/
                 "password": "",/*Android应用打包使用密钥库中证书的密码*/
                 "aliasname": "",/*Android应用打包���用密钥库中证书的别名*/
-               "permissions": ["<uses-feature android:name=\"android.hardware.camera\"/>","<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>","<uses-permission android:name=\"android.permission.RECEIVE_USER_PRESENT\"/>","<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>","<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>","<uses-permission android:name=\"android.permission.VIBRATE\"/>","<uses-permission android:name=\"android.permission.READ_LOGS\"/>","<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>","<uses-permission android:name=\"android.permission.CALL_PHONE\"/>","<uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\"/>","<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>","<uses-permission android:name=\"android.permission.CAMERA\"/>"]
+               "permissions": ["<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>","<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>","<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>","<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>","<uses-permission android:name=\"android.permission.VIBRATE\"/>","<uses-permission android:name=\"android.permission.READ_LOGS\"/>","<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>","<uses-permission android:name=\"android.permission.CALL_PHONE\"/>","<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>","<uses-feature android:name=\"android.hardware.camera\"/>","<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>","<uses-permission android:name=\"android.permission.RECEIVE_USER_PRESENT\"/>","<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>","<uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\"/>","<uses-permission android:name=\"android.permission.CAMERA\"/>"]
 				/*使用Native.js调用原生安卓API需要使用到的系统权限*/
             },
             "orientation": ["portrait-primary"],/*应用支持的方向，portrait-primary：竖屏正方向；portrait-secondary：竖屏反方向；landscape-primary：横屏正方向；landscape-secondary：横屏反方向*/
@@ -215,10 +215,13 @@
 					"src/js/directive/member/myNews.dipan.myNews.directive.js",
 					"src/js/directive/member/editMemberInfo.dipan.editMemberInfo.js",
 					"src/js/directive/from/editImgUpdate.from.editImgUpdate.directive.js",
-					"src/js/directive/member/killContent.dipan.killContent.directive.js"
+					"src/js/directive/member/killContent.dipan.killContent.directive.js",
+					"src/js/directive/member/callIm.dipan.callIm.directive.js",
+					"dist/js/res/arttmpl.js"
 				],
 				"refer": [
-					"src/html/updata.html"
+					"src/html/updata.html",
+					"src/html/callIm.html"
 				]
 			},
 			"src/html/updata.html": {
@@ -259,6 +262,21 @@
 					"src/js/directive/member/loginOut.dipan.loginOut.js",
 					"src/js/server/tap.dipan.clickTapPublic.server.js",
 					"src/js/server/compile.uiBlock.compile.factory.js"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"src/html/callIm.html": {
+				"resources": [
+					"src/fonts/mui.ttf",
+					"dist/js/res/mui.imageViewer.js",
+					"dist/js/res/mui.min.js",
+					"src/css/app.css",
+					"src/css/mui.min.css",
+					"dist/js/res/arttmpl.js",
+					"src/css/mui.imageviewer.css",
+					"dist/js/res/realtime.browser.js",
+					"dist/js/res/realtime.browser.js.map"
 				],
 				"refer": [],
 				"priority": 0

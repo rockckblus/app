@@ -26,7 +26,7 @@
      * 此处是hackpost 到 node 转 对象格式问题, 如果是 请求node ,post的 需要传入 queryType = true; todo 默认不hackpost格式
      * 16/2/1 */
     //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block'], hackPost).config(uiRouter);
-    angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'angular-websql', 'block', 'from']).config(uiRouter);
+    angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block', 'from']).config(uiRouter);
 
     /**
      * config 定义 全局变量 ,并且保留到window全局变量
@@ -91,7 +91,6 @@
                 templateUrl: window.tplPath + 'route/member/myNews.html'
             })
 
-
             //memberIndex 我的 member
             .state('memberIndex', {
                 url: '/memberIndex',
@@ -109,7 +108,6 @@
                 url: '/loginOut',
                 templateUrl: window.tplPath + 'route/member/loginOut.html'
             })
-
 
             //member 登录
             .state('login', {
