@@ -402,7 +402,7 @@
 
         var realtime = new Realtime({
             appId: APP_ID,
-            pushOfflineMessages: true,//配置离线接收
+            pushOfflineMessages: false,//配置离线接收
             region: 'cn', //美国节点为 "us"
         });
 
@@ -426,6 +426,8 @@
                 softinputMode: "adustResize"
             });
             var selfG = plus.webview.currentWebview();
+            selfG.gusetId = 'aaaa2';
+            selfG.userId = 'aaaa1';
             userHeader = selfG.userHeader;
             guestHeader = selfG.gusetHeader;
             var showKeyboard = function () {
@@ -447,17 +449,17 @@
             };
             var record = [];
 
-            var tempRecord = getLocalStorageObj('imHistory');
-            if (tempRecord) {
-                record = tempRecord;
-            } else {
-                record = [
-                    {
-                        sender: selfG.gusetId,
-                        type: 'text',
-                        content: 'Hi，我是 ' + selfG.gName
-                    }]
-            }
+//            var tempRecord = getLocalStorageObj('imHistory');
+//            if (tempRecord) {
+//                record = tempRecord;
+//            } else {
+            record = [];
+//                {
+//                    sender: selfG.gusetId,
+//                    type: 'text',
+//                    content: 'Hi，我是 ' + selfG.gName
+//                }]
+//            }
 
 
             /**
@@ -531,7 +533,7 @@
                 ui.areaMsgList.innerHTML = template('msg-template', {
                     "record": record,
                     "userHeader": userHeader,
-                    "guestUid": guestHeader,
+                    "guestHeader": guestHeader,
                 });
                 var msgItems = ui.areaMsgList.querySelectorAll('.msg-item');
                 [].forEach.call(msgItems, function (item, index) {
@@ -562,7 +564,7 @@
                         }
                     }
                     tempRecord.reverse();
-                    saveLocalStorageObj('imHistory', tempRecord);
+//                    saveLocalStorageObj('imHistory', tempRecord);
 
                     bindMsgList();
                     toRobot(msg.content);
@@ -580,10 +582,13 @@
                         members: [selfG.gusetId],
                         unique: true,
                     });
-
                     return con;
 
                 }).then(function (conversation) {
+
+
+
+
                     // 发送消息
                     if (info) {
                         return conversation.send(new TextMessage(info));
@@ -595,8 +600,42 @@
             };
 
             realtime.createIMClient(selfG.userId).then(function (tom) {
-                tom.on('message', function (message, conversation) {
 
+                // 创建与Jerry之间的对话
+                tom.createConversation({
+                    members: [selfG.gusetId],
+                    unique: true,
+                }).then(function (conversation) {
+                    conversation.queryMessages({
+                        limit: 20, // limit 取值范围 1~1000，默认 20
+                    }).then(function (messages) {
+
+                        for (var i in messages) {
+                            if (messages[i].from == selfG.userId) {
+                                messages[i].from = 'self';
+                            }
+                            record.push({
+                                sender: messages[i].from,
+                                type: 'text',
+                                content: messages[i].text
+                            });
+                        }
+
+                        if (!record[0]) {
+                            record.push({
+                                sender: selfG.gusetId,
+                                type: 'text',
+                                content: 'Hi，我是 ' + selfG.gName
+
+                            });
+                        }
+                        bindMsgList();
+                        // 最新的十条消息，按时间增序排列
+                    }).catch(console.error.bind(console));
+
+                });
+
+                tom.on('message', function (message, conversation) {
                     record.push({
                         sender: selfG.gusetId,
                         type: 'text',
