@@ -289,42 +289,42 @@
                 }];
                 return _obj;
 
-            case '/memberIndex':
-                _obj = [{
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '粉丝 ' + _getUserData('fensi'), //名称
-                    route: 'hrefTabFensi', //routeUrl
-                    stateName: 'fensi', //routeUrl
-                }, {
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '关注 ' + _getUserData('guanzhu'), //名称
-                    route: 'hrefTabGuanZhu', //routeUrl
-                    stateName: 'guanzhu', //routeUrl
-                }, {
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '联系 ' + _getUserData('lianxi'), //名称
-                    route: 'hrefTabLianXi', //routeUrl
-                    stateName: 'lianxi', //routeUrl
-                },];
-
-
-                return _obj;
-            case '/login':
-                _obj = [{
-                    colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: _objDefaulOne.thisItem, //高亮
-                    name: '登录', //名称
-                    route: 'login' //routeUrl
-                }, {
-                    colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '设置', //名称
-                    route: 'memberIndex' //routeUrl
-                },];
-                return _obj;
+            // case '/memberIndex':
+            //     _obj = [{
+            //         colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: false, //高亮
+            //         name: '粉丝 ' + _getUserData('fensi'), //名称
+            //         route: 'hrefTabFensi', //routeUrl
+            //         stateName: 'fensi', //routeUrl
+            //     }, {
+            //         colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: false, //高亮
+            //         name: '关注 ' + _getUserData('guanzhu'), //名称
+            //         route: 'hrefTabGuanZhu', //routeUrl
+            //         stateName: 'guanzhu', //routeUrl
+            //     }, {
+            //         colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: false, //高亮
+            //         name: '联系 ' + _getUserData('lianxi'), //名称
+            //         route: 'hrefTabLianXi', //routeUrl
+            //         stateName: 'lianxi', //routeUrl
+            //     },];
+            //
+            //
+            //     return _obj;
+            // case '/login':
+            //     _obj = [{
+            //         colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: _objDefaulOne.thisItem, //高亮
+            //         name: '登录', //名称
+            //         route: 'login' //routeUrl
+            //     }, {
+            //         colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: false, //高亮
+            //         name: '设置', //名称
+            //         route: 'memberIndex' //routeUrl
+            //     },];
+            //     return _obj;
             default:
                 return [];
         }

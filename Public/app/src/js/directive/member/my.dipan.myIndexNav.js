@@ -39,7 +39,16 @@
         $scope.version = config.version.default;//版本
         $scope.jiNengCount = undefined;//技能count
         $scope.needCount = undefined;//需求count
-        $scope.showNews = false;//显示有新消息
+        // $scope.showNews = false;//显示有新消息 ,读member数据
+        $scope.showNewsHistory = undefined;//显示有新的联系消息
+        $scope.getNoReadNewsEnd = undefined;//联系的未读消息显示的消息内容
+        $scope.noReadNewsCount = undefined;//未读消息的统计
+
+        $scope.showNoReadFromCount = false;//显示未读的订单消息
+        $scope.noReadFromCount = undefined;//未读的订单统计
+        $scope.noReadFrom = undefined;//未读的订单list
+
+
         $scope.$on('showNews', showNews);//监听有新消息图标显示事件
         $scope.$on('hideNews', hideNews);//监听关闭新消息图标事件
 
@@ -49,6 +58,56 @@
 
         function init() {
             getNewsData();//获取有没有新消息,给图片状态
+            getNoReadFrom();//获取未读订单
+            getNoReadNews();//获取有未读的联系人消息
+        }
+
+        /**
+         * 获取有未读的联系人消息
+         */
+        function getNoReadNews() {
+            var url = config.host.nodeHost + "/imApi/noReadNewsCount";
+            var postData = {};
+            try {
+                postData.uid = tools.getLocalStorageObj('userData').uid;
+            } catch (e) {
+                postData.uid = '';
+            }
+            tools.postJsp(url, postData, true).then(_s);
+            function _s(re) {
+                if (re.data.code == 'S') {
+                    $timeout(function () {
+                        $scope.showNewsHistory = true;
+                        $scope.getNoReadNewsEnd = re.data.getNoReadNewsEnd;//联系的未读消息显示的消息内容
+                        $scope.noReadNewsCount = re.data.results;//未读消息的统计
+                    }, 0);
+                }
+            }
+        }
+
+        /**
+         * 获取未读订单
+         */
+        function getNoReadFrom() {
+            var url = config.host.nodeHost + "/member/noReadOrderFromCount";
+            var postData = {};
+            try {
+                postData.uid = tools.getLocalStorageObj('userData').uid;
+            } catch (e) {
+                postData.uid = '';
+            }
+            tools.postJsp(url, postData, true).then(_s);
+            function _s(re) {
+                console.log('re', re);
+                if (re.data.code == 'S') {
+                    $timeout(function () {
+                        $scope.showNoReadFromCount = true;
+                        $scope.noReadFromCount = re.data.itemStrAllCount;
+                        $scope.noReadFrom = re.data.itemStr;
+                    }, 0);
+                }
+            }
+
         }
 
         /**

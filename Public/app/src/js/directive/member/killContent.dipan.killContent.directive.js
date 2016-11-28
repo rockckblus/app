@@ -53,14 +53,21 @@
             function _s(re) {
                 $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
                 if (re.data && re.data.code == 'S') {
-                    if (!re.data.userData.headerImg) {
-                        re.data.userData.headerImg = header.defaultHeader;
+                    try {
+                        if (!re.data.userData.headerImg) {
+                            re.data.userData.headerImg = header.defaultHeader;
+                        }
+                    } catch (e) {
+                        console.error('无headerImg');
                     }
+                    try {
+                        if (re.data.thisJiNeng.priceUnit == '面议') {
+                            re.data.thisJiNeng.priceStr = '面议';
+                        } else {
+                            re.data.thisJiNeng.priceStr = re.data.thisJiNeng.price + ' ' + re.data.thisJiNeng.priceUnit;
+                        }
+                    } catch (e) {
 
-                    if (re.data.thisJiNeng.priceUnit == '面议') {
-                        re.data.thisJiNeng.priceStr = '面议';
-                    } else {
-                        re.data.thisJiNeng.priceStr = re.data.thisJiNeng.price + ' ' + re.data.thisJiNeng.priceUnit;
                     }
 
                     switch (re.data.thisJiNeng.service) {

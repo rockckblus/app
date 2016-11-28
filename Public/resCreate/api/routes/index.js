@@ -4,6 +4,7 @@ var cityCtrl = require('../db/controller/city.g.controller');//城市Ctrl
 var sessionCtrl = require('../db/controller/session.g.controller');//session Ctrl
 var categoryServiceCtrl = require('../db/controller/category_service.g.controller');//category_service Ctrl
 var snsArticleServiceCtrl = require('../db/controller/snsArticle.g.controller');//sns文章 Ctrl
+var imApi = require('../db/controller/imApi.imApi.controller');//请求及时通讯api接口
 var all = require('./default');//公共路由all方法
 //var oeoeSchema = new mongoose.Schema(
 ////    _id:mongoose.Schema.ObjectId,
@@ -99,6 +100,13 @@ router.post('/sns/:fun', function (req, res) {
     postSns(req, res);
 });
 
+/**
+ * post im:fun 及时通讯相关
+ * 16/3/8 */
+router.post('/imApi/:fun', function (req, res) {
+    postIm(req, res);
+});
+
 router.get('/', function (req, res) {
     res.json(11123);
 });
@@ -176,7 +184,6 @@ function postCity(req, res) {
     }
 }
 
-
 /**
  * function 详情 ****************************************************
  * 16/3/8 */
@@ -237,7 +244,6 @@ function postCategory(req, res) {
  * post sns Aip sns相关
  * 16/3/8 */
 function postSns(req, res) {
-    console.log('req');
     var fun = req.params.fun;
     switch (fun) {
         case 'homeGetList' :
@@ -288,6 +294,78 @@ function postSns(req, res) {
         }
     }
 }
+
+/**
+ * postIm 即时通讯
+ */
+function postIm(req, res) {
+    var fun = req.params.fun;
+    switch (fun) {
+        case 'getOnLine' ://获取im用户在线状态
+            _getOnLine(req.body);
+            break;
+        case 'noReadNewsCount' ://获取im用户的未读取消息数,传uid
+            _noReadNewsCount(req.body);
+            break;
+    }
+
+    /**
+     * 获取im在线状态,uidArr传入数组['rockblus','rockblus2'],最多20个
+     * @param body
+     * @private
+     * @returns {'results':['rockblus']}
+     */
+    function _getOnLine(body) {
+        imApi.getOnLine(body.uidArr, _s);
+        function _s(re) {
+            var reData = {
+                "complete": true,
+                "data": {
+                    "code": "S",
+                    "msg": "查询成功",
+                    "results": re.results
+                }
+            };
+            res.json(reData);
+        }
+    }
+
+    /**
+     * 获取im用户的未读取消息数
+     * @param body
+     * @private
+     * @returns {'results':['rockblus']}
+     */
+    function _noReadNewsCount(body) {
+        imApi.noReadNewsCount(body.uid, _s, _e);
+        function _s(re) {
+            var reData = {
+                "complete": true,
+                "data": {
+                    "code": "S",
+                    "msg": "查询成功",
+                    "results": re.count,
+                    "noReadNews": re.noReadNews
+                }
+            };
+            res.json(reData);
+        }
+
+        function _e(e) {
+            var reData = {
+                "complete": true,
+                "data": {
+                    "code": "F",
+                    "msg": "查询失败",
+                    "results": e
+                }
+            };
+            res.json(reData);
+        }
+    }
+
+}
+
 
 /** curl  */
 function curl(req, res) {

@@ -24,18 +24,19 @@
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
         });
+        $scope.list = '';//联系人列表
 
         init();
         function init() {
-            aleryRead();//已经读过新消息了,请求api 改状态
+            getList();//获取联系人列表,判断是否联系人有列表新消息,
         }
 
         /**
-         * 已经读过新消息了,请求api 改状态
+         *获取联系人列表,判断是否联系人有列表新消息,
          */
-        function aleryRead() {
+        function getList() {
             var uid = '';
-            var url = config.host.nodeHost + "/member/myNewsIsRead";
+            var url = config.host.nodeHost + "/member/getCallList";
             try {
                 uid = tools.getLocalStorageObj('userData').uid;
             } catch (e) {
@@ -43,10 +44,34 @@
             }
             tools.postJsp(url, {uid: uid}, true).then(_s);
             function _s(re) {
-                if (re.data.code == 'S') {
-                    $rootScope.$broadcast('hideNews');//关闭新消息提示图标
+                if (re.data && re.data.code == 'S') {
+                    $timeout(function () {
+                        $scope.list = re.data.list;
+                    }, 0);
                 }
             }
+        }
+
+        /**
+         * 已经读过的新消息了,请求api 改状态
+         */
+        function aleryRead(newsId) {
+            // if (!newsId) {
+            //     return false;
+            // }
+            // var uid = '';
+            // var url = config.host.nodeHost + "/member/myNewsIsRead";
+            // try {
+            //     uid = tools.getLocalStorageObj('userData').uid;
+            // } catch (e) {
+            //     uid = '';
+            // }
+            // tools.postJsp(url, {uid: uid, newId: newId}, true).then(_s);
+            // function _s(re) {
+            //     if (re.data.code == 'S') {
+            //         $rootScope.$broadcast('hideNews');//关闭新消息提示图标
+            //     }
+            // }
         }
 
     }

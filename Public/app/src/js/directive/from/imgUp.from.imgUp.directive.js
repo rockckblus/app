@@ -1,53 +1,39 @@
 /**
- * 命名注释：directive简称_editImgUpDate. 父模块_from. 功能_头像图片上传 类型_directive .js
- * 使用 ：<div edit-img-up-date></div>
+ * 命名注释：directive简称_imgUp. 父模块_from. 功能_技能发布图片上传 类型_directive .js
+ * 使用 ：<div img-up></div>
  */
 (function () {
     'use strict';
-    angular.module('from').directive('editImgUpDate', editImgUpDate);
-    function editImgUpDate() {
+    angular.module('from').directive('imgUp', imgUp);
+    function imgUp() {
         return {
             restrict: 'A',
             replace: true,
             scope: {},
             controller: thisController,
-            templateUrl: window.tplPath + 'directive/from/editImgUpDate.from.editImgUpdate.directive.html',
+            templateUrl: window.tplPath + 'directive/from/imgUp.from.imgUp.directive.html',
             link: function (scope, element, attrs) {
             }
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'config', '$state', 'header'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'config', '$state'];
 
-    function thisController($scope, $rootScope, $timeout, tools, config, $state, header) {
-
+    function thisController($scope, $rootScope, $timeout, tools, config, $state) {
 
         $scope.upImg1 = false;
+        $scope.upImg2 = false;
+        $scope.upImg3 = false;
         $scope.img1 = '';
-        var clickArr = ['editUpImgClick1'];
+        $scope.img2 = '';
+        $scope.img3 = '';
+        var clickArr = ['upImgClick1', 'upImgClick2', 'upImgClick3'];
+
         init();
 
         function init() {
             forBind();
-            giveDefaultImg();//给默认头像
         }
-
-        /**
-         * 给默认头像
-         */
-        function giveDefaultImg() {
-            var userData = tools.getLocalStorageObj('userData');
-            if (userData.headerImg) {
-                $timeout(function () {
-                    $scope.img1 = userData.headerImg;
-                }, 0);
-            } else {
-                $timeout(function () {
-                    $scope.img1 = header.defaultHeader;
-                }, 0);
-            }
-        }
-
 
         function forBind() {
             angular.forEach(clickArr, function (vo) {
@@ -57,7 +43,8 @@
 
         function bindImgClick(voId) {
             document.getElementById(voId).addEventListener('tap', function () {
-                var thisImgId = voId.replace('editUpImgClick', '');
+                var thisImgId = voId.replace('upImgClick', '');
+
                 if (mui.os.plus) {
                     var a = [
                         {
@@ -74,12 +61,15 @@
                             }, {
                                 title: "从手机相册选择"
                             },
+                            {
+                                title: "删除"
+                            }
                         ];
                     }
 
 
                     plus.nativeUI.actionSheet({
-                        title: "修改头像",
+                        title: "作品图片/靓照",
                         cancel: "取消",
                         buttons: a
                     }, function (b) { /*actionSheet 按钮点击事件*/
@@ -94,20 +84,49 @@
                                 galleryImg(voId);
                                 /*打开相册*/
                                 break;
+                            case 3:
+                                delImg(voId);
+                                /*删除delImg*/
+                                break;
                             default:
                                 break;
                         }
-                    });
-                } else {
-                    tools.trueWeb(function () {
-                        alert('请下载手机app修改头像');
-                    }, function () {
-                        tools.alert({title: '您的设备不支持修改头像功能'});
                     });
                 }
             }, false);
         }
 
+        //删除
+        function delImg(voId) {
+            $timeout(function () {
+                switch (voId) {
+                    case 'upImgClick1':
+                        $scope.img1 = false;
+                        break;
+                    case 'upImgClick2':
+                        $scope.img2 = false;
+                        break;
+                    case 'upImgClick3':
+                        $scope.img3 = false;
+                        break;
+                }
+            }, 0);
+            var url = config.host.nodeHost + '/sns/delKillImg';//删除服务器上的图片
+            var postData = {
+                killRoundId: tools.getLocalStorageObj('killRoundId'),
+                uid: tools.getLocalStorageObj('user').uid,
+                voId: voId
+            };
+            tools.postJsp(url, postData, true).then(function (re) {
+                if (re.data.code == 'S') {
+                    console.log('删除服务器图片成功', re.data.msg);
+                } else {
+                    console.log('删除服务器图片失败', re.data.msg);
+                }
+            }, function (e) {
+                console.log('删除服务器图片失败2');
+            });
+        }
 
         //拍照
         function getImage(voId) {
@@ -123,7 +142,7 @@
             }, function (s) {
                 console.log("error" + s);
             }, {
-                filename: "_doc/edithead_" + voId + ".png"
+                filename: "_doc/head_" + voId + ".png"
             });
         }
 
@@ -132,11 +151,11 @@
             plus.gallery.pick(function (a) {
                 plus.io.resolveLocalFileSystemURL(a, function (entry) {
                     plus.io.resolveLocalFileSystemURL("_doc/", function (root) {
-                        root.getFile("edithead_" + voId + ".png", {}, function (file) {
+                        root.getFile("head_" + voId + ".png", {}, function (file) {
                             //文件已存在
                             file.remove(function () {
                                 console.log("file remove success");
-                                entry.copyTo(root, 'edithead_' + voId + '.png', function (e) {
+                                entry.copyTo(root, 'head_' + voId + '.png', function (e) {
                                         var ee = e.fullPath + "?version=" + new Date().getTime();
                                         uploadHead(ee, voId);
                                         /*上传图片*/
@@ -151,7 +170,7 @@
                             });
                         }, function () {
                             //文件不存在
-                            var fielName = 'edithead_' + voId + '.png';
+                            var fielName = 'head_' + voId + '.png';
                             entry.copyTo(root, fielName, function (eee) {
                                     var path = eee.fullPath + "?version=" + new Date().getTime();
                                     uploadHead(path, voId);
@@ -178,17 +197,42 @@
             console.log('voId', voId);
             $timeout(function () {
                 switch (voId) {
-                    case 'editUpImgClick1':
+                    case 'upImgClick1':
                         $scope.img1 = imgPath;
+                        break;
+                    case 'upImgClick2':
+                        $scope.img2 = imgPath;
+                        break;
+                    case 'upImgClick3':
+                        $scope.img3 = imgPath;
                         break;
                 }
             }, 0);
+            // mainImage.src = imgPath;
+            // mainImage.style.width = "60px";
+            // mainImage.style.height = "60px";
 
             var image = new Image();
             image.src = imgPath;
             image.onload = function () {
                 var imgData = getBase64Image(image);
                 apiUpImg(imgData, voId);
+                // console.log('imgData', imgData);
+                /*在这里调用上传接口*/
+//              mui.ajax("图片上传接口", {
+//                  data: {
+//
+//                  },
+//                  dataType: 'json',
+//                  type: 'post',
+//                  timeout: 10000,
+//                  success: function(data) {
+//                      console.log('上传成功');
+//                  },
+//                  error: function(xhr, type, errorThrown) {
+//                      mui.toast('网络异常，请稍后再试！');
+//                  }
+//              });
             };
         }
 
@@ -220,6 +264,7 @@
             return dataURL.replace("data:image/png;base64,", "");
         }
 
+
         /**
          *图片上传到api接口,传 图片,uid,技能表单随机id,头像id
          */
@@ -227,9 +272,10 @@
             var postData = {
                 imgData: imgData,
                 uid: tools.getLocalStorageObj('userData').uid,
+                killRoundId: tools.getLocalStorageObj('killRoundId'),
                 voId: voId
             };
-            var url = config.host.nodeHost + '/member/editHeaderImg';
+            var url = config.host.nodeHost + '/sns/addKillImg';
             tools.postJsp(url, postData, true).then(function (re) {
                 if (re.data.code == 'S') {
                     console.log('提交服务器成功', re);

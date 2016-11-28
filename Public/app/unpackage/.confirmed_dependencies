@@ -75,7 +75,9 @@
       "src/js/directive/from/editImgUpdate.from.editImgUpdate.directive.js",
       "src/js/directive/member/killContent.dipan.killContent.directive.js",
       "src/js/directive/member/callIm.dipan.callIm.directive.js",
-      "dist/js/res/arttmpl.js"
+      "dist/js/res/arttmpl.js",
+      "src/js/directive/from/editUserHeaderUp.from.editUserHeaderUp.directive.js",
+      "src/js/directive/from/imgUp.from.imgUp.directive.js"
     ],
     "refer": [
       "src/html/updata.html",

@@ -74,6 +74,7 @@
             changeSubBtnIcon(true);//默认变换发布按钮为 加号
             showBottomNav();//显示底部导航
             var _url = '/' + $state.current.name;
+            console.log('_url',_url);
             $timeout(function () {
                 $scope.title = localData.getTitle(_url);//getTitle
                 $scope.showTab = localData.showTab(_url);//是否显示 tab

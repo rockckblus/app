@@ -41,16 +41,14 @@ document.write('<script src="' + basePath + '/src/js/directive/block/searchArea.
 
 document.write('<script src="' + basePath + '/src/js/directive/from/subkill.from.subkill.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/from/commend.from.commend.directive.js"><\/script>');
-document.write('<script src="' + basePath + '/src/js/directive/from/imgUpdate.from.imgUpdate.directive.js"><\/script>');
-document.write('<script src="' + basePath + '/src/js/directive/from/editImgUpdate.from.editImgUpdate.directive.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/directive/from/imgUp.from.imgUp.directive.js"><\/script>');
+document.write('<script src="' + basePath + '/src/js/directive/from/editUserHeaderUp.from.editUserHeaderUp.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/from/need.from.neesFrom.directive.js"><\/script>');
 
 
 document.write('<script src="' + basePath + '/src/js/directive/block/area.dipan.areaSelect.directive.js"><\/script>');
-document.write('<script src="' + basePath + '/src/js/directive/block/search.dipan.search.directive.js"><\/script>');
 
 document.write('<script src="' + basePath + '/src/js/directive/member/my.dipan.myIndexNav.js"><\/script>');
-document.write('<script src="' + basePath + '/src/js/directive/member/add.dipan.addFrom.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/member/loginOut.dipan.loginOut.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/member/myNews.dipan.myNews.directive.js"><\/script>');
 document.write('<script src="' + basePath + '/src/js/directive/member/editMemberInfo.dipan.editMemberInfo.js"><\/script>');
