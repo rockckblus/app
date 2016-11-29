@@ -1,0 +1,26 @@
+{
+  "complete": false,
+  "data": {
+    "code": "S",
+    "msg": "请求成功",
+    "list": [
+      {
+        "userHeader": "https://www.baidu.com/img/bd_logo1.png",
+        "userNameShow": "kkdfjkksdfsdf",
+        "isNewMsg": true,
+        "cid": "kkdfjkksdfsdf",
+        "gUserId": "kkdfjkksdfsdf"
+      },
+      {
+        "userHeader": "https://gss0.bdstatic.com/5eR1dDebRNRTm2_p8IuM_a/res/img/richanglogo168_24.png",
+        "userNameShow": "rockblus2",
+        "isNewMsg": false,
+        "cid": "kkdfjkksdfsdf2",
+        "gUserId": "isdlfl"
+      }
+    ]
+  }
+}
+
+
+

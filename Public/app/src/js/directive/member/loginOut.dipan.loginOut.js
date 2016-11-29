@@ -21,7 +21,18 @@
     function thisController($state, $timeout) {
         var delCatch = [
             'isLogin',
-            'userData'
+            'userData',
+            'clickShaXuan',
+            'starArr',
+            'home_scrollTop',
+            'need_scrollTop',
+            'radio1',
+            'radio2',
+            'radio3',
+            'radio4',
+            'needRadio1',
+            'needRadio2',
+
         ];
         angular.forEach(delCatch, function (vo) {
             localStorage.removeItem(vo);

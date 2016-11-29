@@ -30,6 +30,7 @@
             'hrefSubKill',//添加技能
             'hrefSubNeed',//添加需求
             'hrefMyNews',//消息
+            'hrefOrederFrom',//订单
             'hrefMyJiNeng',//技能管理
             'hrefMyNeed',//需求管理
             'hrefMyLoginOut',//退出
@@ -48,6 +49,7 @@
             'hrefSubNeed',
             'hrefMember',
             'hrefMyNews',//消息
+            'hrefOrederFrom',//订单
             'hrefMyLoginOut',//退出
             'killContentHrefHome',//技能详情页面
             'needContentHrefHome',//需求详情页面

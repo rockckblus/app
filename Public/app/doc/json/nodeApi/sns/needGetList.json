@@ -3,10 +3,11 @@
   "list": [
     {
       "id": 1,
-      "_id": "abc",
+      "_id": "abc23",
       "listHeader": "https://avatars1.githubusercontent.com/u/3006580?v=3&s=40",
       "title": "这就是你扩散到付款这就是你扩散到付款这就是你扩散到付款这就是你扩散到付款,这就是你扩散到付款,这就是你扩散到付款,这就是你扩散到付款,",
       "iconStar": "fa-star-o",
+      "type": "orderFrom",
       "content": {
         "姓名": 1,
         "电话": 222
@@ -14,10 +15,11 @@
     },
     {
       "id": 2,
-      "_id": "def",
+      "_id": "def232",
       "listHeader": "https://avatars1.githubusercontent.com/u/3006580?v=3&s=40",
       "title": "titleTest1,titleTest1titleTest1titleTest1",
       "iconStar": "fa-star-o",
+      "type": "orderFrom",
       "content": {
         "姓名": 1,
         "电话": 222

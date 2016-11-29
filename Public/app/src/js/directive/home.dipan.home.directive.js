@@ -299,7 +299,10 @@
                     var str = 'homeList_' + vo._id;
                     var dom = document.getElementById(str);
                     try {
-                        dom.addEventListener(clickType, __bindClick);
+                        dom.addEventListener(clickType, function () {
+                            __bindClick(dom);
+                        });
+
                     } catch (e) {
                         console.error('wuHomeList');
                     }
@@ -307,14 +310,14 @@
             }, 400);
 
             function __bindClick(dom) {
-                var goUrl = dom.target.getAttribute('url');
-                var type = dom.target.getAttribute('type');
-                var _id = dom.target.getAttribute('subid');
+                var goUrl = dom.getAttribute('url');
+                var type = dom.getAttribute('type');
+                var _id = dom.getAttribute('subid');
                 if (type == 'kill') {
                     $state.go(goUrl, {'jiNengId': _id});
                 }
-                if (type == 'need') {
-                    $state.go(goUrl, {'needId': _id});
+                if (type == 'orderFrom') {
+                    $state.go(goUrl, {'orderId': _id});
                 }
             }
 

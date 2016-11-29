@@ -91,6 +91,18 @@
                 templateUrl: window.tplPath + 'route/member/myNews.html'
             })
 
+            //订单列表
+            .state('orderFrom', {
+                url: '/orderFrom',
+                templateUrl: window.tplPath + 'route/member/orderFrom.html'
+            })
+
+            //订单详细页面
+            .state('orderFromContent', {
+                url: '/orderFromContent/:orderId',
+                templateUrl: window.tplPath + 'route/member/orderFromContent.html'
+            })
+
             //memberIndex 我的 member
             .state('memberIndex', {
                 url: '/memberIndex',
@@ -263,7 +275,6 @@
                 }
             }
 
-
             trueWeb(function () {//web
                 // return 'http://www.dipan.so';// 生产
                 reUrl = 'http://169.254.210.14';//dev
@@ -273,8 +284,8 @@
                 if (mui.os.android) {
                     reUrl = 'http://192.168.0.50';//dev
                 } else {
-                    // reUrl = 'http://192.168.0.50';//dev ipad
-                    reUrl = 'http://127.0.0.1';//dev ios模拟器
+                    reUrl = 'http://192.168.0.50';//dev ipad
+                    // reUrl = 'http://127.0.0.1';//dev ios模拟器
                 }
             });
 

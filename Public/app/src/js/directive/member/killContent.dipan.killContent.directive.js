@@ -31,6 +31,9 @@
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
             $rootScope.$broadcast('callTelAlertCount0');
+            $timeout(function () {
+                sollTop();
+            }, 0);
         });
 
         init();
@@ -115,10 +118,13 @@
          */
         function bindJiNengListClick() {
             angular.forEach($scope.data.jiNengList, function (vo) {
-                document.getElementById('jiNengList_' + vo._id).addEventListener(clickType, _bind);
+                var dom = document.getElementById('jiNengList_' + vo._id);
+                dom.addEventListener(clickType, function () {
+                    _bind(dom);
+                });
             });
             function _bind(dom) {
-                var _id = dom.target.getAttribute('subid');
+                var _id = dom.getAttribute('subid');
                 $state.go('killContent', {'jiNengId': _id});
             }
         }
@@ -128,7 +134,7 @@
          */
         function sollTop() {
             $timeout(function () {
-                document.getElementById('scrollTop').scrollTop = 0;
+                document.getElementById('killContentSoller').scrollTop = 0;
             }, 0);
         }
 

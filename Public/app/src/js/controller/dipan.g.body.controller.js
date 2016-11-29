@@ -64,6 +64,7 @@
         $scope.$on('trueXiaDan', trueXiaDan);//监听判断当前用户是否对当前技能id下过单
         $scope.$on('callTelAlertCount0', callTelAlertCount0);//监听使打电话alertCount归0
 
+        $scope.$on('openIm', openImInit);//监听跳转到聊天页面
 
         $scope.push = 'fa-plus-circle';//发布需求按钮的 图标样式
         $scope.$on('changeBody', function () {
@@ -74,7 +75,7 @@
             changeSubBtnIcon(true);//默认变换发布按钮为 加号
             showBottomNav();//显示底部导航
             var _url = '/' + $state.current.name;
-            console.log('_url',_url);
+            console.log('_url', _url);
             $timeout(function () {
                 $scope.title = localData.getTitle(_url);//getTitle
                 $scope.showTab = localData.showTab(_url);//是否显示 tab
@@ -94,6 +95,9 @@
 
                     //变换到记录的 滚动位置
                     function changeScroll() {
+                        if ($scope.current.name == 'killContent') {
+                            return false;
+                        }
                         var scrollTopNum = $state.current.name + '_scrollTop';
                         var num = parseInt(localStorage.getItem(scrollTopNum));
                         try {
@@ -173,6 +177,17 @@
             }, 0);
         }
 
+
+        /**
+         * 解析监听传来的数据,再跳转到聊天
+         * @param e
+         * @param v
+         */
+        function openImInit(e, v) {
+            openIm(v.gHeader, v.gUId, v.gName, v.userHeader, v.userId);
+        }
+
+
         /**
          * bind 聊一聊点击事件
          */
@@ -203,7 +218,7 @@
                                 gName = re.data.userData.mt;
                             }
 
-                            open(gHeader, re.data.userData.uid, gName, userHeader, uid);
+                            openIm(gHeader, re.data.userData.uid, gName, userHeader, uid);
 
 
                         } else {
@@ -221,33 +236,33 @@
                 }
 
 
-                /**
-                 * 跳转
-                 * @param gHeader 被联系人的头像
-                 * @param gMt 被联系人的id
-                 * @param userHeader 用户头像
-                 * @param userMt 用户id
-                 */
-                function open(gHeader, gUId, gName, userHeader, userId) {
-
-                    if (gUId && userId) {
-                        mui.openWindow({
-                            url: 'callIm.html',
-                            extras: {
-                                gusetHeader: gHeader,
-                                gusetId: gUId,
-                                userHeader: userHeader,
-                                userId: userId,
-                                gName: gName,
-                            }
-                        });
-                    }
-
-
-                }
             }
         }
 
+        /**
+         * 跳转
+         * @param gHeader 来宾联系人的头像
+         * @param gUId 来宾联系人的id
+         * @param gName 来宾联系人的name
+         * @param userHeader 用户头像
+         * @param userId 用户id
+         */
+        function openIm(gHeader, gUId, gName, userHeader, userId) {
+            console.log('gHeader', gHeader);
+
+            if (gUId && userId) {
+                mui.openWindow({
+                    url: 'callIm.html',
+                    extras: {
+                        gusetHeader: gHeader,
+                        gusetId: gUId,
+                        userHeader: userHeader,
+                        userId: userId,
+                        gName: gName,
+                    }
+                });
+            }
+        }
 
         /**
          * 打电话点击事件

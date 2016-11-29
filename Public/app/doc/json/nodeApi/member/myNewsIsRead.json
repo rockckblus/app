@@ -2,7 +2,6 @@
   "complete": false,
   "data": {
     "code": "S",
-    "msg": "请求成功",
-    "haveNews": true
+    "msg": "会话状态修改成功"
   }
 }

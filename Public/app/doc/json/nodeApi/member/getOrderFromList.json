@@ -1,0 +1,36 @@
+{
+  "complete": false,
+  "data": {
+    "code": "S",
+    "msg": "请求成功",
+    "jiNengOrderList": [
+      {
+        "orderId": "123456",
+        "gUserNameShow": "rockblus客户",
+        "gUserId": "kkdfjkksdfsdf",
+        "isNoRead": true,
+        "jiNengId": "kkdfjkksdfsdf",
+        "jiNengTitle": "跑腿服务"
+      },
+      {
+        "orderId": "567890",
+        "gUserNameShow": "王文林",
+        "gUserId": "aaaa1",
+        "isNoRead": false,
+        "jiNengId": "kkdfjkksdfsdf",
+        "jiNengTitle": "跑腿服务"
+      }
+    ],
+    "needOrderList": [
+      {
+        "orderId": "1234563",
+        "needOrderTitle": "跑腿服务",
+        "needOrderId": "kksdfllllasdfkkkksldf",
+        "needOrederJionCount": "3"
+      }
+    ]
+  }
+}
+
+
+

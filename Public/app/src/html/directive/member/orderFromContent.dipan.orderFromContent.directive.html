@@ -1,0 +1,75 @@
+<div style="color: #777;padding: 1rem" id="orderFromContent">
+    <div class="mui-table-view mui-table-view-chevron clear"
+         style="margin-top: 40px;margin-bottom: 60px">
+
+        <!--技能-->
+        <div class="clear"></div>
+        <div class="clear" style="margin-top: 1.5rem;width: 100%">
+            <div class="clear" style="font-size: 1.2rem; width: 100%">
+                <div class="clear lan" bindonce="data.thisNeed.title" bo-text="data.thisNeed.title"></div>
+                <div class="clear" style="margin-top:10px">
+                    <span class="left" style="color: red;font-size: 1.2rem;margin-left: 0px"
+                          bindonce="data.thisNeed.priceStr"
+                          bo-text="data.thisNeed.priceStr"></span>
+                </div>
+                <div class="clear" style="margin-top:10px;font-size: 0.8rem">
+                    <span class="left">地区要求:</span>
+                    <span class="left"
+                          bindonce="data.thisNeed.city"
+                          bo-text="data.thisNeed.city"></span>
+                </div>
+
+                <div class="clear" style="font-size: 1rem;margin-top: 2rem;color: #777;width: 100%"
+                     bindonce="data.thisNeed.content"
+                     bo-text="data.thisNeed.content"></div>
+            </div>
+        </div>
+
+        <div class="clear" ng-show="userShow">
+            <!--头像-->
+            <div class="line" style="margin-top: 2.5rem"></div>
+            <div class="clear"></div>
+            <div class="lan clear" style="margin-top: 1rem">用户资料:</div>
+            <div class="clear itemFrom " style="margin-top: 1rem">
+                <div class="left" style="width: 71px;height: 71px;overflow: hidden;border: 1px solid #f4f4f4">
+                    <img bindonce="data.userData.headerImg" bo-src="data.userData.headerImg" alt=""
+                         style="width: 70px;height: auto">
+                </div>
+                <div class="left" style="font-size: 0.8rem ;margin-left: 1rem;color: #dadada">
+                <span class="clear lan" style="font-size: 1rem" bindonce="data.userData.userName"
+                      bo-text="data.userData.userName"></span>
+                    <span class="clear" bindonce="data.userData.sex" bo-text="data.userData.sex"></span>
+                    <span class="clear" bindonce="data.userData.age" bo-text="data.userData.age"></span>
+                </div>
+                <div class="right" style="font-size: 0.8rem ;margin-left: 1rem;color: #dadada;text-align: right">
+                <span class="clear lan" style="" bindonce="data.userData.city"
+                      bo-text="data.userData.city"></span>
+                    <span class='fa fa-map-marker' style='margin-left: 1rem'></span>
+                    <span class='' style='margin-left: 3px' bindonce="data.userData"
+                          bo-text='data.userData.far + "km"'></span>
+                    <span class="clear" bindonce="data.userData.mt" bo-text="data.userData.mt"></span>
+                </div>
+            </div>
+
+            <!--其他需求-->
+            <div class="clear"></div>
+            <div class="clear" style="margin-top: 1.5rem;width: 100%">
+                <div class="clear" style="font-size: 0.8rem; width: 100%">
+                    <span class="clear lan">此用户其他需求</span>
+                </div>
+                <div class="clear mui-btn"
+                     style="font-size: 1rem; width: 100%;text-align: left;border-color: #fff;margin-top: 0.8rem;color: #777"
+                     bindonce="data.needList"
+                     bo-id="'jiNengList_' + vo._id"
+                     bo-attr
+                     bo-attr-subid="vo._id"
+                     ng-repeat="vo in data.needList" bo-html="vo.title +'&nbsp;&nbsp;&nbsp;<i>' + vo.priceStr + '</i>'">
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+

@@ -77,7 +77,8 @@
       "src/js/directive/member/callIm.dipan.callIm.directive.js",
       "dist/js/res/arttmpl.js",
       "src/js/directive/from/editUserHeaderUp.from.editUserHeaderUp.directive.js",
-      "src/js/directive/from/imgUp.from.imgUp.directive.js"
+      "src/js/directive/from/imgUp.from.imgUp.directive.js",
+      "src/js/directive/member/orderFrom.dipan.orderFromList.directive.js"
     ],
     "refer": [
       "src/html/updata.html",

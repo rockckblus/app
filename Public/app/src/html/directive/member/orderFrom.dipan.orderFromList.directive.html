@@ -1,0 +1,50 @@
+<div id="orderFrom">
+    <div class="clear" style="margin-top: 1.5rem;width: 100%">
+        <div class="lan clear" style="font-size: 1rem;margin-left: 1rem;margin-bottom: 2rem"
+             ng-show="!isHaveJinengOrderFrom && !isHaveNeedOrderFrom">
+            暂无订单!
+        </div>
+        <div id="jinengOrderFrom" ng-show="isHaveJinengOrderFrom">
+            <div class="lan clear" style="font-size: 1rem;margin-left: 1rem;margin-bottom: 2rem">技能订单</div>
+
+            <div class="clear" style="margin-top: 1rem" bindonce="list.jiNengOrderList"
+                 ng-repeat="vo in list.jiNengOrderList" bo-id="'jinengOreder_'+vo.orderId">
+                <div class="mui-btn "
+                     style="width: 100%;text-align: left;font-size: 0.8rem;color:#777;border-color: #fff;">
+                    <div class="left" style="margin-left: 1rem" bo-text="vo.jiNengTitle"></div>
+                    <div class="left" style="margin-left: 1rem">
+                        <span class="hui left" bo-text="vo.gUserNameShow"></span>
+                        <span class="left">
+                        <i class="fa fa-ellipsis-h fa-2x"
+                           style="width: 7px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;"
+                           bo-if="vo.isNoRead"></i>
+                        </span>
+                    </div>
+                    <div class="right hui fa fa-angle-right" style="margin-top: 3px"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="needOrderFrom" style="margin-top: 2.5rem" ng-show="isHaveNeedOrderFrom">
+            <div class="lan" style="font-size: 1rem;margin-left: 1rem;margin-bottom: 2rem">需求订单</div>
+            <div class="clear" style="margin-top: 1rem" bindonce="list.needOrderList"
+                 ng-repeat="vo2 in list.needOrderList" bo-id="'needOrder_'+vo2.orderId">
+                <div class="mui-btn "
+                     style="width: 100%;text-align: left;font-size: 0.8rem;color:#777;border-color: #fff">
+                    <div class="left" style="margin-left: 1rem" bo-text="vo2.needOrderTitle"></div>
+                    <div class="left" style="margin-left: 1rem">
+                        <span class="left" style="color: red;font-weight: bolder"
+                              bo-text="vo2.needOrederJionCount"></span>
+                        <span class="left hui">人接单</span>
+                        <span class="left">
+                        <i class="fa fa-ellipsis-h fa-2x"
+                           style="width: 7px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;"
+                           bo-if="vo2.isNoRead"></i>
+                        </span>
+                    </div>
+                    <div class="right hui fa fa-angle-right" style="margin-top: 3px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

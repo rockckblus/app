@@ -341,9 +341,9 @@
     <div class="msg-item <%= (item.sender=='self'?' msg-item-self':'') %>" msg-type='<%=(item.type)%>'
          msg-content='<%=(item.content)%>'>
         <% if(item.sender=='self' ) { %>
-        <img src="<%=(guestHeader)%>" class="msg-user "/>
+        <img src="<%=(userHeader)%>" class="msg-user "/>
         <% } else { %>
-        <img class="msg-user-img" src="<%=(userHeader)%>" alt=""/>
+        <img class="msg-user-img" src="<%=(guestHeader)%>" alt=""/>
         <% } %>
         <div class="msg-content">
             <div class="msg-content-inner">
@@ -368,6 +368,13 @@
 </div>
 <footer>
     <div class="footer-left">
+        <div style="color:#007AFF;font-size: 1rem;margin-top: 5px">
+            <script id='footerleft' type="text/template">
+                <% if(jionorder != true) { %>
+                接单
+                <% } %>
+            </script>
+        </div>
         <!--<i id='msg-image' class="mui-icon mui-icon-camera" style="font-size: 28px;"></i>-->
     </div>
     <div class="footer-center">
@@ -390,6 +397,7 @@
 <script type="text/javascript" charset="utf-8">
     (function ($, doc) {
         var userHeader, guestHeader;//用户头像
+        var jionOrder = true;//是否显示接单按钮
 
         // 应用 ID，用来识别应用
         var APP_ID = 'jFnAKF8oIWzB7INn2GpNyPAt-gzGzoHsz';
@@ -426,8 +434,8 @@
                 softinputMode: "adustResize"
             });
             var selfG = plus.webview.currentWebview();
-            selfG.gusetId = 'aaaa1';
-            selfG.userId = 'rockblus';
+//            selfG.gusetId = 'c1';
+//            selfG.userId = 'b1';
             userHeader = selfG.userHeader;
             guestHeader = selfG.gusetHeader;
             var showKeyboard = function () {
@@ -494,6 +502,7 @@
                 footer: doc.querySelector('footer'),
                 footerRight: doc.querySelector('.footer-right'),
                 footerLeft: doc.querySelector('.footer-left'),
+                footerLeftText: doc.querySelector('#footerleft'),
                 btnMsgType: doc.querySelector('#msg-type'),
                 boxMsgText: doc.querySelector('#msg-text'),
 //                boxMsgSound: doc.querySelector('#msg-sound'),
@@ -535,6 +544,12 @@
                     "userHeader": userHeader,
                     "guestHeader": guestHeader,
                 });
+
+                ui.footerLeftText.innerHTML = template('footerleft', {
+                    "jionorder": jionOrder
+                });
+
+
                 var msgItems = ui.areaMsgList.querySelectorAll('.msg-item');
                 [].forEach.call(msgItems, function (item, index) {
                     item.addEventListener('tap', function (event) {
@@ -579,7 +594,7 @@
 
                     // 创建与Jerry之间的对话
                     var con = tom.createConversation({
-                        members: [selfG.gusetId],
+                        members: [selfG.gusetId, selfG.userId],
                         unique: true,
                     });
                     return con;
@@ -603,7 +618,7 @@
 
                 // 创建与Jerry之间的对话
                 tom.createConversation({
-                    members: [selfG.gusetId],
+                    members: [selfG.gusetId, selfG.userId],
                     unique: true,
                 }).then(function (conversation) {
                     conversation.queryMessages({
@@ -716,43 +731,45 @@
             }, false);
 
             ui.footerLeft.addEventListener('tap', function (event) {
-                var btnArray = [{
-                    title: "拍照"
-                }, {
-                    title: "从相册选择"
-                }];
-                plus.nativeUI.actionSheet({
-                    title: "选择照片",
-                    cancel: "取消",
-                    buttons: btnArray
-                }, function (e) {
-                    var index = e.index;
-                    switch (index) {
-                        case 0:
-                            break;
-                        case 1:
-                            var cmr = plus.camera.getCamera();
-                            cmr.captureImage(function (path) {
-                                send({
-                                    sender: 'self',
-                                    type: 'image',
-                                    content: "file://" + plus.io.convertLocalFileSystemURL(path)
-                                });
-                            }, function (err) {
-                            });
-                            break;
-                        case 2:
-                            plus.gallery.pick(function (path) {
-                                send({
-                                    sender: 'self',
-                                    type: 'image',
-                                    content: path
-                                });
-                            }, function (err) {
-                            }, null);
-                            break;
-                    }
-                });
+                //接单 todo
+
+//                var btnArray = [{
+//                    title: "拍照"
+//                }, {
+//                    title: "从相册选择"
+//                }];
+//                plus.nativeUI.actionSheet({
+//                    title: "选择照片",
+//                    cancel: "取消",
+//                    buttons: btnArray
+//                }, function (e) {
+//                    var index = e.index;
+//                    switch (index) {
+//                        case 0:
+//                            break;
+//                        case 1:
+//                            var cmr = plus.camera.getCamera();
+//                            cmr.captureImage(function (path) {
+//                                send({
+//                                    sender: 'self',
+//                                    type: 'image',
+//                                    content: "file://" + plus.io.convertLocalFileSystemURL(path)
+//                                });
+//                            }, function (err) {
+//                            });
+//                            break;
+//                        case 2:
+//                            plus.gallery.pick(function (path) {
+//                                send({
+//                                    sender: 'self',
+//                                    type: 'image',
+//                                    content: path
+//                                });
+//                            }, function (err) {
+//                            }, null);
+//                            break;
+//                    }
+//                });
             }, false);
             var setSoundAlertVisable = function (show) {
                 if (show) {

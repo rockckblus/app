@@ -67,7 +67,11 @@
             case '/login':
                 return _filter('toHtml')('兼职鼠');
             case '/myNews':
-                return _filter('toHtml')('消息');
+                return _filter('toHtml')('联系');
+            case '/orderFrom':
+                return _filter('toHtml')('订单');
+            case '/orderFromContent':
+                return _filter('toHtml')('订单详情');
             case '/killContent':
                 return _filter('toHtml')('技能详情');
             default:
@@ -101,7 +105,6 @@
             }
         }
     }
-
 
     /**
      * 遍历url 返回true false ,控制是否显示tab
@@ -195,6 +198,10 @@
             case 'memberIndex':
                 return true;
             case 'myNews':
+                return true;
+            case 'orderFrom':
+                return true;
+            case 'orderFromContent':
                 return true;
             case 'editMemberInfo':
                 return true;

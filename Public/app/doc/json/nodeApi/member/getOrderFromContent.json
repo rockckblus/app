@@ -1,0 +1,43 @@
+{
+  "complete": false,
+  "data": {
+    "code": "S",
+    "msg": "请求成功",
+    "userData": {
+      "userName": "rockblus",
+      "uid": "ksdfkkkkkasfasdf",
+      "mt": "155******92",
+      "headerImg": "http://avatar.csdn.net/2/9/1/1_qinguicheng.jpg",
+      "far": "2000",
+      "city": "天津",
+      "sex": "女",
+      "age": "16~24",
+      "telType": "yunXu"
+    },
+    "thisNeed": {
+      "_id": "kdkdkdkdkdkdkd",
+      "title": "叫起床服务",
+      "content": "叫起床服务,叫起床服务,叫起床服务,asdfkk,asfasdfsadfsaf",
+      "price": "200",
+      "priceUnit": "每次",
+      "city": "不限"
+    },
+    "needList": [
+      {
+        "_id": "kdkdkdkdkdkdkd",
+        "title": "叫起床服务",
+        "price": "200",
+        "priceUnit": "每次"
+      },
+      {
+        "_id": "kdkdkdkdkdkdkd2",
+        "title": "叫起床服务2",
+        "price": "200",
+        "priceUnit": "面议"
+      }
+    ]
+  }
+}
+
+
+
