@@ -75,7 +75,7 @@
                 document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
 
 
-                document.write('<script src="' + window.basePath + '/dist/js/appDev.js"><\/script>');
+                document.write('<script src="' + window.basePath + '/dist/js/appDev.js?' + jsDate + '"><\/script>');
             } else {
                 //app端
                 window.basePath = '../..'; //跟路径

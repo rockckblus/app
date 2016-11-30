@@ -214,9 +214,9 @@ body {
   border-radius: 2px;
   box-shadow: 0px 0px 2px 1px #DBE5DB;
   background-color: #fff;
-  -webkit-animation: bounceInDown 0.2s ease-in-out;
-  -ms-animation: bounceInDown 0.2s ease-in-out;
-  animation: bounceInDown 0.2s ease-in-out;
+  -webkit-animation: bounceInDown 0.8s ease-in-out;
+  -ms-animation: bounceInDown 0.8s ease-in-out;
+  animation: bounceInDown 0.8s ease-in-out;
 }
 @-webkit-keyframes bounceInDown {
   0%,

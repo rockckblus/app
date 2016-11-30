@@ -9,9 +9,9 @@
     'use strict';
     angular.module('dipan').factory('tools', tools);
 
-    tools.$inject = ['$http', '$rootScope', '$q', 'ui', '$filter', 'config'];
+    tools.$inject = ['$http', '$rootScope', '$q', 'ui', '$filter', 'config', '$state'];
 
-    function tools($http, $rootScope, $q, ui, $filter, config) {
+    function tools($http, $rootScope, $q, ui, $filter, config, $state) {
 
         var re;
 
@@ -103,7 +103,13 @@
             /**
              *事件注册
              */
-            loginEvent: loginEvent
+            loginEvent: loginEvent,
+
+            /**
+             * 绑定dom点击事件
+             */
+            bindClick: bindClick,
+
 
         };
 
@@ -480,6 +486,30 @@
             }
 
             ele.eventList[eventType] = true;
+        }
+
+
+        /**
+         * 绑定dom点击事件
+         * @param domId
+         * @param callBack <Function>
+         */
+        function bindClick(domId, callBack) {
+            var clickType = 'tap';
+            re.trueWeb(function () {
+                clickType = 'click';
+            }, function () {
+                clickType = 'tap';
+            });
+
+            try {
+                var dom = document.getElementById(domId);
+                dom.addEventListener(clickType, function () {
+                    callBack(dom);
+                });
+            } catch (e) {
+                console.error('bindClick', domId + '没有绑定');
+            }
         }
 
         return re;

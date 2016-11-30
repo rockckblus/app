@@ -97,9 +97,9 @@
                 templateUrl: window.tplPath + 'route/member/orderFrom.html'
             })
 
-            //订单详细页面
+            //订单详细页面 type 技能方进入,可接单(show) 自己方进入,可选单(select)
             .state('orderFromContent', {
-                url: '/orderFromContent/:orderId',
+                url: '/orderFromContent/:type/:orderId',
                 templateUrl: window.tplPath + 'route/member/orderFromContent.html'
             })
 

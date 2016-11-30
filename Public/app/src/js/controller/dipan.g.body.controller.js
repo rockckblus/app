@@ -63,6 +63,9 @@
         $scope.$on('hideNews', hideNews);//监听关闭新消息图标事件
         $scope.$on('trueXiaDan', trueXiaDan);//监听判断当前用户是否对当前技能id下过单
         $scope.$on('callTelAlertCount0', callTelAlertCount0);//监听使打电话alertCount归0
+        $scope.$on('callTel', callTel);//监听打电话 ,传obj{code=S,jiNengId,uid}
+        $scope.$on('hideXiaDan', hideXiaDan);//监听隐藏下单按钮
+        $scope.$on('showXianDan', showXiaDan);//监听显示下单按钮
 
         $scope.$on('openIm', openImInit);//监听跳转到聊天页面
 
@@ -92,22 +95,25 @@
                     }
 
                     _init();
-
                     //变换到记录的 滚动位置
                     function changeScroll() {
-                        if ($scope.current.name == 'killContent') {
-                            return false;
-                        }
-                        var scrollTopNum = $state.current.name + '_scrollTop';
-                        var num = parseInt(localStorage.getItem(scrollTopNum));
                         try {
-                            document.body.scrollTop = num;
-                        } catch (e) {
-                            try {
-                                window.pageYOffset = num;
-                            } catch (e) {
-                                document.documentElement.scrollTop = num;
+                            if ($scope.current.name == 'killContent') {
+                                return false;
                             }
+                            var scrollTopNum = $state.current.name + '_scrollTop';
+                            var num = parseInt(localStorage.getItem(scrollTopNum));
+                            try {
+                                document.body.scrollTop = num;
+                            } catch (e) {
+                                try {
+                                    window.pageYOffset = num;
+                                } catch (e) {
+                                    document.documentElement.scrollTop = num;
+                                }
+                            }
+                        } catch (e) {
+                            console.error('无当前页面name');
                         }
                     }
 
@@ -295,48 +301,54 @@
                         jiNengId: jinengId
                     };
                     var url = config.host.nodeHost + "/member/trueTelCall";
-                    tools.postJsp(url, postData).then(_s, _err);
+                    tools.postJsp(url, postData).then(callTel, callTelerr);
                 }
             }
+        }
 
+        /**
+         * 大电话
+         */
+        function callTel(re, re2) {
+            if (re2) {
+                re = re2;
+            }
 
-            function _s(re) {
-                if (re.data && re.data.code == 'S') {
-                    alertCount++;
-                    tools.trueWeb(function () {
-                        if (alertCount == 1) {
-                            alert('请下载手机app使用此功能');
-                        }
-                    }, function () {
-                        var postData2 = {
-                            uid: re.data.uid,
-                            jiNengId: re.data.jiNengId
-                        };
-                        var url2 = config.host.nodeHost + "/member/getUserTel";//todo 加密解密
-                        tools.postJsp(url2, postData2, true).then(__s, __err);
+            if (re.data && re.data.code == 'S') {
+                alertCount++;
+                tools.trueWeb(function () {
+                    if (alertCount == 1) {
+                        alert('请下载手机app使用此功能');
+                    }
+                }, function () {
+                    var postData2 = {
+                        uid: re.data.uid,
+                        jiNengId: re.data.jiNengId
+                    };
+                    var url2 = config.host.nodeHost + "/member/getUserTel";//todo 加密解密
+                    tools.postJsp(url2, postData2, true).then(__s, __err);
 
-                        function __s(re2) {
-                            if (re2.data && re2.data.code == 'S') {
-                                if (alertCount > 1) {
-                                    plus.device.dial(re2.data.mt, false);
-                                }
-                            } else {
-                                __err();
+                    function __s(re2) {
+                        if (re2.data && re2.data.code == 'S') {
+                            if (alertCount > 1) {
+                                plus.device.dial(re2.data.mt, false);
                             }
+                        } else {
+                            __err();
                         }
+                    }
 
-                        function __err() {
-                            tools.alert({title: '拨打电话失败'});
-                        }
-                    });
-                } else {
-                    _err();
-                }
+                    function __err() {
+                        tools.alert({title: '拨打电话失败'});
+                    }
+                });
+            } else {
+                callTelerr();
             }
+        }
 
-            function _err() {
-                tools.alert('此用户禁止了电话服务!');
-            }
+        function callTelerr() {
+            tools.alert('此用户禁止了电话服务!');
         }
 
 
@@ -396,7 +408,6 @@
                     var url = config.host.nodeHost + "/member/trueXianDan";
                     tools.postJsp(url, postData, true).then(_s, _err);
                 }
-
             }
             function _s(re) {
                 if (re.data && re.data.code == 'S') {

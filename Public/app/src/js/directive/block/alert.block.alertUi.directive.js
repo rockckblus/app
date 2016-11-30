@@ -32,20 +32,20 @@
          * 16/8/19 上午9:45 ByRockBlus
          *************************/
         function show(e, obj) {
-            tools.trueWeb(function () {
-                $scope.showAlertUi = true;
+            // tools.trueWeb(function () {
+            $timeout(function () {
                 $scope.title = obj.title;
                 $scope.content = obj.content;
+                $scope.alertUiClass = 'showThis';
+                $scope.showAlertUi = true;
                 $timeout(function () {
-                    $scope.alertUiClass = 'hideThis';
-                    $timeout(function () {
-                        $scope.showAlertUi = false;
-                        $scope.alertUiClass = 'showThis';
-                    }, 0);
+                    $scope.showAlertUi = false;
+                    $scope.alertUiClass = 'showThis';
                 }, 800);
-            }, function () {
-                plus.nativeUI.toast(obj.title);
-            });
+            }, 0);
+            // }, function () {
+            //     plus.nativeUI.toast(obj.title);
+            // });
         }
     }
 })();

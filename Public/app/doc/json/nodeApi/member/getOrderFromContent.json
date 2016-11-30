@@ -3,12 +3,13 @@
   "data": {
     "code": "S",
     "msg": "请求成功",
+    "isJion": false,
     "userData": {
       "userName": "rockblus",
-      "uid": "ksdfkkkkkasfasdf",
+      "uid": "rockblus2",
       "mt": "155******92",
       "headerImg": "http://avatar.csdn.net/2/9/1/1_qinguicheng.jpg",
-      "far": "2000",
+      "far": 2000,
       "city": "天津",
       "sex": "女",
       "age": "16~24",
@@ -20,7 +21,39 @@
       "content": "叫起床服务,叫起床服务,叫起床服务,asdfkk,asfasdfsadfsaf",
       "price": "200",
       "priceUnit": "每次",
-      "city": "不限"
+      "city": "不限",
+      "date": "06-28",
+      "status": 3,
+      "bidUserArr": [
+        {
+          "uid": "aksdkfkk",
+          "headerImg": "",
+          "userNameShow": "王文林",
+          "city": "天津",
+          "sex": "女",
+          "age": "16~24",
+          "isCanCallTel": true
+        },
+        {
+          "uid": "aksdkfkk2",
+          "headerImg": "http://avatar.csdn.net/2/9/1/1_qinguicheng.jpg",
+          "userNameShow": "石福宽",
+          "city": "天津",
+          "sex": "女",
+          "age": "16~24",
+          "isCanCallTel": false
+        }
+      ],
+      "binUser": {
+        "uid": "aksdkfkk",
+        "headerImg": "",
+        "userNameShow": "王文林",
+        "city": "天津",
+        "sex": "男",
+        "age": "16~24",
+        "isCanCallTel": true,
+        "pingJia":""
+      }
     },
     "needList": [
       {
@@ -38,6 +71,4 @@
     ]
   }
 }
-
-
 

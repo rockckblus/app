@@ -73,22 +73,22 @@
             angular.forEach($scope.list.jiNengOrderList, function (vo) {
                 var dom = document.getElementById('jinengOreder_' + vo.orderId);
                 dom.addEventListener(clickType, function () {
-                    _bindJiNeng(dom, vo.orderId);
-                })
+                    _bindJiNeng(dom, vo.orderId, 'show');
+                });
             });
 
             //需求绑定
             angular.forEach($scope.list.needOrderList, function (vo) {
                 var dom = document.getElementById('needOrder_' + vo.orderId);
                 dom.addEventListener(clickType, function () {
-                    _bindJiNeng(dom, vo.orderId);
-                })
+                    _bindJiNeng(dom, vo.orderId, 'select');
+                });
             });
 
 
             //跳转订单详情
-            function _bindJiNeng(dom, orderId) {
-                $state.go('orderFromContent', {'orderId': orderId});
+            function _bindJiNeng(dom, orderId, type) {
+                $state.go('orderFromContent', {'orderId': orderId, 'type': type});
             }
 
         }

@@ -36,7 +36,7 @@
             'hrefMyLoginOut',//退出
             'hrefEditMemberInfo',//用户资料编辑
             'killContentHrefHome',//技能详情页面
-            'needContentHrefHome',//需求详情页面
+            'orderFromContentHrefHome',//需求详情页面
         ];
 
         var idsIsBind = [];//已经在服务绑定过的 id,就不去绑定了
@@ -52,7 +52,7 @@
             'hrefOrederFrom',//订单
             'hrefMyLoginOut',//退出
             'killContentHrefHome',//技能详情页面
-            'needContentHrefHome',//需求详情页面
+            'orderFromContentHrefHome',//需求详情页面
         ];
 
         function plus(callBack) {

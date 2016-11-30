@@ -317,7 +317,7 @@
                     $state.go(goUrl, {'jiNengId': _id});
                 }
                 if (type == 'orderFrom') {
-                    $state.go(goUrl, {'orderId': _id});
+                    $state.go(goUrl, {'orderId': _id, 'type': 'show'});
                 }
             }
 
