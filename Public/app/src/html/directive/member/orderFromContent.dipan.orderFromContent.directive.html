@@ -171,13 +171,13 @@
                 <!--过期-->
                 <div ng-show="data.thisNeed.status == 4">
                     <div class="clear lan " style="margin-top: 1.5rem">订单已过期</div>
-                    <div class="clear lan mui-btn" style="margin-top: 1.5rem">重新发布</div>
+                    <!--<div class="clear lan mui-btn" style="margin-top: 1.5rem">重新发布</div>-->
                 </div>
             </div>
 
             <!--发起-->
             <div ng-show="data.thisNeed.status == 1">
-                <div class="clear lan mui-btn" style="margin-top: 1.5rem">暂时无人接单,去看看其他人的技能吧!</div>
+                <div class="clear lan mui-btn" style="margin-top: 1.5rem" id="noOrderGoHome">暂时无人接单,去看看其他人的技能吧!</div>
             </div>
             <!--选单-->
             <div class="clear" ng-show="data.thisNeed.status == 2">

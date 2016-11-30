@@ -136,8 +136,17 @@
                 tools.bindClick('telCallSelect_' + binId, telCall);
                 tools.bindClick('imCallSelect_' + binId, imCall);
                 tools.bindClick('givePingJiaBtn', pingJiaSub);
+                tools.bindClick('noOrderGoHome', goHome);
+
             }
 
+        }
+
+        /**
+         * goHome
+         */
+        function goHome() {
+            $state.go('home');
         }
 
         /**

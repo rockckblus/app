@@ -23,7 +23,7 @@
       "priceUnit": "每次",
       "city": "不限",
       "date": "06-28",
-      "status": 3,
+      "status": 4,
       "bidUserArr": [
         {
           "uid": "aksdkfkk",
@@ -52,7 +52,7 @@
         "sex": "男",
         "age": "16~24",
         "isCanCallTel": true,
-        "pingJia":""
+        "pingJia": "有内容"
       }
     },
     "needList": [
