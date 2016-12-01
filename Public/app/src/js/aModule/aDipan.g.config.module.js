@@ -277,8 +277,8 @@
 
             trueWeb(function () {//web
                 // return 'http://www.dipan.so';// 生产
-                reUrl = 'http://169.254.210.14';//dev
-                // reUrl = 'http://127.0.0.1';//dev
+                // reUrl = 'http://169.254.210.14';//dev
+                reUrl = 'http://127.0.0.1';//dev
             }, function () {//app
                 // return 'http://www.dipan.so';// 生产
                 if (mui.os.android) {
