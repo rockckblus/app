@@ -17,8 +17,10 @@ class IndexController extends Controller
     function regIn()
     {
 
+
         /** 接受angularPost数据 */
         $_POST = file_get_contents("php://input");
+        $this->ajaxReturn($_POST, 'JSON');
         $_POST = json_decode($_POST);
 
 
@@ -56,9 +58,17 @@ class IndexController extends Controller
                 }
             } else {
 
+                /** 电话已经注册，判断验证码  */
+                $trueCodeRe = $this->sub_RegIn_trueCode();
+                if ($trueCodeRe == 200) {
+                    $re['code']='S';
+                    $re['msg']='登录成功';
+                    $this->ajaxReturn($re, 'JSON');
+                }
+
                 /** 记录错误信息 */
-                writeError($trueMt, 'f_Member/Index/regIn');
-                $this->ajaxReturn($trueMt, 'JSON');
+//                writeError($trueMt, 'f_Member/Index/regIn');
+//                $this->ajaxReturn($trueMt, 'JSON');
             }
         } else {
 

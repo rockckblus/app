@@ -4,6 +4,7 @@ var cityCtrl = require('../db/controller/city.g.controller');//城市Ctrl
 var sessionCtrl = require('../db/controller/session.g.controller');//session Ctrl
 var categoryServiceCtrl = require('../db/controller/category_service.g.controller');//category_service Ctrl
 var snsArticleServiceCtrl = require('../db/controller/snsArticle.g.controller');//sns文章 Ctrl
+var memberCtrl = require('../db/controller/member.g.controller');//会员相关 Ctrl
 var imApi = require('../db/controller/imApi.imApi.controller');//请求及时通讯api接口
 var all = require('./default');//公共路由all方法
 //var oeoeSchema = new mongoose.Schema(
@@ -99,6 +100,14 @@ router.post('/category/:fun', function (req, res) {
 router.post('/sns/:fun', function (req, res) {
     postSns(req, res);
 });
+
+/**
+ * post member:fun 会员相关
+ * 16/3/8 */
+router.post('/member/:fun', function (req, res) {
+    postMember(req, res);
+});
+
 
 /**
  * post im:fun 及时通讯相关
@@ -366,6 +375,33 @@ function postIm(req, res) {
 
 }
 
+/**
+ * post member:fun 会员相关
+ * 16/3/8 */
+function postMember(req, res) {
+    var fun = req.params.fun;
+    switch (fun) {
+        case 'getUserData' ://获取用户数据
+            memberCtrl.getUserData(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+        case 'loginIn' ://用户登录
+            memberCtrl.loginIn(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+    }
+
+    /**
+     * 获取用户数据
+     * @param body
+     * @private
+     */
+    function _getUserData(body) {
+
+    }
+}
 
 /** curl  */
 function curl(req, res) {

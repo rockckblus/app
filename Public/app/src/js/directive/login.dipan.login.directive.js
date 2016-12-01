@@ -125,7 +125,8 @@
                     title: '手机号格式不正确'
                 });
             } else {
-                var url = config.host.phpHost + '/Api/loginIn';
+                var url = config.host.nodeHost + '/member/loginIn';
+                console.log('url', url);
                 tools.postJsp(url, {code: $scope.code, mtNum: $scope.tel})
                     .then(_success, _faile);
             }

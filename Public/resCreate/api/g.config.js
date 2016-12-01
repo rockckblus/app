@@ -40,6 +40,9 @@ var g = {
         sessionTime: 3600 * 24 //1天超时 需要在session表中设置 超时时间,自动删除,此处只是记录超时时间
 
     },
+    host: {
+        phpApi: 'http://127.0.0.1:8888',//phpApi
+    },
 
 
     /**
@@ -54,10 +57,10 @@ var g = {
      * 16/3/7 */
 
     var mongoUrl = g.mongo.url + g.mongo.master;
-    console.log('mongoUrl',mongoUrl);
+    console.log('mongoUrl', mongoUrl);
     mongoose.connect(mongoUrl, function (err) {
         if (err) {
-            console.log('err',err);
+            console.log('err', err);
             g.mongoConnect = false;
         }
     });
