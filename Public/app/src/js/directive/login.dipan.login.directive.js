@@ -92,11 +92,17 @@
                 return;
             } else {
                 var roundCodeId = localStorage.getItem(config.localSaveName.user.roundCodeId);
-
                 //'Api/Sem/getCode/roundCodeId/' + roundCodeId + '/mtNum/' + telNum;
-                tools.postJsp(config.host.phpHost + '/Api/Sem/getCode/roundCodeId/' + roundCodeId + '/mtNum/' + $scope.tel, {}, true).then(function (re) {
+                tools.getJsp(config.host.phpHost + '/Api/Sem/getCode/roundCodeId/' + roundCodeId + '/mtNum/' + $scope.tel, true).then(function (re) {
+                    console.log('smRe', re);
+                    var msg = '';
+                    if (re && re.statusCode == 200) {
+                        msg = '验证码已发送';
+                    } else {
+                        msg = '验证码发送失败';
+                    }
                     tools.alert({
-                        title: re
+                        title: msg
                     });
                 });
                 $timeout(function () {
@@ -126,25 +132,30 @@
                 });
             } else {
                 var url = config.host.nodeHost + '/member/loginIn';
-                console.log('url', url);
-                tools.postJsp(url, {code: $scope.code, mtNum: $scope.tel})
+                var roundCodeId = localStorage.getItem(config.localSaveName.user.roundCodeId);
+                tools.postJsp(url, {code: $scope.code, mtNum: $scope.tel, roundCodeId: roundCodeId})
                     .then(_success, _faile);
             }
 
 
             function _success(re) {
+                console.log('re', re);
                 if (re.data.code == 'S') {
                     localStorage.setItem('isLogin', 'true');//缓存登录状态
                     tools.saveLocalStorageObj('userData', re.data.userData);//缓存用户数据
                     $state.go('home');
                 } else {
-                    _faile('登录失败');
+                    _faile(re.data.msg);
                 }
             }
 
-            function _faile() {
+            function _faile(e) {
+                var eEcho = '登录失败';
+                if (e) {
+                    eEcho = e;
+                }
                 tools.alert({
-                    title: '登录失败'
+                    title: eEcho
                 });
             }
 

@@ -266,6 +266,14 @@ function postSns(req, res) {
         case 'addOneArticle' ://添加一条记录
             _addArticle(req.body);
             break;
+        case 'postKillFrom' ://添加一条技能 ,如果有补充会员资料,去更新会员资料
+            snsArticleServiceCtrl.addKill(req.body, function (re) {
+                res.json(re);
+            }, function (err) {
+                res.json(err);
+            });
+            break;
+
     }
 
     /**
@@ -393,14 +401,6 @@ function postMember(req, res) {
             break;
     }
 
-    /**
-     * 获取用户数据
-     * @param body
-     * @private
-     */
-    function _getUserData(body) {
-
-    }
 }
 
 /** curl  */

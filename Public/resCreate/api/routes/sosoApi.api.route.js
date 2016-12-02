@@ -99,7 +99,6 @@ function sosoApi(req, res) {
         if (ip) {
             var gaoDeApiUrl = api.url.gaoDeIpToCity + ip + '&key=' + _getRoundArr(api.url.gaodeKey);
             curlCtrl.get(gaoDeApiUrl, function (doc) {
-                console.log(111111111);
                 res.json(doc);
             });
         } else {

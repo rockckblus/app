@@ -13,6 +13,7 @@ class IndexController extends Controller
 {
 
 
+
     /** 会员注册提交地址 */
     function regIn()
     {
@@ -20,7 +21,6 @@ class IndexController extends Controller
 
         /** 接受angularPost数据 */
         $_POST = file_get_contents("php://input");
-        $this->ajaxReturn($_POST, 'JSON');
         $_POST = json_decode($_POST);
 
 
@@ -40,9 +40,10 @@ class IndexController extends Controller
                 /** 验证判断成功返回200 ,入库注册*/
                 if ($trueCodeRe == 200) {
                     $userRegIn = $this->sub_RegIn_userRegIn();
-                    if ($userRegIn == 200) {
-                        $re['state']='S';
+                    if ($userRegIn['code'] == 200) {
+                        $re['code']='S';
                         $re['msg']='注册成功';
+                        $re['_id']=$userRegIn['_id'];
                         $this->ajaxReturn($re, 'JSON');
                     } else {
 
@@ -63,6 +64,11 @@ class IndexController extends Controller
                 if ($trueCodeRe == 200) {
                     $re['code']='S';
                     $re['msg']='登录成功';
+//                    $re['uid']=
+                    $this->ajaxReturn($re, 'JSON');
+                }else{
+                    $re['code']='F';
+                    $re['msg']='登录失败,错误码:' . $trueCodeRe;
                     $this->ajaxReturn($re, 'JSON');
                 }
 
@@ -112,12 +118,11 @@ class IndexController extends Controller
 
         /** 入库用户数据 */
         $add['mt'] = (int)$_POST->tel;
-        $add['time'] = time();
-        $add['code'] = (int)$_POST->code;
-        $add['type'] = 0;//普通会员
         $addRe = $d->add($add);
         if ($addRe) {
-            return 200;
+            $re['_id']=$addRe;
+            $re['code']=200;
+            return $re;
         } else {
             writeError(110, 'f_Member/Index/sub_RegIn_userRegIn');
             return 110;//注册用户添加失败

@@ -25,17 +25,18 @@ class SemController extends Controller
     function getCode()
     {
         $return = R('SemSubGetCode/index');
-        $this->ajaxReturn($return, 'JSONP');
+        $re['stausCode'] = $return;
+        $this->ajaxReturn($re, 'JSON');
     }
 
-    /** getToken */
-    function getTokenText(){
-       dump(sendSm('18947157789','123456'));
-    }
-
-    /** smReturn */
-    function smReturn(){
-        return 1234321;
-    }
+//    /** getToken */
+//    function getTokenText(){
+//       dump(sendSm('18947157789','123456'));
+//    }
+//
+//    /** smReturn */
+//    function smReturn(){
+//        return 1234321;
+//    }
 
 }

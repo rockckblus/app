@@ -30,15 +30,16 @@ var g = require('../../g.config');
  * city结构
  * 16/3/7 */
 var memberSchema = new g.Schema({
-    name: String,//用户名
+    name: {type: String, default: ''},//用户名
     mt: Number,//手机
-    headerImg: Number,//头像url
+    headerImg: {type: String, default: ''},//头像url
     city: {type: String, default: '未知'},//城市
-    gps: String,//用户的定位信息
+    gps: {type: String, default: ''},//用户的定位信息
     age: {type: String, default: '未知'},//年龄字符串
+    sex: {type: String, default: '未知'},//性别
     isUser: {type: Boolean, default: false},//是否有会员资料
     telType: {type: Boolean, default: true},//是否允许电话咨询
-    regTime: {type: Date, default: Date.now},//注册时间
+    regTime: {type: Date, default: ''},//注册时间
     state: {type: Number, default: 1},//状态 0(禁用) 1激活
     type: {type: Number, default: 0},//级别 会员 0普通 1vip
 });
