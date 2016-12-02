@@ -20,6 +20,7 @@ var fun = {
     getUserData: getUserData,//获取用户数据
     loginIn: loginIn,//用户登录
     getUidByMt: getUidByMt,//根据电话号码获取uid
+    upDataMember:upDataMember,//updateMember
 
 };
 
@@ -139,6 +140,11 @@ function getUidByMt(mt, callBack) {
                 callBack(re);
             }
         });
+}
+
+//updataMember
+function upDataMember(){
+
 }
 
 
