@@ -193,8 +193,8 @@
      */
     function _trueShowHedaer(name) {
         switch (name) {
-            case 'home':
-                return true;
+            // case 'home':
+            //     return true;
             case 'memberIndex':
                 return true;
             case 'myNews':
@@ -230,7 +230,7 @@
         switch (url) {
             case '/home':
                 _obj = [{
-                    colNumCss: 'twoTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: _objDefaulOne.thisItem, //高亮
                     name: '技能', //名称
                     route: 'hrefTabHome', //routeUrl

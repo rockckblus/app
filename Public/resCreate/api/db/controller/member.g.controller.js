@@ -20,7 +20,7 @@ var fun = {
     getUserData: getUserData,//获取用户数据
     loginIn: loginIn,//用户登录
     getUidByMt: getUidByMt,//根据电话号码获取uid
-    upDataMember:upDataMember,//updateMember
+    upDataMember: upDataMember,//updateMember
 
 };
 
@@ -143,8 +143,20 @@ function getUidByMt(mt, callBack) {
 }
 
 //updataMember
-function upDataMember(){
+function upDataMember(userUpData) {
+    memberServiceModel.update(
+        {
+            _id: userUpData.uid
+        },
+        {
+             sex:userUpData.sex,
+            age:userUpData.age,
+            city:userUpData.city
+        },
+        {}, function (err, doc) {
+            console.log('doc',doc);
 
+        })
 }
 
 
