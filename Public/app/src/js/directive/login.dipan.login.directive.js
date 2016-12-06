@@ -94,9 +94,10 @@
                 var roundCodeId = localStorage.getItem(config.localSaveName.user.roundCodeId);
                 //'Api/Sem/getCode/roundCodeId/' + roundCodeId + '/mtNum/' + telNum;
                 tools.getJsp(config.host.phpHost + '/Api/Sem/getCode/roundCodeId/' + roundCodeId + '/mtNum/' + $scope.tel, true).then(function (re) {
+
                     console.log('smRe', re);
                     var msg = '';
-                    if (re && re.statusCode == 200) {
+                    if (re && re.stausCode == 200) {
                         msg = '验证码已发送';
                     } else {
                         msg = '验证码发送失败';
@@ -155,8 +156,9 @@
                     eEcho = e;
                 }
                 tools.alert({
-                    title: eEcho
+                    title: JSON.stringify(eEcho)
                 });
+
             }
 
         }

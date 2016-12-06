@@ -26,13 +26,10 @@ var g = {
     /**
      * mongo 数据库连接配置
      * 16/3/7 */
-
     mongo: {
         url: 'mongodb://127.0.0.1:27017/',//分片路由
         master: 'dipan',//主库
     },
-
-
     system: {
         /**
          * 定时销毁session,时间设置
@@ -41,9 +38,8 @@ var g = {
 
     },
     host: {
-        phpApi: 'http://127.0.0.1:80',//phpApi
+        phpApi: 'http://127.0.0.1:8888',//phpApi
     },
-
 
     /**
      * 错误信息输出

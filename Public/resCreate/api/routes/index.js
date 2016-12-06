@@ -108,7 +108,6 @@ router.post('/member/:fun', function (req, res) {
     postMember(req, res);
 });
 
-
 /**
  * post im:fun 及时通讯相关
  * 16/3/8 */
@@ -263,11 +262,8 @@ function postSns(req, res) {
             req.body.type = 'need';//加入type字段。需
             _getList(req.body);
             break;
-        case 'addOneArticle' ://添加一条记录
-            _addArticle(req.body);
-            break;
         case 'postKillFrom' ://添加一条技能 ,如果有补充会员资料,去更新会员资料
-            snsArticleServiceCtrl.addKill(req.body, function (re) {
+            snsArticleServiceCtrl.postKillFrom(req.body, function (re) {
                 res.json(re);
             }, function (err) {
                 res.json(err);
@@ -282,9 +278,8 @@ function postSns(req, res) {
      */
     function _getList(body) {
         snsArticleServiceCtrl.getList(body, _callback);
-
-        function _callback(err, doc) {
-            res.json({err: err, doc: doc});
+        function _callback(re) {
+            res.json(re);
         }
 
     }
@@ -306,8 +301,8 @@ function postSns(req, res) {
      */
     function _addArticle(postObj) {
         snsArticleServiceCtrl.addOneArticle(postObj, _callback);
-        function _callback(err, doc) {
-            res.json({err: err, doc: doc});
+        function _callback(re) {
+            res.json(re);
         }
     }
 }

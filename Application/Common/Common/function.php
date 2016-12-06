@@ -149,6 +149,17 @@ function getToken()
 
 }
 
+
+//curl -X POST \
+//-H "X-LC-Id: jFnAKF8oIWzB7INn2GpNyPAt-gzGzoHsz" \
+//-H "X-LC-Key: OvRQhBzP5fW4Uer1gLfPbpzl" \
+//-H "Content-Type: application/json" \
+//-d '{"mobilePhoneNumber": "15510986492","myCode":"124322"}' \
+//https://api.leancloud.cn/1.1/requestSmsCode
+
+
+
+
 /** 记录错误日志 传入状态码，和出错方法地址*/
 function writeError($code = null, $url = null)
 {

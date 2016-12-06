@@ -7,9 +7,9 @@
  * 16/3/7 */
 var memberServiceModel = require('../model/member.g.model');
 var g = require('../../g.config');
-// var request = require('request'); //curl 控件
 var request = require('superagent'); //curl 控件
 var q = require('q');//异步编程
+var pubFun = require('../fun/pub.g.fun');//公共方法
 
 var fun = {
 
@@ -20,7 +20,6 @@ var fun = {
     getUserData: getUserData,//获取用户数据
     loginIn: loginIn,//用户登录
     getUidByMt: getUidByMt,//根据电话号码获取uid
-    upDataMember: upDataMember,//updateMember
 
 };
 
@@ -31,26 +30,11 @@ var fun = {
 /**
  * 获取用户数据
  *  */
-function getUserData(post, callBack, callBackErr) {
+function getUserData(post, callBack) {
     memberServiceModel.find({_id: post.uid})
         .select('uid name mt headerImg city sex age isUser telType')
         .exec(function (err, doc) {
-            if (err) {
-                g.alert.err(err);//输出错误信息
-            }
-            var re = {
-                data: {
-                    code: "F",
-                    msg: "获取用户数据失败"
-                }
-            };
-            if (err || !doc[0]) {
-                callBackErr(re);
-            } else {
-                re.data.code = 'S';
-                re.data.msg = '获取用户数据成功';
-                callBack(re);
-            }
+            pubFun.pubReturn(err, doc, '查询用户数据成功', '查询用户数据失败', callBack);
         });
 }
 
@@ -76,13 +60,12 @@ function loginIn(post, callBack) {
             var callRe = {
                 data: {
                     code: "F",
-                    msg: '登录失败' + re
+                    msg: '登录失败' + JSON.stringify(re)
                 }
             };
             callBack(callRe);
         }
     }
-
 
     /**
      * curl php接口的 登录api
@@ -114,7 +97,6 @@ function loginIn(post, callBack) {
 
 }
 
-
 /**
  * 根据电话号码获取uid
  */
@@ -140,23 +122,6 @@ function getUidByMt(mt, callBack) {
                 callBack(re);
             }
         });
-}
-
-//updataMember
-function upDataMember(userUpData) {
-    memberServiceModel.update(
-        {
-            _id: userUpData.uid
-        },
-        {
-             sex:userUpData.sex,
-            age:userUpData.age,
-            city:userUpData.city
-        },
-        {}, function (err, doc) {
-            console.log('doc',doc);
-
-        })
 }
 
 
