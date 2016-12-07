@@ -7,7 +7,7 @@ module.exports = function (grunt) {
         /** 检查代码  */
         jshint: {
             //此处是 需要 测试 的文件路径，可自己修改
-            build: ['src/js/**/*.js','../resCreate/api/db/**/*.js','../resCreate/api/routes/**/*.js'],
+            build: ['src/js/**/*.js', '../resCreate/api/db/**/*.js', '../resCreate/api/routes/**/*.js'],
             options: {
                 //此处是 验证规则配置文件
                 jshintrc: '.jshintrc'
@@ -20,7 +20,19 @@ module.exports = function (grunt) {
          * 16/1/22 */
         watch: {
             build: {
-                files: ['Gruntfile.js', 'dist/js/*.js', 'src/**/*.js', 'src/**/**/*.js', 'src/**/**/**/*.js', 'src/css/*.css', 'src/**/**/**/*.html', 'src/**/**/html', 'src/**/*.html', 'doc/**/**'],
+                files: ['Gruntfile.js',
+                    'dist/js/*.js',
+                    'src/**/*.js',
+                    'src/**/**/*.js',
+                    'src/**/**/**/*.js',
+                    'src/css/*.css',
+                    'src/**/**/**/*.html',
+                    'src/**/**/html',
+                    'src/**/*.html',
+                    'doc/**/**',
+                    '../resCreate/api/db/**/*.js',
+                    '../resCreate/api/routes/*.js',
+                ],
                 // tasks: ['jshint', 'ngtemplates', 'concat', 'uglify', 'cssmin', 'clean'],//dist 配置
                 // tasks: ['jshint', 'ngtemplates', 'concat', 'cssmin', 'clean'],//dist 配置
                 tasks: ['jshint'],//dev 配置

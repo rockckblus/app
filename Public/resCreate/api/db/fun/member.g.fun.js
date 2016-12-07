@@ -19,20 +19,24 @@ function upDataMember(userUpData) {
             city: userUpData.city
         },
         {}, function (err, doc) {
-            var reData = {
-                doc: {
-                    data: {
-                        code: 'S', msg: '更新用户数据成功'
-                    }
-                }
-            };
-            if (doc.ok == 1) {
-                reData.doc.data.code = 'S';
-                reData.doc.data.msg = '更新用户数据成功';
+            if (err) {
+                defer.reject(JSON.stringify(err));
             } else {
-                reData.err = '';
+                var reData = {
+                    doc: {
+                        data: {
+                            code: 'S', msg: '更新用户数据成功'
+                        }
+                    }
+                };
+                if (doc.ok == 1) {
+                    reData.doc.data.code = 'S';
+                    reData.doc.data.msg = '更新用户数据成功';
+                } else {
+                    reData.err = '';
+                }
+                defer.resolve(reData);
             }
-            defer.resolve(reData);
         });
 
     return defer.promise;

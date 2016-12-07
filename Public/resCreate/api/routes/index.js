@@ -269,6 +269,22 @@ function postSns(req, res) {
                 res.json(err);
             });
             break;
+        case 'postNeedFrom' ://添加一条需求
+
+            snsArticleServiceCtrl.postNeedFrom(req.body, function (re) {
+                res.json(re);
+            }, function (err) {
+                res.json(err);
+            });
+            break;
+        case 'addKillImg' ://添加需求图片上传接口
+            snsArticleServiceCtrl.addKillImg(req.body, function (re) {
+                res.json(re);
+            }, function (err) {
+                res.json(err);
+            });
+            break;
+
 
     }
 

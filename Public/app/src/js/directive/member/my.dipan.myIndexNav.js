@@ -182,12 +182,12 @@
 
             function _scuess(re) {
                 if (re.data.code == 'S') {
-                    tools.saveLocalStorageObj('userData', re.data.userData);
+                    tools.saveLocalStorageObj('userData', re.data.doc[0]);
                     $timeout(function () {
                         $rootScope.$broadcast('changeBody');
                         $rootScope.$broadcast('closeLoading');
                     }, 200);
-                    giveTellCallStatus(re.data.userData.telType);
+                    giveTellCallStatus(re.data.doc[0].telType);
                 }
             }
         }
@@ -264,7 +264,6 @@
          * 给电话咨询状态
          */
         function giveTellCallStatus(telType) {
-
             if (telType == 'yunXu') {
                 _yunXun();
             }

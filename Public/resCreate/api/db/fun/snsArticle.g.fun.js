@@ -1,9 +1,11 @@
 var snsArticleModel = require('../model/snsArticle.g.model');
+var killFromImgModel = require('../model/killFromImg.g.model');
 var q = require('q');//异步编程对象
 
 var fun = {
     killAdd: killAdd,//添加一条技能
     getOneKill: getOneKill,//判断订单是否存在,防止重复提交 ,传 killRoundId,
+    addKillFromImg: addKillFromImg,//添加技能图片
 };
 
 /**
@@ -28,7 +30,11 @@ function killAdd(postObj) {
                 service: postObj.service,//服务方式
             },//属性
         }, function (err, doc) {
-            defer.resolve({err: err, doc: doc});
+            if (err) {
+                defer.resolve(JSON.stringify(err));
+            } else {
+                defer.resolve({err: err, doc: doc});
+            }
         }
     );
     return defer.promise;
@@ -41,24 +47,148 @@ function getOneKill(killRoundId) {
     var defer = q.defer();
     snsArticleModel.findOne({killRoundId: killRoundId}).exec(function (err, doc) {
         var reData = {};
-        if (doc && doc._doc && doc._doc.killRoundId) {
-            reData = {
-                data: {
-                    code: 'F',
-                    msg: 'id存在,不可以入库'
-                }
-            };
+        if (err) {
+            defer.reject(JSON.stringify(err));
         } else {
-            reData = {
-                data: {
-                    code: 'S',
-                    msg: 'id不存在,可以入库'
-                }
-            };
+            if (doc && doc._doc && doc._doc.killRoundId) {
+                reData = {
+                    data: {
+                        code: 'F',
+                        msg: 'id存在,不可以入库'
+                    }
+                };
+            } else {
+                reData = {
+                    data: {
+                        code: 'S',
+                        msg: 'id不存在,可以入库'
+                    }
+                };
+            }
         }
         defer.resolve({err: err, doc: reData});
     });
     return defer.promise;
 }
+
+/**
+ * 添加技能图片*/
+function addKillFromImg(postObj) {
+    /**
+     * 1.find killRoundId , 图片数组排序是否存在, 如果存在,就更新这个图片
+     * 2.否则,就添加一个新记录
+     */
+    var defer = q.defer();
+    _trueKillImgIsSet(postObj)
+        .then(_trueFun)
+        .then(_call, _err);
+
+    function _trueFun(re) {
+        var defer2 = q.defer();
+        if (!re[0]) {
+            _addKillImg(postObj).then(function (re) {
+                defer2.resolve(re);
+            }, _err);
+        } else {
+            _upDataKillImg(postObj).then(function (re) {
+                defer2.resolve(re);
+            }, _err);
+        }
+        return defer2.promise;
+    }
+
+    function _call(re) {
+        defer.resolve(re);
+    }
+
+    function _err(re) {
+        defer.reject(re);
+    }
+
+    return defer.promise;
+
+}
+
+/**
+ * find killRoundId 并且 图片数组顺序 是否存在
+ */
+function _trueKillImgIsSet(postObj) {
+    var defer = q.defer();
+    killFromImgModel.find({killRoundId: postObj.killRoundId, voId: postObj.voId, uid: postObj.uid})
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(JSON.stringify(err));
+            } else {
+                defer.resolve(doc);
+            }
+        });
+    return defer.promise;
+}
+
+/**
+ * 添加图片
+ */
+function _addKillImg(postObj) {
+    var defer = q.defer();
+    killFromImgModel.create(
+        {
+            killRoundId: postObj.killRoundId,
+            voId: postObj.voId,
+            uid: postObj.uid,
+            imgUrl: postObj.imgUrl,
+        }, function (err, doc) {
+            if (err) {
+                defer.reject(JSON.stringify(err));
+            } else {
+                var reData = {
+                    doc: {
+                        data: {
+                            code: 'S', msg: '添加图片成功'
+                        }
+                    }
+                };
+                defer.resolve(reData);
+            }
+        });
+    return defer.promise;
+}
+
+/**
+ * 更新图片
+ */
+function _upDataKillImg(postObj) {
+    var defer = q.defer();
+    killFromImgModel.update(
+        {
+            killRoundId: postObj.killRoundId,
+            voId: postObj.voId
+        },
+        {
+            imgUrl: postObj.imgUrl
+        },
+        {}, function (err, doc) {
+            if (err) {
+                defer.reject(JSON.stringify(err));
+            } else {
+                var reData = {
+                    doc: {
+                        data: {
+                            code: 'S', msg: '更新图片成功'
+                        }
+                    }
+                };
+                if (doc.ok == 1) {
+                    reData.doc.data.code = 'S';
+                    reData.doc.data.msg = '更新图片成功';
+                    defer.resolve(reData);
+                } else {
+                    defer.reject('更新图片失败');
+                }
+            }
+        });
+
+    return defer.promise;
+}
+
 
 module.exports = fun;

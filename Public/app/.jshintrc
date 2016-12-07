@@ -23,6 +23,7 @@
         "require": false,
         "module": false,
         "__dirname": false,
-        "basePath":false
+        "basePath":false,
+        "Buffer":false
     }
 }

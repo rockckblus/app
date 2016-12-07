@@ -1,11 +1,11 @@
 {
-  "complete": false,
+  "complete": true,
   "data": {
     "code": "S",
     "msg": "登录成功",
     "userData": {
       "userName": "",
-      "uid": "rockblus",
+      "uid": "584121ec73842e08300041ac",
       "mt": "15510986492",
       "headerImg": "",
       "city": "",

@@ -15,7 +15,7 @@
 
 
 /**
- * 全局
+ * 全局 技能model
  * 16/3/7 */
 var g = require('../../g.config');
 
