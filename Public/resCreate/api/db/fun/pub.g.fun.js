@@ -8,6 +8,7 @@ var moment = require('moment');//日期插件
 var fun = {
     pubReturn: pubReturn,//公共返回
     baseToImgUrl: baseToImgUrl,//base64 转 图片文件保存,返回url
+    farGps:farGps,//计算2个gps 之间的 距离
 };
 
 /**
@@ -92,4 +93,27 @@ function baseToImgUrl(imgData) {
 
     return defer.promise;
 }
+
+
+/**************************
+ * 计算2个gps 之间的 距离
+ * // #lat为纬度, lng为经度, 一定不要弄错
+ * 16/12/7 下午9:18 ByRockBlus
+ **************************/
+
+function farGps(lat1, lng1, lat2, lng2){
+    return getDisance();
+    function toRad(d) {  return d * Math.PI / 180; }
+    function getDisance() {
+        var dis = 0;
+        var radLat1 = toRad(lat1);
+        var radLat2 = toRad(lat2);
+        var deltaLat = radLat1 - radLat2;
+        var deltaLng = toRad(lng1) - toRad(lng2);
+        dis = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(deltaLat / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(deltaLng / 2), 2)));
+        return dis * 6378137;
+    }
+}
+
+
 module.exports = fun;
