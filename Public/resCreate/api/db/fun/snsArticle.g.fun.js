@@ -6,6 +6,7 @@ var fun = {
     killAdd: killAdd,//添加一条技能
     getOneKill: getOneKill,//判断订单是否存在,防止重复提交 ,传 killRoundId,
     addKillFromImg: addKillFromImg,//添加技能图片
+    delKillImg: delKillImg,//删除技能图片
 };
 
 /**
@@ -190,5 +191,37 @@ function _upDataKillImg(postObj) {
     return defer.promise;
 }
 
+/**
+ * 删除图片
+ */
+function delKillImg(postObj) {
+    var defer = q.defer();
+    killFromImgModel.remove({
+        killRoundId: postObj.killRoundId,
+        uid: postObj.uid,
+        voId: postObj.voId
+    }, function (err, doc) {
+        if (err) {
+            defer.reject({
+                data: {
+                    code: 'F',
+                    msg: '删除技能图片失败'
+                }
+            });
+        }
+        if (doc && doc.result && doc.result.n == 1) {
+            defer.resolve({
+                data: {
+                    code: 'S',
+                    msg: '删除技能图片成功'
+                }
+            });
+        } else {
+            defer.reject('图片不存在');
+        }
+    });
+
+    return defer.promise;
+}
 
 module.exports = fun;

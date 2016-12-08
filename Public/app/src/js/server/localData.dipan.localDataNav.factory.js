@@ -58,8 +58,8 @@
         switch (url) {
             case '/memberIndex':
                 return __getUserTitle();
-            case '/home':
-                return _filter('toHtml')('<i class="fa fa-search linkMouse mui-btn qiaokeli" id="searchIconH1"></i>');
+            // case '/home':
+            //     return _filter('toHtml')('<i class="fa fa-search linkMouse mui-btn qiaokeli" id="searchIconH1"></i>');
             case '/editMemberInfo':
                 return _filter('toHtml')('资料编辑');
             // case '/star':
@@ -74,6 +74,11 @@
                 return _filter('toHtml')('订单详情');
             case '/killContent':
                 return _filter('toHtml')('技能详情');
+            case '/subkill':
+                return _filter('toHtml')('发布技能');
+            case '/subneed':
+                return _filter('toHtml')('发布需求');
+
             default:
                 return '';
         }
@@ -205,6 +210,8 @@
                 return true;
             case 'editMemberInfo':
                 return true;
+            case 'subkill':
+                return true;
             case 'killContent':
                 return true;
             default :
@@ -274,27 +281,27 @@
                     // }
                 ];
                 return _obj;
-            case '/star':
-                _obj = [{
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '技能', //名称
-                    route: 'hrefTabHome', //routeUrl
-                    stateName: 'home', //routeUrl
-                }, {
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '需求', //名称
-                    route: 'hrefTabNeed', //routeUrl
-                    stateName: 'need', //routeUrl
-                }, {
-                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: 'thisItem', //高亮
-                    name: '<i class="fa fa-star-o"></i>', //名称
-                    route: 'hrefTabStar', //routeUrl
-                    stateName: 'star', //routeUrl
-                }];
-                return _obj;
+            // case '/star':
+            //     _obj = [{
+            //         colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: false, //高亮
+            //         name: '技能', //名称
+            //         route: 'hrefTabHome', //routeUrl
+            //         stateName: 'home', //routeUrl
+            //     }, {
+            //         colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: false, //高亮
+            //         name: '需求', //名称
+            //         route: 'hrefTabNeed', //routeUrl
+            //         stateName: 'need', //routeUrl
+            //     }, {
+            //         colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: 'thisItem', //高亮
+            //         name: '<i class="fa fa-star-o"></i>', //名称
+            //         route: 'hrefTabStar', //routeUrl
+            //         stateName: 'star', //routeUrl
+            //     }];
+            //     return _obj;
 
             // case '/memberIndex':
             //     _obj = [{

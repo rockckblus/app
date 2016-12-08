@@ -5,7 +5,6 @@ var moment = require('moment');//日期插件
 var fun = {
     needAdd: needAdd,//添加一条需求
     getOneFrom: getOneFrom,//判断需求是否存在,防止重复提交 ,传 fromRoundId,
-
 };
 
 /**

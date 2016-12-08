@@ -280,7 +280,7 @@
                                 buttons: [{title: "继续发布"}, {title: "我的技能"}]
                             }, function (e) {
                                 console.log("User pressed: " + e.index);
-                                if (e.index == 1) {
+                                if (e.index == 1 || e.index == -1) {
                                     window.location.reload();
                                 }
                                 if (e.index == 2) {

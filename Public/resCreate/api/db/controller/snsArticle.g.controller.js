@@ -17,6 +17,7 @@ var fun = {
     postKillFrom: postKillFrom,//添加一条技能 dist
     postNeedFrom: postNeedFrom,//添加一条需求
     addKillImg: addKillImg,//技能图片添加
+    delKillImg: delKillImg,//删除技能图片
 };
 
 /**
@@ -104,7 +105,6 @@ function postKillFrom(postObj, callBack) {
         pubFun.pubReturn(errRe, {}, '', '技能添加失败', callBack);
     }
 
-
 }
 
 /**
@@ -173,6 +173,21 @@ function addKillImg(postObj, callBack) {
 
 }
 
+/**
+ * 技能图片删除
+ * @param postObj
+ * @param callBack
+ */
+function delKillImg(postObj, callBack) {
+    snsArticleFun.delKillImg(postObj).then(_call, _err);
+    function _call(re) {
+        pubFun.pubReturn(false, re, '技能图片删除成功', '技能图片删除失败', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '技能图片删除失败', callBack);
+    }
+}
 
 module.exports = fun;
 

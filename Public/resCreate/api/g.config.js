@@ -39,6 +39,7 @@ var g = {
     },
     host: {
         phpApi: 'http://127.0.0.1:8888',//phpApi
+        imageHost: 'http://192.168.0.50:7788/',//图片服务器
     },
 
     /**

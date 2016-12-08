@@ -20,7 +20,7 @@ var killFromImgSchema = new g.Schema({
     uid: {type: String},//用户id
     imgUrl: {type: String},
     killRoundId: {type: String, default: ''},//对应技能表单提交的id
-    voId: {type: Number, default: 0},//3张图片的 排序
+    voId: {type: String, default: 'upImgClick1'},//3张图片的 排序
     state: {type: Number, default: 1},//状态 1.正常 2.禁用
 });
 

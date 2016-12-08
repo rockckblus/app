@@ -53,6 +53,26 @@ function curlBaidu($url, $json = null)
 }
 
 
+/** leanCloud 短信接口 curl */
+function curl_leanCloud($url=null,$data=null){
+    $header[] = "X-LC-Id: jFnAKF8oIWzB7INn2GpNyPAt-gzGzoHsz";
+    $header[] = "X-LC-Key: OvRQhBzP5fW4Uer1gLfPbpzl";
+    $header[] = "Content-Type: application/json";
+
+    $ch =  curl_init($url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    if (!empty($options)) {
+        curl_setopt_array($ch, $options);
+    }
+    $data = curl_exec($ch);
+    curl_close($ch);
+    return $data;
+}
+
 /** curl Post */
 function curl_post($url = '', $postdata = '', $options = array())
 {
@@ -97,42 +117,54 @@ function curlSem($mtNum, $content)
 }
 
 /** 天翼发送短信接口 */
-function sendSm($mtNum = null, $code = null)
-{
+//function sendSm($mtNum = null, $code = null)
+//{
+//
+//
+//    $curl = 'http://api.189.cn/v2/emp/templateSms/sendSms';//post地址
+//    $app_secret = '2cfd6ea6dd74cb30e5d87c92e3c489c1';
+//    $access_token = '';
+//
+//    $app_id = '473425090000040482';
+//    $acceptor_tel = $mtNum;
+//    $template_id = '91004562';
+//    $template_param = '{"param1":"' . $code . '"}';
+//    $timestamp = date('Y-m-d H:i:s');
+//
+//    $access_token = getToken();
+//    if ($access_token) {
+//
+//
+//        $array['app_id'] = $app_id;
+//        $array['access_token'] = $access_token;
+//        $array['acceptor_tel'] = $acceptor_tel;
+//        $array['template_id'] = $template_id;
+//        $array['template_param'] = $template_param;
+//        $array['timestamp'] = $timestamp;
+//
+////        ksort($array);//升序排序
+//
+////    将数组传入buildPlainText方法生成明文
+//        $plaintext = http_build_query($array);
+////        $plaintext = urlencode($plaintext);
+//        $cipherText = base64_encode(hash_hmac("sha1", $plaintext, $app_secret));
+//
+//         return curl_post($curl,$plaintext);
+//
+//    }
+//}
 
 
-    $curl = 'http://api.189.cn/v2/emp/templateSms/sendSms';//post地址
-    $app_secret = '2cfd6ea6dd74cb30e5d87c92e3c489c1';
-    $access_token = '';
-
-    $app_id = '473425090000040482';
-    $acceptor_tel = $mtNum;
-    $template_id = '91004562';
-    $template_param = '{"param1":"' . $code . '"}';
-    $timestamp = date('Y-m-d H:i:s');
-
-    $access_token = getToken();
-    if ($access_token) {
-
-
-        $array['app_id'] = $app_id;
-        $array['access_token'] = $access_token;
-        $array['acceptor_tel'] = $acceptor_tel;
-        $array['template_id'] = $template_id;
-        $array['template_param'] = $template_param;
-        $array['timestamp'] = $timestamp;
-
-//        ksort($array);//升序排序
-
-//    将数组传入buildPlainText方法生成明文
-        $plaintext = http_build_query($array);
-//        $plaintext = urlencode($plaintext);
-        $cipherText = base64_encode(hash_hmac("sha1", $plaintext, $app_secret));
-
-         return curl_post($curl,$plaintext);
-
+/** https://leancloud.cn/ 短信接口 */
+function sendSm($mtNum = null,$code = null){
+    $curl = 'https://api.leancloud.cn/1.1/requestSmsCode';//post地址
+//    -d '{"mobilePhoneNumber": "15510986492", "template":"验证码","myCode":"1111111"}' \
+    $data = '{"mobilePhoneNumber": "'.$mtNum.'", "template":"验证码","myCode":"'.$code.'"}';
+       return curl_leanCloud($curl,$data);
     }
-}
+
+
+
 
 /** 获取天翼令牌 */
 function getToken()
@@ -149,7 +181,6 @@ function getToken()
 
 }
 
-
 //curl -X POST \
 //-H "X-LC-Id: jFnAKF8oIWzB7INn2GpNyPAt-gzGzoHsz" \
 //-H "X-LC-Key: OvRQhBzP5fW4Uer1gLfPbpzl" \
@@ -157,7 +188,12 @@ function getToken()
 //-d '{"mobilePhoneNumber": "15510986492","myCode":"124322"}' \
 //https://api.leancloud.cn/1.1/requestSmsCode
 
-
+//curl -X POST \
+//-H "X-LC-Id: jFnAKF8oIWzB7INn2GpNyPAt-gzGzoHsz" \
+//-H "X-LC-Key: OvRQhBzP5fW4Uer1gLfPbpzl" \
+//-H "Content-Type: application/json" \
+//-d '{"mobilePhoneNumber": "15510986492", "template":"验证码","myCode":"1111111"}' \
+//https://api.leancloud.cn/1.1/requestSmsCode
 
 
 /** 记录错误日志 传入状态码，和出错方法地址*/

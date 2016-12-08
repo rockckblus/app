@@ -98,6 +98,7 @@
 
         //删除
         function delImg(voId) {
+            console.log('voId', voId);
             $timeout(function () {
                 switch (voId) {
                     case 'upImgClick1':
@@ -112,9 +113,10 @@
                 }
             }, 0);
             var url = config.host.nodeHost + '/sns/delKillImg';//删除服务器上的图片
+            console.log('url', url);
             var postData = {
                 killRoundId: tools.getLocalStorageObj('killRoundId'),
-                uid: tools.getLocalStorageObj('user').uid,
+                uid: tools.getLocalStorageObj('userData').uid,
                 voId: voId
             };
             tools.postJsp(url, postData, true).then(function (re) {
@@ -243,14 +245,14 @@
             var height = img.height;
             // calculate the width and height, constraining the proportions
             if (width > height) {
-                if (width > 100) {
-                    height = Math.round(height *= 100 / width);
-                    width = 100;
+                if (width > 350) {
+                    height = Math.round(height *= 350 / width);
+                    width = 350;
                 }
             } else {
-                if (height > 100) {
-                    width = Math.round(width *= 100 / height);
-                    height = 100;
+                if (height > 350) {
+                    width = Math.round(width *= 350 / height);
+                    height = 350;
                 }
             }
             canvas.width = width;
@@ -260,7 +262,7 @@
             var ctx = canvas.getContext("2d");
             ctx.drawImage(img, 0, 0, width, height);
             /*绘图*/
-            var dataURL = canvas.toDataURL("image/png", 0.8);
+            var dataURL = canvas.toDataURL("image/jpeg", 0.9);
             return dataURL.replace("data:image/png;base64,", "");
         }
 
@@ -280,10 +282,14 @@
                 if (re.data.code == 'S') {
                     console.log('提交服务器成功', re);
                 } else {
-                    console.error('提交服务器失败');
+                    tools.alert({
+                        title: '图片提交服务器失败'
+                    });
                 }
             }, function (e) {
-                console.error('提交服务器失败');
+                tools.alert({
+                    title: '图片提交服务器失败'
+                });
             });
         }
     }

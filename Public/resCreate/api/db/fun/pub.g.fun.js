@@ -8,7 +8,7 @@ var moment = require('moment');//日期插件
 var fun = {
     pubReturn: pubReturn,//公共返回
     baseToImgUrl: baseToImgUrl,//base64 转 图片文件保存,返回url
-    farGps:farGps,//计算2个gps 之间的 距离
+    farGps: farGps,//计算2个gps 之间的 距离
 };
 
 /**
@@ -64,7 +64,7 @@ function baseToImgUrl(imgData) {
     var base64Data = imgData.replace(/^data:image\/\w+;base64,/, "");
     var dataBuffer = new Buffer(base64Data, 'base64');
     var path = 'imagesUpData/' + moment().format("YYYY_MM_DD");
-    var imgName = moment().format("YYYYMMDDhhmmss") + '.png';
+    var imgName = moment().format("YYYYMMDDhhmmss") + '.jpg';
     fs.exists(path, function (re) {//判断文件夹存在
         if (re) {
             _write();
@@ -72,7 +72,7 @@ function baseToImgUrl(imgData) {
             fs.mkdirSync(path);//创建文件夹
             _write();
         }
-    })
+    });
 
     function _write() {
         fs.writeFile(path + '/' + imgName, dataBuffer, function (err) {
@@ -83,7 +83,7 @@ function baseToImgUrl(imgData) {
                     data: {
                         code: 'S',
                         msg: '保存成功！',
-                        imgUrl: path + '/' + imgName
+                        imgUrl: moment().format("YYYY_MM_DD") + '/' + imgName
                     }
                 };
                 defer.resolve(reData);
@@ -94,16 +94,18 @@ function baseToImgUrl(imgData) {
     return defer.promise;
 }
 
-
 /**************************
- * 计算2个gps 之间的 距离
+ * 计算2个gps 之间的 距离 todo 转换成小数点后1位公里
  * // #lat为纬度, lng为经度, 一定不要弄错
  * 16/12/7 下午9:18 ByRockBlus
  **************************/
 
-function farGps(lat1, lng1, lat2, lng2){
+function farGps(lat1, lng1, lat2, lng2) {
     return getDisance();
-    function toRad(d) {  return d * Math.PI / 180; }
+    function toRad(d) {
+        return d * Math.PI / 180;
+    }
+
     function getDisance() {
         var dis = 0;
         var radLat1 = toRad(lat1);
@@ -114,6 +116,5 @@ function farGps(lat1, lng1, lat2, lng2){
         return dis * 6378137;
     }
 }
-
 
 module.exports = fun;

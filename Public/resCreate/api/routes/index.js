@@ -284,6 +284,13 @@ function postSns(req, res) {
                 res.json(err);
             });
             break;
+        case 'delKillImg' ://删除需求图片
+            snsArticleServiceCtrl.delKillImg(req.body, function (re) {
+                res.json(re);
+            }, function (err) {
+                res.json(err);
+            });
+            break;
 
 
     }
@@ -402,6 +409,7 @@ function postMember(req, res) {
     switch (fun) {
         case 'getUserData' ://获取用户数据
             memberCtrl.getUserData(req.body, function (re) {
+                re.data.doc[0].uid = re.data.doc[0]._id;
                 res.json(re);
             });
             break;
@@ -410,6 +418,12 @@ function postMember(req, res) {
                 res.json(re);
             });
             break;
+        case 'editHeaderImg' ://用户头像编辑
+            memberCtrl.editHeaderImg(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+
     }
 
 }

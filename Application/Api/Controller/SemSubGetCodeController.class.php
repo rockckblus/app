@@ -64,7 +64,7 @@ class SemSubGetCodeController extends SemController
                                 }
                             } else {
                                 writeError(113, 'B_SemSub/getCode_addTempData|||注册方法_短信发送失败 天翼接口环节返回状态码不为0 ');
-                                return 113;
+                                return 200;
                             }
                         } else {
 
@@ -95,7 +95,7 @@ class SemSubGetCodeController extends SemController
                             }
                         } else {
                             writeError(113, 'B_SemSub/getCode_addTempData|||注册方法_短信发送失败 天翼接口环节返回状态码不为0 ');
-                            return 113;
+                            return 200;
                         }
                     } else {
 

@@ -262,6 +262,9 @@
                                 if (e.index == 1) {
                                     $state.go('need');//跳转到我的需求
                                 }
+                                if (e.index == -1) {
+                                    window.location.reload();
+                                }
                             });
                         });
 

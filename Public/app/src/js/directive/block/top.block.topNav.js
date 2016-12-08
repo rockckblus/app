@@ -47,6 +47,7 @@
             $timeout(function () {
                 $scope.headerShow = false;  //关闭header
             }, 0);
+            hideHeader();
         });
         $scope.$on('showHeader', function (e, gold) {
             cancelClick();//取消按钮点击事件,先还原顶部 搜索按钮
@@ -60,6 +61,7 @@
             if (isShowHeader) {//如果当前页面需要显示header,再去显示header
                 $timeout(function () {
                     $scope.headerShow = true;  //关闭header
+                    showHeader();
                 }, 0);
             }
         });
@@ -163,6 +165,7 @@
          *search 焦点事件
          */
         function focusSearch() {
+            showHeader();
             $timeout(function () {
                 $scope.topSearch = true;//显示inputDiv
                 $scope.searchPlace = '技能';
@@ -176,7 +179,6 @@
             $rootScope.$broadcast('showLianXianShow');//显示联想选择面板
             $rootScope.$broadcast('getKeyList', '');//默认去取热门关键词,不传key,就是热门
             hideSearchIcon();//隐藏搜索icon
-
         }
 
         /**
@@ -252,6 +254,7 @@
          * cancelClick 取消按钮点击事件
          */
         function cancelClick() {
+            hideHeader();
             $timeout(function () {
                 $scope.search = '';
                 $scope.showCancel = false;
@@ -282,6 +285,7 @@
             $timeout(function () {
                 $scope.topSearch = true;
             }, 0);
+            showHeader();
         }
 
         /**
@@ -291,8 +295,8 @@
             $timeout(function () {
                 $scope.topSearch = false;
             }, 0);
+            hideHeader();
         }
-
 
         /**
          * 给 search 赋值 giveSearch
@@ -301,6 +305,45 @@
             $timeout(function () {
                 $scope.search = key;
             }, 0);
+        }
+
+        /**显示header
+         */
+        function showHeader() {
+            var allHeaderDom = document.getElementById('allHeader');
+            allHeaderDom.style.display = 'block';
+            $timeout(function () {
+                $scope.headerShow = true;  //打开header
+            }, 0);
+            try {
+                var tabDom = document.getElementById('tab');
+                var viewContent = document.getElementById('viewContent');
+                tabDom.style.top = '50px';
+                viewContent.style.marginTop = '50px';
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        /**隐藏header
+         */
+        function hideHeader() {
+            if ($state.current.name == 'home') {
+                try {
+                    var allHeaderDom = document.getElementById('allHeader');
+                    var tabDom = document.getElementById('tab');
+                    var viewContent = document.getElementById('viewContent');
+                    $timeout(function () {
+                        $scope.headerShow = false;  //关闭header
+                        allHeaderDom.style.display = 'none';
+                        tabDom.style.top = '0px';
+                        viewContent.style.marginTop = '0px';
+                    }, 0);
+
+                } catch (e) {
+                    console.error(e);
+                }
+            }
         }
     }
 

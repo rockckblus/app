@@ -2,14 +2,15 @@
  * member member contrller 全局
  */
 
+var request = require('superagent'); //curl 控件
+var q = require('q');//异步编程
+var pubFun = require('../fun/pub.g.fun');//公共方法
 /**
  * 会员模型
  * 16/3/7 */
 var memberServiceModel = require('../model/member.g.model');
 var g = require('../../g.config');
-var request = require('superagent'); //curl 控件
-var q = require('q');//异步编程
-var pubFun = require('../fun/pub.g.fun');//公共方法
+var memberFun = require('../fun/member.g.fun');
 
 var fun = {
 
@@ -20,6 +21,7 @@ var fun = {
     getUserData: getUserData,//获取用户数据
     loginIn: loginIn,//用户登录
     getUidByMt: getUidByMt,//根据电话号码获取uid
+    editHeaderImg: editHeaderImg,//用户头像修改
 
 };
 
@@ -34,6 +36,9 @@ function getUserData(post, callBack) {
     memberServiceModel.find({_id: post.uid})
         .select('uid name mt headerImg city sex age isUser telType')
         .exec(function (err, doc) {
+            if (doc && doc[0] && doc[0]._doc && doc[0]._doc.headerImg) {
+                doc[0]._doc.headerImg = g.host.imageHost + doc[0]._doc.headerImg;
+            }
             pubFun.pubReturn(err, doc, '查询用户数据成功', '查询用户数据失败', callBack);
         });
 }
@@ -124,6 +129,36 @@ function getUidByMt(mt, callBack) {
         });
 }
 
+/**
+ * 用户头像修改
+ */
+function editHeaderImg(postObj, callBack) {
+    pubFun.baseToImgUrl(postObj.imgData)
+        .then(_editHeaderImg)
+        .then(_call, _err);
+
+    function _editHeaderImg(re) {
+        var defer = q.defer();
+        if (re.data && re.data.code == 'S') {
+            postObj.headerImg = re.data.imgUrl;
+            memberFun.editHeaderImg(postObj).then(function (re2) {
+                defer.resolve(re2);
+            });
+        } else {
+            defer.reject('头像入库失败');
+        }
+        return defer.promise;
+    }
+
+    function _call(re) {
+        pubFun.pubReturn(false, re, '头像修改成功', '头像修改失败', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '头像修改失败', callBack);
+    }
+
+}
 
 module.exports = fun;
 
