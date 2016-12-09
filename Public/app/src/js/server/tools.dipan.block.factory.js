@@ -215,6 +215,28 @@
          * isNoLoading (可选 true:不显示loading动画)
          * 15-3-27 */
         function postJsp(getMoreUrl, data, isNoLoading) {
+
+            if (!data.roundCodeId) {
+                try {
+                    data.roundCodeId = localStorage.getItem(config.localSaveName.user.roundCodeId);
+                    data.uid = re.getLocalStorageObj('userData').uid;
+                    data.mt = re.getLocalStorageObj('userData').mt;
+                } catch (e) {
+                    console.error('未获取到userData');
+                }
+            }
+
+            function _logOut() {
+                re.alert({
+                    title: '登录超时,重新登录'
+                });
+                setTimeout(function () {
+                    $state.go('loginOut');
+                }, 1000);
+                return false;
+
+            }
+
             var oldGetMoreUrl = getMoreUrl;//记录原始地址
 
             //先解析url , 转换到 测试 url
@@ -273,7 +295,19 @@
                             if (!isNoLoading) {
                                 $rootScope.$broadcast('closeLoading'); //http请求成功 关闭loading
                             }
-                            defer.resolve(_doc);
+                            if (_doc && _doc.data && _doc.data.msg == 'token失效') {
+
+                                re.alert({
+                                    title: '登录超时,重新登录'
+                                });
+                                setTimeout(function () {
+                                    $state.go('loginOut');
+                                }, 1000);
+                                return false;
+
+                            } else {
+                                defer.resolve(_doc);
+                            }
                         }
                     }).error(function (err) {
                     if (!isNoLoading) {

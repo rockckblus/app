@@ -63,8 +63,8 @@
             if (userData.age) {
                 _changeAge(userData.age);
             }
-            if (userData.userName) {
-                _changeName(userData.userName);
+            if (userData.name) {
+                _changeName(userData.name);
             }
 
             function _changeSex(sex) {
@@ -81,7 +81,6 @@
                     age3Dom.style.borderColor = '#fff';
                 }
                 if (age == '35+') {
-                    console.log(1111);
                     age1Dom.style.borderColor = '#fff';
                     age2Dom.style.borderColor = '#fff';
                     age3Dom.style.borderColor = '#ccc';

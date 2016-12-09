@@ -423,6 +423,11 @@ function postMember(req, res) {
                 res.json(re);
             });
             break;
+        case 'userDataEdit' ://修改用户资料
+            memberCtrl.userDataEdit(req.body, function (re) {
+                res.json(re);
+            });
+            break;
 
     }
 

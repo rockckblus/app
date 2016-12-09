@@ -67,6 +67,7 @@
         });
         $scope.$on('changeBody', changeTitleText);
         $scope.$on('focusSearch', focusSearch);
+        $scope.$on('cancelClick', cancelClick);//监听取消点击事件
 
         //topSearch 显示隐藏监听事件
         $scope.$on('showTopSearch', showTopSearch);
@@ -77,7 +78,6 @@
 
         //监听外部传来的关键词赋值
         $scope.$on('giveSearch', giveSearch);
-
 
         init();
         function init() {

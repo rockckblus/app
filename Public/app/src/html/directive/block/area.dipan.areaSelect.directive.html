@@ -1,7 +1,7 @@
 <div class="clear" ng-if="showArea" id="area">
     <div class="itemCity clear">
         <div class="title left"><i class="fa fa-map-marker" style="color: #30a080"></i></div>
-        <div class="left thisCityItem" style="margin-left: 10px;color: #30a080">
+        <div class="left thisCityItem" ng-show="showAreaFujin" style="margin-left: 10px;color: #30a080">
             {{thisCity.name}}
         </div>
     </div>

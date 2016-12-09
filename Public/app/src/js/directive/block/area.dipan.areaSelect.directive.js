@@ -24,7 +24,7 @@
 
         $scope.thisCity = {'name': '', 'cityCode': '', 'location': ''};
         $scope.showArea = false;//显示地区选择div
-        $scope.showAreaFujin = false;//显示附近div
+        $scope.showAreaFujin = true;//显示附近div
         $scope.shengRep = [
             {id: 1, name: '广东', type: 'sheng', 'searchStr': '广东省'},
             {id: 2, name: '江苏', type: 'sheng', 'searchStr': '江苏省'},

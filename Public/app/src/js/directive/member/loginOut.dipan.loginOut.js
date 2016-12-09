@@ -32,7 +32,7 @@
             'radio4',
             'needRadio1',
             'needRadio2',
-
+            'roundCodeId',
         ];
         angular.forEach(delCatch, function (vo) {
             localStorage.removeItem(vo);

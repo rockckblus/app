@@ -176,7 +176,6 @@
             }
         }
 
-
         /**
          * 使title焦点
          * document.getElementById("inputId").focus();
@@ -249,6 +248,7 @@
                 postData.sex = getDefault('sex');//会员补充 男女
                 postData.age = getDefault('age');//会员补充 年龄
                 postData.city = $scope.city;//会员补充 男女
+                postData.areaGps = tools.getLocalStorageObj('areaGps');//地理位置
                 if (!tools.isEmpty(postData.title)) {
                     tools.trueWeb(function () {
                         alert('技能必须填');

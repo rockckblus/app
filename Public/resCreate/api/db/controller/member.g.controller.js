@@ -22,6 +22,7 @@ var fun = {
     loginIn: loginIn,//用户登录
     getUidByMt: getUidByMt,//根据电话号码获取uid
     editHeaderImg: editHeaderImg,//用户头像修改
+    userDataEdit: userDataEdit,//修改用户资料
 
 };
 
@@ -47,7 +48,7 @@ function getUserData(post, callBack) {
  * 用户登录
  */
 function loginIn(post, callBack) {
-    curlLoginIn().then(getUid);
+    curlLoginIn().then(getUid, _err);
     function getUid(re) {
         if (re.code == 'S') {
             getUidByMt(post.mtNum, function (re) {
@@ -72,6 +73,10 @@ function loginIn(post, callBack) {
         }
     }
 
+    function _err(err) {
+        callBack(err);
+    }
+
     /**
      * curl php接口的 登录api
      */
@@ -86,14 +91,18 @@ function loginIn(post, callBack) {
             .send({tel: post.mtNum, code: post.code, roundCodeId: post.roundCodeId})
             .set('Accept', 'application/json')
             .end(function (err, res) {
-                try {
-                    if (res.statusCode == 200) {
-                        defered.resolve(res.body);
-                    } else {
-                        defered.reject(res.statusCode);
+                if (err) {
+                    defered.reject(JSON.stringify(err));
+                } else {
+                    try {
+                        if (res.statusCode == 200) {
+                            defered.resolve(res.body);
+                        } else {
+                            defered.reject(res.statusCode);
+                        }
+                    } catch (e) {
+                        defered.reject(e);
                     }
-                } catch (e) {
-                    defered.reject(e);
                 }
             });
 
@@ -159,6 +168,23 @@ function editHeaderImg(postObj, callBack) {
     }
 
 }
+
+/**
+ * 修改用户资料
+ */
+function userDataEdit(postObj, callBack) {
+    memberFun.userDataEdit(postObj).then(_call, _err);
+
+    function _call(re) {
+        pubFun.pubReturn(false, re.doc, '修改资料成功', '修改资料失败', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '头像修改失败', callBack);
+    }
+
+}
+
 
 module.exports = fun;
 

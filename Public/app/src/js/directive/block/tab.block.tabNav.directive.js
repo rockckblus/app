@@ -46,23 +46,23 @@
 
         $scope.$on('showHeader', function () {
             if (isShowHeader) {
-                $timeout(function(){
+                $timeout(function () {
                     $scope.tabStyle = {
                         'top': '50px',
                         'border-bottom-color': '#f4f4f4'
                     };
-                },0);
+                }, 0);
             }
         });
 
         $scope.$on('hideHeader', function () {
             if (isShowHeader) {
-                $timeout(function(){
+                $timeout(function () {
                     $scope.tabStyle = {
                         'top': '0px',
                         'border-bottom-color': '#bababa'
                     };
-                },0);
+                }, 0);
             }
         });
 

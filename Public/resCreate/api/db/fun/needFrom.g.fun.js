@@ -12,6 +12,8 @@ var fun = {
  * @param postObj
  */
 function needAdd(postObj) {
+
+
     var defer = q.defer();
     if (!postObj.price) {//如果价格为空,修改 单位为面议
         postObj.priceUnit = '3';

@@ -27,7 +27,7 @@
         thisLocalData.shaiXuan = _shaiXuan; //根据 url 遍历 筛选条件
         thisLocalData.showTab = _showTab; //遍历url 返回true false ,控制是否显示tab
         thisLocalData.getTitle = _getTitle; //getTitle
-        thisLocalData.giveRoundCode = _giveRoundCode; // 给一个8位随机码,验证短信用
+        // thisLocalData.giveRoundCode = _giveRoundCode; // 给一个8位随机码,验证短信用
         thisLocalData.gps = {
             isHaveGps: false, //判断
         };
@@ -39,7 +39,7 @@
             _filter = $filter;
             q = $q;
             thisTimeout = $timeout;
-            thisLocalData.giveRoundCode();
+            // thisLocalData.giveRoundCode();
             getGps();
         };
 
@@ -98,8 +98,8 @@
                 if (userData.headerImg) {
                     reStr += '<img class="hImg" style="margin-top: 13px" src="' + userData.headerImg + '" /> &nbsp;';
                 }
-                if (userData.userName) {
-                    userData.mt = userData.userName;
+                if (userData.name) {
+                    userData.mt = userData.name;
                 }
                 if (userData.mt) {
                     reStr += '<span style="font-size: 0.8rem;color: #777">' + userData.mt + '</span>';
@@ -211,6 +211,8 @@
             case 'editMemberInfo':
                 return true;
             case 'subkill':
+                return true;
+            case 'subneed':
                 return true;
             case 'killContent':
                 return true;
@@ -576,17 +578,6 @@
      * 16/9/2 上午8:10 ByRockBlus
      *************************/
 
-    /**
-     * 第一次后给localStorage一个随机码,验证用户发送短信用
-     * @private
-     */
-    function _giveRoundCode() {
-        localStorage.removeItem(_config.localSaveName.user.roundCodeId);
-        setTimeout(function () {
-            var roundCode = thisTools.getRoundCode(8);
-            localStorage.setItem(_config.localSaveName.user.roundCodeId, roundCode);
-        }, 200);
-    }
 
     /**
      * login 页面图标

@@ -114,6 +114,7 @@
                 switch ($state.current.name) {
                     case 'home' :
                         __saveCatchList();
+                        $rootScope.$broadcast('cancelClick');
                         break;
                     case 'need' :
                         __saveCatchList();

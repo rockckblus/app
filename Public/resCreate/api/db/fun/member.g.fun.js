@@ -5,6 +5,8 @@ var pub = require('../fun/pub.g.fun');//公共方法
 var fun = {
     upDataMember: upDataMember,//补充用户资料
     editHeaderImg: editHeaderImg,//修改用户头像
+    userDataEdit: userDataEdit,// 修改用户资料
+    upUserGpsArea: upUserGpsArea//修改用地位gps
 };
 
 
@@ -55,6 +57,76 @@ function upDataMember(userUpData) {
 }
 
 /**
+ * 修改用户资料
+ */
+function userDataEdit(userUpData) {
+
+    switch (userUpData.sex) {
+        case '0':
+            userUpData.sex = '女';
+            break;
+        case '1':
+            userUpData.sex = '男';
+            break;
+        default:
+            userUpData.sex = '女';
+            break;
+    }
+    switch (userUpData.age) {
+        case '0':
+            userUpData.age = '16~24';
+            break;
+        case '1':
+            userUpData.age = '25~35';
+            break;
+        case '2':
+            userUpData.age = '35+';
+            break;
+        default:
+            userUpData.age = '16~24';
+            break;
+    }
+
+
+    var defer = q.defer();
+    memberModel.update(
+        {
+            _id: userUpData.uid
+        },
+        {
+            name: userUpData.name,
+            sex: userUpData.sex,
+            age: userUpData.age,
+            city: userUpData.city,
+            isUser: true
+        },
+        {}, function (err, doc) {
+            if (err) {
+                defer.reject(JSON.stringify(err));
+            } else {
+                var reData = {
+                    doc: {
+                        data: {
+                            code: 'S', msg: '修改用户资料成功'
+                        }
+                    }
+                };
+                if (doc.ok == 1) {
+                    reData.doc.data.code = 'S';
+                    reData.doc.data.msg = '修改用户资料成功';
+                } else {
+                    reData.err = '';
+                }
+
+                defer.resolve(reData);
+            }
+        });
+
+    return defer.promise;
+}
+
+
+/**
  * 修改用户头像
  */
 function editHeaderImg(postObj) {
@@ -78,4 +150,23 @@ function editHeaderImg(postObj) {
     return defer.promise;
 }
 
+
+/**
+ * 修改用户定位gps ,无返回,直接更新成功就成功,失败就忽略
+ */
+function upUserGpsArea(areaObj, uid) {
+    memberModel.update({_id: uid}, {areaGps: areaObj}, {}, function (err, doc) {
+        return {
+            err: err,
+            doc: doc
+        };
+    });
+}
+
+
 module.exports = fun;
+
+
+
+
+

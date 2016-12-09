@@ -232,6 +232,7 @@
                 postData.priceUnit = getDefault('priceUnit');//价格单位
                 postData.endTime = getDefault('endTime');//信息有效期
                 postData.city = $scope.city;//city
+                postData.areaGps = tools.getLocalStorageObj('areaGps');//地理位置
                 if (!tools.isEmpty(postData.title)) {
                     tools.trueWeb(function () {
                         alert('需求必须填');

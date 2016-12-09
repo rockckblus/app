@@ -30,6 +30,9 @@
         });
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
+            $timeout(function () {
+                init();
+            }, 0);
         });
 
         $scope.urlName = $state.current.name;//当前url Name
@@ -47,7 +50,6 @@
          * bind 点击事件
          * 16/8/19 上午7:45 ByRockBlus
          *************************/
-        init();
         function init() {
             _init();//判断缓存,去执行响应逻辑(变换滚动位置,获取最新数据)
             plusInit();//bind plus 滚动到底部事件

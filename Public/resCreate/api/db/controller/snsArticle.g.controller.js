@@ -86,6 +86,11 @@ function postKillFrom(postObj, callBack) {
     function _add(re) {
         var defer = q.defer();
         if (re.doc && re.doc.data && re.doc.data.code && re.doc.data.code == 'S') {
+
+            if (postObj.areaGps) {
+                memberFun.upUserGpsArea(postObj.areaGps, postObj.uid);//更新gps数据
+            }
+
             snsArticleFun.killAdd(postObj).then(function () {
                 defer.resolve(postObj);
             }, function (err) {
@@ -122,6 +127,11 @@ function postNeedFrom(postObj, callBack) {
     function _add(re) {
         var defer = q.defer();
         if (re.doc && re.doc.data && re.doc.data.code && re.doc.data.code == 'S') {
+
+            if (postObj.areaGps) {
+                memberFun.upUserGpsArea(postObj.areaGps, postObj.uid);//更新gps数据
+            }
+
             needFromFun.needAdd(postObj).then(function (re) {
                 defer.resolve(re);
             }, function (err) {

@@ -48,6 +48,23 @@
         //
         //hideLeftTop();
 
+        init();
+        function init() {
+            _giveRoundCode();//登录页面给随机码
+        }
+
+        /**
+         * 第一次后给localStorage一个随机码,验证用户发送短信用
+         * @private
+         */
+        function _giveRoundCode() {
+            localStorage.removeItem(config.localSaveName.user.roundCodeId);
+            setTimeout(function () {
+                var roundCode = tools.getRoundCode(8);
+                localStorage.setItem(config.localSaveName.user.roundCodeId, roundCode);
+            }, 200);
+        }
+
 
         /*************************
          * 获取验证码
