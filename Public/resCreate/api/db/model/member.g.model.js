@@ -38,7 +38,7 @@ var memberSchema = new g.Schema({
     age: {type: String, default: '未知'},//年龄字符串
     sex: {type: String, default: '未知'},//性别
     isUser: {type: Boolean, default: false},//是否有会员资料
-    telType: {type: Boolean, default: true},//是否允许电话咨询
+    telType: {type: String, default: 'yunXun'},//是否允许电话咨询 yunXun jinZhi
     regTime: {type: Date, default: ''},//注册时间
     state: {type: Number, default: 1},//状态 0(禁用) 1激活
     type: {type: Number, default: 0},//级别 会员 0普通 1vip

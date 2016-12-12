@@ -428,6 +428,11 @@ function postMember(req, res) {
                 res.json(re);
             });
             break;
+        case 'telType' ://修改是否允许电话咨询
+            memberCtrl.telType(req.body, function (re) {
+                res.json(re);
+            });
+            break;
 
     }
 

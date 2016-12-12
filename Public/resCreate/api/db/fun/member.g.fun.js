@@ -6,7 +6,9 @@ var fun = {
     upDataMember: upDataMember,//补充用户资料
     editHeaderImg: editHeaderImg,//修改用户头像
     userDataEdit: userDataEdit,// 修改用户资料
-    upUserGpsArea: upUserGpsArea//修改用地位gps
+    upUserGpsArea: upUserGpsArea,//修改用地位gps
+    telType: telType//修改是否允许电话咨询
+
 };
 
 
@@ -163,6 +165,30 @@ function upUserGpsArea(areaObj, uid) {
     });
 }
 
+/**************************
+ * 允许电话咨询
+ * 16/12/12 上午6:18 ByRockBlus
+ **************************/
+function telType(postObj) {
+    var defer = q.defer();
+    memberModel.update({_id: postObj.uid}, {telType: postObj.telType}, {}, function (err, doc) {
+        if (!err) {
+            if (doc && doc.result && doc.result.n == 1) {
+                defer.resolve({
+                    data: {
+                        code: 'S',
+                        msg: '电话咨询更新成功',
+                    }
+                });
+            } else {
+                defer.reject('头像更新失败');
+            }
+        } else {
+            defer.reject('头像更新失败');
+        }
+    });
+    return defer.promise;
+}
 
 module.exports = fun;
 

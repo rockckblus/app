@@ -23,6 +23,7 @@ var fun = {
     getUidByMt: getUidByMt,//根据电话号码获取uid
     editHeaderImg: editHeaderImg,//用户头像修改
     userDataEdit: userDataEdit,//修改用户资料
+    telType:telType
 
 };
 
@@ -185,6 +186,23 @@ function userDataEdit(postObj, callBack) {
 
 }
 
+
+/**************************
+ *  修改用户电话咨询
+ * 16/12/12 上午6:22 ByRockBlus
+ **************************/
+function telType(postObj, callBack) {
+    memberFun.telType(postObj).then(_call, _err);
+
+    function _call(re) {
+        pubFun.pubReturn(false, re.doc, '修改电话咨询成功', '修改资料失败', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '修改电话咨询失败', callBack);
+    }
+
+}
 
 module.exports = fun;
 
