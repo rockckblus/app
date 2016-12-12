@@ -1,24 +1,25 @@
 <div style="color: #777;padding: 1rem" id="killContent">
-    <div class="mui-table-view mui-table-view-chevron clear" id="killContentSoller" style="margin-top: 40px;margin-bottom: 60px">
+    <div class="mui-table-view mui-table-view-chevron clear" id="killContentSoller"
+         style="margin-top: 40px;margin-bottom: 60px">
         <!--头像-->
         <div class="clear itemFrom " style="margin-top: 1rem">
             <div class="left" style="width: 71px;height: 71px;overflow: hidden;border: 1px solid #f4f4f4">
-                <img bindonce="data.userData.headerImg" bo-src="data.userData.headerImg" alt=""
+                <img bindonce="data.doc.userData.headerImg" bo-src="data.doc.userData.headerImg" alt=""
                      style="width: 70px;height: auto">
             </div>
-            <div class="left" style="font-size: 0.8rem ;margin-left: 1rem;color: #dadada">
-                <span class="clear lan" style="font-size: 1rem" bindonce="data.userData.userName"
-                      bo-text="data.userData.userName"></span>
-                <span class="clear" bindonce="data.userData.sex" bo-text="data.userData.sex"></span>
-                <span class="clear" bindonce="data.userData.age" bo-text="data.userData.age"></span>
+            <div class="left" style="font-size: 0.8rem ;margin-left: 1rem;color: #777">
+                <span class="clear lan" style="font-size: 1rem" bindonce="data.doc.userData.userName"
+                      bo-text="data.doc.userData.userName"></span>
+                <span class="clear" bindonce="data.doc.userData.sex" bo-text="data.doc.userData.sex"></span>
+                <span class="clear" bindonce="data.doc.userData.age" bo-text="data.doc.userData.age"></span>
             </div>
-            <div class="right" style="font-size: 0.8rem ;margin-left: 1rem;color: #dadada;text-align: right">
-                <span class="clear lan" style="" bindonce="data.userData.city"
-                      bo-text="data.userData.city"></span>
+            <div class="right" style="font-size: 0.8rem ;margin-left: 1rem;color: #777;text-align: right">
+                <span class="clear lan" style="" bindonce="data.doc.userData.city"
+                      bo-text="data.doc.userData.city"></span>
                 <span class='fa fa-map-marker' style='margin-left: 1rem'></span>
-                <span class='' style='margin-left: 3px' bindonce="data.userData"
-                      bo-text='data.userData.far + "km"'></span>
-                <span class="clear" bindonce="data.userData.mt" bo-text="data.userData.mt"></span>
+                <span class='' style='margin-left: 3px' bindonce="data.doc.userData"
+                      bo-text='data.doc.userData.far + "km"'></span>
+                <span class="clear" bindonce="data.doc.userData.mt" bo-text="data.doc.userData.mt"></span>
             </div>
         </div>
         <div class="line" style="margin-top: 1rem"></div>
@@ -28,19 +29,20 @@
         <div class="clear"></div>
         <div class="clear" style="margin-top: 1.5rem;width: 100%">
             <div class="clear" style="font-size: 1.2rem; width: 100%">
-                <span class="clear lan" bindonce="data.thisJiNeng.title" bo-text="data.thisJiNeng.title"></span>
-                <i class="left" style="color: red;font-size: 0.9rem;" bindonce="data.thisJiNeng.priceStr"
-                   bo-text="data.thisJiNeng.priceStr"></i>
-                <i class="left hui" style="font-size: 0.8rem;margin-left: 1rem" bindonce="data.thisJiNeng.serviceStr"
-                   bo-text="data.thisJiNeng.serviceStr"></i>
+                <span class="clear lan" bindonce="data.doc.thisJiNeng.title" bo-text="data.doc.thisJiNeng.title"></span>
+                <i class="left" style="color: red;font-size: 0.9rem;" bindonce="data.doc.thisJiNeng.priceStr"
+                   bo-text="data.doc.thisJiNeng.priceStr"></i>
+                <i class="left hui" style="font-size: 0.8rem;margin-left: 1rem"
+                   bindonce="data.doc.thisJiNeng.serviceStr"
+                   bo-text="data.doc.thisJiNeng.serviceStr"></i>
                 <div class="clear" style="font-size: 1rem;margin-top: 2rem;color: #777;width: 100%"
-                     bindonce="data.thisJiNeng.content"
-                     bo-text="data.thisJiNeng.content"></div>
+                     bindonce="data.doc.thisJiNeng.content"
+                     bo-text="data.doc.thisJiNeng.content"></div>
             </div>
         </div>
         <div class="line" style="margin-top: 0.8rem"></div>
         <!--图片-->
-        <img class="clear" bindonce="data.thisJiNeng.imgs" bo-src="vo" ng-repeat="vo in data.thisJiNeng.imgs"
+        <img class="clear" bindonce="data.doc.thisJiNeng.imgs" bo-src="vo" ng-repeat="vo in data.thisJiNeng.imgs"
              style="width: 100%;max-width: 25rem;"/>
 
         <div class="line" style="margin-top: 1rem"></div>
@@ -53,11 +55,12 @@
             </div>
             <div class="clear mui-btn"
                  style="font-size: 1rem; width: 100%;text-align: left;border-color: #e9e9e9;margin-top: 0.8rem;color: #777"
-                 bindonce="data.jiNengList"
+                 bindonce="data.doc.jiNengList"
                  bo-id="'jiNengList_' + vo._id"
                  bo-attr
                  bo-attr-subid="vo._id"
-                 ng-repeat="vo in data.jiNengList" bo-html="vo.title +'&nbsp;&nbsp;&nbsp;<i>' + vo.priceStr + '</i>'">
+                 ng-repeat="vo in data.doc.jiNengList"
+                 bo-html="vo.title +'&nbsp;&nbsp;&nbsp;<i>' + vo.priceStr + '</i>'">
             </div>
 
         </div>

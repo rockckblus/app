@@ -9,6 +9,8 @@ var fun = {
     pubReturn: pubReturn,//公共返回
     baseToImgUrl: baseToImgUrl,//base64 转 图片文件保存,返回url
     farGps: farGps,//计算2个gps 之间的 距离
+    changeMt: changeMt,//转换手机号为 155******92
+    getDefaultVal: getDefaultVal,//表单的系统定义值转换为正常值
 };
 
 /**
@@ -113,7 +115,55 @@ function farGps(lat1, lng1, lat2, lng2) {
         var deltaLat = radLat1 - radLat2;
         var deltaLng = toRad(lng1) - toRad(lng2);
         dis = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(deltaLat / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(deltaLng / 2), 2)));
-        return dis * 6378137;
+        dis = dis * 6378137 / 1000;//除1000 变为公里
+        dis = dis.toFixed(2);
+        if (dis == 0.00) {
+            dis = 0.01;
+        }
+        return dis;
+    }
+}
+
+/**
+ * 转换手机号为 155******92
+ */
+function changeMt(mt) {
+    mt = mt.toString();
+    return mt.substr(0, 3) + "****" + mt.substr(7);
+}
+
+/**
+ * 表单的系统定义值转换为正常值
+ * 传字段名, 系统值
+ * */
+function getDefaultVal(fild, val) {
+    switch (fild) {
+        case 'kill_service'://技能服务方式
+            switch (val) {
+                case '0':
+                    return '服务方式不限';
+                case '1':
+                    return '线上服务';
+                case '2':
+                    return '线下服务';
+                default:
+                    return '服务方式不限';
+            }
+            break;
+        case 'kill_priceUnit'://技能价格单位
+            switch (val) {
+                case '0':
+                    return '每小时';
+                case '1':
+                    return '每次';
+                case '2':
+                    return '每单';
+                case '3':
+                    return '面议';
+                default:
+                    return '面议';
+            }
+            break;
     }
 }
 

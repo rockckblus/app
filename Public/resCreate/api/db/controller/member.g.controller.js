@@ -11,6 +11,7 @@ var pubFun = require('../fun/pub.g.fun');//公共方法
 var memberServiceModel = require('../model/member.g.model');
 var g = require('../../g.config');
 var memberFun = require('../fun/member.g.fun');
+var snsArticleFun = require('../fun/snsArticle.g.fun');//技能方法相关
 
 var fun = {
 
@@ -23,7 +24,8 @@ var fun = {
     getUidByMt: getUidByMt,//根据电话号码获取uid
     editHeaderImg: editHeaderImg,//用户头像修改
     userDataEdit: userDataEdit,//修改用户资料
-    telType:telType
+    telType: telType,//设置是否电话咨询
+    getKillContent: getKillContent,//获取技能详情_根据id
 
 };
 
@@ -186,7 +188,6 @@ function userDataEdit(postObj, callBack) {
 
 }
 
-
 /**************************
  *  修改用户电话咨询
  * 16/12/12 上午6:22 ByRockBlus
@@ -195,7 +196,7 @@ function telType(postObj, callBack) {
     memberFun.telType(postObj).then(_call, _err);
 
     function _call(re) {
-        pubFun.pubReturn(false, re.doc, '修改电话咨询成功', '修改资料失败', callBack);
+        pubFun.pubReturn(false, re, '修改电话咨询成功', '修改资料失败', callBack);
     }
 
     function _err(re) {
@@ -203,6 +204,37 @@ function telType(postObj, callBack) {
     }
 
 }
+
+/**获取技能详情_根据id
+ */
+function getKillContent(postObj, callBack) {
+    snsArticleFun.getKillContent(postObj).then(getImgS).then(_call, _err);
+
+    //获取技能图片
+    function getImgS(re) {
+        var defer = q.defer();
+        snsArticleFun.getKillImgs(re.thisJiNeng.killRoundId, re.userData._id).then(function (reImgs) {
+            re.thisJiNeng.imgs = reImgs;
+            defer.resolve(re);
+        }, function (err) {
+            defer.reject(JSON.stringify(err));
+        });
+        return defer.promise;
+    }
+
+    function _call(re) {
+        var reData = {
+            _doc: re
+        };
+        pubFun.pubReturn(false, reData, '技能获取成功', '技能获取失败', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '技能获取失败', callBack);
+    }
+
+}
+
 
 module.exports = fun;
 

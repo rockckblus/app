@@ -127,7 +127,6 @@ function userDataEdit(userUpData) {
     return defer.promise;
 }
 
-
 /**
  * 修改用户头像
  */
@@ -152,7 +151,6 @@ function editHeaderImg(postObj) {
     return defer.promise;
 }
 
-
 /**
  * 修改用户定位gps ,无返回,直接更新成功就成功,失败就忽略
  */
@@ -173,7 +171,7 @@ function telType(postObj) {
     var defer = q.defer();
     memberModel.update({_id: postObj.uid}, {telType: postObj.telType}, {}, function (err, doc) {
         if (!err) {
-            if (doc && doc.result && doc.result.n == 1) {
+            if (doc && doc.n == 1) {
                 defer.resolve({
                     data: {
                         code: 'S',
@@ -181,10 +179,10 @@ function telType(postObj) {
                     }
                 });
             } else {
-                defer.reject('头像更新失败');
+                defer.reject('电话咨询更新失败');
             }
         } else {
-            defer.reject('头像更新失败');
+            defer.reject('电话咨询更新失败');
         }
     });
     return defer.promise;

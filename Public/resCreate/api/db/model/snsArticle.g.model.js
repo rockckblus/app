@@ -37,7 +37,7 @@ var articleSchema = new g.Schema({
             service: {type: Number, default: 0},//服务方式 (‘0’:不限,’1’:’线上’,’2’:’线下’)
         }
     },
-    uid: {type: String},//用户id
+    uid: {type: g.Schema.Types.ObjectId},//用户id
 });
 
 

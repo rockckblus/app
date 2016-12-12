@@ -1,12 +1,17 @@
 var snsArticleModel = require('../model/snsArticle.g.model');
 var killFromImgModel = require('../model/killFromImg.g.model');
+var memberModel = require('../model/member.g.model');
 var q = require('q');//异步编程对象
-
+var g = require('../../g.config');
+var pub = require('../fun/pub.g.fun');//公共方法
 var fun = {
     killAdd: killAdd,//添加一条技能
     getOneKill: getOneKill,//判断订单是否存在,防止重复提交 ,传 killRoundId,
     addKillFromImg: addKillFromImg,//添加技能图片
     delKillImg: delKillImg,//删除技能图片
+    getKillContent: getKillContent,//获取技能详情_根据id
+    getUserIdKillList: getUserIdKillList,//查询用户发布的所有 技能
+    getKillImgs: getKillImgs,//技能图片选择
 };
 
 /**
@@ -23,6 +28,7 @@ function killAdd(postObj) {
     snsArticleModel.create({
             killRoundId: postObj.killRoundId,//随机id 仿制重复提交
             uid: postObj.uid,
+            userId: postObj.uid,
             title: postObj.title,//技能标题
             content: postObj.content,//技能介绍
             attr: {
@@ -38,6 +44,74 @@ function killAdd(postObj) {
             }
         }
     );
+    return defer.promise;
+}
+
+/**
+ * 获取技能详情_根据id ,发节能的用户资料
+ * */
+function getKillContent(postObj) {
+    var defer = q.defer();
+    snsArticleModel.find({_id: postObj.jiNengId})
+        .populate(
+            {
+                'path': 'uid',
+                'model': memberModel,
+            }
+        )
+        .exec(function (err, doc) {
+            var reDoc = {
+                userData: {},
+                thisJiNeng: {},
+                jiNengList: {}
+            };
+            if (err) {
+                defer.reject(err);
+            } else {
+                reDoc.userData = doc[0].uid._doc;
+                reDoc.userData.headerImg = g.host.imageHost + reDoc.userData.headerImg;
+                reDoc.userData.mt = pub.changeMt(reDoc.userData.mt);
+
+                // reDoc.userData.far = pub.farGps(39.911843, 116.390533, 39.079774, 117.172880);//北京到天津117
+                if (postObj.areaGps && postObj.areaGps.lat && reDoc.userData.areaGps && reDoc.userData.areaGps.gpsObj && reDoc.userData.areaGps.gpsObj.lat) {//如果有客户gps 就去计算距离
+                    reDoc.userData.far = pub.farGps(postObj.areaGps.lat, postObj.areaGps.lng, reDoc.userData.areaGps.gpsObj.lat, reDoc.userData.areaGps.gpsObj.lng);
+                }
+                reDoc.thisJiNeng = doc[0]._doc;
+                reDoc.thisJiNeng.price = doc[0]._doc.attr.price;
+                reDoc.thisJiNeng.priceUnit = pub.getDefaultVal('kill_priceUnit', doc[0]._doc.attr.priceUnit);
+                reDoc.thisJiNeng.service = pub.getDefaultVal('kill_service', doc[0]._doc.attr.service);
+
+                getUserIdKillList(doc.userId).then(function (doc) {//取用户发布的其他
+                    reDoc.jiNengList = doc;
+                    defer.resolve(reDoc);
+                }, function (err) {
+                    defer.reject(err);
+                });
+            }
+        });
+    return defer.promise;
+}
+
+/**
+ * 查询用户发布的所有 技能
+ * @param postObj
+ */
+function getUserIdKillList(userId) {
+    var defer = q.defer();
+    snsArticleModel.find({userId: userId, state: 1})
+        .select('_id title attr')
+        .limit(5)
+        .exec(function (err, doc) {
+            for (var i in doc) {
+                doc[i]._doc.price = doc[i]._doc.attr.price;
+                doc[i]._doc.priceUnit = pub.getDefaultVal('kill_priceUnit', doc[i]._doc.attr.priceUnit);
+                doc[i]._doc.service = pub.getDefaultVal('kill_service', doc[i]._doc.attr.service);
+            }
+            if (err) {
+                defer.reject(err);
+            }
+            defer.resolve(doc);
+        });
     return defer.promise;
 }
 
@@ -223,5 +297,31 @@ function delKillImg(postObj) {
 
     return defer.promise;
 }
+
+
+/**
+ * 技能图片选择
+ * 传 uid,killRoundId
+ */
+function getKillImgs(killRoundId, uid) {
+    var defer = q.defer();
+    killFromImgModel.find(
+        {
+            killRoundId: killRoundId,
+            uid: uid
+        }).exec(function (err, doc) {
+        if (err) {
+            defer.reject(JSON.stringify(err));
+        } else {
+            var reArr = [];
+            for (var i in doc) {
+                reArr.push(g.host.imageHost + doc[i].imgUrl);
+            }
+            defer.resolve(reArr);
+        }
+    });
+    return defer.promise;
+}
+
 
 module.exports = fun;

@@ -17,7 +17,7 @@ var g = require('../../g.config');
  * 技能图片结构
  * 16/3/7 */
 var killFromImgSchema = new g.Schema({
-    uid: {type: String},//用户id
+    uid: {type: g.Schema.Types.ObjectId},//用户id
     imgUrl: {type: String},
     killRoundId: {type: String, default: ''},//对应技能表单提交的id
     voId: {type: String, default: 'upImgClick1'},//3张图片的 排序

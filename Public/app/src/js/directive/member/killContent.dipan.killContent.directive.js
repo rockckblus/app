@@ -52,38 +52,41 @@
          */
         function getData() {
             var url = config.host.nodeHost + "/member/getKillContent";
-            tools.postJsp(url, {jiNengId: $state.params.jiNengId}).then(_s, _e);
+            tools.postJsp(url, {
+                jiNengId: $state.params.jiNengId,
+                areaGps: tools.getLocalStorageObj('areaGps').gpsObj
+            }).then(_s, _e);
             function _s(re) {
                 $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
-                if (re.data && re.data.code == 'S') {
+                if (re.data && re.data.code == 'S' && re.data.doc) {
                     try {
-                        if (!re.data.userData.headerImg) {
-                            re.data.userData.headerImg = header.defaultHeader;
+                        if (!re.data.doc.userData.headerImg) {
+                            re.data.doc.userData.headerImg = header.defaultHeader;
                         }
                     } catch (e) {
                         console.error('无headerImg');
                     }
                     try {
-                        if (re.data.thisJiNeng.priceUnit == '面议') {
-                            re.data.thisJiNeng.priceStr = '面议';
+                        if (re.data.doc.thisJiNeng.priceUnit == '面议') {
+                            re.data.doc.thisJiNeng.priceStr = '价格面议';
                         } else {
-                            re.data.thisJiNeng.priceStr = re.data.thisJiNeng.price + ' ' + re.data.thisJiNeng.priceUnit;
+                            re.data.doc.thisJiNeng.priceStr = re.data.doc.thisJiNeng.price + ' ' + re.data.doc.thisJiNeng.priceUnit;
                         }
                     } catch (e) {
 
                     }
 
-                    switch (re.data.thisJiNeng.service) {
+                    switch (re.data.doc.thisJiNeng.service) {
                         case '线上':
-                            re.data.thisJiNeng.serviceStr = '线上服务';
+                            re.data.doc.thisJiNeng.serviceStr = '线上服务';
                             break;
                         case '线下':
-                            re.data.thisJiNeng.serviceStr = '线下服务';
+                            re.data.doc.thisJiNeng.serviceStr = '线下服务';
                             break;
                     }
 
 
-                    angular.forEach(re.data.jiNengList, function (vo) {
+                    angular.forEach(re.data.doc.jiNengList, function (vo) {
                         if (vo.priceUnit == '面议') {
                             vo.priceStr = '';
                         } else {

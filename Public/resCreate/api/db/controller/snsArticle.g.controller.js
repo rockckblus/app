@@ -199,6 +199,7 @@ function delKillImg(postObj, callBack) {
     }
 }
 
+
 module.exports = fun;
 
 

@@ -208,10 +208,10 @@
                 function getGuest() {//获取技能用户资料
                     var url = config.host.nodeHost + '/member/getKillContent';
                     tools.postJsp(url, {jiNengId: $state.params.jiNengId}, true).then(function (re) {
-                        if (re.data && re.data.code == 'S') {
+                        if (re.data && re.data.code == 'S' && re.data.doc) {
                             var gHeader = header.defaultHeader;
-                            if (re.data.headerImg) {
-                                gHeader = re.data.userData.headerImg;
+                            if (re.data.doc.userData.headerImg) {
+                                gHeader = re.data.doc.userData.headerImg;
                             }
                             var userHeader = header.defaultHeader;
                             var thisHeader = tools.getLocalStorageObj('userData').headerImg;
@@ -219,12 +219,12 @@
                                 userHeader = thisHeader;
                             }
                             var uid = tools.getLocalStorageObj('userData').uid;
-                            var gName = re.data.userData.userName;
+                            var gName = re.data.doc.userData.name;
                             if (!gName) {
-                                gName = re.data.userData.mt;
+                                gName = re.data.doc.userData.mt;
                             }
 
-                            openIm(gHeader, re.data.userData.uid, gName, userHeader, uid);
+                            openIm(gHeader, re.data.doc.userData.uid, gName, userHeader, uid);
 
 
                         } else {
@@ -254,8 +254,6 @@
          * @param userId 用户id
          */
         function openIm(gHeader, gUId, gName, userHeader, userId) {
-            console.log('gHeader', gHeader);
-
             if (gUId && userId) {
                 mui.openWindow({
                     url: 'callIm.html',

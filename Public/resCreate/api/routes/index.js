@@ -433,6 +433,11 @@ function postMember(req, res) {
                 res.json(re);
             });
             break;
+        case 'getKillContent' ://获取技能详情_根据id
+            memberCtrl.getKillContent(req.body, function (re) {
+                res.json(re);
+            });
+            break;
 
     }
 
