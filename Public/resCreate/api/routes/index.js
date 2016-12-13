@@ -437,10 +437,18 @@ function postMember(req, res) {
             memberCtrl.getKillContent(req.body, function (re) {
                 res.json(re);
             });
+        case 'xianDan' ://下单
+            memberCtrl.xiaDan(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+        case 'trueXianDan' ://判断技能id是否被当前uid下单
+            memberCtrl.trueXianDan(req.body, function (re) {
+                res.json(re);
+            });
             break;
 
     }
-
 }
 
 /** curl  */

@@ -223,10 +223,7 @@
                             if (!gName) {
                                 gName = re.data.doc.userData.mt;
                             }
-
-                            openIm(gHeader, re.data.doc.userData.uid, gName, userHeader, uid);
-
-
+                            openIm(gHeader, re.data.doc.userData._id, gName, userHeader, uid);
                         } else {
                             _err(re.msg);
                         }

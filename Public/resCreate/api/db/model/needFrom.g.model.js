@@ -7,7 +7,7 @@
  // price    String    false    价格，为空视为‘面议’
  // priceUnit    String    true    价格单位(‘0’:1小时,’1’:’1次’,’2’:’1单’,’3’:’面议’)
  // endTime    Date true    有效期(‘0’:3天,’1’:’1周’,’2’:’1个月’)
- // state: {type: Number, default: 1},//状态 1.正常 0.删除
+ // state: {type: Number, default: 1},// 订单状态 发起1，接单2,选单3,过期4，删除5
  // needRoundId    String    true    需求自动生成的表单id，仿制重复提交
  // cityBuXian    布尔    true    城市输入如果选不限，就忽略city字段
  // city    String    false    城市名称(默认未知)
@@ -28,7 +28,7 @@ var needFromSchema = new g.Schema({
     uid: {type: String},//用户id
     needRoundId: {type: String, default: ''},//仿制重复提交的id
     title: String,//标题
-    state: {type: Number, default: 1},//状态 1.正常 0.删除
+    state: {type: Number, default: 1},//订单状态 发起1，接单2,选单3,过期4，删除5
     endTime: {type: Date, default: ''},//有效期
     sendTime: {type: Date, default: Date.now},//发布时间
     editTime: {type: Date, default: Date.now},//修改时间 (无修改时间的时候与发布时间相同)

@@ -34,8 +34,9 @@ function pubReturn(err, doc, sMsg, eMsg, callBack) {
     } else if ((doc.data) || (doc && doc._doc) || (doc && doc[0] && doc[0]._doc)) {
         var reDoc = [];
         if (doc.data) {
-            reData.data = doc.data;
+            reDoc = doc.data;
         }
+
         else if (doc && doc[0] && doc[0]._doc) {
             for (var vo in doc) {
                 reDoc.push(doc[vo]._doc);
@@ -48,6 +49,7 @@ function pubReturn(err, doc, sMsg, eMsg, callBack) {
             doc: reDoc,
             msg: sMsg
         };
+
     } else {
         reData.data = {
             code: 'F',

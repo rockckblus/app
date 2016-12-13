@@ -26,6 +26,9 @@ var fun = {
     userDataEdit: userDataEdit,//修改用户资料
     telType: telType,//设置是否电话咨询
     getKillContent: getKillContent,//获取技能详情_根据id
+    xiaDan: xiaDan,//下单
+    trueXianDan: trueXianDan,//判断技能id是否被当前uid下单
+
 
 };
 
@@ -205,7 +208,8 @@ function telType(postObj, callBack) {
 
 }
 
-/**获取技能详情_根据id
+/**
+ * 获取技能详情_根据id
  */
 function getKillContent(postObj, callBack) {
     snsArticleFun.getKillContent(postObj).then(getImgS).then(_call, _err);
@@ -235,6 +239,34 @@ function getKillContent(postObj, callBack) {
 
 }
 
+/**
+ * 下单 todo
+ */
+function xiaDan(postObj, callBack) {
+    // snsArticleFun.xiaDanFun(postObj).then(_call, _err);
+    // function _call(re) {
+    //     pubFun.pubReturn(false, re, '下单成功', '下单失败', callBack);
+    // }
+    //
+    // function _err(re) {
+    //     pubFun.pubReturn(re, {}, '', '下单失败', callBack);
+    // }
+}
+
+
+/**
+ * 判断技能id是否被当前uid下单
+ */
+function trueXianDan(postObj, callBack) {
+    snsArticleFun.trueXianDanFun(postObj).then(_call, _err);
+    function _call(re) {
+        pubFun.pubReturn(false, re, '当前用户已经对当前技能下单', '当前用户没有对当前技能下单', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '是否下单获取失败', callBack);
+    }
+}
 
 module.exports = fun;
 

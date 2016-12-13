@@ -12,6 +12,8 @@ var fun = {
     getKillContent: getKillContent,//获取技能详情_根据id
     getUserIdKillList: getUserIdKillList,//查询用户发布的所有 技能
     getKillImgs: getKillImgs,//技能图片选择
+    xiaDanFun: xiaDanFun,//下单
+    trueXianDanFun: trueXianDanFun,//判断技能id是否被当前uid下单
 };
 
 /**
@@ -68,25 +70,29 @@ function getKillContent(postObj) {
             if (err) {
                 defer.reject(err);
             } else {
-                reDoc.userData = doc[0].uid._doc;
-                reDoc.userData.headerImg = g.host.imageHost + reDoc.userData.headerImg;
-                reDoc.userData.mt = pub.changeMt(reDoc.userData.mt);
+                if (doc && doc[0] && doc[0].uid && doc[0].uid._doc) {
+                    reDoc.userData = doc[0].uid._doc;
+                    reDoc.userData.headerImg = g.host.imageHost + reDoc.userData.headerImg;
+                    reDoc.userData.mt = pub.changeMt(reDoc.userData.mt);
 
-                // reDoc.userData.far = pub.farGps(39.911843, 116.390533, 39.079774, 117.172880);//北京到天津117
-                if (postObj.areaGps && postObj.areaGps.lat && reDoc.userData.areaGps && reDoc.userData.areaGps.gpsObj && reDoc.userData.areaGps.gpsObj.lat) {//如果有客户gps 就去计算距离
-                    reDoc.userData.far = pub.farGps(postObj.areaGps.lat, postObj.areaGps.lng, reDoc.userData.areaGps.gpsObj.lat, reDoc.userData.areaGps.gpsObj.lng);
+                    // reDoc.userData.far = pub.farGps(39.911843, 116.390533, 39.079774, 117.172880);//北京到天津117
+                    if (postObj.areaGps && postObj.areaGps.lat && reDoc.userData.areaGps && reDoc.userData.areaGps.gpsObj && reDoc.userData.areaGps.gpsObj.lat) {//如果有客户gps 就去计算距离
+                        reDoc.userData.far = pub.farGps(postObj.areaGps.lat, postObj.areaGps.lng, reDoc.userData.areaGps.gpsObj.lat, reDoc.userData.areaGps.gpsObj.lng);
+                    }
+                    reDoc.thisJiNeng = doc[0]._doc;
+                    reDoc.thisJiNeng.price = doc[0]._doc.attr.price;
+                    reDoc.thisJiNeng.priceUnit = pub.getDefaultVal('kill_priceUnit', doc[0]._doc.attr.priceUnit);
+                    reDoc.thisJiNeng.service = pub.getDefaultVal('kill_service', doc[0]._doc.attr.service);
+
+                    getUserIdKillList(doc.userId).then(function (doc) {//取用户发布的其他
+                        reDoc.jiNengList = doc;
+                        defer.resolve(reDoc);
+                    }, function (err) {
+                        defer.reject(err);
+                    });
+                } else {
+                    defer.reject('doc为空');
                 }
-                reDoc.thisJiNeng = doc[0]._doc;
-                reDoc.thisJiNeng.price = doc[0]._doc.attr.price;
-                reDoc.thisJiNeng.priceUnit = pub.getDefaultVal('kill_priceUnit', doc[0]._doc.attr.priceUnit);
-                reDoc.thisJiNeng.service = pub.getDefaultVal('kill_service', doc[0]._doc.attr.service);
-
-                getUserIdKillList(doc.userId).then(function (doc) {//取用户发布的其他
-                    reDoc.jiNengList = doc;
-                    defer.resolve(reDoc);
-                }, function (err) {
-                    defer.reject(err);
-                });
             }
         });
     return defer.promise;
@@ -298,7 +304,6 @@ function delKillImg(postObj) {
     return defer.promise;
 }
 
-
 /**
  * 技能图片选择
  * 传 uid,killRoundId
@@ -323,5 +328,19 @@ function getKillImgs(killRoundId, uid) {
     return defer.promise;
 }
 
+/**
+ *下单
+ */
+function xiaDanFun(postObj) {
+
+}
+
+
+/**
+ *判断技能id是否被当前uid下单 todo
+ */
+function trueXianDanFun(postObj) {
+
+}
 
 module.exports = fun;

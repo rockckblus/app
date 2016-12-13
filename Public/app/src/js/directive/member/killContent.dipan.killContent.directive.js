@@ -120,7 +120,7 @@
          * bind 技能列表点击
          */
         function bindJiNengListClick() {
-            angular.forEach($scope.data.jiNengList, function (vo) {
+            angular.forEach($scope.data.doc.jiNengList, function (vo) {
                 var dom = document.getElementById('jiNengList_' + vo._id);
                 dom.addEventListener(clickType, function () {
                     _bind(dom);
