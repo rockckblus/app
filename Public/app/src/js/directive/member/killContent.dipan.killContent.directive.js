@@ -21,7 +21,6 @@
 
     function thisController($scope, $rootScope, $timeout, $state, config, tools, header) {
 
-
         var clickType = 'tap';
         tools.trueWeb(function () {
             clickType = 'click';
@@ -45,7 +44,6 @@
                 getData();
             }, 0);
         }
-
 
         /**
          * 获取数据
@@ -100,6 +98,15 @@
                             bindJiNengListClick();
                         }, 0);
                     }, 0);
+
+
+                    $timeout(function () {
+                        if ((re.data.doc.userData._id == tools.getLocalStorageObj('userData').uid)) {
+                            document.getElementById('bottomNavCall').style.display = 'none';
+                        }
+                    }, 0);
+
+
                 } else {
                     _e(re.data.msg);
                 }
@@ -114,7 +121,6 @@
                 tools.alert({title: errMsg});
             }
         }
-
 
         /**
          * bind 技能列表点击

@@ -237,6 +237,8 @@
                     clickShaiXuan: 'clickShaiXuan',//筛选点击id数组
                     area: 'area',//gps 坐标信息,城市名称,邮编
                     areaGps: 'areaGps',//gps 坐标信息,城市名称,邮编,此处是 第一次运行,手机定位成功的时候 记录的精确位置信息
+                    searchKey: 'searchKey',//搜索时候存储的关键词,返回homeList数据时候就清空此字段
+                    searchCity: 'searchCity',//搜索时候选择的城市字段,如果有城市就有城市的搜索条件,如果没有 或者 附近,就是全国,按照gpsObj传来的数据 去按照定位距离搜索,
                 },
                 version: {
                     //版本
@@ -250,6 +252,7 @@
                     radio3: 'radio3',//会员补充资料,男,女 default:女
                     radio4: 'radio4',//会员补充资料,年龄 default:16~24
                 }
+
             },
 
             //系统配置

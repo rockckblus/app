@@ -73,9 +73,9 @@
         var url;
         var type = 1;//1上啦,2下拉
         switch (name) {
-            case 'memberIndex':
-                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
-                break;
+            // case 'memberIndex':
+            //     url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
+            //     break;
             case 'home':
                 url = _config.host.nodeHost + '/sns/homeGetList?' + _tools.getRoundCode(8);
                 break;
@@ -110,9 +110,15 @@
                 type = 2;
             }
 
+
+            //获取数据库的筛选条件,遍历name 给不同筛选条件
+            var condit = switchSearchCondition();
+
+
             var postData = {
                 'frontId': _frontId,
                 'endId': _endId,
+                'condition': condit
             };
 
             /**************************
@@ -139,9 +145,9 @@
          **************************/
         function _getCatchList(__call) {
             switch (_state.current.name) {
-                case 'star' :
-                    _logicStar(__call);//星标的逻辑
-                    break;
+                // case 'star' :
+                //     _logicStar(__call);//星标的逻辑
+                //     break;
                 default:
                     _logicHome(__call);//供`需`其他 的逻辑
                     break;
@@ -153,23 +159,23 @@
          * 读取缓存的 星标 list对象返回,如果 为空  提示alert
          * 16/9/16 上午11:10 ByRockBlus
          **************************/
-        function _logicStar(___call) {
-
-            var starCatchList = _tools.getLocalStorageObj('star');
-            if (!starCatchList || !starCatchList [0]) {
-                _tools.alert({
-                    title: '没有标记过的信息'
-                });
-                _rootScope.$broadcast('closeLoading');
-                return;
-            } else {
-                var re = {
-                    list: starCatchList
-                };
-                _rootScope.$broadcast('closeLoading');
-                ___call(re);
-            }
-        }
+        // function _logicStar(___call) {
+        //
+        //     var starCatchList = _tools.getLocalStorageObj('star');
+        //     if (!starCatchList || !starCatchList [0]) {
+        //         _tools.alert({
+        //             title: '没有标记过的信息'
+        //         });
+        //         _rootScope.$broadcast('closeLoading');
+        //         return;
+        //     } else {
+        //         var re = {
+        //             list: starCatchList
+        //         };
+        //         _rootScope.$broadcast('closeLoading');
+        //         ___call(re);
+        //     }
+        // }
 
         /**************************
          * home  供`需`其他 的逻辑
@@ -526,5 +532,22 @@
         }
     }
 
+    /**
+     * 获取数据库的筛选条件,遍历name 给不同筛选条件
+     * 获取地址逻辑,如果 area.city.city == 附近,(cityCode == 777) ,就取areaGps 的gps 坐标,按照距离排序
+     * 否则如果有值,就取 cityCode 去 筛选城市排序
+     */
+    function switchSearchCondition() {
+        var condi = {
+            area: {},
+            areaGps: {},
+            clickShaiXuan: {}
+        };
+        condi.area = _tools.getLocalStorageObj('area');
+        condi.areaGps = _tools.getLocalStorageObj('areaGps');
+        condi.clickShaiXuan = _tools.getLocalStorageObj('clickShaiXuan');
+        condi.searchKey = localStorage.getItem('searchKey');
+        return condi;
+    }
 
 })();

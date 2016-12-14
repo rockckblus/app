@@ -119,7 +119,7 @@ function farGps(lat1, lng1, lat2, lng2) {
         dis = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(deltaLat / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(deltaLng / 2), 2)));
         dis = dis * 6378137 / 1000;//除1000 变为公里
         dis = dis.toFixed(2);
-        if (dis == 0.00) {
+        if (!dis) {
             dis = 0.01;
         }
         return dis;

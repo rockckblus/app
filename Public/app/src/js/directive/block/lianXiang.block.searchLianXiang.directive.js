@@ -58,6 +58,7 @@
             }
             var url = config.host.nodeHost + '/key/lianXiangKey';
 
+            tools.saveLocalStorageObj('searchKey', key);//存入searchKey 去组合查询条件 如果返回 homeList的 数据,再清空此字段
             tools.postJsp(url, {key: key}, true).then(_call);
             function _call(re) {
                 $timeout(function () {

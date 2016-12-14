@@ -27,7 +27,6 @@
         $scope.$on('hideSearchArea', hideSearchArea);//监听隐藏 block事件 来隐藏area block
         $scope.$on('changeArea', giveThisCity);//监听地址变换事件
 
-
         init();
         function init() {
             giveThisCity();

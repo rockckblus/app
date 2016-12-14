@@ -266,7 +266,6 @@
                         tools.saveLocalStorageObj('radio2', '');
                         tools.saveLocalStorageObj('radio3', '');
                         tools.saveLocalStorageObj('radio4', '');
-
                         tools.trueWeb(function () {
                             var con = confirm("发布成功! 按确定继续发布");
                             if (con) {
@@ -332,6 +331,7 @@
                 }
             }
         }
+
     }
 
 })();

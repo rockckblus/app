@@ -38,6 +38,8 @@ var articleSchema = new g.Schema({
         }
     },
     uid: {type: g.Schema.Types.ObjectId},//用户id
+    gpsArea: {type: Object, default: {}},//gps信息 {"gpsObj":{"lat":39.55237,"lng":116.814664},"city":{"city":"天津市","cityCode":"022"}}
+    cityCode: {type: String, default: '777'},//城市编号
 });
 
 

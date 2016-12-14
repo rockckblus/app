@@ -13,7 +13,7 @@ var memberFun = require('../fun/member.g.fun');//技能方法相关
 var q = require('q');
 
 var fun = {
-    getList: getList,//get 多条
+    homeGetList: homeGetList,//首页技能列表
     postKillFrom: postKillFrom,//添加一条技能 dist
     postNeedFrom: postNeedFrom,//添加一条需求
     addKillImg: addKillImg,//技能图片添加
@@ -26,24 +26,26 @@ var fun = {
 
 
 /**
- * 根据post上拉,下拉返回
+ *  condition :
+ 获取数据库的筛选条件,遍历name 给不同筛选条件
+ 获取地址逻辑,如果 area.city.city == 附近,(cityCode == 777) ,就取areaGps 的gps 坐标,按照距离排序
+ 否则如果有值,就取 cityCode 去 筛选城市排序
  * @param postObj
  * @param callBack
  */
-function getList(postObj, callBack) {
+function homeGetList(postObj, callBack) {
 
-    var whereCondition = {};
-    if (postObj.endId) {//下拉 find next 查出当前 的 上一条数据
+    var whereCondition = null;
+    if (postObj.endId !== 0) {//下拉 find next 查出当前 的 上一条数据
         whereCondition = {
             '_id': {
                 '$lt': postObj.endId
             },
             'type': postObj.type
-
         };
     }
 
-    else if (postObj.frontId) {//下拉 find next 查出当前 的 上一条数据
+    else if (postObj.frontId !== 0) {//下拉 find next 查出当前 的 上一条数据
         whereCondition = {
             '_id': {
                 '$gt': postObj.frontId
@@ -52,14 +54,9 @@ function getList(postObj, callBack) {
         };
     }
 
-    else {
-        whereCondition = {
-            'type': postObj.type
-        };
-    }
     snsArticleModel.find(whereCondition)
         .limit(10)
-        .sort('-editTime')
+        // .sort('-editTime')
         .exec(function (err, doc) {
             pubFun.pubReturn(err, doc, '查询成功', '查询失败', callBack);
         });

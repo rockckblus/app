@@ -27,6 +27,14 @@ function killAdd(postObj) {
     if (!postObj.price) {//如果价格为空,修改 单位为面议
         postObj.priceUnit = '3';
     }
+    var gpsArea = {};
+    var cityCode = 777;
+    if (postObj.areaGps) {
+        gpsArea = postObj.areaGps;
+    }
+    if (postObj.areaGps && postObj.areaGps.city && postObj.areaGps.city.cityCode) {
+        cityCode = postObj.areaGps.city.cityCode;
+    }
     snsArticleModel.create({
             killRoundId: postObj.killRoundId,//随机id 仿制重复提交
             uid: postObj.uid,
@@ -38,6 +46,8 @@ function killAdd(postObj) {
                 priceUnit: postObj.priceUnit,//价格单位
                 service: postObj.service,//服务方式
             },//属性
+            cityCode: cityCode,//城市编码
+            gpsArea: gpsArea,//gps位置
         }, function (err, doc) {
             if (err) {
                 defer.resolve(JSON.stringify(err));
@@ -84,7 +94,7 @@ function getKillContent(postObj) {
                     reDoc.thisJiNeng.priceUnit = pub.getDefaultVal('kill_priceUnit', doc[0]._doc.attr.priceUnit);
                     reDoc.thisJiNeng.service = pub.getDefaultVal('kill_service', doc[0]._doc.attr.service);
 
-                    getUserIdKillList(doc.userId).then(function (doc) {//取用户发布的其他
+                    getUserIdKillList(doc[0].uid._id).then(function (doc) {//取用户发布的其他
                         reDoc.jiNengList = doc;
                         defer.resolve(reDoc);
                     }, function (err) {
@@ -104,7 +114,7 @@ function getKillContent(postObj) {
  */
 function getUserIdKillList(userId) {
     var defer = q.defer();
-    snsArticleModel.find({userId: userId, state: 1})
+    snsArticleModel.find({uid: userId, state: 1})
         .select('_id title attr')
         .limit(5)
         .exec(function (err, doc) {

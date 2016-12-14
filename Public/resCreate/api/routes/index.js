@@ -255,8 +255,11 @@ function postSns(req, res) {
     var fun = req.params.fun;
     switch (fun) {
         case 'homeGetList' :
-            req.body.type = 'home';//加入type字段。首页是 供
-            _getList(req.body);
+            snsArticleServiceCtrl.homeGetList(req.body, function (re) {
+                res.json(re);
+            }, function (err) {
+                res.json(err);
+            });
             break;
         case 'needGetlist' :
             req.body.type = 'need';//加入type字段。需
@@ -270,7 +273,6 @@ function postSns(req, res) {
             });
             break;
         case 'postNeedFrom' ://添加一条需求
-
             snsArticleServiceCtrl.postNeedFrom(req.body, function (re) {
                 res.json(re);
             }, function (err) {
@@ -295,39 +297,7 @@ function postSns(req, res) {
 
     }
 
-    /**
-     * 测试下拉文章 list 接口
-     * @private
-     */
-    function _getList(body) {
-        snsArticleServiceCtrl.getList(body, _callback);
-        function _callback(re) {
-            res.json(re);
-        }
 
-    }
-
-    /**
-     * 添加一条文章
-     * @param { Object }postObj
-     title: String,//标题
-     type: {type: Number, default: 3},//供 1,需 2,其他 3
-     sort: {type: Number, default: 0},//排序
-     state: {type: Number, default: 1},//状态 1.正常
-     sendTime: {type: Date, default: Date.now},//发布时间
-     editTime: {type: Date, default: Date.now},//修改时间 (无修改时间的时候与发布时间相同)
-     tags: [{keyId: ObjectId}],//标签数组
-     content: [{key: String, val: String}],//内容 键值对
-     * @param {function 回调}callBack
-     * @param {function 错误回调}errCallBack
-     *
-     */
-    function _addArticle(postObj) {
-        snsArticleServiceCtrl.addOneArticle(postObj, _callback);
-        function _callback(re) {
-            res.json(re);
-        }
-    }
 }
 
 /**
@@ -437,6 +407,12 @@ function postMember(req, res) {
             memberCtrl.getKillContent(req.body, function (re) {
                 res.json(re);
             });
+            break;
+        case 'getOrderFromContent' ://获取技能详情_根据id
+            memberCtrl.getOrderFromContent(req.body, function (re) {
+                res.json(re);
+            });
+            break;
         case 'xianDan' ://下单
             memberCtrl.xiaDan(req.body, function (re) {
                 res.json(re);

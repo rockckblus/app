@@ -25,7 +25,7 @@ var g = require('../../g.config');
  * article结构
  * 16/3/7 */
 var needFromSchema = new g.Schema({
-    uid: {type: String},//用户id
+    uid: {type: g.Schema.Types.ObjectId},//用户id
     needRoundId: {type: String, default: ''},//仿制重复提交的id
     title: String,//标题
     state: {type: Number, default: 1},//订单状态 发起1，接单2,选单3,过期4，删除5
@@ -33,7 +33,6 @@ var needFromSchema = new g.Schema({
     sendTime: {type: Date, default: Date.now},//发布时间
     editTime: {type: Date, default: Date.now},//修改时间 (无修改时间的时候与发布时间相同)
     content: {type: String, default: ''},//内容 介绍
-    city: {type: String, default: '未知'},//城市
     cityBuXian: {type: Boolean, defalut: true},//城市输入如果选不限，就忽略city字段
     attr: {//属性对象
         type: Object,
@@ -42,6 +41,11 @@ var needFromSchema = new g.Schema({
             priceUnit: {type: String, default: '面议'},//价格单位
         }
     },
+    gpsObj: {type: Object, default: {}},//gps信息 {"gpsObj":{"lat":39.55237,"lng":116.814664},"city":{"city":"天津市","cityCode":"022"}}
+    city: {type: String, default: '未知'},//城市
+    cityCode: {type: String, default: '777'},//城市编号
+    gpsArea: {type: Object, default: {}},//gps信息
+
 });
 
 

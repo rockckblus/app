@@ -1,25 +1,19 @@
 {
-  "complete": false,
+  "complete": true,
   "list": [
     {
       "id": 1,
-      "_id": "584fa3048cbc97b242b9fbee",
+      "_id": "5850bf4d991ad9612387cebd",
       "listHeader": "",
       "title": "9099sidfk这就是你扩散到付款这就是你扩散到付款这就是你扩散到付款这就是你扩散到付款,这就是你扩散到付款,这就是你扩散到付款,这就是你扩散到付款,",
-      "iconStar": "fa-star-o",
       "danWei": "小时",
       "price": "2000",
-      "type": "kill",
       "far": "2000",
       "imgs": [
         "http://www.17sucai.com/upload/98055/2015-07-02/af06b5649437de15aed3faf618922d97_big.png",
         "http://h.hiphotos.baidu.com/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=2ad0a348e71190ef15f69a8daf72f673/4afbfbedab64034fd715b1a3afc379310b551dbe.jpg",
         "http://b.hiphotos.baidu.com/baike/c0%3Dbaike92%2C5%2C5%2C92%2C30/sign=6605e29276c6a7efad2ba0749c93c434/5bafa40f4bfbfbed2a70713278f0f736afc31f55.jpg"
       ],
-      "content": {
-        "姓名": 1,
-        "电话": 222
-      },
       "des": "简介已断开, 这是一段自我介绍技能"
     },
     {

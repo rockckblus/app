@@ -47,28 +47,33 @@
         function getOrderContent() {
             var url = config.host.nodeHost + '/member/getOrderFromContent';
             var uid = tools.getLocalStorageObj('userData').uid;
-            tools.postJsp(url, {uid: uid, orderId: $state.params.orderId}, true).then(_s);
+            tools.postJsp(url,
+                {
+                    uid: uid,
+                    orderId: $state.params.orderId,
+                    areaGps: tools.getLocalStorageObj('areaGps').gpsObj
+                }, true).then(_s);
             function _s(re) {
-                if (re.data && re.data.code == 'S') {
+                if (re.data && re.data.code == 'S' && re.data.doc) {
                     try {
-                        if (!re.data.userData.headerImg) {
-                            re.data.userData.headerImg = header.defaultHeader;
+                        if (!re.data.doc.userData.headerImg) {
+                            re.data.doc.userData.headerImg = header.defaultHeader;
                         }
                     } catch (e) {
                         console.error('无headerImg');
                     }
                     try {
-                        if (re.data.thisNeed.priceUnit == '面议') {
-                            re.data.thisNeed.priceStr = '面议';
+                        if (re.data.doc.thisNeed.priceUnit == '面议') {
+                            re.data.doc.thisNeed.priceStr = '价格面议';
                         } else {
-                            re.data.thisNeed.priceStr = re.data.thisNeed.price + ' ' + re.data.thisNeed.priceUnit;
+                            re.data.doc.thisNeed.priceStr = re.data.doc.thisNeed.price + ' ' + re.data.doc.thisNeed.priceUnit;
                         }
                     } catch (e) {
 
                     }
 
 
-                    angular.forEach(re.data.needList, function (vo) {
+                    angular.forEach(re.data.doc.needList, function (vo) {
                         if (vo.priceUnit == '面议') {
                             vo.priceStr = '';
                         } else {
@@ -76,31 +81,39 @@
                         }
                     });
 
-                    angular.forEach(re.data.thisNeed.bidUserArr, function (vo2) {
-                        if (!vo2.headerImg) {
-                            vo2.headerImg = header.defaultHeader;
-                        }
-                    });
+                    if (re.data.doc && re.data.doc.thisNeed && re.data.doc.thisNeed.bidUserArr) {
+                        angular.forEach(re.data.thisNeed.bidUserArr, function (vo2) {
+                            if (!vo2.headerImg) {
+                                vo2.headerImg = header.defaultHeader;
+                            }
+                        });
+                    }
 
-                    if (!re.data.thisNeed.binUser.headerImg) {
-                        re.data.thisNeed.binUser.headerImg = header.defaultHeader;
+
+                    try {
+                        if (!re.data.doc.thisNeed.binUser.headerImg) {
+                            re.data.doc.thisNeed.binUser.headerImg = header.defaultHeader;
+                        }
+                    } catch (e) {
+                        console.log('没有bindUser');
                     }
 
 
                     $timeout(function () {
-                        if ((re.data.userData.uid == tools.getLocalStorageObj('userData').uid) || ($state.params.type == 'select')) {
+                        if ((re.data.doc.userData._id == tools.getLocalStorageObj('userData').uid) || ($state.params.type == 'select')) {
                             showUi('select');
                         } else {
-                            if (re.data.isJion) {//如果当前用户已经接了这单,隐藏接单按钮
+                            if (re.data.doc.userData.isJion) {//如果当前用户已经接了这单,隐藏接单按钮
                                 $rootScope.$broadcast('hideXiaDan');
-                            } else if ((re.data.thisNeed.status !== 1) && (re.data.thisNeed.status !== 2)) {
+                            } else if ((re.data.doc.thisNeed.state !== 1) && (re.data.doc.thisNeed.state !== 2)) {
                                 document.getElementById('bottomNavCall').style.display = 'none';
                             }
                             showUi('show');
                         }
-                        $scope.data = re.data;
+                        $scope.data = re.data.doc;
                         $timeout(function () {
-                            bindClick();
+                            bindClick();//bind用户列表 打电话,发消息,评价,没有订单 点击事件
+                            bindJiNengListClick();//绑定更多需求点击事件
                         }, 0);
                     }, 0);
                 }
@@ -126,18 +139,20 @@
          * bind点击
          */
         function bindClick() {
-            angular.forEach($scope.data.thisNeed.bidUserArr, function (vo) {
-                tools.bindClick('telCall_' + vo.uid, telCall);
-                tools.bindClick('imCall_' + vo.uid, imCall);
-                tools.bindClick('selectUser_' + vo.uid, selectUser);
-            });
-            var binId = $scope.data.thisNeed.binUser.uid;
-            if (binId) {
-                tools.bindClick('telCallSelect_' + binId, telCall);
-                tools.bindClick('imCallSelect_' + binId, imCall);
-                tools.bindClick('givePingJiaBtn', pingJiaSub);
+            if ($scope.data && $scope.data.thisNeed && $scope.data.thisNeed.bidUserArr) {
+                angular.forEach($scope.data.thisNeed.bidUserArr, function (vo) {
+                    tools.bindClick('telCall_' + vo.uid, telCall);
+                    tools.bindClick('imCall_' + vo.uid, imCall);
+                    tools.bindClick('selectUser_' + vo.uid, selectUser);
+                });
+                var binId = $scope.data.thisNeed.binUser.uid;
+                if (binId) {
+                    tools.bindClick('telCallSelect_' + binId, telCall);
+                    tools.bindClick('imCallSelect_' + binId, imCall);
+                    tools.bindClick('givePingJiaBtn', pingJiaSub);
+                }
+            } else {
                 tools.bindClick('noOrderGoHome', goHome);
-
             }
 
         }
@@ -254,5 +269,24 @@
                 tools.alert({title: enE});
             }
         }
+
+
+        /**
+         * bind 更多需求点击
+         */
+        function bindJiNengListClick() {
+            angular.forEach($scope.data.needList, function (vo) {
+                var dom = document.getElementById('needlist_' + vo._id);
+                dom.addEventListener(clickType, function () {
+                    _bind(dom);
+                });
+            });
+            function _bind(dom) {
+                var _id = dom.getAttribute('subid');
+                $state.go('orderFromContent', {'orderId': _id});
+            }
+        }
+
+
     }
 })();

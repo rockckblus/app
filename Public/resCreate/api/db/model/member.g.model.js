@@ -34,6 +34,7 @@ var memberSchema = new g.Schema({
     mt: Number,//手机
     headerImg: {type: String, default: ''},//头像url
     city: {type: String, default: '未知'},//城市
+    cityCode: {type: Number, default: '777'},//城市编号
     areaGps: {type: Object, default: {}},//用户的定位信息,表单发布的时候更新
     age: {type: String, default: '未知'},//年龄字符串
     sex: {type: String, default: '未知'},//性别

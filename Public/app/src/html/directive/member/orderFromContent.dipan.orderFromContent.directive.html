@@ -49,13 +49,13 @@
                     <img bindonce="data.userData.headerImg" bo-src="data.userData.headerImg" alt=""
                          style="width: 70px;height: auto">
                 </div>
-                <div class="left" style="font-size: 0.8rem ;margin-left: 1rem;color: #dadada">
-                <span class="clear lan" style="font-size: 1rem" bindonce="data.userData.userName"
-                      bo-text="data.userData.userName"></span>
+                <div class="left" style="font-size: 0.8rem ;margin-left: 1rem;color: #777">
+                <span class="clear lan" style="font-size: 1rem" bindonce="data.userData.name"
+                      bo-text="data.userData.name"></span>
                     <span class="clear" bindonce="data.userData.sex" bo-text="data.userData.sex"></span>
                     <span class="clear" bindonce="data.userData.age" bo-text="data.userData.age"></span>
                 </div>
-                <div class="right" style="font-size: 0.8rem ;margin-left: 1rem;color: #dadada;text-align: right">
+                <div class="right" style="font-size: 0.8rem ;margin-left: 1rem;color: #777;text-align: right">
                 <span class="clear lan" style="" bindonce="data.userData.city"
                       bo-text="data.userData.city"></span>
                     <span class="clear" bindonce="data.userData.mt" bo-text="data.userData.mt"></span>
@@ -74,7 +74,7 @@
                 <div class="clear mui-btn"
                      style="font-size: 0.8rem; width: 100%;text-align: left;border-color: #e9e9e9;margin-top: 0.8rem;color: #777"
                      bindonce="data.needList"
-                     bo-id="'jiNengList_' + vo._id"
+                     bo-id="'needlist_' + vo._id"
                      bo-attr
                      bo-attr-subid="vo._id"
                      ng-repeat="vo in data.needList"
@@ -85,9 +85,9 @@
 
         <!--选单-->
         <div class="clear" ng-show="userSelect">
-            <div class="clear" ng-show="(data.thisNeed.status != 1) && (data.thisNeed.status !=2)">
+            <div class="clear" ng-show="(data.thisNeed.state != 1) && (data.thisNeed.state !=2)">
                 <!--已经选好-->
-                <div class="clear" style="margin-top: 2rem" ng-show="data.thisNeed.status == 3">
+                <div class="clear" style="margin-top: 2rem" ng-show="data.thisNeed.state == 3">
 
                     <div class="clear line" style="font-size: 1rem; width: 100%;">
                         <div class="clear"></div>
@@ -169,18 +169,18 @@
                 </div>
 
                 <!--过期-->
-                <div ng-show="data.thisNeed.status == 4">
+                <div ng-show="data.thisNeed.state == 4">
                     <div class="clear lan " style="margin-top: 1.5rem">订单已过期</div>
                     <!--<div class="clear lan mui-btn" style="margin-top: 1.5rem">重新发布</div>-->
                 </div>
             </div>
 
             <!--发起-->
-            <div ng-show="data.thisNeed.status == 1">
+            <div ng-show="data.thisNeed.state == 1">
                 <div class="clear lan mui-btn" style="margin-top: 1.5rem" id="noOrderGoHome">暂时无人接单,去看看其他人的技能吧!</div>
             </div>
             <!--选单-->
-            <div class="clear" ng-show="data.thisNeed.status == 2">
+            <div class="clear" ng-show="data.thisNeed.state == 2">
                 <div class="clear line" style="font-size: 1rem; width: 100%;">
                     <div class="clear"></div>
                     <div class="clear lan" style="margin-top: 1.5rem">接单列表:</div>

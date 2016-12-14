@@ -5,13 +5,14 @@
 var request = require('superagent'); //curl 控件
 var q = require('q');//异步编程
 var pubFun = require('../fun/pub.g.fun');//公共方法
+var g = require('../../g.config');
 /**
  * 会员模型
  * 16/3/7 */
 var memberServiceModel = require('../model/member.g.model');
-var g = require('../../g.config');
 var memberFun = require('../fun/member.g.fun');
 var snsArticleFun = require('../fun/snsArticle.g.fun');//技能方法相关
+var needFromFun = require('../fun/needFrom.g.fun');//订单方法
 
 var fun = {
 
@@ -28,7 +29,7 @@ var fun = {
     getKillContent: getKillContent,//获取技能详情_根据id
     xiaDan: xiaDan,//下单
     trueXianDan: trueXianDan,//判断技能id是否被当前uid下单
-
+    getOrderFromContent: getOrderFromContent,//订单详情
 
 };
 
@@ -213,7 +214,6 @@ function telType(postObj, callBack) {
  */
 function getKillContent(postObj, callBack) {
     snsArticleFun.getKillContent(postObj).then(getImgS).then(_call, _err);
-
     //获取技能图片
     function getImgS(re) {
         var defer = q.defer();
@@ -239,6 +239,27 @@ function getKillContent(postObj, callBack) {
 
 }
 
+
+/**
+ * 订单详情
+ * uid
+ * orderId
+ */
+function getOrderFromContent(postObj, callBack) {
+    needFromFun.getOrederContentFun(postObj).then(_call, _err);
+    function _call(re) {
+        var reData = {
+            _doc: re
+        };
+        pubFun.pubReturn(false, reData, '订单详情获取成功', '订单详情获取失败', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '订单详情获取失败', callBack);
+    }
+}
+
+
 /**
  * 下单 todo
  */
@@ -250,6 +271,7 @@ function xiaDan(postObj, callBack) {
     //
     // function _err(re) {
     //     pubFun.pubReturn(re, {}, '', '下单失败', callBack);
+
     // }
 }
 
