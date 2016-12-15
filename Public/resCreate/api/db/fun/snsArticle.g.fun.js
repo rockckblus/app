@@ -10,10 +10,12 @@ var fun = {
     addKillFromImg: addKillFromImg,//添加技能图片
     delKillImg: delKillImg,//删除技能图片
     getKillContent: getKillContent,//获取技能详情_根据id
+    homeGetListFun: homeGetListFun,//获取首页技能列表
     getUserIdKillList: getUserIdKillList,//查询用户发布的所有 技能
     getKillImgs: getKillImgs,//技能图片选择
     xiaDanFun: xiaDanFun,//下单
     trueXianDanFun: trueXianDanFun,//判断技能id是否被当前uid下单
+    upDateKillGpsFun: upDateKillGpsFun,//更新uid下的 技能表 会员资料字段,gpsSearch,sex,hot,live
 };
 
 /**
@@ -24,17 +26,35 @@ var fun = {
 function killAdd(postObj) {
     var defer = q.defer();
 
+    switch (postObj.sex) {
+        case '0':
+            postObj.sex = '女';
+            break;
+        case '1':
+            postObj.sex = '男';
+            break;
+        default:
+            postObj.sex = '女';
+            break;
+    }
+
     if (!postObj.price) {//如果价格为空,修改 单位为面议
         postObj.priceUnit = '3';
     }
     var gpsArea = {};
+    var gpsSearch = [0, 0];
     var cityCode = 777;
     if (postObj.areaGps) {
         gpsArea = postObj.areaGps;
+        if (postObj.areaGps && postObj.areaGps.gpsObj && postObj.areaGps.gpsObj.lat) {
+            gpsSearch[0] = postObj.areaGps.gpsObj.lng;
+            gpsSearch[1] = postObj.areaGps.gpsObj.lat;
+        }
     }
     if (postObj.areaGps && postObj.areaGps.city && postObj.areaGps.city.cityCode) {
         cityCode = postObj.areaGps.city.cityCode;
     }
+
     snsArticleModel.create({
             killRoundId: postObj.killRoundId,//随机id 仿制重复提交
             uid: postObj.uid,
@@ -48,6 +68,10 @@ function killAdd(postObj) {
             },//属性
             cityCode: cityCode,//城市编码
             gpsArea: gpsArea,//gps位置
+            gpsSearch: gpsSearch,//monogo索引地理位置坐标
+            sex: postObj.sex,//性别
+            hot: postObj.hot,//人气
+            live: postObj.live,//热度
         }, function (err, doc) {
             if (err) {
                 defer.resolve(JSON.stringify(err));
@@ -352,5 +376,136 @@ function xiaDanFun(postObj) {
 function trueXianDanFun(postObj) {
 
 }
+
+/**
+ * 获取首页技能列表
+ */
+function homeGetListFun(postObj) {
+    var defer = q.defer();
+    var whereCondition = {};//where条件
+    var sortStr = '';//排序条件 留空就是 按距离
+    if (postObj.endId !== '0') {//下拉 翻页 find next 查出当前 的 下10条数据
+        whereCondition._id = {};
+        whereCondition._id.$gt = postObj.endId;
+    }
+    if (postObj.searchKey) {//如果有搜索关键词
+        whereCondition.title = {
+            $regex: postObj.searchKey
+        };
+    }
+    try {
+        if (postObj.condition.area.city.cityCode == '777') {//如果是附近搜索
+            whereCondition.gpsSearch = {
+                $near: [postObj.condition.areaGps.gpsObj.lng, postObj.condition.areaGps.gpsObj.lat]
+            };
+        } else {//按照城市搜索
+            whereCondition.cityCode = postObj.condition.area.city.cityCode;
+            whereCondition.gpsSearch = {
+                $near: [postObj.condition.areaGps.gpsObj.lng, postObj.condition.areaGps.gpsObj.lat]
+            };
+        }
+    } catch (e) {
+        console.error(e);
+    }
+
+    if (postObj.clickShaiXuan && postObj.clickShaiXuan[0]) {
+        for (var vo in postObj.clickShaiXuan) {
+            giveShaiXuanWhere(postObj.clickShaiXuan[vo]);//根据筛选给where条件
+        }
+    }
+
+
+    snsArticleModel.find(whereCondition)
+        .populate(
+            {
+                'path': 'uid',
+                'model': memberModel,
+            }
+        )
+        .sort(sortStr)
+        .limit(10)
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(JSON.stringify(err));
+            } else {
+                var isHaveGps = false;
+                if (postObj.condition && postObj.condition.areaGps && postObj.condition.areaGps.gpsObj && postObj.condition.areaGps.gpsObj.lng) {
+                    isHaveGps = true;
+                }
+                for (var vo in doc) {
+                    if (isHaveGps) {
+                        doc[vo]._doc.far = pub.farGps(postObj.condition.areaGps.gpsObj.lat, postObj.condition.areaGps.gpsObj.lng, doc[vo].gpsSearch[1], doc[vo].gpsSearch[0]);
+                    } else {
+                        doc[vo]._doc.far = 0;
+                    }
+                }
+                defer.resolve(doc);
+            }
+        });
+
+
+    /**
+     *根据筛选给where条件
+     */
+    function giveShaiXuanWhere(vo) {
+        switch (vo) {
+            case 'homeShaiXuanThree1' :
+                whereCondition.sex = '男';
+                break;
+            case 'homeShaiXuanThree2' :
+                whereCondition.sex = '女';
+                break;
+            case 'homeShaiXuanOne3' ://人气排序
+                sortStr = 'hot';
+                break;
+            case 'homeShaiXuanTwo4' ://活跃度排序
+                sortStr = 'live';
+                break;
+        }
+    }
+
+
+    return defer.promise;
+
+
+}
+
+
+/**
+ * 更新uid下的 技能表 会员资料字段,gpsSearch,sex,hot,live
+ * 传 obj.uid
+ * 传 obj.gpsSearch [lng,lat]
+ * 传 obj.sex '男'
+ * 传 obj.hot Number 热度
+ * 传 obj.live Number 活跃度
+ */
+function upDateKillGpsFun(obj) {
+    var defer = q.defer();
+    var saveObj = {};
+    if (obj.gpsSearch) {
+        saveObj.gpsSearch = obj.gpsSearch;
+    }
+    if (obj.sex) {
+        saveObj.sex = obj.sex;
+    }
+    if (obj.hot) {
+        saveObj.hot = obj.hot;
+    }
+    if (obj.live) {
+        saveObj.live = obj.live;
+    }
+
+    snsArticleModel.update({uid: obj.uid}, saveObj, {multi: true}, function (err, doc) {
+        if (err) {
+            defer.reject(JSON.stringify(err));
+        } else {
+            defer.resolve(doc);
+        }
+    });
+
+
+    return defer.promise;
+}
+
 
 module.exports = fun;

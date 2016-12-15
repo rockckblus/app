@@ -1,4 +1,5 @@
 var memberModel = require('../model/member.g.model');
+var snsFun = require('../fun/snsArticle.g.fun');
 var q = require('q');//异步编程对象
 var pub = require('../fun/pub.g.fun');//公共方法
 
@@ -8,7 +9,6 @@ var fun = {
     userDataEdit: userDataEdit,// 修改用户资料
     upUserGpsArea: upUserGpsArea,//修改用地位gps
     telType: telType//修改是否允许电话咨询
-
 };
 
 
@@ -89,7 +89,6 @@ function userDataEdit(userUpData) {
             break;
     }
 
-
     var defer = q.defer();
     memberModel.update(
         {
@@ -106,6 +105,10 @@ function userDataEdit(userUpData) {
             if (err) {
                 defer.reject(JSON.stringify(err));
             } else {
+
+                //修改用户的技能筛选条件 sex
+                snsFun.upDateKillGpsFun({uid: userUpData.uid, sex: userUpData.sex});
+
                 var reData = {
                     doc: {
                         data: {
@@ -152,6 +155,7 @@ function editHeaderImg(postObj) {
 }
 
 /**
+ * 修改用户的所有技能的 hot live sex
  * 修改用户定位gps ,无返回,直接更新成功就成功,失败就忽略
  */
 function upUserGpsArea(areaObj, uid) {
@@ -161,6 +165,7 @@ function upUserGpsArea(areaObj, uid) {
             doc: doc
         };
     });
+
 }
 
 /**************************

@@ -43,6 +43,9 @@ var memberSchema = new g.Schema({
     regTime: {type: Date, default: ''},//注册时间
     state: {type: Number, default: 1},//状态 0(禁用) 1激活
     type: {type: Number, default: 0},//级别 会员 0普通 1vip
+    hot: {type: Number, default: 0},//人气 按成交量自增
+    live: {type: Number, default: 0},//活跃度 1-7 按最近一周的登录次数,每天登录计算统计
+
 });
 
 

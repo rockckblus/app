@@ -40,6 +40,11 @@ var articleSchema = new g.Schema({
     uid: {type: g.Schema.Types.ObjectId},//用户id
     gpsArea: {type: Object, default: {}},//gps信息 {"gpsObj":{"lat":39.55237,"lng":116.814664},"city":{"city":"天津市","cityCode":"022"}}
     cityCode: {type: String, default: '777'},//城市编号
+    gpsSearch: {type: Array, default: [0, 0]},//mongo 地理位置
+    hot: {type: Number, default: 0},//人气 按成交量自增
+    live: {type: Number, default: 0},//活跃度 1-7 按最近一周的登录次数,每天登录计算统计
+    sex: {type: String, default: '未知'},//性别
+    master: {type: Boolean, default: false},//主展示技能 默认无关键词搜索时候 展示出来的,有关键词搜索,会忽略此选项
 });
 
 

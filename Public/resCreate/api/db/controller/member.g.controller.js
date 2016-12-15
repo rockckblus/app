@@ -21,6 +21,7 @@ var fun = {
      * 传callBack
      * 16/3/7 */
     getUserData: getUserData,//获取用户数据
+    getUserDataPri: getUserDataPri,//内部方法获取用户 gpsSearch sex live hot
     loginIn: loginIn,//用户登录
     getUidByMt: getUidByMt,//根据电话号码获取uid
     editHeaderImg: editHeaderImg,//用户头像修改
@@ -49,6 +50,27 @@ function getUserData(post, callBack) {
             }
             pubFun.pubReturn(err, doc, '查询用户数据成功', '查询用户数据失败', callBack);
         });
+}
+
+/**
+ * 内部方法获取用户 gpsSearch sex live hot
+ * @param uid
+ */
+function getUserDataPri(post) {
+    var defer = q.defer();
+    memberServiceModel.find({_id: post.uid})
+        .select('sex areaGps live hot')
+        .exec(function (err, doc) {
+            if (doc[0] && doc[0]._doc && doc[0]._doc.areaGps && doc[0]._doc.areaGps.gpsObj && doc[0]._doc.areaGps.gpsObj.lat) {
+                doc[0]._doc.gpsSearch = [doc[0]._doc.areaGps.gpsObj.lng, doc[0]._doc.areaGps.gpsObj.lat];
+            }
+            if (err) {
+                defer.reject(err);
+            } else {
+                defer.resolve(doc);
+            }
+        });
+    return defer.promise;
 }
 
 /**

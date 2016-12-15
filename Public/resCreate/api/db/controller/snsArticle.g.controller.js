@@ -9,7 +9,8 @@ var snsArticleModel = require('../model/snsArticle.g.model');
 var pubFun = require('../fun/pub.g.fun');//公共方法
 var snsArticleFun = require('../fun/snsArticle.g.fun');//技能方法相关
 var needFromFun = require('../fun/needFrom.g.fun');//需求方法
-var memberFun = require('../fun/member.g.fun');//技能方法相关
+var memberCtrl = require('../controller/member.g.controller');//member ctrl
+var memberFun = require('../fun/member.g.fun');//member fun
 var q = require('q');
 
 var fun = {
@@ -34,32 +35,15 @@ var fun = {
  * @param callBack
  */
 function homeGetList(postObj, callBack) {
-
-    var whereCondition = null;
-    if (postObj.endId !== 0) {//下拉 find next 查出当前 的 上一条数据
-        whereCondition = {
-            '_id': {
-                '$lt': postObj.endId
-            },
-            'type': postObj.type
-        };
+    snsArticleFun.homeGetListFun(postObj).then(_call, _err);
+    function _call(re) {
+        pubFun.pubReturn(false, re, '技能列表查询成功', '技能列表查询失败', callBack);
     }
 
-    else if (postObj.frontId !== 0) {//下拉 find next 查出当前 的 上一条数据
-        whereCondition = {
-            '_id': {
-                '$gt': postObj.frontId
-            },
-            'type': postObj.type
-        };
+    function _err(errRe) {
+        pubFun.pubReturn(errRe, {}, '', '技能列表查询失败', callBack);
     }
 
-    snsArticleModel.find(whereCondition)
-        .limit(10)
-        // .sort('-editTime')
-        .exec(function (err, doc) {
-            pubFun.pubReturn(err, doc, '查询成功', '查询失败', callBack);
-        });
 }
 
 /**
@@ -72,7 +56,7 @@ function postKillFrom(postObj, callBack) {
 
     /**
      * 1.判断订单是否存在,防止重复提交 snsArticleFun.getOneKill
-     * 2.如果不存在,就添加一条技能 _add
+     * 2.如果不存在,去拿用户的 人气和热度,加入postObj,就添加一条技能 _add
      * 3.添加更新会员资料
      */
     snsArticleFun.getOneKill(postObj.killRoundId)
@@ -88,11 +72,18 @@ function postKillFrom(postObj, callBack) {
                 memberFun.upUserGpsArea(postObj.areaGps, postObj.uid);//更新gps数据
             }
 
-            snsArticleFun.killAdd(postObj).then(function () {
-                defer.resolve(postObj);
+            memberCtrl.getUserDataPri(postObj).then(function (userData) {//去拿用户热度
+                postObj.hot = userData[0]._doc.hot;//人气
+                postObj.live = userData[0]._doc.live;//活跃
+                snsArticleFun.killAdd(postObj).then(function () {
+                    defer.resolve(postObj);
+                }, function (err) {
+                    defer.reject(JSON.stringify(err));
+                });
             }, function (err) {
                 defer.reject(JSON.stringify(err));
             });
+
         } else {
             defer.reject('id存在,不可以入库');
         }

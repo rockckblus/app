@@ -1,0 +1,31 @@
+{
+  "roundCodeId": "{{roundCodeId}}",
+  "mtNum": 15510986492,
+  "code": 19780807,
+  "uid": "{{uid}}",
+  "endId": "585105af2570061f4e7888b0",
+  "frontId": "0",
+  "condition": {
+    "area": {
+      "gpsObj": {
+        "lat": 39.552296,
+        "lng": 116.814785
+      },
+      "city": {
+        "city": "天津市",
+        "cityCode": "022"
+      }
+    },
+    "areaGps": {
+      "gpsObj": {
+        "lat": 39.552296,
+        "lng": 116.814785
+      },
+      "city": {
+        "city": "天津市",
+        "cityCode": "022"
+      }
+    }
+  },
+  "searchKey": "跑步"
+}
