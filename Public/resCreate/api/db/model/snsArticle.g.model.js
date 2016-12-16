@@ -45,6 +45,7 @@ var articleSchema = new g.Schema({
     live: {type: Number, default: 0},//活跃度 1-7 按最近一周的登录次数,每天登录计算统计
     sex: {type: String, default: '未知'},//性别
     master: {type: Boolean, default: false},//主展示技能 默认无关键词搜索时候 展示出来的,有关键词搜索,会忽略此选项
+    type: {type: String, default: 'kill'},//前端判断用
 });
 
 

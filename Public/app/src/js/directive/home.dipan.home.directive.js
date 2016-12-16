@@ -39,7 +39,7 @@
         $scope.list = []; //默认首页 列表 数据,每次刷新请求后 push list变量名称
         $scope.listTop = {'margin-top': '45px'};//homeList 的 style
         $scope.defaultHeader = header.defaultHeader;//默认头像
-        var endId;//下拉后 得到 的 最后一条id
+        // var endId;//下拉后 得到 的 最后一条id ,改为存入本地数据库
         var firstId;//第一条id,上拉时候用
         var type = 'up';//当前请求方式 up down
         var star = [];//标记数组 ,
@@ -117,7 +117,8 @@
                 }
 
             } else {
-                getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
+                var endId = localStorage.getItem($state.current.name + 'EndId');
+                getList.getList($state.current.name, false, endId, $scope, 'list[0]', _bind);
             }
 
         }
@@ -165,7 +166,8 @@
                 }
             }
             try {
-                endId = _getLastId(doc);//给最后一条id
+                var endId = _getLastId(doc);//给最后一条id
+                localStorage.setItem($state.current.name + 'EndId', endId);
             } catch (e) {
                 console.log('error');
             }
@@ -291,7 +293,8 @@
                 }
             }
             try {
-                endId = _getLastId(doc);//给最后一条id
+                var endId = _getLastId(doc);//给最后一条id
+                localStorage.setItem($state.current.name + 'EndId', endId);
             } catch (e) {
                 console.log('error');
             }
@@ -304,7 +307,6 @@
                         dom.addEventListener(clickType, function () {
                             __bindClick(dom);
                         });
-
                     } catch (e) {
                         console.error('wuHomeList');
                     }
@@ -340,6 +342,10 @@
                 return false;
             }
             type = 'down';
+            var endId = localStorage.getItem($state.current.name + 'EndId');
+            if (!endId) {
+                endId = 0;
+            }
             getList.getList($state.current.name, false, endId, $scope, 'list[' + $scope.list.length + ']', _bind);
         }
 

@@ -35,7 +35,42 @@ var fun = {
  * @param callBack
  */
 function homeGetList(postObj, callBack) {
-    snsArticleFun.homeGetListFun(postObj).then(_call, _err);
+    snsArticleFun.homeGetListFun(postObj).then(getOtherKill).then(_call, _err);
+
+    //获取用户的 其他技能
+    function getOtherKill(doc) {
+        var defer = q.defer();
+        if (!postObj.searchKey) {
+            for (var vo in doc) {
+                snsArticleFun.getUserIdKillList(doc[vo]._doc.uid._id, doc[vo]._id, vo).then(_otherCall, _otherErr);
+            }
+        } else {
+            defer.resolve(doc);
+        }
+
+
+        function _otherCall(res) {
+            doc[res.vo]._doc.killList = res;
+            doc[res.vo]._doc.killListTitle = '';
+            for (var i in res) {
+                if (res[i].title) {
+                    doc[res.vo]._doc.killListTitle = doc[res.vo]._doc.killListTitle + res[i].title + ' ';
+                }
+            }
+            if (res.vo == (doc.length - 1)) {
+                defer.resolve(doc);
+            }
+        }
+
+        function _otherErr(err) {
+            defer.reject(err);
+        }
+
+
+        return defer.promise;
+    }
+
+
     function _call(re) {
         pubFun.pubReturn(false, re, '技能列表查询成功', '技能列表查询失败', callBack);
     }
@@ -43,7 +78,6 @@ function homeGetList(postObj, callBack) {
     function _err(errRe) {
         pubFun.pubReturn(errRe, {}, '', '技能列表查询失败', callBack);
     }
-
 }
 
 /**

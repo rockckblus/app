@@ -263,7 +263,7 @@ function postSns(req, res) {
             break;
         case 'needGetlist' :
             req.body.type = 'need';//加入type字段。需
-            _getList(req.body);
+            // _getList(req.body);
             break;
         case 'postKillFrom' ://添加一条技能 ,如果有补充会员资料,去更新会员资料
             snsArticleServiceCtrl.postKillFrom(req.body, function (re) {

@@ -16,13 +16,15 @@
         };
     }
 
-    thisController.$inject = ['$state', '$timeout'];
+    thisController.$inject = ['$state', '$timeout', 'tools'];
 
-    function thisController($state, $timeout) {
+    function thisController($state, $timeout, tools) {
+        var catchListHomeStr = 'catchList_home-' + tools.getToday();
+        var catchListNeedStr = 'catchList_need-' + tools.getToday();
         var delCatch = [
             'isLogin',
             'userData',
-            'clickShaXuan',
+            'clickShaiXuan',
             'starArr',
             'home_scrollTop',
             'need_scrollTop',
@@ -33,6 +35,14 @@
             'needRadio1',
             'needRadio2',
             'roundCodeId',
+            'searchKey',
+            catchListHomeStr,
+            catchListNeedStr,
+            'killContent_scrollTop',
+            'killEndId',
+            'searchKey',
+            'homeEndId',
+            'needEndId'
         ];
         angular.forEach(delCatch, function (vo) {
             localStorage.removeItem(vo);

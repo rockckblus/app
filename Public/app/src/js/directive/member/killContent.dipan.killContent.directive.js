@@ -50,9 +50,14 @@
          */
         function getData() {
             var url = config.host.nodeHost + "/member/getKillContent";
+            var trueAreaGps = tools.getLocalStorageObj('areaGps');
+            var areaGps = {};
+            if (trueAreaGps) {
+                areaGps = trueAreaGps.gpsObj;
+            }
             tools.postJsp(url, {
                 jiNengId: $state.params.jiNengId,
-                areaGps: tools.getLocalStorageObj('areaGps').gpsObj
+                areaGps: areaGps
             }).then(_s, _e);
             function _s(re) {
                 $rootScope.$broadcast('changeBody');//默认读取缓存用户数据

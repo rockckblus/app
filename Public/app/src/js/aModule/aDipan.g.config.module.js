@@ -280,8 +280,8 @@
 
             trueWeb(function () {//web
                 // return 'http://www.dipan.so';// 生产
-                // reUrl = 'http://169.254.210.14';//dev
-                reUrl = 'http://127.0.0.1';//dev
+                reUrl = 'http://169.254.210.14';//dev
+                // reUrl = 'http://127.0.0.1';//dev
             }, function () {//app
                 if (mui.os.android) {
                     reUrl = 'http://192.168.0.50';//dev

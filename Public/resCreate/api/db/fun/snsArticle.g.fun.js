@@ -16,6 +16,7 @@ var fun = {
     xiaDanFun: xiaDanFun,//下单
     trueXianDanFun: trueXianDanFun,//判断技能id是否被当前uid下单
     upDateKillGpsFun: upDateKillGpsFun,//更新uid下的 技能表 会员资料字段,gpsSearch,sex,hot,live
+    trueFirstKill: trueFirstKill,//判断是否第一次发布技能
 };
 
 /**
@@ -25,7 +26,6 @@ var fun = {
  */
 function killAdd(postObj) {
     var defer = q.defer();
-
     switch (postObj.sex) {
         case '0':
             postObj.sex = '女';
@@ -37,7 +37,6 @@ function killAdd(postObj) {
             postObj.sex = '女';
             break;
     }
-
     if (!postObj.price) {//如果价格为空,修改 单位为面议
         postObj.priceUnit = '3';
     }
@@ -55,33 +54,60 @@ function killAdd(postObj) {
         cityCode = postObj.areaGps.city.cityCode;
     }
 
-    snsArticleModel.create({
-            killRoundId: postObj.killRoundId,//随机id 仿制重复提交
-            uid: postObj.uid,
-            userId: postObj.uid,
-            title: postObj.title,//技能标题
-            content: postObj.content,//技能介绍
-            attr: {
-                price: postObj.price,//价格
-                priceUnit: postObj.priceUnit,//价格单位
-                service: postObj.service,//服务方式
-            },//属性
-            cityCode: cityCode,//城市编码
-            gpsArea: gpsArea,//gps位置
-            gpsSearch: gpsSearch,//monogo索引地理位置坐标
-            sex: postObj.sex,//性别
-            hot: postObj.hot,//人气
-            live: postObj.live,//热度
-        }, function (err, doc) {
-            if (err) {
-                defer.resolve(JSON.stringify(err));
-            } else {
-                defer.resolve({err: err, doc: doc});
-            }
+    //判断是否是第一条技能,如果是,就给master:true
+    trueFirstKill(postObj.uid).then(function (re) {
+        var master = false;
+        if (re && !re[0]) {
+            master = true;
         }
-    );
+
+        snsArticleModel.create({
+                killRoundId: postObj.killRoundId,//随机id 仿制重复提交
+                uid: postObj.uid,
+                userId: postObj.uid,
+                title: postObj.title,//技能标题
+                content: postObj.content,//技能介绍
+                attr: {
+                    price: postObj.price,//价格
+                    priceUnit: postObj.priceUnit,//价格单位
+                    service: postObj.service,//服务方式
+                },//属性
+                cityCode: cityCode,//城市编码
+                gpsArea: gpsArea,//gps位置
+                gpsSearch: gpsSearch,//monogo索引地理位置坐标
+                sex: postObj.sex,//性别
+                hot: postObj.hot,//人气
+                live: postObj.live,//热度
+                master: master,//主技能
+            }, function (err, doc) {
+                if (err) {
+                    defer.resolve(JSON.stringify(err));
+                } else {
+                    defer.resolve({err: err, doc: doc});
+                }
+            }
+        );
+    });
+
     return defer.promise;
 }
+
+
+/**
+ * 判断是否是第一条技能,如果是,就给master:true
+ */
+function trueFirstKill(uid) {
+    var defer = q.defer();
+    snsArticleModel.find({uid: uid}).exec(function (err, doc) {
+        if (err) {
+            defer.reject(err);
+        } else {
+            defer.resolve(doc);
+        }
+    });
+    return defer.promise;
+}
+
 
 /**
  * 获取技能详情_根据id ,发节能的用户资料
@@ -118,7 +144,7 @@ function getKillContent(postObj) {
                     reDoc.thisJiNeng.priceUnit = pub.getDefaultVal('kill_priceUnit', doc[0]._doc.attr.priceUnit);
                     reDoc.thisJiNeng.service = pub.getDefaultVal('kill_service', doc[0]._doc.attr.service);
 
-                    getUserIdKillList(doc[0].uid._id).then(function (doc) {//取用户发布的其他
+                    getUserIdKillList(doc[0].uid._id, doc[0]._id).then(function (doc) {//取用户发布的其他
                         reDoc.jiNengList = doc;
                         defer.resolve(reDoc);
                     }, function (err) {
@@ -134,11 +160,21 @@ function getKillContent(postObj) {
 
 /**
  * 查询用户发布的所有 技能
- * @param postObj
+ * @param killId 必穿false  如果有技能id 就返回排除这个 id的其他技能
+ * @param userId
  */
-function getUserIdKillList(userId) {
+function getUserIdKillList(userId, killId, vo) {
     var defer = q.defer();
-    snsArticleModel.find({uid: userId, state: 1})
+    var where = {
+        uid: userId,
+        state: 1
+    };
+
+    if (killId) {
+        where._id = {$ne: killId};
+    }
+
+    snsArticleModel.find(where)
         .select('_id title attr')
         .limit(5)
         .exec(function (err, doc) {
@@ -149,6 +185,9 @@ function getUserIdKillList(userId) {
             }
             if (err) {
                 defer.reject(err);
+            }
+            if (vo) {
+                doc.vo = vo;
             }
             defer.resolve(doc);
         });
@@ -342,7 +381,7 @@ function delKillImg(postObj) {
  * 技能图片选择
  * 传 uid,killRoundId
  */
-function getKillImgs(killRoundId, uid) {
+function getKillImgs(killRoundId, uid, vo) {
     var defer = q.defer();
     killFromImgModel.find(
         {
@@ -353,10 +392,20 @@ function getKillImgs(killRoundId, uid) {
             defer.reject(JSON.stringify(err));
         } else {
             var reArr = [];
+            var endRe = {
+                vo: '',
+                imgArr: []
+            };
             for (var i in doc) {
                 reArr.push(g.host.imageHost + doc[i].imgUrl);
             }
-            defer.resolve(reArr);
+            if (vo) {//hack 传入循环返回 标示
+                endRe.vo = vo;
+                endRe.imgArr = reArr;
+                defer.resolve(endRe);
+            } else {
+                defer.resolve(reArr);
+            }
         }
     });
     return defer.promise;
@@ -368,7 +417,6 @@ function getKillImgs(killRoundId, uid) {
 function xiaDanFun(postObj) {
 
 }
-
 
 /**
  *判断技能id是否被当前uid下单 todo
@@ -382,18 +430,24 @@ function trueXianDanFun(postObj) {
  */
 function homeGetListFun(postObj) {
     var defer = q.defer();
-    var whereCondition = {};//where条件
+    var whereCondition = {master: true}; //where条件 ,默认先找到1条主展示技能
     var sortStr = '';//排序条件 留空就是 按距离
-    if (postObj.endId !== '0') {//下拉 翻页 find next 查出当前 的 下10条数据
+
+    //下拉 翻页 find next 查出当前 的 下10条数据
+    if (postObj.endId !== 0) {
         whereCondition._id = {};
         whereCondition._id.$gt = postObj.endId;
     }
-    if (postObj.searchKey) {//如果有搜索关键词
+
+    //如果有搜索关键词
+    if (postObj.searchKey) {
         whereCondition.title = {
-            $regex: postObj.searchKey
+            $regex: postObj.searchKey,
         };
+        delete whereCondition.master;
     }
-    try {
+
+    try {//如果是附近搜索
         if (postObj.condition.area.city.cityCode == '777') {//如果是附近搜索
             whereCondition.gpsSearch = {
                 $near: [postObj.condition.areaGps.gpsObj.lng, postObj.condition.areaGps.gpsObj.lat]
@@ -408,41 +462,77 @@ function homeGetListFun(postObj) {
         console.error(e);
     }
 
-    if (postObj.clickShaiXuan && postObj.clickShaiXuan[0]) {
-        for (var vo in postObj.clickShaiXuan) {
-            giveShaiXuanWhere(postObj.clickShaiXuan[vo]);//根据筛选给where条件
+    //如果有筛选
+    if (postObj.condition && postObj.condition.clickShaiXuan && postObj.condition.clickShaiXuan[0]) {
+        for (var vo in postObj.condition.clickShaiXuan) {
+            giveShaiXuanWhere(postObj.condition.clickShaiXuan[vo]);//根据筛选给where条件
         }
     }
-
 
     snsArticleModel.find(whereCondition)
         .populate(
             {
                 'path': 'uid',
                 'model': memberModel,
+                'select': 'headerImg name'
             }
         )
         .sort(sortStr)
         .limit(10)
+        .select('uid title gpsSearch attr content sex master killRoundId type')
         .exec(function (err, doc) {
             if (err) {
                 defer.reject(JSON.stringify(err));
             } else {
-                var isHaveGps = false;
-                if (postObj.condition && postObj.condition.areaGps && postObj.condition.areaGps.gpsObj && postObj.condition.areaGps.gpsObj.lng) {
-                    isHaveGps = true;
-                }
-                for (var vo in doc) {
-                    if (isHaveGps) {
-                        doc[vo]._doc.far = pub.farGps(postObj.condition.areaGps.gpsObj.lat, postObj.condition.areaGps.gpsObj.lng, doc[vo].gpsSearch[1], doc[vo].gpsSearch[0]);
-                    } else {
-                        doc[vo]._doc.far = 0;
+                if (doc[0]) {
+                    var isHaveGps = false;
+                    if (postObj.condition && postObj.condition.areaGps && postObj.condition.areaGps.gpsObj && postObj.condition.areaGps.gpsObj.lng) {
+                        isHaveGps = true;
                     }
+                    for (var vo in doc) {
+                        //如果有gps信息就去计算距离
+                        if (isHaveGps) {
+                            doc[vo]._doc.far = pub.farGps(postObj.condition.areaGps.gpsObj.lat, postObj.condition.areaGps.gpsObj.lng, doc[vo].gpsSearch[1], doc[vo].gpsSearch[0]);
+                        } else {
+                            doc[vo]._doc.far = 0;
+                        }
+
+                        //如果有头像
+                        if (doc[vo]._doc && doc[vo]._doc.uid && doc[vo]._doc.uid.headerImg) {
+                            doc[vo]._doc.listHeader = g.host.imageHost + doc[vo]._doc.uid.headerImg;
+                        } else {
+                            doc[vo]._doc.listHeader = '';
+                        }
+
+                        //如果有 attr
+                        if (doc[vo]._doc && doc[vo]._doc.attr) {
+                            doc[vo]._doc.price = doc[vo]._doc.attr.price;
+                            doc[vo]._doc.danWei = pub.getDefaultVal('kill_priceUnit', doc[vo]._doc.attr.priceUnit);
+                        }
+
+                        //des
+                        doc[vo]._doc.des = doc[vo]._doc.content;
+
+                        getKillImgs(doc[vo]._doc.killRoundId, doc[vo]._doc.uid, vo).then(_getImgs, _getImgsErr);
+                    }
+                } else {
+                    defer.reject('暂无数据');
                 }
+            }
+
+            function _getImgs(imgArr) {
+                doc[imgArr.vo]._doc.imgs = imgArr.imgArr;
+                if (imgArr.vo == (doc.length - 1)) {
+                    defer.resolve(doc);
+                }
+            }
+
+            function _getImgsErr(err) {
                 defer.resolve(doc);
             }
-        });
 
+
+        });
 
     /**
      *根据筛选给where条件
@@ -467,9 +557,7 @@ function homeGetListFun(postObj) {
 
     return defer.promise;
 
-
 }
-
 
 /**
  * 更新uid下的 技能表 会员资料字段,gpsSearch,sex,hot,live
@@ -506,6 +594,5 @@ function upDateKillGpsFun(obj) {
 
     return defer.promise;
 }
-
 
 module.exports = fun;

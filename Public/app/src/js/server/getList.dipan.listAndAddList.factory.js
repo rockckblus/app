@@ -190,11 +190,11 @@
 
             try {
                 //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
-                _addNewListToOldList(re.list, function (reList) {
+                _addNewListToOldList(re.data.doc, function (reList) {
                     //标记star
                     reList = editShowStar(reList);
 
-                    if (!re.list && !re.list[0]) {
+                    if (!re.data.doc && !re.data.doc[0]) {
                         callSucessCount++;
                         setTimeout(function () {
                             if (callSucessCount > 1) {
@@ -213,7 +213,9 @@
                     }, 0);
                 }, listNam, scope);
             } catch (e) {
-                console.error('error', e);
+                _tools.alert({
+                    title: '没有更多数据啦! ^_^'
+                });
             }
         }
 
@@ -345,6 +347,9 @@
             "<div class='clear'></div>" +
             "<div class='des' bo-text='vo.des'></div>" +
             "</div>" +
+            "<div class='clear'></div>" +
+            "<div class='moreKill lan' style='font-size: 0.8rem;margin-top: 10px' bo-if='vo.killListTitle' bo-text='\"更多技能: \"+ vo.killListTitle'></div>" +
+            "</div>" +
             "<\/div>";
         // strVar += "                <div class=\"left listHeader\">";
         // strVar += "                    <img bo-src=\"vo.listHeader\"/>";
@@ -389,16 +394,16 @@
         switch (thisUrl) {
             case 'home':
                 newList = thisObj.globalCatchList.home;
-                _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
+                // _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
                 break;
             case 'need':
                 newList = thisObj.globalCatchList.need;
-                _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
+                // _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
                 break;
-            case 'star':
-                //存储 star
-                _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
-                break;
+            // case 'star':
+            //存储 star
+            // _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
+            // break;
         }
 
         if (!newList) {
@@ -431,20 +436,20 @@
 
         //存储 star 从本地读取 记录的,加上新加的 ,一起存储
         // _saveStarNewAndOld();
-        function _saveStarNewAndOld() {
-            var endArr = [];
-            var oldArr = _tools.getLocalStorageObj('starArr');
-            console.log('oldArr', oldArr);
-            var newArr = thisObj.globalCatchList.starArr;
-            angular.forEach(oldArr, function (vo1) {
-                endArr.push(vo1);
-            });
-            angular.forEach(newArr, function (vo2) {
-                endArr.push(vo2);
-            });
-
-            _tools.saveLocalStorageObj('starArr', endArr);
-        }
+        // function _saveStarNewAndOld() {
+        //     var endArr = [];
+        //     var oldArr = _tools.getLocalStorageObj('starArr');
+        //     console.log('oldArr', oldArr);
+        //     var newArr = thisObj.globalCatchList.starArr;
+        //     angular.forEach(oldArr, function (vo1) {
+        //         endArr.push(vo1);
+        //     });
+        //     angular.forEach(newArr, function (vo2) {
+        //         endArr.push(vo2);
+        //     });
+        //
+        //     _tools.saveLocalStorageObj('starArr', endArr);
+        // }
 
         delGoldCatcth();//删除当前url的全局缓存数组
     }
