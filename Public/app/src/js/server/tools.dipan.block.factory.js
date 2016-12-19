@@ -226,16 +226,6 @@
                 }
             }
 
-            function _logOut() {
-                re.alert({
-                    title: '登录超时,重新登录'
-                });
-                setTimeout(function () {
-                    $state.go('loginOut');
-                }, 1000);
-                return false;
-
-            }
 
             var oldGetMoreUrl = getMoreUrl;//记录原始地址
 
@@ -243,7 +233,6 @@
             if (config.debugApi) {
                 var urlObj = parseUrl(getMoreUrl);
                 var urlHostStr = 'http://' + urlObj.host + ':' + urlObj.port;
-
                 if (urlHostStr == config.host.nodeHost) {
                     getMoreUrl = config.host.nodeHostTest + urlObj.path;
                 } else if (urlHostStr == config.host.phpHost) {
@@ -259,6 +248,7 @@
                 endData[vo] = data[vo];
             }
 
+            var postCount = 0;
 
             function _post(url, postData, isComplete) {
                 var defer = $q.defer();
@@ -269,7 +259,7 @@
                     timeout: 10000
                 })
                     .success(function (doc) {
-
+                        postCount++;
                         /**
                          * 判断模拟模式如果开启,去判断 当前api是模拟还是已经 完成,
                          * 如果完成就调用完成的 接口,再从新请求真实数据,

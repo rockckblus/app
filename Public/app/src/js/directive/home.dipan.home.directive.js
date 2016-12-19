@@ -18,9 +18,9 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config', 'compile', '$state', 'getList', 'header'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config', 'compile', '$state', 'getList', 'header', '$q'];
 
-    function thisController($scope, $rootScope, $timeout, tools, update, config, compile, $state, getList, header) {
+    function thisController($scope, $rootScope, $timeout, tools, update, config, compile, $state, getList, header, $q) {
 
         var clickType = 'tap';
         tools.trueWeb(function () {
@@ -44,6 +44,7 @@
         var type = 'up';//当前请求方式 up down
         var star = [];//标记数组 ,
 
+        $scope.$on('getSelectDown', getSelectDown);//获取筛选条件去请求接口
 
         /*************************
          * 默认读取上次的缓存 数据, 然后 再异步更新 到 最新数据,
@@ -69,25 +70,6 @@
             function _getThisCatceList() {
                 var thisLogName = 'catchList_' + $state.current.name + '-' + tools.getToday();
                 return tools.getLocalStorageObj(thisLogName);
-            }
-
-            /**
-             * 返回 标记star 的 id 数组
-             * @returns {array|*}
-             * @private
-             */
-            function _getThisCatchStarArr() {
-                var endArr = [];
-                var homeStar = tools.getLocalStorageObj('star');
-                angular.forEach(homeStar, function (vo) {
-                    endArr.push(vo._id);
-                });
-                return endArr;
-            }
-
-            var strArr = _getThisCatchStarArr();
-            if (strArr && strArr[0]) {//赋值 标记数组
-                getList.globalCatchList.starArr = strArr;
             }
 
             var thisCatchList = _getThisCatceList();
@@ -152,127 +134,6 @@
             });
         }
 
-        //bind 星标 点击事件, 备份
-        function _bindBak(doc, listName) {
-            if (type == 'down') {
-                console.log('down', type);
-            }
-
-            if (!firstId) {//如果没有 firstId,就给 firstId
-                try {
-                    firstId = doc[0]._id;
-                } catch (e) {
-                    console.log('error');
-                }
-            }
-            try {
-                var endId = _getLastId(doc);//给最后一条id
-                localStorage.setItem($state.current.name + 'EndId', endId);
-            } catch (e) {
-                console.log('error');
-            }
-
-            _bindTapIcon();
-
-            ///**
-            // * 遍历list 取最后一条的 id
-            // * @return {String} _id
-            // */
-            function _getLastId(re) {
-                var endNum = re.length - 1;
-                return re[endNum]._id;
-            }
-
-            //bind 星标 点击事件 todo 循环内不放方法
-            function _bindTapIcon() {
-                angular.forEach(eval("$scope." + listName), function (vo) {
-                    var idStr = '#' + vo._id;
-                    $timeout(function () {
-                        mui(idStr).on('tap', '.iconStar', function () {
-                            if (vo.iconStar == 'fa-star-o') {
-                                $timeout(function () {
-                                    vo.iconStar = 'fa-star';
-                                    _saveStarArr(vo._id);
-                                }, 0);
-                            } else if (vo.iconStar == 'fa-star') {
-                                $timeout(function () {
-                                    vo.iconStar = 'fa-star-o';
-                                    _delStarArr(vo._id);
-                                }, 0);
-                            }
-                            //reForList(liId, thisScope);
-                        });
-                    }, 400);
-
-                });
-
-
-                /**************************
-                 * 从缓存 读取 star 数组
-                 *
-                 * star 缓存命名 state.name + '_star'
-                 * @param callBack
-                 *
-                 * 16/9/14 下午9:21 ByRockBlus
-                 **************************/
-                function _getStartFromCatch(callBack) {
-                    var stateName = 'star';
-                    star = tools.getLocalStorageObj(stateName);
-                    if (!star) {
-                        star = [];
-                    }
-                    $timeout(function () {
-                        callBack();
-                    }, 200);
-                }
-
-                /**************************
-                 * 存储标记对象 到 缓存的 标记数组
-                 * 16/9/14 下午7:37 ByRockBlus
-                 **************************/
-                function _saveStarArr(_id) {
-                    getList.globalCatchList.starArr.push(_id);//push 到 全局数组
-                    var idDom = document.getElementById(_id);
-                    idDom = angular.element(idDom);
-                    var listName = idDom.attr('listName');
-                    var thisScope = eval('$scope.' + listName);
-                    angular.forEach(thisScope, function (vo) {
-                        if (vo._id == _id) {
-                            delete(vo.$$hashKey);
-                            _getStartFromCatch(function () {
-                                star.push(vo);
-                                //var stateName = $state.current.name + '_star';
-                                var stateName = 'star';
-                                tools.saveLocalStorageObj(stateName, star);
-                            });
-                        }
-                    });
-                }
-
-                /**************************
-                 * 删除存储标记对象 到 缓存的 标记数组
-                 * 16/9/14 下午7:37 ByRockBlus
-                 **************************/
-                function _delStarArr(_id) {
-                    getList.delStarIdFromStarArr(_id);
-                    _getStartFromCatch(function () {
-                        var tempStar = [];
-                        angular.forEach(star, function (vo) {
-                            if (vo._id !== _id) {
-                                tempStar.push(vo);
-                            }
-                        });
-
-                        var stateName = 'star';
-                        tools.saveLocalStorageObj(stateName, tempStar);
-                    });
-                }
-
-
-            }
-
-
-        }
 
         /**
          * bind listItem 点击事件
@@ -281,6 +142,7 @@
          * @private
          */
         function _bind(doc, listName) {
+
             if (type == 'down') {
                 console.log('down', type);
             }
@@ -338,9 +200,6 @@
          * @param {布尔 判断是点击来的} isClickBtn
          */
         function downGetList() {
-            if ($state.current.name == 'star') {//如果 是标记分类 底部下拉事件 没有任何 操作
-                return false;
-            }
             type = 'down';
             var endId = localStorage.getItem($state.current.name + 'EndId');
             if (!endId) {
@@ -349,52 +208,6 @@
             getList.getList($state.current.name, false, endId, $scope, 'list[' + $scope.list.length + ']', _bind);
         }
 
-        /**
-         * 请求成功后重新给list 赋值
-         * 记录list模型名称
-         * @param re
-         */
-        function call(re) {
-            $timeout(function () {
-                console.log('re', re);
-                //$scope.list[listCount] = re.list;
-                //listCount++;
-                //var name = $state.current.name;
-                //var obj = $scope.list;
-                //tools.saveLocalStorageObj(name, obj);//存储obj
-                plusInit();//绑定点击事件
-            }, 0);
-        }
-
-        function err() {
-            tools.alert({
-                title: '网络请求失败',
-                content: '请检查网络'
-            });
-        }
-
-        /**
-         * 重新给 list
-         * @param id
-         */
-        function reForList(id, thisScope) {
-            angular.forEach(thisScope, function (vo) {
-                if (vo._id == id) {
-                    if (vo.iconStar == 'fa-star-o') {
-                        $timeout(function () {
-                            vo.iconStar = 'fa-star';
-                        }, 0);
-                    } else if (vo.iconStar == 'fa-star') {
-                        $timeout(function () {
-                            vo.iconStar = 'fa-star-o';
-                        }, 0);
-                    }
-
-                    //var name = $state.current.name;
-                    //tools.saveLocalStorageObj(name, $scope.list);//存储obj
-                }
-            });
-        }
 
         /**
          * giveListTop
@@ -413,5 +226,62 @@
             }
         }
 
+
+        /**
+         * 监听筛选获取homeList 事件
+         * @param t
+         * @param urlName
+         */
+        function getSelectDown() {
+            clearEndIdAndList().then(
+                function (re) {
+                    if (re && re.code == 'S') {
+                        downGetList();
+                    }
+                },
+                function () {
+                    tools.alert({
+                        title: '请求失败'
+                    });
+                });
+        }
+
+
+        /**
+         *  清空缓存的 对应url的endId, 清空 对应List 的缓存数据
+         *  验证清空数据之后,再deferPromise(去加入search数据,去请求api)
+         *  @param urlName (home need)
+         */
+        function clearEndIdAndList() {
+            var defer = $q.defer();
+            localStorage.removeItem($state.current.name + 'EndId');
+            var thisLogName = 'catchList_' + $state.current.name + '-' + tools.getToday();
+            localStorage.removeItem(thisLogName);
+
+            $timeout(function () {
+                var endId = localStorage.getItem($state.current.name + 'EndId');
+                var thisLogNameThis = localStorage.getItem(thisLogName);
+                if (!endId && !thisLogNameThis) {
+                    //清空所有dom数据
+                    var list = document.getElementById('list');
+                    var arr = document.getElementsByName('homeListItem');
+
+                    angular.forEach(arr, function (vo) {
+                        list.removeChild(vo);
+                    });
+                    $scope.list = [];
+                    getList.delGoldCatcth();
+                    defer.resolve({
+                        code: 'S'
+                    });
+                } else {
+                    defer.reject({
+                        code: 'F'
+                    });
+                }
+
+            }, 2000);
+            return defer.promise;
+        }
     }
 })();

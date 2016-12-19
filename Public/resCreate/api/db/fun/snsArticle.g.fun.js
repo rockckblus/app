@@ -554,7 +554,6 @@ function homeGetListFun(postObj) {
         }
     }
 
-
     return defer.promise;
 
 }

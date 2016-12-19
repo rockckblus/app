@@ -59,7 +59,7 @@
         $scope.$on('showArea', showArea);//监听打开areaDiv事件
         $scope.$on('hideArea', hideArea);//监听关闭areaDiv事件
 
-        bindSelectAreaBtn();//绑定选择area点击事件
+        // bindSelectAreaBtn();//绑定选择area点击事件
         function init() {
             getDefault();//获取默认本地存储的地址信息
             $timeout(function () {
@@ -116,20 +116,20 @@
          * 绑定选择area点击事件
          */
         function bindSelectAreaBtn() {
-            var bindBtn = document.getElementById('topSearchLeft');
-            var type = 'tap';
-            tools.trueWeb(function () {
-                type = 'click';
-            }, function () {
-                type = 'tap';
-            });
-
-            bindBtn.addEventListener(type, _bind);
-
-            function _bind() {
-                $rootScope.$broadcast('showArea');
-                $rootScope.$broadcast('blurSearch');
-            }
+            // var bindBtn = document.getElementById('topSearchLeft');
+            // var type = 'tap';
+            // tools.trueWeb(function () {
+            //     type = 'click';
+            // }, function () {
+            //     type = 'tap';
+            // });
+            //
+            // bindBtn.addEventListener(type, _bind);
+            //
+            // function _bind() {
+            //     $rootScope.$broadcast('showArea');
+            //     $rootScope.$broadcast('blurSearch');
+            // }
         }
 
         /**
@@ -242,6 +242,7 @@
                 $scope.thisCity.location = vo.getAttribute('location');
                 saveLocalArea();
                 closeThisShengShow();
+                $rootScope.$broadcast('getSelectDown');
             }, 0);
         }
 
@@ -294,12 +295,12 @@
                 if (!sub) {//如果 不是 点击关闭按钮的调用
                     $rootScope.$broadcast('hideArea');//关闭地区alert
                     if ($state.current.name == 'home') {
-                        $rootScope.$broadcast('focusSearch');//焦点搜索框
+                        console.log('focusSearch');
+                        // $rootScope.$broadcast('focusSearch');//焦点搜索框
                     }
                 }
             }, 0);
         }
-
     }
 
 })();

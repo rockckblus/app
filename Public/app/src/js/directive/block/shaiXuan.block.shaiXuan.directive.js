@@ -260,6 +260,9 @@
                             $rootScope.$broadcast('showArea');//激活地址选择directive
                         }
 
+
+                        $rootScope.$broadcast('getSelectDown');//去筛选 请求数据
+
                     }, 0);
 
                 }

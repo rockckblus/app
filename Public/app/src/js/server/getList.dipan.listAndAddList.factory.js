@@ -17,7 +17,7 @@
     var _state;
     var _rootScope;
     var _filter;
-
+    var goldListId = [];
 
     function getList(tools, config, $timeout, compile, $state, $rootScope, $filter) {
         /**
@@ -32,7 +32,6 @@
         thisObj.pushToGoldCatcth = pushToGoldCatcth;//push 到全局变量数组 ,传入 newList
         thisObj.delGoldCatcth = delGoldCatcth;//del 全局变量数组
         thisObj.saveCatecNewList = saveCatecNewList;//存储全局变量数组 到本地localStroe 传入listObj
-        thisObj.delStarIdFromStarArr = delStarIdFromStarArr;//从标记的 全局缓存数组里删除 指定 标记 id
         thisObj.editShowStar = editShowStar;//从全局缓存数组遍历 标记过的 star, 给list 赋值
 
         /**
@@ -66,34 +65,18 @@
      * @param {作用域变量} scope.list
      * @param {function 成功后的回调} callBack
      */
-
     var callSucessCount = 0;
 
     function _getList(name, frontId, endId, scope, listNam, callBack) {
         var url;
         var type = 1;//1上啦,2下拉
         switch (name) {
-            // case 'memberIndex':
-            //     url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
-            //     break;
             case 'home':
                 url = _config.host.nodeHost + '/sns/homeGetList?' + _tools.getRoundCode(8);
                 break;
             case 'need':
                 url = _config.host.nodeHost + '/sns/needGetList?' + _tools.getRoundCode(8);
                 break;
-            // case 'star':
-            //     url = true;
-            //     break;
-            // case 'login':
-            //     url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
-            //     break;
-            // case 'area':
-            //     url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
-            //     break;
-            // case 'search':
-            //     url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
-            //     break;
             default:
                 return false;
         }
@@ -110,10 +93,8 @@
                 type = 2;
             }
 
-
             //获取数据库的筛选条件,遍历name 给不同筛选条件
             var condit = switchSearchCondition();
-
 
             var postData = {
                 'frontId': _frontId,
@@ -129,13 +110,27 @@
 
             _getCatchList(function (catchObj, getNext) {
                 if (getNext) {
-                    //call(catchObj);
-                    _tools.postJsp(url, postData, true).then(call, err);
+                    _tools.postJsp(url, postData, true).then(
+                        function (re) {
+//todo
+                            var endre = [];
+                            angular.forEach(re, function (vo) {
+                                if (goldListId.indexOf(vo._id) == -1) {
+                                    goldListId.push(vo._id);
+                                } else {
+                                    endre.push(vo);
+                                }
+                            });
+
+                            call(re);
+
+                        }
+
+                        , err);
                 } else {
                     call(catchObj);
                 }
             });
-
         }
 
         /**************************
@@ -145,37 +140,11 @@
          **************************/
         function _getCatchList(__call) {
             switch (_state.current.name) {
-                // case 'star' :
-                //     _logicStar(__call);//星标的逻辑
-                //     break;
-                default:
+                case 'home' :
                     _logicHome(__call);//供`需`其他 的逻辑
                     break;
             }
         }
-
-        /**************************
-         * 星标的逻辑
-         * 读取缓存的 星标 list对象返回,如果 为空  提示alert
-         * 16/9/16 上午11:10 ByRockBlus
-         **************************/
-        // function _logicStar(___call) {
-        //
-        //     var starCatchList = _tools.getLocalStorageObj('star');
-        //     if (!starCatchList || !starCatchList [0]) {
-        //         _tools.alert({
-        //             title: '没有标记过的信息'
-        //         });
-        //         _rootScope.$broadcast('closeLoading');
-        //         return;
-        //     } else {
-        //         var re = {
-        //             list: starCatchList
-        //         };
-        //         _rootScope.$broadcast('closeLoading');
-        //         ___call(re);
-        //     }
-        // }
 
         /**************************
          * home  供`需`其他 的逻辑
@@ -187,13 +156,9 @@
         }
 
         function call(re) {
-
             try {
                 //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
                 _addNewListToOldList(re.data.doc, function (reList) {
-                    //标记star
-                    reList = editShowStar(reList);
-
                     if (!re.data.doc && !re.data.doc[0]) {
                         callSucessCount++;
                         setTimeout(function () {
@@ -226,37 +191,6 @@
             });
         }
 
-        /**
-         * save到数据库之前的 编辑 ,只缓存20条数据
-         * @param {obj}obj
-         * @param {NUmber 1上滑 2下滑}type
-         * @returns {obj 过滤后的数据}
-         */
-        function saveLocalObjEdit(obj) {
-            var re = [];
-            var tempCount = 0;
-            angular.forEach(obj, function (vo) {
-                tempCount++;
-
-                if (obj.length < 20) {
-                    re.push(vo);
-                } else {
-                    if (type == 1) {// 上啦条件 小于20
-                        if (tempCount < 20) {
-                            re.push(vo);
-                        }
-                    }
-
-                    if (type == 2) {//下拉条件 大于总数量 - 20
-                        if (tempCount > (obj.length - 20)) {
-                            re.push(vo);
-                        }
-                    }
-                }
-
-            });
-            return re;
-        }
 
         /**************************
          * 遍历catchname, 删除 过期的 缓存数据,
@@ -283,7 +217,6 @@
                  * @private
                  */
                 function __delCatchListName(catchName) {
-
                     var chaName = catchName.split('_');
                     if (chaName[0] == 'catchList') {//判断 是 list对象
                         var _chaName = catchName.split('-');
@@ -313,6 +246,7 @@
      * */
     function _addNewListToOldList(newlist, _call, listNam, scope, isCatch) {
 
+
         //判断newList 里面的 id 是否有 标记
         var strVar = "";
         strVar += "        <li class=\" item homeListItem thinner-border\" bindonce bo-attr bo-attr-url=\"vo.type + 'Content'\" bo-attr-type=\"vo.type\" bo-attr-subid=\"vo._id\"  bo-id='\"homeList_\" + vo._id'";
@@ -327,6 +261,8 @@
             "<span class='fa fa-map-marker' style='margin-left: 1rem'></span>" +
             "<span class='' style='margin-left: 3px' bo-text='vo.far + \"km\"'></span>" +
             "<\/div>";
+        strVar += "                <div class='right' bo-text='\"(\"+vo.sex+\")\"'></div>";
+        strVar += "                <div class='right' bo-text='vo.uid.name'></div>";
         strVar += "                <\/div>";
         strVar += "                <div class=\"line clear marginLine\"><\/div>";
         strVar += "                <div class=\"clear\">" +
@@ -351,33 +287,15 @@
             "<div class='moreKill lan' style='font-size: 0.8rem;margin-top: 10px' bo-if='vo.killListTitle' bo-text='\"更多技能: \"+ vo.killListTitle'></div>" +
             "</div>" +
             "<\/div>";
-        // strVar += "                <div class=\"left listHeader\">";
-        // strVar += "                    <img bo-src=\"vo.listHeader\"/>";
-        // strVar += "                <\/div>";
         strVar += "            <\/div>";
-        // strVar += "            <div class=\"mui-navigate-right\" style=\"font-size:14px;color: #777;margin-top: 5px\" bindonce";
-        // strVar += "                 ng-repeat=\"(key,vo2) in vo.content\">";
-
-        // strVar += "                <span style=\"color:#bd0000\" bo-text=\"key + ':'\"><\/span>";
-        // strVar += "                <span bo-text=\"vo2\"><\/span>";
-        // strVar += "            <\/div>";
-        // strVar += "";
-        // strVar += "            <div class=\"panle\">";
-        // strVar += "                <div class=\"mui-btn fa fa-weixin fa-1x icon-btn\"><\/div>";
-        // strVar += "                <div class=\"mui-btn fa  fa-1x icon-btn-noBack iconStar\" ng-class=\"vo.iconStar\" bo-attr";
-        // strVar += "                     bo-attr-iconId=\"vo._id\"><\/div>";
-        // strVar += "            <\/div>";
         strVar += "        <\/li>";
 
         var repListHtml = angular.element(strVar);
         repListHtml.attr('ng-repeat', "vo in " + listNam);
         repListHtml.attr('listName', listNam);
-        // repListHtml.attr('bo-id', 'vo._id');
-
         _compile('list', repListHtml[0], scope, true);
         if (!isCatch) {//如果不是 缓存请求
             pushToGoldCatcth(newlist);//push 到全局变量数组
-            //saveCatecNewList(newlist);//合并存储到缓存
         }
         _call(newlist);
     }
@@ -388,22 +306,19 @@
      * 16/9/17 上午10:23 ByRockBlus
      **************************/
     function saveCatecNewList() {
-
         var newList;
         var thisUrl = _state.current.name;
         switch (thisUrl) {
             case 'home':
-                newList = thisObj.globalCatchList.home;
-                // _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
+                if (thisObj.globalCatchList.home[0]) {
+                    newList = thisObj.globalCatchList.home;
+                }
                 break;
             case 'need':
-                newList = thisObj.globalCatchList.need;
-                // _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
+                if (thisObj.globalCatchList.need[0]) {
+                    newList = thisObj.globalCatchList.need;
+                }
                 break;
-            // case 'star':
-            //存储 star
-            // _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
-            // break;
         }
 
         if (!newList) {
@@ -434,23 +349,6 @@
         //存储 catch
         _tools.saveLocalStorageObj(thisLogName, oldArr);
 
-        //存储 star 从本地读取 记录的,加上新加的 ,一起存储
-        // _saveStarNewAndOld();
-        // function _saveStarNewAndOld() {
-        //     var endArr = [];
-        //     var oldArr = _tools.getLocalStorageObj('starArr');
-        //     console.log('oldArr', oldArr);
-        //     var newArr = thisObj.globalCatchList.starArr;
-        //     angular.forEach(oldArr, function (vo1) {
-        //         endArr.push(vo1);
-        //     });
-        //     angular.forEach(newArr, function (vo2) {
-        //         endArr.push(vo2);
-        //     });
-        //
-        //     _tools.saveLocalStorageObj('starArr', endArr);
-        // }
-
         delGoldCatcth();//删除当前url的全局缓存数组
     }
 
@@ -458,14 +356,17 @@
      * push 到全局缓存变量数组
      */
     function pushToGoldCatcth(newList) {
-        var thisUrl = _state.current.name;
-        switch (thisUrl) {
-            case 'home':
-                thisObj.globalCatchList.home.push(newList);
-                break;
-            case 'need':
-                thisObj.globalCatchList.need.push(newList);
-                break;
+
+        if (newList) {
+            var thisUrl = _state.current.name;
+            switch (thisUrl) {
+                case 'home':
+                    thisObj.globalCatchList.home.push(newList);
+                    break;
+                case 'need':
+                    thisObj.globalCatchList.need.push(newList);
+                    break;
+            }
         }
     }
 
@@ -477,37 +378,13 @@
         switch (thisUrl) {
             case 'home':
                 thisObj.globalCatchList.home = [];
-                thisObj.globalCatchList.starArr = [];
                 break;
             case 'need':
                 thisObj.globalCatchList.need = [];
-                thisObj.globalCatchList.starArr = [];
-                break;
-            case 'star':
-                thisObj.globalCatchList.starArr = [];
                 break;
         }
     }
 
-    /**
-     * saveStar 存储star 数组
-     */
-    function saveStarArrToGoldCatch(_id) {
-        thisObj.globalCatchList.starArr.push(_id);
-    }
-
-    /**
-     * 删除star缓存数组
-     */
-    function delStarIdFromStarArr(_id) {
-        var newStarArr = [];
-        angular.forEach(thisObj.globalCatchList.starArr, function (vo) {
-            if (vo != _id) {
-                newStarArr.push(vo);
-            }
-        });
-        thisObj.globalCatchList.starArr = newStarArr;
-    }
 
     /**
      * 从全局缓存数组遍历 标记过的 star, 给list 赋值

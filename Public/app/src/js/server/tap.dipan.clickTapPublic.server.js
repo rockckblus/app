@@ -11,7 +11,6 @@
     angular.module('dipan').factory('tap', tap);
     tap.$inject = ['$state', 'tools', 'getList', '$rootScope'];
 
-
     /**
      * angular 载入完成后。显示modle值
      * 15-12-26 */
@@ -80,7 +79,6 @@
                 function () {
                     plus(_call);
                 });//判断手机网页 手机 绑定 tap 事件, 网页绑定 click事件
-
             function _call() {
                 angular.forEach(ids, function (vo) {
                     var doc = _trueIsSetId(vo);
@@ -99,6 +97,7 @@
          * @param {String}url
          * @private
          */
+
         function _goUrl(doc, url) {
             var type = 'tap';
             tools.trueWeb(function () {
@@ -117,7 +116,6 @@
                         $rootScope.$broadcast('cancelClick');
                         break;
                     case 'need' :
-                        __saveCatchList();
                         break;
                     // case 'star' :
                     //     __saveCatchList();
@@ -155,7 +153,6 @@
 
         }
 
-
         /**
          * 判断id 是否存在,存在的话,返回 true
          * @param {传入id} id
@@ -178,6 +175,5 @@
 
         return re;
     }
-
 
 })();

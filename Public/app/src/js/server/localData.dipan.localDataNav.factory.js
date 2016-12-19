@@ -143,6 +143,11 @@
             case '/home':
                 return [
                     [{
+                        id: 'homeShaiXuanCity',
+                        name: '全国',
+                        type: 'six',
+                    }],
+                    [{
                         id: 'homeShaiXuanThree1',
                         name: '男',
                         type: 'more',
@@ -159,11 +164,11 @@
                         name: '人气',
                         type: 'two',
                     },],
-                    [{
-                        id: 'homeShaiXuanTwo4',
-                        name: '活跃',
-                        type: 'two',
-                    },],
+                    // [{
+                    //     id: 'homeShaiXuanTwo4',
+                    //     name: '活跃',
+                    //     type: 'two',
+                    // },],
                 ];
             case '/need':
                 return [
