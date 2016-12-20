@@ -17,10 +17,8 @@
     var _state;
     var _rootScope;
     var _filter;
-    var goldListId = [];
 
     function getList(tools, config, $timeout, compile, $state, $rootScope, $filter) {
-
 
         /**
          * 全局缓存变量对象
@@ -34,7 +32,6 @@
         thisObj.pushToGoldCatcth = pushToGoldCatcth;//push 到全局变量数组 ,传入 newList
         thisObj.delGoldCatcth = delGoldCatcth;//del 全局变量数组
         thisObj.saveCatecNewList = saveCatecNewList;//存储全局变量数组 到本地localStroe 传入listObj
-        thisObj.editShowStar = editShowStar;//从全局缓存数组遍历 标记过的 star, 给list 赋值
 
         /**
          * 遍历不同url,返回 list 数据 ,
@@ -97,7 +94,6 @@
 
             _timeout(function () {
                 var condit = switchSearchCondition();
-
                 var postData = {
                     'frontId': _frontId,
                     'endId': _endId,
@@ -120,18 +116,7 @@
         }
 
         function _editGetNext(re) {
-            var endre = {
-                data: {
-                    doc: []
-                }
-            };
-            angular.forEach(re.data.doc, function (vo) {
-                if (goldListId.indexOf(vo._id) == -1) {//如果不在全局数组
-                    goldListId.push(vo._id);
-                    endre.data.doc.push(vo);
-                }
-            });
-            call(endre);
+            call(re);
         }
 
         /**************************
@@ -160,24 +145,24 @@
             try {
                 //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
                 _addNewListToOldList(re.data.doc, function (reList) {
-                    if (!re.data.doc || !re.data.doc[0]) {
-                        callSucessCount++;
-                        setTimeout(function () {
-                            if (callSucessCount > 1) {
-                                _tools.alert({
-                                    title: '没有更多数据啦! ^_^'
-                                });
-                            }
-                        }, 0);
+                    if (!re.data.doc && !re.data.doc[0]) {
+                        // callSucessCount++;
+                        // setTimeout(function () {
+                        //     if (callSucessCount > 1) {
+                        _tools.alert({
+                            title: '没有更多数据啦! ^_^'
+                        });
+                        //     }
+                        // }, 0);
                         return false;
                     } else {
                         callSucessCount = 0;
+                        _timeout(function () {
+                            eval("scope.list=reList");
+                            callBack(reList, 'list');//回调去绑定点击事件
+                        }, 0);
                     }
-                    // _timeout(function () {
-                    eval("scope." + listNam + "= reList");
-                    callBack(reList, listNam);//回调去绑定点击事件
-                    // }, 0);
-                }, listNam, scope);
+                }, 'list', scope);
             } catch (e) {
                 _tools.alert({
                     title: '没有更多数据啦! ^_^'
@@ -245,60 +230,59 @@
      *
      * */
     function _addNewListToOldList(newlist, _call, listNam, scope, isCatch) {
-        listNam = "list[0]";
 
         //判断newList 里面的 id 是否有 标记
-        var strVar = "";
-        strVar += "        <li class=\" item homeListItem thinner-border\" bindonce='" + listNam + "' bo-attr bo-attr-url=\"vo.type + 'Content'\" bo-attr-type=\"vo.type\" bo-attr-subid=\"vo._id\"  bo-id='\"homeList_\" + vo._id'";
-        strVar += "            style=\"background-color: #fff;\">";
-        strVar += "            <div class=\"clear contentItem\">";
-        strVar += "                <div class=\"contentItemTitle clear\" bo-text=\"vo.title\"><\/div>";
-        strVar += "                <div class=\"contentItemTitleCounent clear\">";
-        strVar += "                <div class=\"left \">" +
-            "<span class='' style='color:#db5140' bo-text='\"￥\" + vo.price'><\/span>" +
-            "<span class=''>\&nbsp;|&nbsp;</span>" +
-            "<span class='' bo-text='vo.danWei'></span>" +
-            "<span class='fa fa-map-marker' style='margin-left: 1rem'></span>" +
-            "<span class='' style='margin-left: 3px' bo-text='vo.far + \"km\"'></span>" +
-            "<\/div>";
-        strVar += "                <div class='right' bo-text='\"(\"+vo.sex+\")\"'></div>";
-        strVar += "                <div class='right' bo-text='vo.uid.name'></div>";
-        strVar += "                <\/div>";
-        strVar += "                <div class=\"line clear marginLine\"><\/div>";
-        strVar += "                <div class=\"clear\">" +
-            "<div class='headerLeft left'>" +
-            "<img bo-if='vo.listHeader' bo-src='vo.listHeader' style='width: 30px;height: 30px;border-radius:30px;'/>" +
-            "<img bo-if='!vo.listHeader' bo-src='defaultHeader' style='width: 30px;height: 30px';border-radius:30px;/>" +
-            "</div>" +
-            "<div class='left imagesArr' >" +
-            "<div class='left imagesItem' bo-if='vo.imgs[0]'>" +
-            "<img bo-src='vo.imgs[0]'/>" +
-            "</div>" +
-            "<div class='left imagesItem' bo-if='vo.imgs[1]'>" +
-            "<img bo-src='vo.imgs[1]'/>" +
-            "</div>" +
-            "<div class='left imagesItem' bo-if='vo.imgs[2]'>" +
-            "<img bo-src='vo.imgs[2]'/>" +
-            "</div>" +
-            "<div class='clear'></div>" +
-            "<div class='des' bo-text='vo.des'></div>" +
-            "</div>" +
-            "<div class='clear'></div>" +
-            "<div class='moreKill lan' style='font-size: 0.8rem;margin-top: 10px' bo-if='vo.killListTitle' bo-text='\"更多技能: \"+ vo.killListTitle'></div>" +
-            "</div>" +
-            "<\/div>";
-        strVar += "            <\/div>";
-        strVar += "        <\/li>";
-
-        var repListHtml = angular.element(strVar);
-        repListHtml.attr('ng-repeat', "vo in " + listNam + " track by $index");
-        repListHtml.attr('listName', listNam);
-        console.log('scope', scope);
-        _compile('list', repListHtml[0], scope, true);
+        // var strVar = "";
+        // strVar += "        <li class=\" item homeListItem thinner-border\" bindonce='" + listNam + "' bo-attr bo-attr-url=\"vo.type + 'Content'\" bo-attr-type=\"vo.type\" bo-attr-subid=\"vo._id\"  bo-id='\"homeList_\" + vo._id'";
+        // strVar += "            style=\"background-color: #fff;\">";
+        // strVar += "            <div class=\"clear contentItem\">";
+        // strVar += "                <div class=\"contentItemTitle clear\" bo-text=\"vo.title\"><\/div>";
+        // strVar += "                <div class=\"contentItemTitleCounent clear\">";
+        // strVar += "                <div class=\"left \">" +
+        //     "<span class='' style='color:#db5140' bo-text='\"￥\" + vo.price'><\/span>" +
+        //     "<span class=''>\&nbsp;|&nbsp;</span>" +
+        //     "<span class='' bo-text='vo.danWei'></span>" +
+        //     "<span class='fa fa-map-marker' style='margin-left: 1rem'></span>" +
+        //     "<span class='' style='margin-left: 3px' bo-text='vo.far + \"km\"'></span>" +
+        //     "<\/div>";
+        // strVar += "                <div class='right' bo-text='\"(\"+vo.sex+\")\"'></div>";
+        // strVar += "                <div class='right' bo-text='vo.uid.name'></div>";
+        // strVar += "                <\/div>";
+        // strVar += "                <div class=\"line clear marginLine\"><\/div>";
+        // strVar += "                <div class=\"clear\">" +
+        //     "<div class='headerLeft left'>" +
+        //     "<img bo-if='vo.listHeader' bo-src='vo.listHeader' style='width: 30px;height: 30px;border-radius:30px;'/>" +
+        //     "<img bo-if='!vo.listHeader' bo-src='defaultHeader' style='width: 30px;height: 30px';border-radius:30px;/>" +
+        //     "</div>" +
+        //     "<div class='left imagesArr' >" +
+        //     "<div class='left imagesItem' bo-if='vo.imgs[0]'>" +
+        //     "<img bo-src='vo.imgs[0]'/>" +
+        //     "</div>" +
+        //     "<div class='left imagesItem' bo-if='vo.imgs[1]'>" +
+        //     "<img bo-src='vo.imgs[1]'/>" +
+        //     "</div>" +
+        //     "<div class='left imagesItem' bo-if='vo.imgs[2]'>" +
+        //     "<img bo-src='vo.imgs[2]'/>" +
+        //     "</div>" +
+        //     "<div class='clear'></div>" +
+        //     "<div class='des' bo-text='vo.des'></div>" +
+        //     "</div>" +
+        //     "<div class='clear'></div>" +
+        //     "<div class='moreKill lan' style='font-size: 0.8rem;margin-top: 10px' bo-if='vo.killListTitle' bo-text='\"更多技能: \"+ vo.killListTitle'></div>" +
+        //     "</div>" +
+        //     "<\/div>";
+        // strVar += "        <\/li>";
+        //
+        // var repListHtml = angular.element(strVar);
+        // repListHtml.attr('ng-repeat', "vo in " + listNam + " track by $index");
+        // repListHtml.attr('listName', listNam);
+        // console.log('scope', scope);
+        // _compile('list', repListHtml[0], scope, true);
         if (!isCatch) {//如果不是 缓存请求
-            pushToGoldCatcth(newlist);//push 到全局变量数组
+            _call(pushToGoldCatcth(newlist));//push 到全局变量数组
+        } else {
+            _call(newlist);
         }
-        _call(newlist);
     }
 
     /**************************
@@ -326,27 +310,21 @@
             return false;
         }
 
+        console.log('newList', newList);
         var oldArr = [];
         var thisLogName = 'catchList_' + _state.current.name + '-' + _tools.getToday();
 
         var tempCount = 0;
         angular.forEach(newList, function (voNew) {
-            angular.forEach(voNew, function (vo) {
-                tempCount++;
-                try {
-                    vo.iconStar = 'fa-star-o';
-                    // delete(vo.$$hashKey);
-                } catch (e) {
-                    console.error('删除hashKey失败');
-                }
-                if (tempCount < 10) {
-                    oldArr.push(vo);
-                } else {
-                    return false;
-                }
-            });
+            tempCount++;
+            if (tempCount < 10) {
+                oldArr.push(voNew);
+            } else {
+                return false;
+            }
         });
 
+        console.log('oldArr', oldArr);
         //存储 catch
         _tools.saveLocalStorageObj(thisLogName, oldArr);
 
@@ -357,13 +335,14 @@
      * push 到全局缓存变量数组
      */
     function pushToGoldCatcth(newList) {
-
         if (newList) {
             var thisUrl = _state.current.name;
             switch (thisUrl) {
                 case 'home':
-                    thisObj.globalCatchList.home.push(newList);
-                    break;
+                    angular.forEach(newList, function (vo) {
+                        thisObj.globalCatchList.home.push(vo);
+                    });
+                    return thisObj.globalCatchList.home;
                 case 'need':
                     thisObj.globalCatchList.need.push(newList);
                     break;
@@ -379,39 +358,10 @@
         switch (thisUrl) {
             case 'home':
                 thisObj.globalCatchList.home = [];
-                goldListId = [];//清空home的存在id数组,去除重复用
                 break;
             case 'need':
                 thisObj.globalCatchList.need = [];
                 break;
-        }
-    }
-
-    /**
-     * 从全局缓存数组遍历 标记过的 star, 给list 赋值
-     * @parme list
-     * @return list
-     * editShowStar
-     */
-    function editShowStar(list) {
-        var reList = [];
-        angular.forEach(list, function (vo) {
-            vo = _trueStar(vo);
-            reList.push(vo);
-        });
-        return reList;
-
-        /**
-         * 判断star
-         * return vo
-         * @private
-         */
-        function _trueStar(vo) {
-            var trueNum = thisObj.globalCatchList.starArr.indexOf(vo._id);
-            if (trueNum !== -1) {
-                vo.iconStar = "fa-star";
-            }
-            return vo;
         }
     }
 

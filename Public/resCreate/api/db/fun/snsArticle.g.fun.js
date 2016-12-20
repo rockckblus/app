@@ -478,7 +478,7 @@ function homeGetListFun(postObj) {
             }
         )
         .sort(sortStr)
-        .limit(10)
+        .limit(1)
         .select('uid title gpsSearch attr content sex master killRoundId type')
         .exec(function (err, doc) {
             if (err) {

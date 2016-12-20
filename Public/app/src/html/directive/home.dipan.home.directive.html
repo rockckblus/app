@@ -20,6 +20,51 @@
 
     <div id="list" class="mui-table-view mui-table-view-chevron clear"
          style="background-color:#f9f9f9;min-height: 100px" ng-style="listTop">
+
+        <li class=" item homeListItem thinner-border" bindonce='list' ng-repeat="vo in list" bo-attr
+            bo-attr-url="vo.type + 'Content'" bo-attr-type="vo.type" bo-attr-subid="vo._id" bo-id='"homeList_" + vo._id'
+            style="background-color: #fff;">
+            <div class="clear contentItem">
+                <div class="contentItemTitle clear" bo-text="vo.title"></div>
+                <div class="contentItemTitleCounent clear">
+                    <div class="left">
+                        <span class='' style='color:#db5140' bo-text='"￥" + vo.price'></span>
+                        <span class=''>&nbsp;|&nbsp;</span>
+                        <span class='' bo-text='vo.danWei'></span>
+                        <span class='fa fa-map-marker' style='margin-left: 1rem'></span>
+                        <span class='' style='margin-left: 3px' bo-text='vo.far + "km"'></span>
+                    </div>
+                    <div class='right' bo-text='"("+vo.sex+")"'></div>
+                    <div class='right' bo-text='vo.uid.name'></div>
+                </div>
+                <div class="line clear marginLine"></div>
+                <div class="clear">
+                    <div class='headerLeft left'>
+                        <img bo-if='vo.listHeader' bo-src='vo.listHeader'
+                             style='width: 30px;height: 30px;border-radius:30px;'/>
+                        <img bo-if='!vo.listHeader' bo-src='defaultHeader'
+                             style='width: 30px;height: 30px;border-radius:30px;'/>
+                    </div>
+                    <div class=' left imagesArr'>
+                        <div class='left imagesItem' bo-if='vo.imgs[0]'>
+                            <img bo-src='vo.imgs[0]'/>
+                        </div>
+                        <div class='left imagesItem' bo-if='vo.imgs[1]'>
+                            <img bo-src='vo.imgs[1]'/>
+                        </div>
+                        <div class='left imagesItem' bo-if='vo.imgs[2]'>
+                            <img bo-src='vo.imgs[2]'/>
+                        </div>
+                        <div class='clear'></div>
+                        <div class='des' bo-text='vo.des'></div>
+                    </div>
+                    <div class='clear'></div>
+                    <div class='moreKill lan' style='font-size: 0.8rem;margin-top: 10px' bo-if='vo.killListTitle'
+                         bo-text='"更多技能: "+ vo.killListTitle'></div>
+                </div>
+            </div>
+        </li>
+
     </div>
     <div class="mui-btn" id="isWeb"
          style="width:140px;left: 50%;margin-left: -70px;margin-top: 20px;margin-bottom: 20px">
