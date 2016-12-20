@@ -60,7 +60,6 @@ function killAdd(postObj) {
         if (re && !re[0]) {
             master = true;
         }
-
         snsArticleModel.create({
                 killRoundId: postObj.killRoundId,//随机id 仿制重复提交
                 uid: postObj.uid,
@@ -478,7 +477,7 @@ function homeGetListFun(postObj) {
             }
         )
         .sort(sortStr)
-        .limit(1)
+        .limit(10)
         .select('uid title gpsSearch attr content sex master killRoundId type')
         .exec(function (err, doc) {
             if (err) {

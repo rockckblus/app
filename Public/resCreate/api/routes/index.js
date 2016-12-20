@@ -254,6 +254,13 @@ function postCategory(req, res) {
 function postSns(req, res) {
     var fun = req.params.fun;
     switch (fun) {
+        case 'froAddKill' :
+            snsArticleServiceCtrl.froAddKill(req.body, function (re) {
+                res.json(re);
+            }, function (err) {
+                res.json(err);
+            });
+            break;
         case 'homeGetList' :
             snsArticleServiceCtrl.homeGetList(req.body, function (re) {
                 res.json(re);
@@ -377,6 +384,11 @@ function postIm(req, res) {
 function postMember(req, res) {
     var fun = req.params.fun;
     switch (fun) {
+        case 'forAddMember' ://循环添加1000条用户
+            memberCtrl.forAddMember(req.body, function (re) {
+                res.json(re);
+            });
+            break;
         case 'getUserData' ://获取用户数据
             memberCtrl.getUserData(req.body, function (re) {
                 re.data.doc[0].uid = re.data.doc[0]._id;

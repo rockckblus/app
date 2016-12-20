@@ -31,12 +31,39 @@ var fun = {
     xiaDan: xiaDan,//下单
     trueXianDan: trueXianDan,//判断技能id是否被当前uid下单
     getOrderFromContent: getOrderFromContent,//订单详情
+    forAddMember: forAddMember,//循环添加1000个用户
 
 };
 
 /**
  * -------------------------具体方法-----------------
  *  */
+function forAddMember() {
+    var name = '';
+    for (var i = 0; i <= 1000; i++) {
+        name = generateMixed(6)
+        add();
+    }
+
+
+    function generateMixed(n) {
+        var chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+        var res = "";
+        for (var i = 0; i < n; i++) {
+            var id = Math.ceil(Math.random() * 35);
+            res += chars[id];
+        }
+        return res;
+    }
+
+
+    function add() {
+        memberServiceModel.create({
+            name: name,
+            mt: 15510987676
+        })
+    }
+}
 
 /**
  * 获取用户数据

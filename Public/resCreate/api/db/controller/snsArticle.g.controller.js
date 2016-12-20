@@ -6,6 +6,7 @@
  * sns 文章 模型
  * */
 var snsArticleModel = require('../model/snsArticle.g.model');
+var memberModel = require('../model/member.g.model');
 var pubFun = require('../fun/pub.g.fun');//公共方法
 var snsArticleFun = require('../fun/snsArticle.g.fun');//技能方法相关
 var needFromFun = require('../fun/needFrom.g.fun');//需求方法
@@ -19,12 +20,54 @@ var fun = {
     postNeedFrom: postNeedFrom,//添加一条需求
     addKillImg: addKillImg,//技能图片添加
     delKillImg: delKillImg,//删除技能图片
+    froAddKill: froAddKill,//根据id循环添加 1000条技能
 };
 
 /**
  * -------------------------具体方法-----------------
  * 16/3/7 */
 
+/**
+ * 根据id循环添加 1000条技能
+ */
+function froAddKill() {
+
+    selectMember().then(function (idArr) {
+        for (var vo in idArr) {
+            var name = generateMixed(14);
+            var killRoundId = generateMixed(8);
+            var content = generateMixed(30);
+            snsArticleFun.killAdd({
+                killRoundId: killRoundId,
+                title: name,
+                content: content,
+                uid: idArr[vo].toString(),
+            })
+        }
+    });
+    function selectMember() {
+        var defer = q.defer();
+        memberModel.find().exec(function (err, doc) {
+            var idArr = [];
+            for (var vo in doc) {
+                idArr.push(doc[vo]._id);
+            }
+            defer.resolve(idArr);
+        });
+        return defer.promise;
+    }
+
+
+    function generateMixed(n) {
+        var chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+        var res = "";
+        for (var i = 0; i < n; i++) {
+            var id = Math.ceil(Math.random() * 35);
+            res += chars[id];
+        }
+        return res;
+    }
+}
 
 /**
  *  condition :

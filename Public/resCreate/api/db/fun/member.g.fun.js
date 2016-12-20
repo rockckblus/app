@@ -11,7 +11,6 @@ var fun = {
     telType: telType//修改是否允许电话咨询
 };
 
-
 //updataMembe
 function upDataMember(userUpData) {
 
@@ -192,6 +191,10 @@ function telType(postObj) {
     });
     return defer.promise;
 }
+
+
+
+
 
 module.exports = fun;
 
