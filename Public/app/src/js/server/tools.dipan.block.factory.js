@@ -528,9 +528,10 @@
 
             try {
                 var dom = document.getElementById(domId);
-                dom.addEventListener(clickType, function () {
+                loginEvent(dom, clickType, function () {
                     callBack(dom);
                 });
+
             } catch (e) {
                 console.error('bindClick', domId + '没有绑定');
             }

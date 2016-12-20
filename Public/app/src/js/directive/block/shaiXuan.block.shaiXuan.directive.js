@@ -36,7 +36,7 @@
             init();
         });
 
-        init();
+        // init();
         function init() {
             //判断是否需要筛选,需要的话,回调
             if (trueNeedShaiXuan()) {
@@ -159,25 +159,20 @@
                 var url = $state.current.url;
                 var list = localData.shaiXuan(url);
                 angular.forEach(list, function (vo, index) {
-                    angular.forEach(vo, function (vo2, index2) {
-                        if (index2 === 0) {
-                            vo.thisName = vo2.name;
-                            vo.thisId = vo2.id;
-                            vo.type = vo2.type;
+                    vo.thisName = vo[0].name;
+                    vo.thisId = vo[0].id;
+                    vo.type = vo[0].type;
+                    if (clcikSaiXuanArr.indexOf(vo[0].id) == -1) {
+                        vo.shaiXuanGaoLiang = '';//不在记录数组,就不给高亮
+                    } else {
+                        vo.shaiXuanGaoLiang = 'shaiXuanGaoLiang';//在记录数组里面,给高亮
+                    }
 
-                            if (clcikSaiXuanArr.indexOf(vo2.id) == -1) {
-                                vo.shaiXuanGaoLiang = '';//不在记录数组,就不给高亮
-                            } else {
-                                vo.shaiXuanGaoLiang = 'shaiXuanGaoLiang';//在记录数组里面,给高亮
-                            }
+                    if (vo.type == 'six') {
+                        vo.shaiXuanGaoLiang = 'shaiXuanGaoLiang';//在记录数组里面,给高亮
+                    }
 
-                            if (vo.type == 'six') {
-                                vo.shaiXuanGaoLiang = 'shaiXuanGaoLiang';//在记录数组里面,给高亮
-                            }
-
-                            bindClickId(index, vo.thisId);
-                        }
-                    });
+                    bindClickId(index, vo.thisId);
                 });
                 $scope.shaiXuanList = list;
             }, 0);
@@ -201,17 +196,25 @@
             $timeout(function () {
                 var idStr = "shaiXuanClick_" + index;
                 try {
-                    var idClickDom = document.getElementById(idStr);
-                    idClickDom.addEventListener('tap', function () {
-                        var idDom = angular.element(idClickDom);
-                        var thisId = idDom.attr('thisid');
+                    // var idClickDom = document.getElementById(idStr);
+
+                    tools.bindClick(idStr, function (dom) {
+                        var thisId = dom.getAttribute('thisid');
                         clickThis(index, thisId);
                     });
+
+                    // idClickDom.addEventListener('tap', function () {
+                    //     var thisId = idClickDom.getAttribute('thisid');
+                    //     clickThis(index, thisId);
+                    // });
+
+
                 } catch (e) {
                     console.log('id不存在');
                 }
             }, 0);
         }
+
 
         /**
          * 筛选点击事件,传入 index
@@ -260,11 +263,9 @@
                             $rootScope.$broadcast('showArea');//激活地址选择directive
                         }
 
-
                         $rootScope.$broadcast('getSelectDown');//去筛选 请求数据
 
                     }, 0);
-
                 }
             });
         }

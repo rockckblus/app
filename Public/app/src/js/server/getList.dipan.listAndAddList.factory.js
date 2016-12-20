@@ -20,6 +20,8 @@
     var goldListId = [];
 
     function getList(tools, config, $timeout, compile, $state, $rootScope, $filter) {
+
+
         /**
          * 全局缓存变量对象
          * @type {{home: Array, need: Array}}
@@ -93,44 +95,43 @@
                 type = 2;
             }
 
-            //获取数据库的筛选条件,遍历name 给不同筛选条件
-            var condit = switchSearchCondition();
+            _timeout(function () {
+                var condit = switchSearchCondition();
 
-            var postData = {
-                'frontId': _frontId,
-                'endId': _endId,
-                'condition': condit
+                var postData = {
+                    'frontId': _frontId,
+                    'endId': _endId,
+                    'condition': condit
+                };
+                //获取数据库的筛选条件,遍历name 给不同筛选条件
+                /**************************
+                 * @returns {Obj 缓存的list对象} catchObj
+                 * @returns {getNext 布尔} getNext true 进行下面的 http 请求
+                 * 16/9/16 上午11:27 ByRockBlus
+                 ******R*******************/
+                _getCatchList(function (catchObj, getNext) {
+                    if (getNext) {
+                        _tools.postJsp(url, postData, true).then(_editGetNext, err);
+                    } else {
+                        call(catchObj);
+                    }
+                });
+            }, 400);
+        }
+
+        function _editGetNext(re) {
+            var endre = {
+                data: {
+                    doc: []
+                }
             };
-
-            /**************************
-             * @returns {Obj 缓存的list对象} catchObj
-             * @returns {getNext 布尔} getNext true 进行下面的 http 请求
-             * 16/9/16 上午11:27 ByRockBlus
-             **************************/
-
-            _getCatchList(function (catchObj, getNext) {
-                if (getNext) {
-                    _tools.postJsp(url, postData, true).then(
-                        function (re) {
-//todo
-                            var endre = [];
-                            angular.forEach(re, function (vo) {
-                                if (goldListId.indexOf(vo._id) == -1) {
-                                    goldListId.push(vo._id);
-                                } else {
-                                    endre.push(vo);
-                                }
-                            });
-
-                            call(re);
-
-                        }
-
-                        , err);
-                } else {
-                    call(catchObj);
+            angular.forEach(re.data.doc, function (vo) {
+                if (goldListId.indexOf(vo._id) == -1) {//如果不在全局数组
+                    goldListId.push(vo._id);
+                    endre.data.doc.push(vo);
                 }
             });
+            call(endre);
         }
 
         /**************************
@@ -159,7 +160,7 @@
             try {
                 //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
                 _addNewListToOldList(re.data.doc, function (reList) {
-                    if (!re.data.doc && !re.data.doc[0]) {
+                    if (!re.data.doc || !re.data.doc[0]) {
                         callSucessCount++;
                         setTimeout(function () {
                             if (callSucessCount > 1) {
@@ -172,10 +173,10 @@
                     } else {
                         callSucessCount = 0;
                     }
-                    _timeout(function () {
-                        eval("scope." + listNam + "= reList");
-                        callBack(reList, listNam);//回调去绑定点击事件
-                    }, 0);
+                    // _timeout(function () {
+                    eval("scope." + listNam + "= reList");
+                    callBack(reList, listNam);//回调去绑定点击事件
+                    // }, 0);
                 }, listNam, scope);
             } catch (e) {
                 _tools.alert({
@@ -190,7 +191,6 @@
                 content: '请检查网络'
             });
         }
-
 
         /**************************
          * 遍历catchname, 删除 过期的 缓存数据,
@@ -245,11 +245,11 @@
      *
      * */
     function _addNewListToOldList(newlist, _call, listNam, scope, isCatch) {
-
+        listNam = "list[0]";
 
         //判断newList 里面的 id 是否有 标记
         var strVar = "";
-        strVar += "        <li class=\" item homeListItem thinner-border\" bindonce bo-attr bo-attr-url=\"vo.type + 'Content'\" bo-attr-type=\"vo.type\" bo-attr-subid=\"vo._id\"  bo-id='\"homeList_\" + vo._id'";
+        strVar += "        <li class=\" item homeListItem thinner-border\" bindonce='" + listNam + "' bo-attr bo-attr-url=\"vo.type + 'Content'\" bo-attr-type=\"vo.type\" bo-attr-subid=\"vo._id\"  bo-id='\"homeList_\" + vo._id'";
         strVar += "            style=\"background-color: #fff;\">";
         strVar += "            <div class=\"clear contentItem\">";
         strVar += "                <div class=\"contentItemTitle clear\" bo-text=\"vo.title\"><\/div>";
@@ -291,8 +291,9 @@
         strVar += "        <\/li>";
 
         var repListHtml = angular.element(strVar);
-        repListHtml.attr('ng-repeat', "vo in " + listNam);
+        repListHtml.attr('ng-repeat', "vo in " + listNam + " track by $index");
         repListHtml.attr('listName', listNam);
+        console.log('scope', scope);
         _compile('list', repListHtml[0], scope, true);
         if (!isCatch) {//如果不是 缓存请求
             pushToGoldCatcth(newlist);//push 到全局变量数组
@@ -334,7 +335,7 @@
                 tempCount++;
                 try {
                     vo.iconStar = 'fa-star-o';
-                    delete(vo.$$hashKey);
+                    // delete(vo.$$hashKey);
                 } catch (e) {
                     console.error('删除hashKey失败');
                 }
@@ -378,13 +379,13 @@
         switch (thisUrl) {
             case 'home':
                 thisObj.globalCatchList.home = [];
+                goldListId = [];//清空home的存在id数组,去除重复用
                 break;
             case 'need':
                 thisObj.globalCatchList.need = [];
                 break;
         }
     }
-
 
     /**
      * 从全局缓存数组遍历 标记过的 star, 给list 赋值

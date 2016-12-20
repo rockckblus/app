@@ -35,6 +35,8 @@
             }, 0);
         });
 
+        $scope.moreInfo = '加载更多...';
+        $scope.$on('changeMoreInfo', changeMoreInfo);//变换moreInfo内容 监听
         $scope.urlName = $state.current.name;//当前url Name
         $scope.list = []; //默认首页 列表 数据,每次刷新请求后 push list变量名称
         $scope.listTop = {'margin-top': '45px'};//homeList 的 style
@@ -106,17 +108,23 @@
         }
 
         /**
+         * 变换moreInfo内容 监听
+         */
+        function changeMoreInfo(d, val) {
+            $timeout(function () {
+                $scope.moreInfo = val;
+            }, 0);
+        }
+
+        /**
          * bind 加载 更多点击事件
          */
         function bindLoadMoreClick() {
-            var bindBtn = document.getElementById('isWeb');
             try {
-                bindBtn.addEventListener('tap', function () {
-                    downGetList(true);//请求下拉更多数据,
+                tools.bindClick('isWeb', function () {
+                    downGetList();//请求下拉更多数据,
                 });
-
             } catch (e) {
-                console.log('binBtn', bindBtn);
                 console.log('没找到isWebId');
             }
         }
@@ -208,7 +216,6 @@
             getList.getList($state.current.name, false, endId, $scope, 'list[' + $scope.list.length + ']', _bind);
         }
 
-
         /**
          * giveListTop
          */
@@ -225,7 +232,6 @@
                     return;
             }
         }
-
 
         /**
          * 监听筛选获取homeList 事件
@@ -258,29 +264,29 @@
             var thisLogName = 'catchList_' + $state.current.name + '-' + tools.getToday();
             localStorage.removeItem(thisLogName);
 
-            $timeout(function () {
-                var endId = localStorage.getItem($state.current.name + 'EndId');
-                var thisLogNameThis = localStorage.getItem(thisLogName);
-                if (!endId && !thisLogNameThis) {
-                    //清空所有dom数据
-                    var list = document.getElementById('list');
-                    var arr = document.getElementsByName('homeListItem');
+            var endId = localStorage.getItem($state.current.name + 'EndId');
+            var thisLogNameThis = localStorage.getItem(thisLogName);
+            if (!endId && !thisLogNameThis) {
+                console.count();
+                //清空所有dom数据
+                var list = document.getElementById('list');
+                var arr = document.getElementsByName('homeListItem');
+                angular.forEach(arr, function (vo) {
+                    list.removeChild(vo);
+                });
 
-                    angular.forEach(arr, function (vo) {
-                        list.removeChild(vo);
-                    });
-                    $scope.list = [];
+                $scope.$apply(function () {
                     getList.delGoldCatcth();
-                    defer.resolve({
-                        code: 'S'
-                    });
-                } else {
-                    defer.reject({
-                        code: 'F'
-                    });
-                }
-
-            }, 2000);
+                    $scope.list = [];
+                });
+                defer.resolve({
+                    code: 'S'
+                });
+            } else {
+                defer.reject({
+                    code: 'F'
+                });
+            }
             return defer.promise;
         }
     }
