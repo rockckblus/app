@@ -44,7 +44,6 @@
         // var endId;//下拉后 得到 的 最后一条id ,改为存入本地数据库
         var firstId;//第一条id,上拉时候用
         var type = 'up';//当前请求方式 up down
-        var star = [];//标记数组 ,
 
         $scope.$on('getSelectDown', getSelectDown);//获取筛选条件去请求接口
 
@@ -82,27 +81,24 @@
                  * 读缓存 作为list[0] push到 缓存数组 ,绑定点击事件,
                  */
                 getList.giveFirstCatchList(_getThisCatceList(), function (reList) {
-                    reList = getList.editShowStar(reList);//赋值星标
                     $timeout(function () {
-                        $scope.list.push(reList);
-                        _bind(reList, 'list[0]');//回调去绑定点击事件
+                        $scope.list = reList;
+                        _bind(reList, 'list');//回调去绑定点击事件
                         $rootScope.$broadcast('closeLoading');//关闭 loading
                     }, 0);
-                }, 'list[0]', $scope, true);
+                }, 'list', $scope, true);
 
                 /**
                  * 判断如果 是 0 就去取上拉数据
                  */
                 var scrollTopName = $state.current.name + '_scrollTop';
                 if (localStorage.getItem(scrollTopName) === '0') {
-                    //getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
-                    ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
                     console.log('请求NewData');
                 }
 
             } else {
                 var endId = localStorage.getItem($state.current.name + 'EndId');
-                getList.getList($state.current.name, false, endId, $scope, 'list[0]', _bind);
+                getList.getList($state.current.name, false, endId, $scope, 'list', _bind);
             }
 
         }
@@ -199,7 +195,6 @@
                 var endNum = re.length - 1;
                 return re[endNum]._id;
             }
-
         }
 
 
@@ -213,7 +208,7 @@
             if (!endId) {
                 endId = 0;
             }
-            getList.getList($state.current.name, false, endId, $scope, 'list[' + $scope.list.length + ']', _bind);
+            getList.getList($state.current.name, false, endId, $scope, 'list', _bind);
         }
 
         /**
@@ -263,22 +258,14 @@
             localStorage.removeItem($state.current.name + 'EndId');
             var thisLogName = 'catchList_' + $state.current.name + '-' + tools.getToday();
             localStorage.removeItem(thisLogName);
-
             var endId = localStorage.getItem($state.current.name + 'EndId');
             var thisLogNameThis = localStorage.getItem(thisLogName);
-            if (!endId && !thisLogNameThis) {
-                console.count();
-                //清空所有dom数据
-                var list = document.getElementById('list');
-                var arr = document.getElementsByName('homeListItem');
-                angular.forEach(arr, function (vo) {
-                    list.removeChild(vo);
-                });
+            $timeout(function () {
+                getList.delGoldCatcth();
+                $scope.list = [];
+            }, 0);
 
-                $scope.$apply(function () {
-                    getList.delGoldCatcth();
-                    $scope.list = [];
-                });
+            if (!endId && !thisLogNameThis) {
                 defer.resolve({
                     code: 'S'
                 });
