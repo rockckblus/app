@@ -33,6 +33,7 @@
         $scope.from = {
             title: '',//技能标题
             price: '',//价格
+            service: '',//服务方式
             cityBuXian: false,//城市选择不限变量
         };
         $scope.titleFocus = titleFocus;//当title焦点的事件
@@ -46,6 +47,7 @@
         var radioArr = {//radio 数组
             needRadio1: ['1小时', '1次', '1单', '面议'],
             needRadio2: ['3天', '1周', '1个月'],//有效期
+            needRadio3: ['不限', '线上', '线下'],//服务方式
         };
 
         function init() {
@@ -222,6 +224,7 @@
             });
             document.getElementById('subNeed').addEventListener(type, _sub);
             function _sub() {
+                var cityCode = _getCityCode();
                 var postData = {};
                 postData.uid = tools.getLocalStorageObj('userData').uid;//uid
                 postData.needRoundId = tools.getLocalStorageObj('needRoundId');//需求随机提交的生成的id
@@ -231,7 +234,9 @@
                 postData.cityBuXian = $scope.from.cityBuXian;//city 不限
                 postData.priceUnit = getDefault('priceUnit');//价格单位
                 postData.endTime = getDefault('endTime');//信息有效期
+                postData.service = getDefault('service');//服务方式
                 postData.city = $scope.city;//city
+                postData.cityCode = cityCode;//cityCode
                 postData.areaGps = tools.getLocalStorageObj('areaGps');//地理位置
                 if (!tools.isEmpty(postData.title)) {
                     tools.trueWeb(function () {
@@ -284,6 +289,16 @@
                         plus.nativeUI.toast(e);
                     });
                 }
+
+                function _getCityCode() {
+                    var code = tools.getLocalStorageObj('area');
+                    if (code && code.city && code.city.cityCode) {
+                        return code.city.cityCode;
+                    } else {
+                        return '777';
+                    }
+                }
+
             }
         }
 
@@ -296,6 +311,8 @@
                     return find('needRadio1');
                 case 'endTime'://单位
                     return find('needRadio2');
+                case 'service'://服务方式
+                    return find('needRadio3');
             }
             function find(thisType) {
                 var val = tools.getLocalStorageObj(thisType);

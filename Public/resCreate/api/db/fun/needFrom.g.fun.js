@@ -9,8 +9,121 @@ var fun = {
     needAdd: needAdd,//添加一条需求
     getOneFrom: getOneFrom,//判断需求是否存在,防止重复提交 ,传 fromRoundId,
     getOrederContentFun: getOrederContentFun,//获取详情_根据id ,发订单的用户资料
+    needGetListFun: needGetListFun,//获取需求列表
 
 };
+
+/**
+ * 获取需求列表
+ */
+function needGetListFun(postObj) {
+    var defer = q.defer();
+    var whereCondition = {}; //where条件,默认空
+    var sortStr = '_id';//排序条件 留空就是 按距离
+
+    //下拉 翻页 find next 查出当前 的 下10条数据
+    if (postObj.endId !== 0) {
+        whereCondition._id = {};
+        whereCondition._id.$gt = postObj.endId;
+    }
+
+
+    try {//如果是附近搜索
+        if (postObj.condition.area.city.cityCode == '777') {//如果是附近搜索
+            whereCondition.gpsSearch = {
+                $near: [postObj.condition.areaGps.gpsObj.lng, postObj.condition.areaGps.gpsObj.lat]
+            };
+        } else {//按照城市搜索
+            whereCondition.cityCode = postObj.condition.area.city.cityCode;
+            whereCondition.gpsSearch = {
+                $near: [postObj.condition.areaGps.gpsObj.lng, postObj.condition.areaGps.gpsObj.lat]
+            };
+        }
+    } catch (e) {
+        console.error(e);
+    }
+
+    //如果有筛选
+    if (postObj.condition && postObj.condition.clickShaiXuan && postObj.condition.clickShaiXuan[0]) {
+        for (var vo in postObj.condition.clickShaiXuan) {
+            _giveShaiXuanWhere(postObj.condition.clickShaiXuan[vo]);//根据筛选给where条件
+        }
+    }
+
+    orderModel.find(whereCondition)
+        .populate(
+            {
+                'path': 'uid',
+                'model': memberModel,
+                'select': 'headerImg name'
+            }
+        )
+        .sort(sortStr)
+        .limit(10)
+        .select('uid title gpsSearch attr content sex master killRoundId type')
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(JSON.stringify(err));
+            } else {
+                if (doc[0]) {
+                    var isHaveGps = false;
+                    if (postObj.condition && postObj.condition.areaGps && postObj.condition.areaGps.gpsObj && postObj.condition.areaGps.gpsObj.lng) {
+                        isHaveGps = true;
+                    }
+                    for (var vo in doc) {
+
+                        //如果有gps信息就去计算距离
+                        if (isHaveGps) {
+                            doc[vo]._doc.far = pub.farGps(postObj.condition.areaGps.gpsObj.lat, postObj.condition.areaGps.gpsObj.lng, doc[vo].gpsSearch[1], doc[vo].gpsSearch[0]);
+                        } else {
+                            doc[vo]._doc.far = 0;
+                        }
+
+                        //如果有头像
+                        if (doc[vo]._doc && doc[vo]._doc.uid && doc[vo]._doc.uid.headerImg) {
+                            doc[vo]._doc.listHeader = g.host.imageHost + doc[vo]._doc.uid.headerImg;
+                        } else {
+                            doc[vo]._doc.listHeader = '';
+                        }
+
+                        //如果有 attr
+                        if (doc[vo]._doc && doc[vo]._doc.attr) {
+                            doc[vo]._doc.price = doc[vo]._doc.attr.price;
+                            doc[vo]._doc.danWei = pub.getDefaultVal('kill_priceUnit', doc[vo]._doc.attr.priceUnit);
+                        }
+
+                        //des
+                        doc[vo]._doc.des = doc[vo]._doc.content;
+
+                    }
+                } else {
+                    defer.reject('暂无数据');
+                }
+            }
+
+        });
+
+    /**
+     *根据筛选给where条件
+     */
+    function _giveShaiXuanWhere(vo) {
+        switch (vo) {
+            case 'needShaiXuanTwo2' :
+                sortStr = 'editTime';//最新排序
+                break;
+            case 'needShaiXuanOne2' :
+                sortStr = 'price';//价格排序
+                break;
+            case 'needShaiXuanTwo3' ://线上服务 筛选
+                whereCondition.service = 1;
+                break;
+        }
+    }
+
+    return defer.promise;
+
+}
+
 
 /**
  * 添加一条需求
@@ -28,13 +141,24 @@ function needAdd(postObj) {
         postObj.city = "不限";
     }
 
-    var gpsArea = {};
-    var cityCode = 777;
-    if (postObj.areaGps) {
-        gpsArea = postObj.areaGps;
+    var gpsArea = [0, 0];
+    var cityCode = '777';
+    var service = 0;
+    if (postObj.areaGps && postObj.areaGps.gpsObj && postObj.areaGps.gpsObj.lat) {
+        gpsArea = [postObj.areaGps.gpsObj.lng, postObj.areaGps.gpsObj.lat];
     }
-    if (postObj.areaGps && postObj.areaGps.city && postObj.areaGps.city.cityCode) {
-        cityCode = postObj.areaGps.city.cityCode;
+    if (postObj.cityCode) {
+        if (postObj.city !== '不限') {
+            cityCode = postObj.cityCode;
+        }
+    }
+
+    if (postObj.service) {
+        if (postObj.service == 'default') {
+            service = 0;
+        } else {
+            service = Number(postObj.service);
+        }
     }
 
     orderModel.create({
@@ -46,11 +170,13 @@ function needAdd(postObj) {
                 price: postObj.price,//价格
                 priceUnit: postObj.priceUnit,//价格单位
             },//属性
+            price: postObj.price,//价格
             endTime: getEndTime(postObj.endTime),//计算出来的最后过期时间
             cityBuXian: postObj.cityBuXian,//城市输入如果选不限，就忽略city字段
             city: postObj.city,//城市
             cityCode: cityCode,//城市编码
-            gpsArea: gpsArea,//gps位置
+            gpsSearch: gpsArea,//mongo 地理位置
+            service: service,//服务方式
 
         }, function (err, doc) {
             if (err) {
@@ -180,4 +306,6 @@ function getUserIdOrderListFun(userId) {
         });
     return defer.promise;
 }
+
+
 module.exports = fun;

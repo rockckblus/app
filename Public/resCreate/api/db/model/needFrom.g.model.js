@@ -39,12 +39,16 @@ var needFromSchema = new g.Schema({
         default: {
             price: {type: String, default: '面议'},//价格
             priceUnit: {type: String, default: '面议'},//价格单位
+            service: {type: Number, default: 0},//服务方式 (‘0’:不限,’1’:’线上’,’2’:’线下’)
         }
     },
     gpsObj: {type: Object, default: {}},//gps信息 {"gpsObj":{"lat":39.55237,"lng":116.814664},"city":{"city":"天津市","cityCode":"022"}}
     city: {type: String, default: '未知'},//城市
     cityCode: {type: String, default: '777'},//城市编号
-    gpsArea: {type: Object, default: {}},//gps信息
+    price: {type: Number, default: 0},//价格筛选用
+    service: {type: Number, default: 0},//服务方式 (‘0’:不限,’1’:’线上’,’2’:’线下’)
+    type: {type: String, default: 'orderFrom'},//前端判断用
+    gpsSearch: {type: Array, default: [0, 0]},//mongo 地理位置
 
 });
 

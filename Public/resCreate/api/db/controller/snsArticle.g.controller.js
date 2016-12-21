@@ -16,6 +16,7 @@ var q = require('q');
 
 var fun = {
     homeGetList: homeGetList,//首页技能列表
+    needGetList: needGetList,//需求列表
     postKillFrom: postKillFrom,//添加一条技能 dist
     postNeedFrom: postNeedFrom,//添加一条需求
     addKillImg: addKillImg,//技能图片添加
@@ -52,7 +53,7 @@ function froAddKill() {
             var count = 0;
             for (var vo in doc) {
                 count++;
-                if (count < 50) {
+                if (count < 1000) {
                     idArr.push(doc[vo]._id);
                 }
             }
@@ -117,13 +118,32 @@ function homeGetList(postObj, callBack) {
         return defer.promise;
     }
 
-
     function _call(re) {
         pubFun.pubReturn(false, re, '技能列表查询成功', '技能列表查询失败', callBack);
     }
 
     function _err(errRe) {
         pubFun.pubReturn(errRe, {}, '', '技能列表查询失败', callBack);
+    }
+}
+
+/**
+ *  condition :
+ 获取数据库的筛选条件,遍历name 给不同筛选条件
+ 获取地址逻辑,如果 area.city.city == 附近,(cityCode == 777) ,就取areaGps 的gps 坐标,按照距离排序
+ 否则如果有值,就取 cityCode 去 筛选城市排序
+ * @param postObj
+ * @param callBack
+ */
+function needGetList(postObj, callBack) {
+    snsArticleFun.needGetListFun(postObj).then(_call, _err);
+
+    function _call(re) {
+        pubFun.pubReturn(false, re, '需求列表查询成功', '需求列表查询失败', callBack);
+    }
+
+    function _err(errRe) {
+        pubFun.pubReturn(errRe, {}, '', '需求列表查询失败', callBack);
     }
 }
 

@@ -132,6 +132,9 @@
                 case 'home' :
                     _logicHome(__call);//供`需`其他 的逻辑
                     break;
+                case 'need' :
+                    _logicHome(__call);//供`需`其他 的逻辑
+                    break;
             }
         }
 
