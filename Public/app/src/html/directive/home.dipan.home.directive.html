@@ -21,7 +21,7 @@
     <div id="list" class="mui-table-view mui-table-view-chevron clear"
          style="background-color:#f9f9f9;min-height: 100px" ng-style="listTop">
 
-        <li class=" item homeListItem thinner-border" bindonce='list' ng-repeat="vo in list" bo-attr
+        <li class=" item homeListItem thinner-border" bindonce='list' ng-repeat="vo in list track by vo._id" bo-attr
             bo-attr-url="vo.type + 'Content'" bo-attr-type="vo.type" bo-attr-subid="vo._id" bo-id='"homeList_" + vo._id'
             style="background-color: #fff;">
             <div class="clear contentItem">

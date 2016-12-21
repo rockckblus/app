@@ -138,7 +138,6 @@
             });
         }
 
-
         /**
          * bind listItem 点击事件
          * @param doc
@@ -184,16 +183,23 @@
                 var type = dom.getAttribute('type');
                 var _id = dom.getAttribute('subid');
                 if (type == 'kill') {
+                    getList.saveCatecNewList();
                     $state.go(goUrl, {'jiNengId': _id});
                 }
                 if (type == 'orderFrom') {
+                    getList.saveCatecNewList();
                     $state.go(goUrl, {'orderId': _id, 'type': 'show'});
                 }
             }
 
             function _getLastId(re) {
-                var endNum = re.length - 1;
-                return re[endNum]._id;
+                var endIdArr = [];
+                angular.forEach(re, function (vo) {
+                    endIdArr.push(vo._id);
+                });
+                endIdArr.sort();
+                var end = endIdArr[re.length - 1];
+                return end;
             }
         }
 

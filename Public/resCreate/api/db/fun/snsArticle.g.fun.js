@@ -91,7 +91,6 @@ function killAdd(postObj) {
     return defer.promise;
 }
 
-
 /**
  * 判断是否是第一条技能,如果是,就给master:true
  */
@@ -106,7 +105,6 @@ function trueFirstKill(uid) {
     });
     return defer.promise;
 }
-
 
 /**
  * 获取技能详情_根据id ,发节能的用户资料
@@ -430,7 +428,7 @@ function trueXianDanFun(postObj) {
 function homeGetListFun(postObj) {
     var defer = q.defer();
     var whereCondition = {master: true}; //where条件 ,默认先找到1条主展示技能
-    var sortStr = '';//排序条件 留空就是 按距离
+    var sortStr = '_id';//排序条件 留空就是 按距离
 
     //下拉 翻页 find next 查出当前 的 下10条数据
     if (postObj.endId !== 0) {
@@ -477,7 +475,7 @@ function homeGetListFun(postObj) {
             }
         )
         .sort(sortStr)
-        .limit(10)
+        .limit(3)
         .select('uid title gpsSearch attr content sex master killRoundId type')
         .exec(function (err, doc) {
             if (err) {

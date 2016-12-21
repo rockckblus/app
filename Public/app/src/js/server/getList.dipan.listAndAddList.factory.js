@@ -18,6 +18,8 @@
     var _rootScope;
     var _filter;
 
+    var allListId = [];
+
     function getList(tools, config, $timeout, compile, $state, $rootScope, $filter) {
 
         /**
@@ -143,8 +145,19 @@
 
         function call(re) {
             try {
+
+                var cutre = [];
+                //去重
+                angular.forEach(re.data.doc, function (vo) {
+                    if (allListId.indexOf(vo._id) == -1) {
+                        allListId.push(vo._id);
+                        cutre.push(vo);
+                    }
+                });
+
+
                 //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
-                _addNewListToOldList(re.data.doc, function (reList) {
+                _addNewListToOldList(cutre, function (reList) {
                     if (!re.data.doc && !re.data.doc[0]) {
                         // callSucessCount++;
                         // setTimeout(function () {
@@ -157,6 +170,7 @@
                         return false;
                     } else {
                         callSucessCount = 0;
+                        console.log('reList', reList);
                         _timeout(function () {
                             eval("scope.list=reList");
                             callBack(reList, 'list');//回调去绑定点击事件
@@ -310,21 +324,19 @@
             return false;
         }
 
-        console.log('newList', newList);
         var oldArr = [];
         var thisLogName = 'catchList_' + _state.current.name + '-' + _tools.getToday();
 
         var tempCount = 0;
         angular.forEach(newList, function (voNew) {
             tempCount++;
-            if (tempCount < 10) {
+            if (tempCount < 30) {
                 oldArr.push(voNew);
             } else {
                 return false;
             }
         });
 
-        console.log('oldArr', oldArr);
         //存储 catch
         _tools.saveLocalStorageObj(thisLogName, oldArr);
 
@@ -358,6 +370,7 @@
         switch (thisUrl) {
             case 'home':
                 thisObj.globalCatchList.home = [];
+                allListId = [];
                 break;
             case 'need':
                 thisObj.globalCatchList.need = [];

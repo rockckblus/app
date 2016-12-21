@@ -49,8 +49,12 @@ function froAddKill() {
         var defer = q.defer();
         memberModel.find().exec(function (err, doc) {
             var idArr = [];
+            var count = 0;
             for (var vo in doc) {
-                idArr.push(doc[vo]._id);
+                count++;
+                if (count < 50) {
+                    idArr.push(doc[vo]._id);
+                }
             }
             defer.resolve(idArr);
         });
