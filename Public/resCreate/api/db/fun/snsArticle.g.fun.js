@@ -437,9 +437,9 @@ function homeGetListFun(postObj) {
     }
 
     //如果有搜索关键词
-    if (postObj.searchKey) {
+    if (postObj.condition && postObj.condition.searchKey) {
         whereCondition.title = {
-            $regex: postObj.searchKey,
+            $regex: postObj.condition.searchKey,
         };
         delete whereCondition.master;
     }
@@ -475,7 +475,7 @@ function homeGetListFun(postObj) {
             }
         )
         .sort(sortStr)
-        .limit(3)
+        .limit(10)
         .select('uid title gpsSearch attr content sex master killRoundId type')
         .exec(function (err, doc) {
             if (err) {

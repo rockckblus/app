@@ -69,6 +69,7 @@
     var callSucessCount = 0;
 
     function _getList(name, frontId, endId, scope, listNam, callBack) {
+        _rootScope.$broadcast('changeMoreInfo', '加载更多...');
         var url;
         var type = 1;//1上啦,2下拉
         switch (name) {
@@ -162,15 +163,15 @@
                         // callSucessCount++;
                         // setTimeout(function () {
                         //     if (callSucessCount > 1) {
-                        _tools.alert({
-                            title: '没有更多数据啦! ^_^'
-                        });
+                        _rootScope.$broadcast('changeMoreInfo', '没有更多数据');
+                        // _tools.alert({
+                        //     title: '没有更多数据啦! ^_^'
+                        // });
                         //     }
                         // }, 0);
                         return false;
                     } else {
                         callSucessCount = 0;
-                        console.log('reList', reList);
                         _timeout(function () {
                             eval("scope.list=reList");
                             callBack(reList, 'list');//回调去绑定点击事件
@@ -178,9 +179,10 @@
                     }
                 }, 'list', scope);
             } catch (e) {
-                _tools.alert({
-                    title: '没有更多数据啦! ^_^'
-                });
+                _rootScope.$broadcast('changeMoreInfo', '没有更多数据');
+                // _tools.alert({
+                //     title: '没有更多数据啦! ^_^'
+                // });
             }
         }
 
@@ -384,6 +386,12 @@
      * 否则如果有值,就取 cityCode 去 筛选城市排序
      */
     function switchSearchCondition() {
+        var searchKey = localStorage.getItem('searchKey');
+        if (!searchKey) {
+            searchKey = "";
+        } else {
+            searchKey = searchKey.replace(/\"/g, "");
+        }
         var condi = {
             area: {},
             areaGps: {},
@@ -392,7 +400,8 @@
         condi.area = _tools.getLocalStorageObj('area');
         condi.areaGps = _tools.getLocalStorageObj('areaGps');
         condi.clickShaiXuan = _tools.getLocalStorageObj('clickShaiXuan');
-        condi.searchKey = localStorage.getItem('searchKey');
+
+        condi.searchKey = searchKey;
         return condi;
     }
 

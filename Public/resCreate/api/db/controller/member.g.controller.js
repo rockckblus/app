@@ -41,7 +41,7 @@ var fun = {
 function forAddMember() {
     var name = '';
     for (var i = 0; i <= 1000; i++) {
-        name = generateMixed(6)
+        name = generateMixed(6);
         add();
     }
 
@@ -61,7 +61,7 @@ function forAddMember() {
         memberServiceModel.create({
             name: name,
             mt: 15510987676
-        })
+        });
     }
 }
 

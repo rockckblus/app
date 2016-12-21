@@ -36,7 +36,6 @@
         $scope.focusSearch = focusSearch;//search焦点事件
         $scope.blurSearch = blurSearch;//search失去焦点事件
         $scope.$on('blurSearch', blurSearch);//监听让搜素事情焦点
-
         $scope.$on('hideHeader', function (e, gold) {
             if (gold) {//如果是全局穿过来的 隐藏header事件,
                 isShowHeader = false;
@@ -84,6 +83,7 @@
             bindDelSearchBtn();//绑定删除按钮点击事件
             bindCancelBtn();//绑定取消按钮点击事件
         }
+
 
         /**
          * getTitle 获取主标题   "分类"
@@ -140,8 +140,6 @@
                         }, 0);
                         return false;
                 }
-
-
             }
 
         }
@@ -158,6 +156,10 @@
 
             //获取联想搜索
             $rootScope.$broadcast('getKeyList', e);
+            //给titleInfo 数据
+            $rootScope.$broadcast('changeTitleInfo', e);
+            //去搜索数据
+            $rootScope.$broadcast('getSelectDown', e);
 
         }
 
@@ -170,7 +172,7 @@
                 $scope.topSearch = true;//显示inputDiv
                 $scope.searchPlace = '技能';
                 $scope.showCancel = true;//显示取消按钮
-                $scope.search = '';
+                // $scope.search = '';
                 $timeout(function () {
                     document.getElementById('searchTop').focus();
                 }, 400);
@@ -256,7 +258,7 @@
         function cancelClick() {
             hideHeader();
             $timeout(function () {
-                $scope.search = '';
+                // $scope.search = '';
                 $scope.showCancel = false;
                 $scope.topSearch = false;//隐藏inputDiv
                 $rootScope.$broadcast('hideSearchArea');//隐藏地区选择面板

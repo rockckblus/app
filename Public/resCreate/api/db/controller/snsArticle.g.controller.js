@@ -42,7 +42,7 @@ function froAddKill() {
                 title: name,
                 content: content,
                 uid: idArr[vo].toString(),
-            })
+            });
         }
     });
     function selectMember() {
@@ -87,7 +87,7 @@ function homeGetList(postObj, callBack) {
     //获取用户的 其他技能
     function getOtherKill(doc) {
         var defer = q.defer();
-        if (!postObj.searchKey) {
+        if (!postObj.condition && !postObj.condition.searchKey) {
             for (var vo in doc) {
                 snsArticleFun.getUserIdKillList(doc[vo]._doc.uid._id, doc[vo]._id, vo).then(_otherCall, _otherErr);
             }

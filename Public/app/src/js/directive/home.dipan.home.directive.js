@@ -37,6 +37,10 @@
 
         $scope.moreInfo = '加载更多...';
         $scope.$on('changeMoreInfo', changeMoreInfo);//变换moreInfo内容 监听
+
+        $scope.titleInfo = '';
+        $scope.$on('changeTitleInfo', changeTitleInfo);//变换titleInfo
+
         $scope.urlName = $state.current.name;//当前url Name
         $scope.list = []; //默认首页 列表 数据,每次刷新请求后 push list变量名称
         $scope.listTop = {'margin-top': '45px'};//homeList 的 style
@@ -57,6 +61,8 @@
             plusInit();//bind plus 滚动到底部事件
             bindLoadMoreClick();//bind 加载 更多点击事件
             giveListTop();//根据url 给内容部分marginTop
+            bindTitleInfo();//bind titleInfo clcik
+            getLocalKey();//判断有搜索关键词缓存,去geititleINfo数据
         }
 
         /**
@@ -104,11 +110,44 @@
         }
 
         /**
+         * 判断有搜索关键词缓存,去geititleINfo数据
+         */
+        function getLocalKey() {
+            var key = localStorage.getItem('searchKey');
+            if (key && key !== '""') {
+                $timeout(function () {
+                    key = key.replace(/\"/g, "");
+                    $scope.titleInfo = key;
+                }, 0);
+            }
+        }
+
+        /**
+         * 清空搜索key 焦点搜索 显示搜索面板
+         * bind titleInfo clcik
+         */
+        function bindTitleInfo() {
+            tools.bindClick('titleInfo', function () {
+                $rootScope.$broadcast('focusSearch');
+                $rootScope.$broadcast('giveSearch', '');
+            });
+        }
+
+        /**
          * 变换moreInfo内容 监听
          */
         function changeMoreInfo(d, val) {
             $timeout(function () {
                 $scope.moreInfo = val;
+            }, 0);
+        }
+
+        /**
+         * 变换titleInfo
+         */
+        function changeTitleInfo(d, v) {
+            $timeout(function () {
+                $scope.titleInfo = v;
             }, 0);
         }
 
@@ -203,7 +242,6 @@
             }
         }
 
-
         /**
          *底部下拉,去请求数据,
          * @param {布尔 判断是点击来的} isClickBtn
@@ -252,7 +290,6 @@
                     });
                 });
         }
-
 
         /**
          *  清空缓存的 对应url的endId, 清空 对应List 的缓存数据
