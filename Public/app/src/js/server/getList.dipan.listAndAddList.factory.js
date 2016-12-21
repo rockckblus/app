@@ -297,7 +297,9 @@
         // repListHtml.attr('listName', listNam);
         // console.log('scope', scope);
         // _compile('list', repListHtml[0], scope, true);
+
         if (!isCatch) {//如果不是 缓存请求
+            console.log(1);
             _call(pushToGoldCatcth(newlist));//push 到全局变量数组
         } else {
             _call(newlist);
@@ -324,6 +326,7 @@
                 }
                 break;
         }
+        console.log('thisLoList', newList);
 
         if (!newList) {
             return false;
@@ -331,7 +334,7 @@
 
         var oldArr = [];
         var thisLogName = 'catchList_' + _state.current.name + '-' + _tools.getToday();
-
+        console.log('thisLogname', thisLogName);
         var tempCount = 0;
         angular.forEach(newList, function (voNew) {
             tempCount++;
@@ -352,6 +355,7 @@
      * push 到全局缓存变量数组
      */
     function pushToGoldCatcth(newList) {
+
         if (newList) {
             var thisUrl = _state.current.name;
             switch (thisUrl) {
@@ -361,8 +365,10 @@
                     });
                     return thisObj.globalCatchList.home;
                 case 'need':
-                    thisObj.globalCatchList.need.push(newList);
-                    break;
+                    angular.forEach(newList, function (vo) {
+                        thisObj.globalCatchList.need.push(vo);
+                    });
+                    return thisObj.globalCatchList.need;
             }
         }
     }
@@ -379,6 +385,7 @@
                 break;
             case 'need':
                 thisObj.globalCatchList.need = [];
+                allListId = [];
                 break;
         }
     }

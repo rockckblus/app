@@ -556,7 +556,6 @@ function homeGetListFun(postObj) {
 }
 
 
-
 /**
  * 更新uid下的 技能表 会员资料字段,gpsSearch,sex,hot,live
  * 传 obj.uid

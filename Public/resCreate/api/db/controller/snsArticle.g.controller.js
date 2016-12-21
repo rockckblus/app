@@ -136,7 +136,7 @@ function homeGetList(postObj, callBack) {
  * @param callBack
  */
 function needGetList(postObj, callBack) {
-    snsArticleFun.needGetListFun(postObj).then(_call, _err);
+    needFromFun.needGetListFun(postObj).then(_call, _err);
 
     function _call(re) {
         pubFun.pubReturn(false, re, '需求列表查询成功', '需求列表查询失败', callBack);

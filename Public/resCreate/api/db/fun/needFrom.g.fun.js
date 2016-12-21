@@ -27,7 +27,6 @@ function needGetListFun(postObj) {
         whereCondition._id.$gt = postObj.endId;
     }
 
-
     try {//如果是附近搜索
         if (postObj.condition.area.city.cityCode == '777') {//如果是附近搜索
             whereCondition.gpsSearch = {
@@ -60,7 +59,7 @@ function needGetListFun(postObj) {
         )
         .sort(sortStr)
         .limit(10)
-        .select('uid title gpsSearch attr content sex master killRoundId type')
+        .select('uid title gpsSearch attr content service price  type')
         .exec(function (err, doc) {
             if (err) {
                 defer.reject(JSON.stringify(err));
@@ -96,6 +95,9 @@ function needGetListFun(postObj) {
                         doc[vo]._doc.des = doc[vo]._doc.content;
 
                     }
+
+                    defer.resolve(doc);
+
                 } else {
                     defer.reject('暂无数据');
                 }

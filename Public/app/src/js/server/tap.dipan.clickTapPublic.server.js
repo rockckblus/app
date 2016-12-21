@@ -116,6 +116,7 @@
                         $rootScope.$broadcast('cancelClick');
                         break;
                     case 'need' :
+                        __saveCatchList();
                         break;
                     // case 'star' :
                     //     __saveCatchList();
