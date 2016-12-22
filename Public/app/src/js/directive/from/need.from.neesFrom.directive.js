@@ -252,6 +252,9 @@
                     if (re.data.code == 'S') {
                         //清空 radio
                         tools.saveLocalStorageObj('radio1', '');
+                        tools.saveLocalStorageObj('needRadio1', '');
+                        tools.saveLocalStorageObj('needRadio2', '');
+                        tools.saveLocalStorageObj('needRadio3', '');
 
                         tools.trueWeb(function () {
                             var con = confirm("发布成功! 跳转到我的发布");

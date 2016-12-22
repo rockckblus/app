@@ -29,6 +29,8 @@ var fun = {
     telType: telType,//设置是否电话咨询
     getKillContent: getKillContent,//获取技能详情_根据id
     xiaDan: xiaDan,//下单
+    jieDan: jieDan,//接单
+
     trueXianDan: trueXianDan,//判断技能id是否被当前uid下单
     getOrderFromContent: getOrderFromContent,//订单详情
     forAddMember: forAddMember,//循环添加1000个用户
@@ -310,18 +312,33 @@ function getOrderFromContent(postObj, callBack) {
 
 
 /**
- * 下单 todo
+ * 下单
  */
 function xiaDan(postObj, callBack) {
-    // snsArticleFun.xiaDanFun(postObj).then(_call, _err);
-    // function _call(re) {
-    //     pubFun.pubReturn(false, re, '下单成功', '下单失败', callBack);
-    // }
-    //
-    // function _err(re) {
-    //     pubFun.pubReturn(re, {}, '', '下单失败', callBack);
+    snsArticleFun.xiaDanFun(postObj).then(_call, _err);
+    function _call(re) {
+        pubFun.pubReturn(false, re, '下单成功', '下单失败', callBack);
+    }
 
-    // }
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '下单失败', callBack);
+
+    }
+}
+
+/**
+ * 接单
+ */
+function jieDan(postObj, callBack) {
+    snsArticleFun.jieDanFun(postObj).then(_call, _err);
+    function _call(re) {
+        pubFun.pubReturn(false, re, '接单成功', '接单失败', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '接单失败', callBack);
+
+    }
 }
 
 

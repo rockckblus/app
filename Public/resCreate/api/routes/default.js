@@ -15,6 +15,8 @@ function all(req, res, next) {
         '/member/getUserData',//获取用户数据
         '/member/userDataEdit',//修改用户信息
         '/member/telType',//修改用户允许打电话
+        '/member/xiaDan',//对技能下单
+        '/member/jieDan',//对需求接单
     ];
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');

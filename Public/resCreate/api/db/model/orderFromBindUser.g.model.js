@@ -13,16 +13,16 @@ var orderFromBindUserSchema = new g.Schema({
     orderUid: {type: g.Schema.Types.ObjectId},//发订单的用户id
     bindUid: {type: g.Schema.Types.ObjectId},//抢订单的用户id
     bindUidType: {type: Number, default: 1},//抢订单的用户，对应订单 的 关系 1 主动接单(点击接单) ，2 。被动接单(点击下单) 3.被选单
-    selectOrderTime:{type:Date},//被选单时间
-    clickJieOrderTime:{type:Date}, //点击接单时间
-    clickDownOrderTime:{type:Date},//点击下单时间
+    selectOrderTime: {type: Date},//被选单时间
+    clickJieOrderTime: {type: Date}, //点击接单时间
+    clickDownOrderTime: {type: Date},//点击下单时间
 });
 
 
 /**
  * orderFromBindUserSchema
  * 16/3/7 */
-var orderFromBindUserModel= g.mongoose.model('orderFrom.bindUser', orderFromBindUserSchema , 'orderFrom.bindUser');
+var orderFromBindUserModel = g.mongoose.model('orderFrom.bindUser', orderFromBindUserSchema, 'orderFrom.bindUser');
 
 module.exports = orderFromBindUserModel;
 

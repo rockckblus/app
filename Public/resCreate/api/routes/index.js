@@ -431,8 +431,13 @@ function postMember(req, res) {
                 res.json(re);
             });
             break;
-        case 'xianDan' ://下单
+        case 'xiaDan' ://下单
             memberCtrl.xiaDan(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+        case 'jieDan' ://接单
+            memberCtrl.jieDan(req.body, function (re) {
                 res.json(re);
             });
             break;

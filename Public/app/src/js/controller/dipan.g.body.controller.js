@@ -352,20 +352,53 @@
          */
         function bindXiaDanClick() {
             try {
-                document.getElementById('xiaDan').addEventListener(clickType, _bind);
+                console.log('kdk', $state.current.name);
+                if ($state.current.name == 'killContent') {//对技能下单
+                    document.getElementById('xiaDan').addEventListener(clickType, _bindXiaDan);
+                }
+                if ($state.current.name == 'orderFromContent') {//对需求接单
+                    document.getElementById('xiaDan').addEventListener(clickType, _bindJieDan);
+                }
             } catch (e) {
                 console.error('无下单按钮');
             }
-            function _bind() {
+
+            /**
+             * 对技能下单
+             * @private
+             */
+            function _bindXiaDan() {
                 //去请求接口标记技能id
                 var jinengId = $state.params.jiNengId;
                 var uid = tools.getLocalStorageObj('userData').uid;
+                var needRoundId = tools.getLocalStorageObj('killContentRoundId');
+                var gpsObj = tools.getLocalStorageObj('areaGps');
                 if (uid) {
                     var postData = {
-                        uid: uid,
-                        jiNengId: jinengId
+                        uid: uid,//下单用户id
+                        jiNengId: jinengId,
+                        needRoundId: needRoundId,
+                        areaGps: gpsObj
                     };
                     var url = config.host.nodeHost + "/member/xiaDan";
+                    tools.postJsp(url, postData, true).then(_s, _err);
+                }
+            }
+
+            /**
+             * 对需求接单
+             * @private
+             */
+            function _bindJieDan() {
+                // 需求id
+                var orderId = $state.params.orderId;
+                var uid = tools.getLocalStorageObj('userData').uid;
+                if (uid) {
+                    var postData = {
+                        uid: uid,//下单用户id
+                        orderId: orderId //订单id
+                    };
+                    var url = config.host.nodeHost + "/member/jieDan";
                     tools.postJsp(url, postData, true).then(_s, _err);
                 }
             }

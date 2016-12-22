@@ -247,6 +247,8 @@
                 form: {
                     //表单单相关
                     killRoundId: 'killRoundId',//随机技能表单id
+                    needRoundId: 'needRoundId',//随机技能表单id
+                    killContentRoundId: 'killContentRoundId',//生成随机技能详情表单id,如果点击下单,就用这个id作为 needRoundId(需求订单随机id),去生成需求订单,
                     radio1: 'radio1',//技能价格单位 default:1次
                     radio2: 'radio2',//技能服务方式 default:不限
                     radio3: 'radio3',//会员补充资料,男,女 default:女
@@ -280,8 +282,8 @@
 
             trueWeb(function () {//web
                 // return 'http://www.dipan.so';// 生产
-                reUrl = 'http://169.254.210.14';//dev
-                // reUrl = 'http://127.0.0.1';//dev
+                // reUrl = 'http://169.254.210.14';//dev
+                reUrl = 'http://127.0.0.1';//dev
             }, function () {//app
                 if (mui.os.android) {
                     reUrl = 'http://192.168.0.25';//dev

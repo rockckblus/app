@@ -1,6 +1,9 @@
 var snsArticleModel = require('../model/snsArticle.g.model');
 var killFromImgModel = require('../model/killFromImg.g.model');
 var memberModel = require('../model/member.g.model');
+var mumberFun = require('../fun/member.g.fun');
+var needFromFun = require('../fun/needFrom.g.fun');
+var orderFromBindUserCtrl = require('../controller/orderFromBindUser.g.controller');//订单用户对应关系 ctrl
 var q = require('q');//异步编程对象
 var g = require('../../g.config');
 var pub = require('../fun/pub.g.fun');//公共方法
@@ -14,6 +17,7 @@ var fun = {
     getUserIdKillList: getUserIdKillList,//查询用户发布的所有 技能
     getKillImgs: getKillImgs,//技能图片选择
     xiaDanFun: xiaDanFun,//下单
+    jieDanFun: jieDanFun,//接单
     trueXianDanFun: trueXianDanFun,//判断技能id是否被当前uid下单
     upDateKillGpsFun: upDateKillGpsFun,//更新uid下的 技能表 会员资料字段,gpsSearch,sex,hot,live
     trueFirstKill: trueFirstKill,//判断是否第一次发布技能
@@ -140,6 +144,7 @@ function getKillContent(postObj) {
                     reDoc.thisJiNeng.price = doc[0]._doc.attr.price;
                     reDoc.thisJiNeng.priceUnit = pub.getDefaultVal('kill_priceUnit', doc[0]._doc.attr.priceUnit);
                     reDoc.thisJiNeng.service = pub.getDefaultVal('kill_service', doc[0]._doc.attr.service);
+                    reDoc.thisJiNeng.serviceNum = doc[0]._doc.attr.service;
 
                     getUserIdKillList(doc[0].uid._id, doc[0]._id).then(function (doc) {//取用户发布的其他
                         reDoc.jiNengList = doc;
@@ -412,8 +417,131 @@ function getKillImgs(killRoundId, uid, vo) {
  *下单
  */
 function xiaDanFun(postObj) {
+    var defer = q.defer();
+    //获取当前的订单详情,组合数据去添加一条需求
+    needFromFun.getOneFrom(postObj.needRoundId)//判断重复
+        .then(__trueGetOne)//判断重复之后逻辑
+        .then(getKillContent)//获取订单详情
+        .then(_editData)//组合需求订单数据
+        .then(_add)//入库需求订单
+        .then(_editBindUserData)//编辑订单用户关系入库数据
+        .then(_call, _err);//return promis
+
+    // 判断need重复
+    function __trueGetOne(re) {
+        var ___defer = q.defer();
+        if (re.doc.data.code == 'S') {
+            ___defer.resolve(postObj);
+        } else {
+            ___defer.reject(re.doc.data.msg);
+        }
+        return ___defer.promise;
+    }
+
+    /**
+     * 组合数据
+     * @param re
+     * @private
+     */
+    function _editData(re) {
+        var _defer = q.defer();
+        if (re.thisJiNeng) {
+            if (re.userData && re.userData._id) {
+                postObj.jinengUid = re.userData._id;//给postObj一个 技能方 id
+            } else {
+                _defer.reject('技能详情用户uid获取失败');
+            }
+            var city = '不限';
+            var gpsArea = [0, 0];
+            if (postObj.areaGps && postObj.areaGps.gpsObj && postObj.areaGps.gpsObj.lat) {
+                gpsArea = [postObj.areaGps.gpsObj.lng, postObj.areaGps.gpsObj.lat];
+            }
+            if (re.thisJiNeng.uid.city) {
+                city = re.thisJiNeng.uid.city;
+            }
+            var postData = {
+                needRoundId: postObj.needRoundId,
+                uid: postObj.uid,
+                title: re.thisJiNeng.title,//需求标题
+                content: '',
+                attr: {
+                    price: re.thisJiNeng.price,//价格
+                    priceUnit: re.thisJiNeng.attr.priceUnit,//价格单位
+                },//属性
+                endTime: needFromFun.getEndTime('0'),//给有效期3天
+                city: city,
+                cityCode: re.thisJiNeng.cityCode,
+                service: re.thisJiNeng.serviceNum,//服务方式
+                gpsSearch: gpsArea,//mongo 地理位置
+            };
+            _defer.resolve(postData);
+        } else {
+            _defer.reject('技能详情获取失败');
+        }
+        return _defer.promise;
+    }
+
+    //入库需求
+    function _add(postObjEnd) {
+        var __defer = q.defer();
+        if (postObj.areaGps) {
+            mumberFun.upUserGpsArea(postObj.areaGps, postObj.uid);//更新gps数据
+        }
+        needFromFun.needAdd(postObjEnd).then(function (re) {
+            __defer.resolve(re);
+        }, function (err) {
+            __defer.reject(JSON.stringify(err));
+        });
+        return __defer.promise;
+    }
+
+    //编辑订单用户关系入库数据
+    function _editBindUserData(re) {
+        var ____defer = q.defer();
+        if (re.doc && re.doc._id) {//新添加的需求订单id
+            var bindUserData = {
+                orderId: re.doc._id,
+                orderUid: postObj.uid,
+                bindUid: postObj.jinengUid
+            };
+            orderFromBindUserCtrl.addOneBindUser(bindUserData, 2).then(function (re2) {
+                ____defer.resolve(re2);
+            }, function (err) {
+                ____defer.reject('添加对应关系失败!');
+            });
+        } else {
+            ____defer.reject('添加需求订单未返回id');
+        }
+        return ____defer.promise;
+    }
+
+    function _call(re) {
+        defer.resolve(re);
+    }
+
+    function _err(err) {
+        defer.reject(err);
+    }
+
+    return defer.promise;
+}
+
+/**
+ *接单
+ *0.根据orderId获取订单的uid
+ *1.判断接单的重复id 订单id 订单uid 技能uid 是否存在,
+ *2.入库订单用户关系
+ */
+function jieDanFun(postObj) {
+    var defer = q.defer();
+    orderFromBindUserCtrl.trueIsHave(postObj);//todo
+
+    //defer.resolve();
+    //defer.reject();
+    return defer.promise;
 
 }
+
 
 /**
  *判断技能id是否被当前uid下单 todo
@@ -527,7 +655,6 @@ function homeGetListFun(postObj) {
             function _getImgsErr(err) {
                 defer.resolve(doc);
             }
-
 
         });
 

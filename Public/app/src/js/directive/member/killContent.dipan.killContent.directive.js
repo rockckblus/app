@@ -40,6 +40,7 @@
         $scope.data = '';//技能详情数据
 
         function init() {
+            creatKillcontentRoundId();//建立随机id
             $timeout(function () {
                 getData();
             }, 0);
@@ -152,6 +153,13 @@
             }, 0);
         }
 
+        /**
+         * 生成随机技能详情表单id,如果点击下单,就用这个id作为 needRoundId(需求订单随机id),去生成需求订单,
+         */
+        function creatKillcontentRoundId() {
+            var roundCode = tools.getRoundCode(8);
+            tools.saveLocalStorageObj('killContentRoundId', 'needRoundId_' + roundCode);
+        }
 
     }
 })();

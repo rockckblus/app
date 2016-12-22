@@ -10,6 +10,7 @@ var fun = {
     getOneFrom: getOneFrom,//判断需求是否存在,防止重复提交 ,传 fromRoundId,
     getOrederContentFun: getOrederContentFun,//获取详情_根据id ,发订单的用户资料
     needGetListFun: needGetListFun,//获取需求列表
+    getEndTime: getEndTime,//转换有效期,返回最后日期
 
 };
 
@@ -54,12 +55,12 @@ function needGetListFun(postObj) {
             {
                 'path': 'uid',
                 'model': memberModel,
-                'select': 'headerImg name'
+                'select': 'headerImg name sex'
             }
         )
         .sort(sortStr)
         .limit(10)
-        .select('uid title gpsSearch attr content service price  type')
+        .select('uid title gpsSearch attr content service price city type endTime')
         .exec(function (err, doc) {
             if (err) {
                 defer.reject(JSON.stringify(err));
@@ -91,6 +92,19 @@ function needGetListFun(postObj) {
                             doc[vo]._doc.danWei = pub.getDefaultVal('kill_priceUnit', doc[vo]._doc.attr.priceUnit);
                         }
 
+                        //如果有 服务器方式
+                        if (doc[vo]._doc && doc[vo]._doc.service !== undefined) {
+                            var service = doc[vo]._doc.service.toString();
+                            doc[vo]._doc.serviceStr = pub.getDefaultVal('kill_service', service);
+                        }
+
+                        //如果有city
+                        if (doc[vo]._doc && doc[vo]._doc.city) {
+                            if (doc[vo]._doc.city == '不限') {
+                                doc[vo]._doc.city = '地区不限';
+                            }
+                        }
+
                         //des
                         doc[vo]._doc.des = doc[vo]._doc.content;
 
@@ -111,10 +125,10 @@ function needGetListFun(postObj) {
     function _giveShaiXuanWhere(vo) {
         switch (vo) {
             case 'needShaiXuanTwo2' :
-                sortStr = 'editTime';//最新排序
+                sortStr = '-editTime';//最新排序
                 break;
             case 'needShaiXuanOne2' :
-                sortStr = 'price';//价格排序
+                sortStr = '-price';//价格排序
                 break;
             case 'needShaiXuanTwo3' ://线上服务 筛选
                 whereCondition.service = 1;
@@ -126,13 +140,11 @@ function needGetListFun(postObj) {
 
 }
 
-
 /**
  * 添加一条需求
  * @param postObj
  */
 function needAdd(postObj) {
-
 
     var defer = q.defer();
     if (!postObj.price) {//如果价格为空,修改 单位为面议
