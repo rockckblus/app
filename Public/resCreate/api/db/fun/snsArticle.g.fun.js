@@ -21,6 +21,7 @@ var fun = {
     trueXianDanFun: trueXianDanFun,//判断技能id是否被当前uid下单
     upDateKillGpsFun: upDateKillGpsFun,//更新uid下的 技能表 会员资料字段,gpsSearch,sex,hot,live
     trueFirstKill: trueFirstKill,//判断是否第一次发布技能
+    myKillFun: myKillFun,//我的技能
 };
 
 /**
@@ -94,6 +95,25 @@ function killAdd(postObj) {
 
     return defer.promise;
 }
+
+/**************************
+ * 获取我的技能，传 obj.uid
+ * 16/12/26 下午10:07 ByRockBlus
+ **************************/
+function myKillFun(postObj) {
+    var defer = q.defer();
+    snsArticleModel.find({uid: postObj.uid, state: 1})
+        .select('_id title')
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                defer.resolve(doc);
+            }
+        });
+    return defer.promise;
+}
+
 
 /**
  * 判断是否是第一条技能,如果是,就给master:true

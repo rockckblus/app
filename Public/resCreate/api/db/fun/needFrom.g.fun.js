@@ -11,6 +11,7 @@ var fun = {
     getOrederContentFun: getOrederContentFun,//获取详情_根据id ,发订单的用户资料
     needGetListFun: needGetListFun,//获取需求列表
     getEndTime: getEndTime,//转换有效期,返回最后日期
+    myNeedFun: myNeedFun,//我的需求
 
 };
 
@@ -317,6 +318,24 @@ function getUserIdOrderListFun(userId) {
                 defer.reject(err);
             }
             defer.resolve(doc);
+        });
+    return defer.promise;
+}
+
+/**************************
+ * 获取我的技能，传 obj.uid
+ * 16/12/26 下午10:07 ByRockBlus
+ **************************/
+function myNeedFun(postObj) {
+    var defer = q.defer();
+    orderModel.find({uid: postObj.uid, state: {$ne: 5}})
+        .select('_id title state')
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                defer.resolve(doc);
+            }
         });
     return defer.promise;
 }

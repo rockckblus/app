@@ -48,6 +48,8 @@
             'hrefSubNeed',
             'hrefMember',
             'hrefMyNews',//消息
+            'hrefMyJiNeng',//技能管理
+            'hrefMyNeed',//我的需求
             'hrefOrederFrom',//订单
             'hrefMyLoginOut',//退出
             'killContentHrefHome',//技能详情页面

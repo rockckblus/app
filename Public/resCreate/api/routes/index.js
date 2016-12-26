@@ -307,6 +307,20 @@ function postSns(req, res) {
                 res.json(err);
             });
             break;
+        case 'myKill' ://我的技能
+            snsArticleServiceCtrl.myKillCtrl(req.body, function (re) {
+                res.json(re);
+            }, function (err) {
+                res.json(err);
+            });
+            break;
+        case 'myNeed' ://我的技能
+            snsArticleServiceCtrl.myNeedCtrl(req.body, function (re) {
+                res.json(re);
+            }, function (err) {
+                res.json(err);
+            });
+            break;
 
 
     }
