@@ -10,6 +10,10 @@ var tokenFun = require('../db/fun/token.g.fun');
  * router All post get
  * 16/3/8 */
 function all(req, res, next) {
+
+
+
+
     //需要验证token的接口url
     var isTrueToke = [
         '/member/getUserData',//获取用户数据
@@ -52,7 +56,6 @@ function all(req, res, next) {
                 }
             });
         });
-
     }
 }
 module.exports = all;

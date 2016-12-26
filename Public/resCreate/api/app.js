@@ -10,6 +10,9 @@ var adminRoutes = require('./routes/displayAdmin');//admin api
 var sosoRoutes = require('./routes/sosoApi.api.route');//soso api
 var app = express();
 
+// //  apply to all requests
+// app.use(limiter);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');

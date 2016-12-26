@@ -6,6 +6,18 @@ var categoryServiceCtrl = require('../db/controller/category_service.g.controlle
 var snsArticleServiceCtrl = require('../db/controller/snsArticle.g.controller');//sns文章 Ctrl
 var memberCtrl = require('../db/controller/member.g.controller');//会员相关 Ctrl
 var imApi = require('../db/controller/imApi.imApi.controller');//请求及时通讯api接口
+
+
+var RateLimit = require('express-rate-limit');
+
+var limiter = new RateLimit({
+    windowMs: 800, // 15 minutes
+    delayAfter: 1,//begin slowing down responses after the first request,
+    max: 1, // limit each IP to 100 requests per windowMs
+    delayMs: 400// disable delaying - full speed until the max limit is reached
+});
+
+
 var all = require('./default');//公共路由all方法
 //var oeoeSchema = new mongoose.Schema(
 ////    _id:mongoose.Schema.ObjectId,
@@ -23,7 +35,6 @@ var all = require('./default');//公共路由all方法
 //    }
 //}
 //var oeoeLeftNavModel = mongoose.model('', oeoeSchema, 'city');
-
 
 /**
  * post 跨域请求
@@ -94,11 +105,36 @@ router.post('/category/:fun', function (req, res) {
     postCategory(req, res);
 });
 
+
+/**
+ * post sns:fun 社区相关api 技能发布控制点击
+ * 16/3/8 */
+router.post('/sns/postKillFrom', limiter, function (req, res, next) {
+    next();
+});
+router.post('/sns/postNeedFrom', limiter, function (req, res, next) {//需求发布控制点击
+    next();
+});
 /**
  * post sns:fun 社区相关api
  * 16/3/8 */
 router.post('/sns/:fun', function (req, res) {
     postSns(req, res);
+});
+
+
+/**
+ * post member:fun 会员相关 限制重复点击方法
+ * 16/3/8 */
+router.post('/member/xiaDan', limiter, function (req, res, next) {
+    next();
+});
+
+/**
+ * post member:fun 会员相关 限制重复点击方法
+ * 16/3/8 */
+router.post('/member/jieDan', limiter, function (req, res, next) {
+    next();
 });
 
 /**
@@ -107,6 +143,7 @@ router.post('/sns/:fun', function (req, res) {
 router.post('/member/:fun', function (req, res) {
     postMember(req, res);
 });
+
 
 /**
  * post im:fun 及时通讯相关
@@ -443,6 +480,11 @@ function postMember(req, res) {
             break;
         case 'trueXianDan' ://判断技能id是否被当前uid下单
             memberCtrl.trueXianDan(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+        case 'trueJieDan' ://判断当前uid是否对orderid接单
+            memberCtrl.trueJieDan(req.body, function (re) {
                 res.json(re);
             });
             break;

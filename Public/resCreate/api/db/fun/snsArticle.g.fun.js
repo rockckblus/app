@@ -19,6 +19,7 @@ var fun = {
     xiaDanFun: xiaDanFun,//下单
     jieDanFun: jieDanFun,//接单
     trueXianDanFun: trueXianDanFun,//判断技能id是否被当前uid下单
+    trueJieDanFun: trueJieDanFun,//判断orderId是否被当前uid接单
     upDateKillGpsFun: upDateKillGpsFun,//更新uid下的 技能表 会员资料字段,gpsSearch,sex,hot,live
     trueFirstKill: trueFirstKill,//判断是否第一次发布技能
 };
@@ -419,7 +420,7 @@ function getKillImgs(killRoundId, uid, vo) {
 function xiaDanFun(postObj) {
     var defer = q.defer();
     //获取当前的订单详情,组合数据去添加一条需求
-    needFromFun.getOneFrom(postObj.needRoundId)//判断重复
+    trueXianDanFun(postObj)//判断技能id是否被当前uid下单
         .then(__trueGetOne)//判断重复之后逻辑
         .then(getKillContent)//获取订单详情
         .then(_editData)//组合需求订单数据
@@ -430,10 +431,10 @@ function xiaDanFun(postObj) {
     // 判断need重复
     function __trueGetOne(re) {
         var ___defer = q.defer();
-        if (re.doc.data.code == 'S') {
+        if (re.trueIsHave) {//当前uid已经对技能下单,阻止入库需求
+            ___defer.reject('当前uid已经对技能下单');
+        } else {//否则去入库需求
             ___defer.resolve(postObj);
-        } else {
-            ___defer.reject(re.doc.data.msg);
         }
         return ___defer.promise;
     }
@@ -502,7 +503,8 @@ function xiaDanFun(postObj) {
             var bindUserData = {
                 orderId: re.doc._id,
                 orderUid: postObj.uid,
-                bindUid: postObj.jinengUid
+                bindUid: postObj.jinengUid,
+                jiNengId: postObj.jiNengId
             };
             orderFromBindUserCtrl.addOneBindUser(bindUserData, 2).then(function (re2) {
                 ____defer.resolve(re2);
@@ -534,20 +536,89 @@ function xiaDanFun(postObj) {
  */
 function jieDanFun(postObj) {
     var defer = q.defer();
-    orderFromBindUserCtrl.trueIsHave(postObj);//todo
 
-    //defer.resolve();
-    //defer.reject();
+    needFromFun.getOrderUidFun(postObj)//根据orderId获取订单的uid
+        .then(orderFromBindUserCtrl.trueIsHave)//判断接单的重复id 订单id 订单uid 技能uid 是否存在 返回 postObj.trueIsHav = true
+        .then(_editBindUserData)//编辑订单用户关系入库数据
+        .then(_call, _err);
+
+
+    //编辑订单用户关系入库数据
+    function _editBindUserData(re) {
+        var ____defer = q.defer();
+        if (!re.trueIsHave) {//判断如果没有进对应关系表就新建对应关系
+            var bindUserData = {
+                orderId: re.orderId,
+                orderUid: re.orderUid,
+                bindUid: re.uid
+            };
+            orderFromBindUserCtrl.addOneBindUser(bindUserData, 1).then(function (re2) {
+                ____defer.resolve(re2);
+            }, function (err) {
+                ____defer.reject('添加对应关系失败!');
+            });
+        } else {
+            ____defer.reject('添加需求订单对应关系已经存在');
+        }
+        return ____defer.promise;
+    }
+
+
+    function _call(doc) {
+        defer.resolve(doc);
+    }
+
+    function _err(err) {
+        defer.reject(err);
+    }
+
     return defer.promise;
-
 }
 
-
 /**
- *判断技能id是否被当前uid下单 todo
+ *判断技能id是否被当前uid下单
  */
 function trueXianDanFun(postObj) {
+    var defer = q.defer();
+    var findObj = {
+        jiNengId: postObj.jiNengId,
+        uid: postObj.uid,
+    };
 
+    orderFromBindUserCtrl.trueXianDanBindUser(findObj).then(_call, _err);
+
+    function _call(doc) {
+        defer.resolve(doc);
+    }
+
+    function _err(err) {
+        defer.reject(err);
+    }
+
+    return defer.promise;
+}
+
+/**
+ *判断orderId是否被当前uid接单
+ */
+function trueJieDanFun(postObj) {
+    var defer = q.defer();
+    var findObj = {
+        orderId: postObj.orderId,
+        bindUid: postObj.uid,
+    };
+
+    orderFromBindUserCtrl.trueJieDanBindUser(findObj).then(_call, _err);
+
+    function _call(doc) {
+        defer.resolve(doc);
+    }
+
+    function _err(err) {
+        defer.reject(err);
+    }
+
+    return defer.promise;
 }
 
 /**
@@ -681,7 +752,6 @@ function homeGetListFun(postObj) {
     return defer.promise;
 
 }
-
 
 /**
  * 更新uid下的 技能表 会员资料字段,gpsSearch,sex,hot,live

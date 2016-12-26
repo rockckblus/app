@@ -32,6 +32,7 @@ var fun = {
     jieDan: jieDan,//接单
 
     trueXianDan: trueXianDan,//判断技能id是否被当前uid下单
+    trueJieDan: trueJieDan,//判断orderId是否被当前uid接单
     getOrderFromContent: getOrderFromContent,//订单详情
     forAddMember: forAddMember,//循环添加1000个用户
 
@@ -348,13 +349,38 @@ function jieDan(postObj, callBack) {
 function trueXianDan(postObj, callBack) {
     snsArticleFun.trueXianDanFun(postObj).then(_call, _err);
     function _call(re) {
-        pubFun.pubReturn(false, re, '当前用户已经对当前技能下单', '当前用户没有对当前技能下单', callBack);
+        if (re.trueIsHave) {//没有下单
+            re.data = true;
+            pubFun.pubReturn(false, re, '当前用户已经对当前技能下单', '当前用户没有对当前技能下单', callBack);
+        } else {
+            pubFun.pubReturn(re, {}, '', '当前用户没有对当前技能下单', callBack);
+        }
     }
 
     function _err(re) {
         pubFun.pubReturn(re, {}, '', '是否下单获取失败', callBack);
     }
 }
+
+/**
+ * 判断orderId是否被当前uid接单
+ */
+function trueJieDan(postObj, callBack) {
+    snsArticleFun.trueJieDanFun(postObj).then(_call, _err);
+    function _call(re) {
+        if (re.trueIsHave) {//没有接单
+            re.data = true;
+            pubFun.pubReturn(false, re, '当前用户已经对当前订单接单', '', callBack);
+        } else {
+            pubFun.pubReturn(re, {}, '', '当前用户没有对当前订单接单', callBack);
+        }
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '是否接单获取失败', callBack);
+    }
+}
+
 
 module.exports = fun;
 

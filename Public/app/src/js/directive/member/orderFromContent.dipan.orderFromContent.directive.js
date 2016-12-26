@@ -270,7 +270,6 @@
             }
         }
 
-
         /**
          * bind 更多需求点击
          */
@@ -286,7 +285,6 @@
                 $state.go('orderFromContent', {'orderId': _id});
             }
         }
-
 
     }
 })();

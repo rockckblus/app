@@ -352,7 +352,6 @@
          */
         function bindXiaDanClick() {
             try {
-                console.log('kdk', $state.current.name);
                 if ($state.current.name == 'killContent') {//对技能下单
                     document.getElementById('xiaDan').addEventListener(clickType, _bindXiaDan);
                 }
@@ -368,6 +367,7 @@
              * @private
              */
             function _bindXiaDan() {
+
                 //去请求接口标记技能id
                 var jinengId = $state.params.jiNengId;
                 var uid = tools.getLocalStorageObj('userData').uid;
@@ -413,10 +413,10 @@
                 }
             }
 
-            function _err() {
-                $timeout(function () {
-                    $scope.xiaDan = false;
-                }, 0);
+            function _err(err) {
+                tools.alert({
+                    title: err
+                });
             }
 
         }
@@ -437,6 +437,20 @@
                     tools.postJsp(url, postData, true).then(_s, _err);
                 }
             }
+
+            if ($state.current.name == 'needContent') {
+                var uid = tools.getLocalStorageObj('userData').uid;
+                var orderId = $state.params.orderId;
+                if (uid) {
+                    var postData = {
+                        uid: uid,
+                        orderId: orderId
+                    };
+                    var url = config.host.nodeHost + "/member/trueJieDan";
+                    tools.postJsp(url, postData, true).then(_s, _err);
+                }
+            }
+
             function _s(re) {
                 if (re.data && re.data.code == 'S') {
                     $timeout(function () {

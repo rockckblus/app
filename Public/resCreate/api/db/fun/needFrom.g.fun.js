@@ -11,6 +11,7 @@ var fun = {
     getOrederContentFun: getOrederContentFun,//获取详情_根据id ,发订单的用户资料
     needGetListFun: needGetListFun,//获取需求列表
     getEndTime: getEndTime,//转换有效期,返回最后日期
+    getOrderUidFun: getOrderUidFun,//根据订单id 获取用户的uid,返回postObj
 
 };
 
@@ -284,7 +285,7 @@ function getOrederContentFun(postObj) {
                     reDoc.thisNeed.price = doc[0]._doc.attr.price;
                     reDoc.thisNeed.priceUnit = pub.getDefaultVal('kill_priceUnit', doc[0]._doc.attr.priceUnit);
                     reDoc.thisNeed.service = pub.getDefaultVal('kill_service', doc[0]._doc.attr.service);
-                    getUserIdOrderListFun(doc[0].uid._id).then(function (doc) {//取用户发布的其他
+                    getUserIdOrderListFun(doc[0].uid._id, doc[0]._doc._id).then(function (doc) {//取用户发布的其他
                         reDoc.needList = doc;
                         defer.resolve(reDoc);
                     }, function (err) {
@@ -299,12 +300,36 @@ function getOrederContentFun(postObj) {
 }
 
 /**
+ * 根据订单id 获取用户的uid,返回postObj
+ */
+function getOrderUidFun(postObj) {
+    var defer = q.defer();
+    orderModel.find({_id: postObj.orderId})
+        .select('uid')
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                postObj.orderUid = doc[0].uid;
+                defer.resolve(postObj);
+            }
+        });
+    return defer.promise;
+}
+
+
+/**
  * 查询用户发布的所有 需求
  * @param postObj
  */
-function getUserIdOrderListFun(userId) {
+function getUserIdOrderListFun(userId, orderId) {
     var defer = q.defer();
-    orderModel.find({uid: userId, state: 1})
+
+    var where = {uid: userId, state: 1};
+    if (orderId) {
+        where._id = {$ne: orderId};
+    }
+    orderModel.find(where)
         .select('_id title attr')
         .limit(5)
         .exec(function (err, doc) {
