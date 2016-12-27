@@ -1,7 +1,7 @@
 var snsArticleModel = require('../model/snsArticle.g.model');
 var killFromImgModel = require('../model/killFromImg.g.model');
 var memberModel = require('../model/member.g.model');
-var mumberFun = require('../fun/member.g.fun');
+var mumberFun;
 var needFromFun = require('../fun/needFrom.g.fun');
 var orderFromBindUserCtrl = require('../controller/orderFromBindUser.g.controller');//订单用户对应关系 ctrl
 var q = require('q');//异步编程对象
@@ -23,6 +23,8 @@ var fun = {
     upDateKillGpsFun: upDateKillGpsFun,//更新uid下的 技能表 会员资料字段,gpsSearch,sex,hot,live
     trueFirstKill: trueFirstKill,//判断是否第一次发布技能
     myKillFun: myKillFun,//我的技能
+    delKillFun: delKillFun,//删除一条技能
+    setMasterFun: setMasterFun,//设置主技能
 };
 
 /**
@@ -97,6 +99,120 @@ function killAdd(postObj) {
     return defer.promise;
 }
 
+/**
+ * 删除一条技能
+ */
+function delKillFun(postObj) {
+    var defer = q.defer();
+    if (postObj.killId) {
+        snsArticleModel.update(
+            {
+                _id: postObj.killId,
+                uid: postObj.uid,
+                master: false
+            },
+            {
+                state: 0
+            },
+            {}, function (err, doc) {
+                if (err) {
+                    defer.reject(JSON.stringify(err));
+                } else {
+                    var reData = {
+                        doc: {
+                            data: {
+                                code: 'S', msg: '删除技能成功'
+                            }
+                        }
+                    };
+                    if (doc.ok == 1) {
+                        reData.doc.data.code = 'S';
+                        reData.doc.data.msg = '更新图片成功';
+                        defer.resolve(reData);
+                    } else {
+                        defer.reject('更新图片失败');
+                    }
+                }
+            });
+    }
+
+    return defer.promise;
+}
+
+/**
+ * 设置主技能
+ */
+function setMasterFun(postObj) {
+    var defer = q.defer();
+    _setMasterFalse(postObj).then(function (reObj) {
+        snsArticleModel.update(
+            {
+                _id: reObj.killId,
+                uid: reObj.uid,
+                master: false
+            },
+            {
+                master: true
+            },
+            {}, function (err, doc) {
+                if (err) {
+                    defer.reject(JSON.stringify(err));
+                } else {
+                    var reData = {
+                        doc: {
+                            data: {
+                                code: 'S', msg: '设置主技能成功'
+                            }
+                        }
+                    };
+                    if (doc.ok == 1) {
+                        reData.doc.data.code = 'S';
+                        reData.doc.data.msg = '设置主技能成功';
+                        defer.resolve(reData);
+                    } else {
+                        defer.reject('设置主技能失败');
+                    }
+                }
+            });
+    }, function (err) {
+        defer.reject(err);
+    });
+
+    return defer.promise;
+}
+
+/**
+ * 修改主技能 master 为 false
+ */
+function _setMasterFalse(postObj) {
+    var defer = q.defer();
+    if (postObj.killId) {
+        snsArticleModel.update(
+            {
+                uid: postObj.uid,
+                master: true,
+                state: 1
+            },
+            {
+                master: false
+            },
+            {}, function (err, doc) {
+                if (err) {
+                    defer.reject(JSON.stringify(err));
+                } else {
+                    if (doc.ok == 1) {
+                        defer.resolve(postObj);
+                    } else {
+                        defer.reject('修改master失败');
+                    }
+                }
+            });
+    }
+
+    return defer.promise;
+}
+
+
 /**************************
  * 获取我的技能，传 obj.uid
  * 16/12/26 下午10:07 ByRockBlus
@@ -104,7 +220,7 @@ function killAdd(postObj) {
 function myKillFun(postObj) {
     var defer = q.defer();
     snsArticleModel.find({uid: postObj.uid, state: 1})
-        .select('_id title')
+        .select('_id title master')
         .exec(function (err, doc) {
             if (err) {
                 defer.reject(err);
@@ -114,7 +230,6 @@ function myKillFun(postObj) {
         });
     return defer.promise;
 }
-
 
 /**
  * 判断是否是第一条技能,如果是,就给master:true
@@ -506,6 +621,7 @@ function xiaDanFun(postObj) {
     function _add(postObjEnd) {
         var __defer = q.defer();
         if (postObj.areaGps) {
+            mumberFun = mumberFun || require('../fun/member.g.fun');
             mumberFun.upUserGpsArea(postObj.areaGps, postObj.uid);//更新gps数据
         }
         needFromFun.needAdd(postObjEnd).then(function (re) {
@@ -796,7 +912,6 @@ function upDateKillGpsFun(obj) {
     if (obj.live) {
         saveObj.live = obj.live;
     }
-
     snsArticleModel.update({uid: obj.uid}, saveObj, {multi: true}, function (err, doc) {
         if (err) {
             defer.reject(JSON.stringify(err));
@@ -804,8 +919,6 @@ function upDateKillGpsFun(obj) {
             defer.resolve(doc);
         }
     });
-
-
     return defer.promise;
 }
 

@@ -358,6 +358,20 @@ function postSns(req, res) {
                 res.json(err);
             });
             break;
+        case 'delKill' ://删除一条技能
+            snsArticleServiceCtrl.delKillCtrl(req.body, function (re) {
+                res.json(re);
+            }, function (err) {
+                res.json(err);
+            });
+            break;
+        case 'setMaster' ://设置主技能
+            snsArticleServiceCtrl.setMasterCtrl(req.body, function (re) {
+                res.json(re);
+            }, function (err) {
+                res.json(err);
+            });
+            break;
 
 
     }

@@ -271,7 +271,7 @@
                             if (con) {
                                 window.location.reload();
                             } else {
-                                $state.go('need');//跳转到需求列表
+                                $state.go('myNeed');//跳转到需求列表
                             }
                         }, function () {
                             plus.nativeUI.actionSheet({
@@ -283,7 +283,7 @@
                                     window.location.reload();
                                 }
                                 if (e.index == 2) {
-                                    $state.go('need');//跳转到需求列表
+                                    $state.go('myKill');//跳转到需求列表
                                 }
 
                             });

@@ -105,8 +105,10 @@ function userDataEdit(userUpData) {
                 defer.reject(JSON.stringify(err));
             } else {
 
-                //修改用户的技能筛选条件 sex
-                snsFun.upDateKillGpsFun({uid: userUpData.uid, sex: userUpData.sex});
+                if (userUpData.sex) {
+                    //修改用户的技能筛选条件 sex
+                    snsFun.upDateKillGpsFun({uid: userUpData.uid, sex: userUpData.sex});
+                }
 
                 var reData = {
                     doc: {
@@ -191,10 +193,6 @@ function telType(postObj) {
     });
     return defer.promise;
 }
-
-
-
-
 
 module.exports = fun;
 

@@ -221,7 +221,9 @@
 					"src/js/directive/from/editUserHeaderUp.from.editUserHeaderUp.directive.js",
 					"src/js/directive/from/imgUp.from.imgUp.directive.js",
 					"src/js/directive/member/orderFrom.dipan.orderFromList.directive.js",
-					"src/js/directive/member/orderFromContent.dipan.orderFromContent.directive.js"
+					"src/js/directive/member/orderFromContent.dipan.orderFromContent.directive.js",
+					"src/js/directive/member/myNeed.dipan.myNeed.directive.js",
+					"src/js/directive/member/myKill.dipan.myKill.directive.js"
 				],
 				"refer": [
 					"src/html/updata.html",

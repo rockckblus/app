@@ -439,15 +439,15 @@
             }
 
             if ($state.current.name == 'needContent') {
-                var uid = tools.getLocalStorageObj('userData').uid;
+                var uidN = tools.getLocalStorageObj('userData').uid;
                 var orderId = $state.params.orderId;
-                if (uid) {
-                    var postData = {
-                        uid: uid,
+                if (uidN) {
+                    var postDataN = {
+                        uid: uidN,
                         orderId: orderId
                     };
-                    var url = config.host.nodeHost + "/member/trueJieDan";
-                    tools.postJsp(url, postData, true).then(_s, _err);
+                    var urlN = config.host.nodeHost + "/member/trueJieDan";
+                    tools.postJsp(urlN, postDataN, true).then(_s, _err);
                 }
             }
 

@@ -24,6 +24,8 @@ var fun = {
     froAddKill: froAddKill,//根据id循环添加 1000条技能
     myKillCtrl: myKillCtrl,//我的技能
     myNeedCtrl: myNeedCtrl,//我的需求
+    delKillCtrl: delKillCtrl,//删除一条技能
+    setMasterCtrl: setMasterCtrl,//设置主技能
 };
 
 /**
@@ -322,6 +324,38 @@ function myNeedCtrl(postObj, callBack) {
 
     function _err(re) {
         pubFun.pubReturn(re, {}, '', '获取我的能失败', callBack);
+    }
+}
+
+/**
+ * 删除一条技能
+ */
+function delKillCtrl(postObj, callBack) {
+    snsArticleFun.delKillFun(postObj)
+        .then(_call, _err);
+    function _call(re) {
+        re.data = true;
+        pubFun.pubReturn(false, re, '删除技能成功', '删除技能失败', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '删除技能失败', callBack);
+    }
+}
+
+/**
+ * 设置主技能
+ */
+function setMasterCtrl(postObj, callBack) {
+    snsArticleFun.setMasterFun(postObj)
+        .then(_call, _err);
+    function _call(re) {
+        re.data = true;
+        pubFun.pubReturn(false, re, '设置主技能成功', '设置主技能失败', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '设置主技能失败', callBack);
     }
 }
 

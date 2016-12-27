@@ -21,6 +21,8 @@ function all(req, res, next) {
         '/member/telType',//修改用户允许打电话
         '/member/xiaDan',//对技能下单
         '/member/jieDan',//对需求接单
+        '/sns/delKill',//删除一条技能
+        '/sns/setMaster',//设置主技能
     ];
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
