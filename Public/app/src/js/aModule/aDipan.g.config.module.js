@@ -97,6 +97,19 @@
                 templateUrl: window.tplPath + 'route/member/orderFrom.html'
             })
 
+            //我的技能
+            .state('myKill', {
+                url: '/myKill',
+                templateUrl: window.tplPath + 'route/member/myKill.html'
+            })
+
+            //我的需求
+            .state('myNeed', {
+                url: '/myNeed',
+                templateUrl: window.tplPath + 'route/member/myNeed.html'
+            })
+
+
             //订单详细页面 type 技能方进入,可接单(show) 自己方进入,可选单(select)
             .state('orderFromContent', {
                 url: '/orderFromContent/:type/:orderId',

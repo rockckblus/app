@@ -68,6 +68,10 @@
                 return _filter('toHtml')('兼职鼠');
             case '/myNews':
                 return _filter('toHtml')('联系');
+            case '/myKill':
+                return _filter('toHtml')('我的技能');
+            case '/myNeed':
+                return _filter('toHtml')('我的需求');
             case '/orderFrom':
                 return _filter('toHtml')('订单');
             case '/orderFromContent':
@@ -208,6 +212,10 @@
             case 'memberIndex':
                 return true;
             case 'myNews':
+                return true;
+            case 'myKill':
+                return true;
+            case 'myNeed':
                 return true;
             case 'orderFrom':
                 return true;

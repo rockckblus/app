@@ -22,6 +22,8 @@ var fun = {
     addKillImg: addKillImg,//技能图片添加
     delKillImg: delKillImg,//删除技能图片
     froAddKill: froAddKill,//根据id循环添加 1000条技能
+    myKillCtrl: myKillCtrl,//我的技能
+    myNeedCtrl: myNeedCtrl,//我的需求
 };
 
 /**
@@ -285,6 +287,41 @@ function delKillImg(postObj, callBack) {
 
     function _err(re) {
         pubFun.pubReturn(re, {}, '', '技能图片删除失败', callBack);
+    }
+}
+
+/**************************
+ * 我的技能
+ * 16/12/26 下午10:04 ByRockBlus
+ **************************/
+function myKillCtrl(postObj, callBack) {
+    snsArticleFun.myKillFun(postObj)
+        .then(_call, _err);
+
+    function _call(re) {
+        pubFun.pubReturn(false, re, '获取我的技能成功', '', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '获取我的技能失败', callBack);
+    }
+}
+
+
+/**************************
+ * 我的需求
+ * 16/12/26 下午10:04 ByRockBlus
+ **************************/
+function myNeedCtrl(postObj, callBack) {
+    needFromFun.myNeedFun(postObj)
+        .then(_call, _err);
+
+    function _call(re) {
+        pubFun.pubReturn(false, re, '获取我的需求成功', '咱无需求', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '获取我的能失败', callBack);
     }
 }
 

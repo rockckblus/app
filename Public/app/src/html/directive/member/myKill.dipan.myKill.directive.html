@@ -1,0 +1,24 @@
+<div id="myKill">
+    <div class="clear" style="margin-top: 1.5rem;width: 100%">
+        <div class="clear mui-btn"
+             style="width: 100%;text-align: left;border-color: #fff;font-size: 1rem;"
+             bindonce="list" ng-repeat="vo in list"
+             bo-attr
+             bo-attr-gHeader='vo.gHeader'
+             bo-attr-gUId='vo.gUId'
+             bo-attr-gName='vo.gName'
+             bo-id="vo.cid">
+            <div class="left" style="width: 30px;height: 30px;overflow: hidden">
+                <img bo-src="vo.userHeader" alt="" style="width: 20px;height: auto;"/>
+            </div>
+            <div class="left" style="color: #777;margin-left: 1rem" bo-text="vo.userNameShow"></div>
+            <div class="left">
+                <i class="fa fa-ellipsis-h fa-2x"
+                   style="width: 7px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;"
+                   bo-if="vo.isNewMsg"></i>
+            </div>
+            <div class="clear"></div>
+            <div class="clear line" style="margin-top: 1rem"></div>
+        </div>
+    </div>
+</div>
