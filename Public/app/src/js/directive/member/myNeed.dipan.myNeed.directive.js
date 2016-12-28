@@ -17,17 +17,42 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config', 'tools', 'header'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config', 'tools', 'header', '$q'];
 
-    function thisController($scope, $rootScope, $timeout, localData, config, tools, header) {
+    function thisController($scope, $rootScope, $timeout, localData, config, tools, header, $q) {
 
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
         });
-        $scope.list = '';//
+        $scope.list = '';//需求list
+        $scope.errMsg = '';//错误提示
 
         init();
         function init() {
+            getList()//获取需求列表
+                .then(bindClick);
         }
+
+        function getList() {//获取需求列表
+            var defer = $q.defer();
+            var url = config.host.nodeHost + '/sns/myNeed';
+            tools.postJsp(url, {})
+                .then(function (re) {
+                    if (re && re.data && re.data.code == 'S' && re.data.doc) {
+                        defer.resolve(re.data.doc);//成功
+                    } else {
+                        defer.reject('获取需求列表失败');
+                    }
+                }, function (err) {
+                    defer.reject('获取需求列表失败');
+                });
+            return defer.promise();
+        }
+
+        function bindClick() {
+
+        }
+
+
     }
 })();

@@ -1,25 +1,32 @@
 <div id="myNeed">
-    myNeed
-    <div class="clear" style="margin-top: 1.5rem;width: 100%">
-        <div class="clear mui-btn"
-             style="width: 100%;text-align: left;border-color: #fff;font-size: 1rem;"
-             bindonce="list" ng-repeat="vo in list"
-             bo-attr
-             bo-attr-gHeader='vo.gHeader'
-             bo-attr-gUId='vo.gUId'
-             bo-attr-gName='vo.gName'
-             bo-id="vo.cid">
-            <div class="left" style="width: 30px;height: 30px;overflow: hidden">
-                <img bo-src="vo.userHeader" alt="" style="width: 20px;height: auto;"/>
+    <div class="clear" style="margin-top: 1.5rem;width: 100%;text-align: center">
+        <h5 style="margin:0 auto;margin-top: 200px" ng-show="errMsg">{{errMsg}}</h5>
+        <div class="clear "
+             style="width: 100%;text-align: left;font-size: 1rem;"
+             bindonce="list" ng-repeat="vo in list" bo-id="'myKillList_'+vo._id" bo-attr bo-attr-killid="vo._id">
+            <div class="clear" style="margin-top: 1rem">
+                <div class="left " style="padding-left: 10px;padding-right: 10px;color: #777" bo-text="vo.title"></div>
+                <div class="right">
+                    <div class="left hui mui-btn fa fa-pencil-square-o" bo-id="'myKillListEdit_'+vo._id"
+                         style="border: none"></div>
+                    <div class="left mui-btn fa fa-home" bindonce="vo.master" bo-if="vo.master"
+                         style="border: none"></div>
+                    <div class="left hui mui-btn fa fa-home" bindonce="vo.master" bo-if="!vo.master"
+                         bo-id="'setMaster_'+vo._id"
+                         bo-attr
+                         bo-attr-killid="vo._id"
+                         style="border: none"></div>
+                    <div class="left hui mui-btn fa fa-times"
+                         bindonce="vo.master"
+                         bo-id="'myKillListDel_'+vo._id"
+                         bo-attr
+                         bo-attr-killid="vo._id"
+                         bo-if="!vo.master"
+                         style="margin-left: 0rem;border: none"></div>
+                </div>
             </div>
-            <div class="left" style="color: #777;margin-left: 1rem" bo-text="vo.userNameShow"></div>
-            <div class="left">
-                <i class="fa fa-ellipsis-h fa-2x"
-                   style="width: 7px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;"
-                   bo-if="vo.isNewMsg"></i>
-            </div>
-            <div class="clear"></div>
-            <div class="clear line" style="margin-top: 1rem"></div>
+            <div class="clear line"></div>
         </div>
     </div>
 </div>
+

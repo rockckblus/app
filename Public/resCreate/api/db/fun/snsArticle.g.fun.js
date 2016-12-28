@@ -212,7 +212,6 @@ function _setMasterFalse(postObj) {
     return defer.promise;
 }
 
-
 /**************************
  * 获取我的技能，传 obj.uid
  * 16/12/26 下午10:07 ByRockBlus
