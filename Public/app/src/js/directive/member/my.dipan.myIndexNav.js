@@ -98,7 +98,6 @@
             }
             tools.postJsp(url, postData, true).then(_s);
             function _s(re) {
-                console.log('re', re);
                 if (re.data.code == 'S') {
                     $timeout(function () {
                         $scope.showNoReadFromCount = true;

@@ -1,32 +1,67 @@
 <div id="myNeed">
     <div class="clear" style="margin-top: 1.5rem;width: 100%;text-align: center">
-        <h5 style="margin:0 auto;margin-top: 200px" ng-show="errMsg">{{errMsg}}</h5>
-        <div class="clear "
+        <h5 style="margin:0 auto;color: red" ng-show="errMsg">{{errMsg}}</h5>
+
+        <div class="lan" style="text-align: left;margin-left: 10px">有效</div>
+        <div class="hui" style="text-align: left;margin-left: 10px;font-size: 0.8rem"
+             ng-if="!listTypeOne[0]">暂无数据
+        </div>
+
+        <div class="clear"
              style="width: 100%;text-align: left;font-size: 1rem;"
-             bindonce="list" ng-repeat="vo in list" bo-id="'myKillList_'+vo._id" bo-attr bo-attr-killid="vo._id">
+             bindonce="listTypeOne"
+             ng-repeat="vo in listTypeOne">
             <div class="clear" style="margin-top: 1rem">
-                <div class="left " style="padding-left: 10px;padding-right: 10px;color: #777" bo-text="vo.title"></div>
+                <div class="left mui-btn "
+                     style="padding-left: 10px;padding-right: 10px;color: #777;min-width: 70%;text-align: left;border: none"
+                     bo-text="vo.title"
+                     bo-id="'myNeedListClick_'+vo._id"
+                     bo-attr
+                     bo-attr-needid="vo._id"
+                ></div>
                 <div class="right">
-                    <div class="left hui mui-btn fa fa-pencil-square-o" bo-id="'myKillListEdit_'+vo._id"
-                         style="border: none"></div>
-                    <div class="left mui-btn fa fa-home" bindonce="vo.master" bo-if="vo.master"
-                         style="border: none"></div>
-                    <div class="left hui mui-btn fa fa-home" bindonce="vo.master" bo-if="!vo.master"
-                         bo-id="'setMaster_'+vo._id"
-                         bo-attr
-                         bo-attr-killid="vo._id"
-                         style="border: none"></div>
                     <div class="left hui mui-btn fa fa-times"
-                         bindonce="vo.master"
-                         bo-id="'myKillListDel_'+vo._id"
+                         bo-id="'myNeedListDel_'+vo._id"
                          bo-attr
-                         bo-attr-killid="vo._id"
-                         bo-if="!vo.master"
+                         bo-attr-needid="vo._id"
                          style="margin-left: 0rem;border: none"></div>
                 </div>
             </div>
             <div class="clear line"></div>
         </div>
+
+
+        <div class="clear" style="margin-top: 40px"></div>
+        <div class="lan" style="text-align: left;margin-left: 10px">失效</div>
+
+        <div class="hui" style="text-align: left;margin-left: 10px;font-size: 0.8rem"
+             ng-if="!listTypeTwo[0]">暂无数据
+        </div>
+
+        <div class="clear"
+             style="width: 100%;text-align: left;font-size: 1rem;"
+             bindonce="listTypeTwo" ng-repeat="vo in listTypeTwo"
+        >
+            <div class="clear" style="margin-top: 1rem">
+                <div class="left mui-btn "
+                     style="padding-left: 10px;padding-right: 10px;color: #777;min-width: 70%;text-align: left;border: none"
+                     bo-text="vo.title"
+                     bo-id="'myNeedListClick_'+vo._id"
+                     bo-attr
+                     bo-attr-needid="vo._id"
+                ></div>
+                <div class="right">
+                    <div class="left hui mui-btn fa fa-times"
+                         bo-id="'myNeedListDel_'+vo._id"
+                         bo-attr
+                         bo-attr-needid="vo._id"
+                         style="margin-left: 0rem;border: none"></div>
+                </div>
+            </div>
+            <div class="clear line"></div>
+        </div>
+
+
     </div>
 </div>
 

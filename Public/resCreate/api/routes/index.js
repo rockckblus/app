@@ -372,6 +372,13 @@ function postSns(req, res) {
                 res.json(err);
             });
             break;
+        case 'delNeed' ://删除一条需求
+            snsArticleServiceCtrl.delNeedCtrl(req.body, function (re) {
+                res.json(re);
+            }, function (err) {
+                res.json(err);
+            });
+            break;
 
 
     }
@@ -483,6 +490,16 @@ function postMember(req, res) {
             break;
         case 'telType' ://修改是否允许电话咨询
             memberCtrl.telType(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+        case 'trueTelCall' ://判断是否有打电话权限
+            memberCtrl.trueTelCallCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+        case 'getUserTel' ://查询电话
+            memberCtrl.getUserTelCtrl(req.body, function (re) {
                 res.json(re);
             });
             break;

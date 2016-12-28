@@ -1,4 +1,5 @@
 <div style="color: #777;padding: 1rem" id="orderFromContent">
+
     <div class="mui-table-view mui-table-view-chevron clear"
          style="margin-top: 40px;margin-bottom: 60px">
 
@@ -26,12 +27,12 @@
                         <span class="left"
                               bindonce="data.thisNeed.city"
                               bo-text="data.thisNeed.city"></span>
-                        <span ng-show="userShow" class='fa fa-map-marker right' style=''></span>
-                        <span ng-show="userShow" class='right' style='' bindonce="data.userData"
+                        <span ng-if="userShow" class='fa fa-map-marker right' style=''></span>
+                        <span ng-if="userShow" class='right' style='' bindonce="data.userData"
                               bo-text='data.userData.far + "km"'></span>
                     </div>
 
-                    <div ng-show="userShow" class="clear"
+                    <div ng-if="userShow" class="clear"
                          style="font-size: 1rem;margin-top: 2rem;color: #777;width: 100%"
                          bindonce="data.thisNeed.content"
                          bo-text="data.thisNeed.content"></div>
@@ -39,7 +40,7 @@
             </div>
         </div>
 
-        <div class="clear" ng-show="userShow">
+        <div class="clear" ng-if="userShow">
             <!--头像-->
             <div class="line" style="margin-top: 2.5rem"></div>
             <div class="clear"></div>
@@ -50,20 +51,20 @@
                          style="width: 70px;height: auto">
                 </div>
                 <div class="left" style="font-size: 0.8rem ;margin-left: 1rem;color: #777">
-                <span class="clear lan" style="font-size: 1rem" bindonce="data.userData.name"
-                      bo-text="data.userData.name"></span>
+                    <span class="clear lan" style="font-size: 1rem" bindonce="data.userData.name"
+                          bo-text="data.userData.name"></span>
                     <span class="clear" bindonce="data.userData.sex" bo-text="data.userData.sex"></span>
                     <span class="clear" bindonce="data.userData.age" bo-text="data.userData.age"></span>
                 </div>
                 <div class="right" style="font-size: 0.8rem ;margin-left: 1rem;color: #777;text-align: right">
-                <span class="clear lan" style="" bindonce="data.userData.city"
-                      bo-text="data.userData.city"></span>
+                    <span class="clear lan" style="" bindonce="data.userData.city"
+                          bo-text="data.userData.city"></span>
                     <span class="clear" bindonce="data.userData.mt" bo-text="data.userData.mt"></span>
                 </div>
             </div>
         </div>
 
-        <div class="clear" ng-show="userShow">
+        <div class="clear" ng-if="userShow">
             <!--其他需求-->
             <div class="line" style="margin-top: 2.5rem"></div>
             <div class="clear"></div>
@@ -243,5 +244,6 @@
         </div>
 
     </div>
+
 </div>
 

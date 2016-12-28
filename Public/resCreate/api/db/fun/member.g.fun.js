@@ -1,4 +1,5 @@
 var memberModel = require('../model/member.g.model');
+var snsModel = require('../model/snsArticle.g.model');
 var snsFun = require('../fun/snsArticle.g.fun');
 var q = require('q');//异步编程对象
 var pub = require('../fun/pub.g.fun');//公共方法
@@ -8,7 +9,9 @@ var fun = {
     editHeaderImg: editHeaderImg,//修改用户头像
     userDataEdit: userDataEdit,// 修改用户资料
     upUserGpsArea: upUserGpsArea,//修改用地位gps
-    telType: telType//修改是否允许电话咨询
+    telType: telType,//修改是否允许电话咨询
+    getUserTelFun: getUserTelFun,//查询电话
+    trueTelCallFun: trueTelCallFun,//查询是否有打电话权限
 };
 
 //updataMembe
@@ -193,6 +196,78 @@ function telType(postObj) {
     });
     return defer.promise;
 }
+
+/**************************
+ * 查询电话
+ * 16/12/12 上午6:18 ByRockBlus
+ **************************/
+function getUserTelFun(postObj) {
+    var defer = q.defer();
+    snsModel.find({_id: postObj.jiNengId})
+        .populate(
+            {
+                'path': 'uid',
+                'model': memberModel,
+            }
+        )
+        .exec(
+            function (err, doc) {
+                if (err) {
+                    defer.reject('电话查询失败');
+                }
+                else {
+                    if (doc[0] && doc[0].uid && doc[0].uid.telType == 'yunXun') {
+                        defer.resolve({
+                            data: {
+                                code: 'S',
+                                msg: '电话咨询更新成功',
+                                mt: doc[0].uid.mt
+                            }
+                        });
+                    } else {
+                        defer.reject('电话咨询更新失败,用户不允许电话咨询');
+                    }
+                }
+            });
+
+    return defer.promise;
+}
+
+/**************************
+ * 查询电话权限
+ * 16/12/12 上午6:18 ByRockBlus
+ **************************/
+function trueTelCallFun(postObj) {
+    var defer = q.defer();
+    snsModel.find({_id: postObj.jiNengId})
+        .populate(
+            {
+                'path': 'uid',
+                'model': memberModel,
+            }
+        )
+        .exec(
+            function (err, doc) {
+                if (err) {
+                    defer.reject('电话权限查询失败');
+                }
+                else {
+                    if (doc[0] && doc[0].uid && doc[0].uid.telType == 'yunXun') {
+                        defer.resolve({
+                            data: {
+                                code: 'S',
+                                msg: '有打电话权限'
+                            }
+                        });
+                    } else {
+                        defer.reject('用户不允许电话咨询');
+                    }
+                }
+            });
+
+    return defer.promise;
+}
+
 
 module.exports = fun;
 

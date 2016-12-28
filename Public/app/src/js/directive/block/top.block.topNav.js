@@ -323,7 +323,7 @@
                 tabDom.style.top = '50px';
                 viewContent.style.marginTop = '50px';
             } catch (e) {
-                console.error(e);
+                return false;
             }
         }
 

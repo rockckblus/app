@@ -259,7 +259,7 @@
                         tools.trueWeb(function () {
                             var con = confirm("发布成功! 跳转到我的发布");
                             if (con) {
-                                $state.go('need');//跳转到我的需求
+                                $state.go('myNeed');//跳转到我的需求
                             } else {
                                 window.location.reload();
                             }
@@ -269,7 +269,7 @@
                                 buttons: [{title: "我的发布"}]
                             }, function (e) {
                                 if (e.index == 1) {
-                                    $state.go('need');//跳转到我的需求
+                                    $state.go('myNeed');//跳转到我的需求
                                 }
                                 if (e.index == -1) {
                                     window.location.reload();

@@ -78,7 +78,6 @@
             changeSubBtnIcon(true);//默认变换发布按钮为 加号
             showBottomNav();//显示底部导航
             var _url = '/' + $state.current.name;
-            console.log('_url', _url);
             $timeout(function () {
                 $scope.title = localData.getTitle(_url);//getTitle
                 $scope.showTab = localData.showTab(_url);//是否显示 tab
@@ -317,16 +316,16 @@
                     }
                 }, function () {
                     var postData2 = {
-                        uid: re.data.uid,
-                        jiNengId: re.data.jiNengId
+                        // uid: re.data.uid,
+                        jiNengId: $state.params.jiNengId
                     };
                     var url2 = config.host.nodeHost + "/member/getUserTel";//todo 加密解密
                     tools.postJsp(url2, postData2, true).then(__s, __err);
 
                     function __s(re2) {
-                        if (re2.data && re2.data.code == 'S') {
+                        if (re2.data && re2.data.code == 'S' && re2.data.doc && re2.data.doc.mt) {
                             if (alertCount > 1) {
-                                plus.device.dial(re2.data.mt, false);
+                                plus.device.dial(re2.data.doc.mt, false);
                             }
                         } else {
                             __err();
@@ -343,7 +342,7 @@
         }
 
         function callTelerr() {
-            tools.alert('此用户禁止了电话服务!');
+            tools.alert({title: '此用户禁止了电话服务!'});
         }
 
 

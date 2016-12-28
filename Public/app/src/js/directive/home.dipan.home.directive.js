@@ -99,7 +99,8 @@
                  */
                 var scrollTopName = $state.current.name + '_scrollTop';
                 if (localStorage.getItem(scrollTopName) === '0') {
-                    console.log('请求NewData');
+                    return false;
+                    // console.log('请求NewData');
                 }
 
             } else {
@@ -186,7 +187,7 @@
         function _bind(doc, listName) {
 
             if (type == 'down') {
-                console.log('down', type);
+                var down = 1;
             }
 
             if (!firstId) {//如果没有 firstId,就给 firstId
@@ -212,7 +213,7 @@
                             __bindClick(dom);
                         });
                     } catch (e) {
-                        console.error('wuHomeList');
+                        return false;
                     }
                 });
             }, 400);

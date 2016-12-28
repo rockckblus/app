@@ -13,6 +13,7 @@ var fun = {
     getEndTime: getEndTime,//转换有效期,返回最后日期
     getOrderUidFun: getOrderUidFun,//根据订单id 获取用户的uid,返回postObj
     myNeedFun: myNeedFun,//我的需求
+    delNeedFun: delNeedFun,//删除一条需求
 
 };
 
@@ -63,6 +64,7 @@ function needGetListFun(postObj) {
         .sort(sortStr)
         .limit(10)
         .select('uid title gpsSearch attr content service price city type endTime')
+        .in({state: [1, 2]})
         .exec(function (err, doc) {
             if (err) {
                 defer.reject(JSON.stringify(err));
@@ -362,6 +364,46 @@ function myNeedFun(postObj) {
                 defer.resolve(doc);
             }
         });
+    return defer.promise;
+}
+
+
+/**
+ * 删除一条需求
+ */
+function delNeedFun(postObj) {
+    var defer = q.defer();
+    if (postObj.needId) {
+        orderModel.update(
+            {
+                _id: postObj.needId,
+                uid: postObj.uid
+            },
+            {
+                state: 5
+            },
+            {}, function (err, doc) {
+                if (err) {
+                    defer.reject(JSON.stringify(err));
+                } else {
+                    var reData = {
+                        doc: {
+                            data: {
+                                code: 'S', msg: '删除需求成功'
+                            }
+                        }
+                    };
+                    if (doc.ok == 1) {
+                        reData.doc.data.code = 'S';
+                        reData.doc.data.msg = '删除技能成功';
+                        defer.resolve(reData);
+                    } else {
+                        defer.reject('删除技能失败');
+                    }
+                }
+            });
+    }
+
     return defer.promise;
 }
 

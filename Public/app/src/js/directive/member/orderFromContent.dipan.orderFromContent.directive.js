@@ -95,7 +95,8 @@
                             re.data.doc.thisNeed.binUser.headerImg = header.defaultHeader;
                         }
                     } catch (e) {
-                        console.log('没有bindUser');
+                        var ee;
+                        // console.log('没有bindUser');
                     }
 
 
@@ -275,10 +276,14 @@
          */
         function bindJiNengListClick() {
             angular.forEach($scope.data.needList, function (vo) {
-                var dom = document.getElementById('needlist_' + vo._id);
-                dom.addEventListener(clickType, function () {
-                    _bind(dom);
-                });
+                // var dom = document.getElementById('needlist_' + vo._id);
+                // dom.addEventListener(clickType, function () {
+                //     _bind(dom);
+                // });
+
+                tools.bindClick('needlist_' + vo._id, _bind);
+
+
             });
             function _bind(dom) {
                 var _id = dom.getAttribute('subid');

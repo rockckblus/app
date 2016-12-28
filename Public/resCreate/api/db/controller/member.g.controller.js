@@ -27,10 +27,11 @@ var fun = {
     editHeaderImg: editHeaderImg,//用户头像修改
     userDataEdit: userDataEdit,//修改用户资料
     telType: telType,//设置是否电话咨询
+    trueTelCallCtrl: trueTelCallCtrl,//查询是否有打电话权限
+    getUserTelCtrl: getUserTelCtrl,//查询电话
     getKillContent: getKillContent,//获取技能详情_根据id
     xiaDan: xiaDan,//下单
     jieDan: jieDan,//接单
-
     trueXianDan: trueXianDan,//判断技能id是否被当前uid下单
     trueJieDan: trueJieDan,//判断orderId是否被当前uid接单
     getOrderFromContent: getOrderFromContent,//订单详情
@@ -257,6 +258,42 @@ function telType(postObj, callBack) {
 
     function _err(re) {
         pubFun.pubReturn(re, {}, '', '修改电话咨询失败', callBack);
+    }
+
+}
+
+
+/**
+ * 判断是否有打电话权限
+ * @param postObj
+ * @param callBack
+ */
+function trueTelCallCtrl(postObj, callBack) {
+    memberFun.trueTelCallFun(postObj).then(_call, _err);
+
+    function _call(re) {
+        pubFun.pubReturn(false, re, '查询电话权限成功', '查询电话权限失败', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '查询电话权限失败', callBack);
+    }
+
+}
+
+
+/**
+ * 查询电话
+ */
+function getUserTelCtrl(postObj, callBack) {
+    memberFun.getUserTelFun(postObj).then(_call, _err);
+
+    function _call(re) {
+        pubFun.pubReturn(false, re, '查询电话成功', '查询电话失败', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '查询电话失败', callBack);
     }
 
 }

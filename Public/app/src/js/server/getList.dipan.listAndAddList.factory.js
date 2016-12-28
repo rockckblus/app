@@ -299,7 +299,6 @@
         // _compile('list', repListHtml[0], scope, true);
 
         if (!isCatch) {//如果不是 缓存请求
-            console.log(1);
             _call(pushToGoldCatcth(newlist));//push 到全局变量数组
         } else {
             _call(newlist);
@@ -326,7 +325,7 @@
                 }
                 break;
         }
-        console.log('thisLoList', newList);
+
 
         if (!newList) {
             return false;
@@ -334,7 +333,6 @@
 
         var oldArr = [];
         var thisLogName = 'catchList_' + _state.current.name + '-' + _tools.getToday();
-        console.log('thisLogname', thisLogName);
         var tempCount = 0;
         angular.forEach(newList, function (voNew) {
             tempCount++;

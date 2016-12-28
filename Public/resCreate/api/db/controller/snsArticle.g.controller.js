@@ -5,7 +5,6 @@
 /**
  * sns 文章 模型
  * */
-var snsArticleModel = require('../model/snsArticle.g.model');
 var memberModel = require('../model/member.g.model');
 var pubFun = require('../fun/pub.g.fun');//公共方法
 var snsArticleFun = require('../fun/snsArticle.g.fun');//技能方法相关
@@ -26,6 +25,7 @@ var fun = {
     myNeedCtrl: myNeedCtrl,//我的需求
     delKillCtrl: delKillCtrl,//删除一条技能
     setMasterCtrl: setMasterCtrl,//设置主技能
+    delNeedCtrl: delNeedCtrl,//删除一条需求
 };
 
 /**
@@ -309,7 +309,6 @@ function myKillCtrl(postObj, callBack) {
     }
 }
 
-
 /**************************
  * 我的需求
  * 16/12/26 下午10:04 ByRockBlus
@@ -340,6 +339,22 @@ function delKillCtrl(postObj, callBack) {
 
     function _err(re) {
         pubFun.pubReturn(re, {}, '', '删除技能失败', callBack);
+    }
+}
+
+/**
+ * 删除一条需求
+ */
+function delNeedCtrl(postObj, callBack) {
+    needFromFun.delNeedFun(postObj)
+        .then(_call, _err);
+    function _call(re) {
+        re.data = true;
+        pubFun.pubReturn(false, re, '删除需求成功', '删除需求失败', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '删除需求失败', callBack);
     }
 }
 

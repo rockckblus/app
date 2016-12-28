@@ -23,6 +23,7 @@ function all(req, res, next) {
         '/member/jieDan',//对需求接单
         '/sns/delKill',//删除一条技能
         '/sns/setMaster',//设置主技能
+        '/member/getUserTel',//查询电话
     ];
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
