@@ -533,6 +533,12 @@ function postMember(req, res) {
                 res.json(re);
             });
             break;
+        case 'getOrderFromList' ://我的订单
+            memberCtrl.getOrderFromListCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+
 
     }
 }

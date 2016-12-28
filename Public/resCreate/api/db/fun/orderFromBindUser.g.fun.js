@@ -7,8 +7,7 @@ var fun = {
     trueIsHaveFun: trueIsHaveFun,//判断接单的重复id 订单id 订单uid 技能uid 是否存在,
     trueXianDanBindUserFun: trueXianDanBindUserFun,//判断技能id是否被当前uid下单
     trueJieDanBindUserFun: trueJieDanBindUserFun,//判断orderId是否被当前uid接单
-
-
+    getJiNengListOrderIdFun: getJiNengListOrderIdFun,//根据uid取技能订单列表的订单id 与 对应关系
 };
 
 /**
@@ -140,4 +139,25 @@ function trueJieDanBindUserFun(postObj) {
     return defer.promise;
 
 }
+
+/**
+ * 根据uid取技能订单列表(被动接单,点击下单)的订单id 与 对应关系
+ */
+function getJiNengListOrderIdFun(postObj) {
+    var defer = q.defer();
+    orderFromBindUserModel.find({bindUid: postObj.uid, state: 1, bindUidType: {$in: [1, 2]}})
+        .select('orderId orderUid jiNengId bindUidType')
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                postObj.userOrderList = doc;
+                defer.resolve(postObj);
+            }
+        });
+
+    return defer.promise;
+}
+
+
 module.exports = fun;

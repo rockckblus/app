@@ -437,7 +437,8 @@
                 }
             }
 
-            if ($state.current.name == 'needContent') {
+            //判断当前订单是否被 当前uid 接单,或者被下单
+            if ($state.current.name == 'orderFromContent') {
                 var uidN = tools.getLocalStorageObj('userData').uid;
                 var orderId = $state.params.orderId;
                 if (uidN) {

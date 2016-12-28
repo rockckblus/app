@@ -15,7 +15,7 @@
     <div id="list" class="mui-table-view mui-table-view-chevron clear"
          style="background-color:#f9f9f9;min-height: 100px" ng-style="listTop">
 
-        <div class="titleInfo clear" id="titleInfo" ng-show="titleInfo">
+        <div class="titleInfo clear" id="titleInfo" ng-if="urlName == 'home'" ng-show="titleInfo">
             <span>{{titleInfo}}</span>
             <span class=" fa fa-times-circle"></span>
         </div>

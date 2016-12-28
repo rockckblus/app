@@ -11,6 +11,7 @@ var fun = {
     trueIsHave: orderFromBindUserFun.trueIsHaveFun,//判断接单的重复id 订单id 订单uid 技能uid 是否存在,
     trueXianDanBindUser: orderFromBindUserFun.trueXianDanBindUserFun,//判断技能id是否被当前uid下单
     trueJieDanBindUser: orderFromBindUserFun.trueJieDanBindUserFun,//判断orderId是否被当前uid接单
+    getJiNengListOrderIdCtrl: orderFromBindUserFun.getJiNengListOrderIdFun,//根据uid取技能订单列表的订单id 与 对应关系
 };
 
 /**

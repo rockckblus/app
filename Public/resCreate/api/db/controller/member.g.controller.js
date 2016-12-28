@@ -13,6 +13,7 @@ var memberServiceModel = require('../model/member.g.model');
 var memberFun = require('../fun/member.g.fun');
 var snsArticleFun = require('../fun/snsArticle.g.fun');//技能方法相关
 var needFromFun = require('../fun/needFrom.g.fun');//订单方法
+var bindUserCtrl = require('../controller/orderFromBindUser.g.controller');//订单对应关系
 
 var fun = {
 
@@ -36,6 +37,7 @@ var fun = {
     trueJieDan: trueJieDan,//判断orderId是否被当前uid接单
     getOrderFromContent: getOrderFromContent,//订单详情
     forAddMember: forAddMember,//循环添加1000个用户
+    getOrderFromListCtrl: getOrderFromListCtrl,//我的订单
 
 };
 
@@ -418,7 +420,30 @@ function trueJieDan(postObj, callBack) {
     }
 }
 
+/**
+ * 我的订单
+ * 0.根据uid取技能订单列表的订单id 与 对应关系
+ * 1.jiNengOrderList 取技能订单列表
+ * 2.needOrderList 取需求订单列表
+ */
+function getOrderFromListCtrl(postObj, callBack) {
 
+    bindUserCtrl.getJiNengListOrderIdCtrl(postObj)
+        .then(function (re1) {
+            console.log(re1);
+        });
+
+    // snsArticleFun.jiNengOrderListFun(postObj)
+    //     .then(needFromFun)
+    //     .then(_call, _err);
+    function _call(re) {
+        pubFun.pubReturn(false, re, '订单列表获取成功', '', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '订单列表获取失败', callBack);
+    }
+}
 module.exports = fun;
 
 

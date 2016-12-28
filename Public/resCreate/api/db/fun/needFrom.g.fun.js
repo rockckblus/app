@@ -22,7 +22,9 @@ var fun = {
  */
 function needGetListFun(postObj) {
     var defer = q.defer();
-    var whereCondition = {}; //where条件,默认空
+    var whereCondition = {
+        state: {$in: [1, 2]}
+    }; //where条件,默认空
     var sortStr = '_id';//排序条件 留空就是 按距离
 
     //下拉 翻页 find next 查出当前 的 下10条数据
@@ -64,7 +66,6 @@ function needGetListFun(postObj) {
         .sort(sortStr)
         .limit(10)
         .select('uid title gpsSearch attr content service price city type endTime')
-        .in({state: [1, 2]})
         .exec(function (err, doc) {
             if (err) {
                 defer.reject(JSON.stringify(err));
