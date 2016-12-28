@@ -3,19 +3,19 @@
         <h5 style="margin:0 auto;margin-top: 200px" ng-show="errMsg">{{errMsg}}</h5>
         <div class="clear "
              style="width: 100%;text-align: left;font-size: 1rem;"
-             bindonce="list" ng-repeat="vo in list" bo-id="'myKillList_'+vo._id" bo-attr bo-attr-killid="vo._id">
+             bindonce="list" ng-repeat="vo in list">
             <div class="clear" style="margin-top: 1rem">
-                <div class="left " style="padding-left: 10px;padding-right: 10px;color: #777" bo-text="vo.title"></div>
+                <div class="left  mui-btn" style="padding-left: 10px;padding-right: 10px;color: #777;border: none"
+                     bo-id="'myKillList_'+vo._id"
+                     bo-attr
+                     bo-attr-killid="vo._id"
+                     bo-text="vo.title"></div>
                 <div class="right">
-                    <div class="left hui mui-btn fa fa-pencil-square-o" bo-id="'myKillListEdit_'+vo._id"
-                         style="border: none"></div>
-                    <div class="left mui-btn fa fa-home" bindonce="vo.master" bo-if="vo.master"
-                         style="border: none"></div>
-                    <div class="left hui mui-btn fa fa-home" bindonce="vo.master" bo-if="!vo.master"
-                         bo-id="'setMaster_'+vo._id"
-                         bo-attr
-                         bo-attr-killid="vo._id"
-                         style="border: none"></div>
+                    <!--修改技能按钮-->
+                    <!--<div class="left hui mui-btn fa fa-pencil-square-o" bo-id="'myKillListEdit_'+vo._id"-->
+                    <!--style="border: none"></div>-->
+
+                    <!--删除技能-->
                     <div class="left hui mui-btn fa fa-times"
                          bindonce="vo.master"
                          bo-id="'myKillListDel_'+vo._id"
@@ -23,6 +23,13 @@
                          bo-attr-killid="vo._id"
                          bo-if="!vo.master"
                          style="margin-left: 0rem;border: none"></div>
+                    <div class="left mui-btn fa fa-toggle-on" bindonce="vo.master" bo-if="vo.master"
+                         style="border: none"></div>
+                    <div class="left hui mui-btn fa fa-toggle-off" bindonce="vo.master" bo-if="!vo.master"
+                         bo-id="'setMaster_'+vo._id"
+                         bo-attr
+                         bo-attr-killid="vo._id"
+                         style="border: none"></div>
                 </div>
             </div>
             <div class="clear line"></div>

@@ -35,11 +35,10 @@ var g = {
          * 定时销毁session,时间设置
          * 16/3/17 */
         sessionTime: 3600 * 24 //1天超时 需要在session表中设置 超时时间,自动删除,此处只是记录超时时间
-
     },
     host: {
-        phpApi: 'http://127.0.0.1:8888',//phpApi
-        // phpApi: 'http://127.0.0.1:80',//phpApi 15Pro
+        // phpApi: 'http://127.0.0.1:8888',//phpApi
+        phpApi: 'http://127.0.0.1:80',//phpApi 15Pro
         imageHost: 'http://192.168.0.25:7788/',//图片服务器
     },
 

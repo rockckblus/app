@@ -772,9 +772,12 @@ function homeGetListFun(postObj) {
 
     //如果有搜索关键词
     if (postObj.condition && postObj.condition.searchKey) {
-        whereCondition.title = {
-            $regex: postObj.condition.searchKey,
-        };
+        // whereCondition.title = {
+        //     $regex: postObj.condition.searchKey,
+        // };
+        whereCondition.$text = {
+            $search: postObj.condition.searchKey
+        }
         delete whereCondition.master;
     }
 

@@ -17,9 +17,9 @@
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config', 'tools', 'header', '$q'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config', 'tools', 'header', '$q', '$state'];
 
-    function thisController($scope, $rootScope, $timeout, localData, config, tools, header, $q) {
+    function thisController($scope, $rootScope, $timeout, localData, config, tools, header, $q, $state) {
 
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
@@ -81,10 +81,12 @@
                 });
                 function _bindClick(dom) {//点击
                     var killId = dom.getAttribute('killid');
+                    goKillUrl(killId);
                 }
 
                 function _bindEdit(dom) {//编辑
                     var killId = dom.getAttribute('killid');
+
                 }
 
                 function _bindDel(dom) {//删除
@@ -187,5 +189,14 @@
             }
 
         }
+
+        /**
+         * goKillUrl
+         */
+        function goKillUrl(killId) {
+            $state.go('killContent', {'jiNengId': killId});
+        }
+
+
     }
 })();
