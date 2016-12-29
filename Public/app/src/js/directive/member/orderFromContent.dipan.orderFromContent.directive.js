@@ -82,7 +82,7 @@
                     });
 
                     if (re.data.doc && re.data.doc.thisNeed && re.data.doc.thisNeed.bidUserArr) {
-                        angular.forEach(re.data.thisNeed.bidUserArr, function (vo2) {
+                        angular.forEach(re.data.doc.thisNeed.bidUserArr, function (vo2) {
                             if (!vo2.headerImg) {
                                 vo2.headerImg = header.defaultHeader;
                             }
@@ -102,6 +102,7 @@
 
                     $timeout(function () {
                         if ((re.data.doc.userData._id == tools.getLocalStorageObj('userData').uid) || ($state.params.type == 'select')) {
+                            console.log('STateTyupe', $state.params.type);
                             showUi('select');
                         } else {
                             if (re.data.doc.userData.isJion) {//如果当前用户已经接了这单,隐藏接单按钮
@@ -126,9 +127,11 @@
          */
         function showUi(type) {
             if (type == 'select') {
-                $scope.userShow = false;
-                $scope.userSelect = true;
-                document.getElementById('bottomNavCall').style.display = 'none';
+                $timeout(function () {
+                    $scope.userShow = false;
+                    $scope.userSelect = true;
+                    document.getElementById('bottomNavCall').style.display = 'none';
+                }, 0);
             }
             if (type == 'show') {
                 $scope.userShow = true;
@@ -146,7 +149,10 @@
                     tools.bindClick('imCall_' + vo.uid, imCall);
                     tools.bindClick('selectUser_' + vo.uid, selectUser);
                 });
-                var binId = $scope.data.thisNeed.binUser.uid;
+                var binId;
+                if ($scope.data.thisNeed.bidUser && $scope.data.thisNeed.bidUser.uid) {
+                    binId = $scope.data.thisNeed.binUser.uid;
+                }
                 if (binId) {
                     tools.bindClick('telCallSelect_' + binId, telCall);
                     tools.bindClick('imCallSelect_' + binId, imCall);
@@ -223,7 +229,7 @@
          */
         function selectOrderFrom(uid, orderId) {
             var url = config.host.nodeHost + '/member/selectOrderFrom';
-            tools.postJsp(url, {uid: uid, orderId: orderId}).then(_s, _e);
+            tools.postJsp(url, {bindUid: uid, orderId: orderId}).then(_s, _e);
 
             function _s(re) {
                 if (re.data && re.data.code == 'S') {

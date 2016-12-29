@@ -1,6 +1,9 @@
 var orderFromBindUserModel = require('../model/orderFromBindUser.g.model');
+var memberModel = require('../model/member.g.model');
+var orderModel = require('../model/needFrom.g.model');
 var q = require('q');//异步编程对象
 var pub = require('../fun/pub.g.fun');//公共方法
+var g = require('../../g.config');
 
 var fun = {
     addOneBindUserFun: addOneBindUserFun,//添加一条对应关系
@@ -8,6 +11,10 @@ var fun = {
     trueXianDanBindUserFun: trueXianDanBindUserFun,//判断技能id是否被当前uid下单
     trueJieDanBindUserFun: trueJieDanBindUserFun,//判断orderId是否被当前uid接单
     getJiNengListOrderIdFun: getJiNengListOrderIdFun,//根据uid取技能订单列表的订单id 与 对应关系
+    getNeedListOrderIdFun: getNeedListOrderIdFun,//根据uid 获取需求订单 的对应关系 订单
+    getOrderIdBindUserFun: getOrderIdBindUserFun,//根据orderId 获取 接单的对应关系
+    changeSelectOrderFromFun: changeSelectOrderFromFun,//修改对应关系, 根据orderid 其他对应关系 都改为失效。
+    changeSelectOrderFromNextFun: changeSelectOrderFromNextFun,//修改对应关系, 根据orderid 当前uid 对应关系改为 3选单
 };
 
 /**
@@ -145,13 +152,189 @@ function trueJieDanBindUserFun(postObj) {
  */
 function getJiNengListOrderIdFun(postObj) {
     var defer = q.defer();
-    orderFromBindUserModel.find({bindUid: postObj.uid, state: 1, bindUidType: {$in: [1, 2]}})
+    orderFromBindUserModel.find({bindUid: postObj.uid, state: 1})
+        .populate(
+            {
+                'path': 'orderUid',
+                'model': memberModel,
+                'select': 'headerImg name mt'
+            }
+        )
+        .populate(
+            {
+                'path': 'orderId',
+                'model': orderModel,
+                'select': 'pingJiaState'
+            }
+        )
         .select('orderId orderUid jiNengId bindUidType')
+        .sort('bindUidType')
         .exec(function (err, doc) {
             if (err) {
                 defer.reject(err);
             } else {
-                postObj.userOrderList = doc;
+                postObj.jiNengOrderList = [];//被动接单,点击下单 主动接单 bindUsertype 1 2
+                postObj.selectOrderList = [];//被选单
+                postObj.loseOrderList = [];//失效订单
+                for (var vo in doc) {
+                    doc[vo]._doc.orderUid._doc.mt = pub.changeMt(doc[vo].orderUid.mt);
+                    switch (doc[vo].bindUidType) {
+                        case 1://被动接单
+                            postObj.jiNengOrderList.push(doc[vo]);
+                            break;
+                        case 2://主动接单
+                            postObj.jiNengOrderList.push(doc[vo]);
+                            break;
+                        case 3://选单 返回 当前 uid 对此订单的 评价状态 (需求uid 是否 对 接单uid 评价, 接单uid )
+                            postObj.selectOrderList.push(doc[vo]);
+                            break;
+                        case 4://超时失效
+                            postObj.loseOrderList.push(doc[vo]);
+                            break;
+                        case 5://选其他人 失效
+                            postObj.loseOrderList.push(doc[vo]);
+                            break;
+                    }
+                }
+                defer.resolve(postObj);
+            }
+        });
+
+    return defer.promise;
+}
+
+/**
+ * 根据uid 获取需求订单 的对应关系 订单
+ */
+function getNeedListOrderIdFun(postObj) {
+    var defer = q.defer();
+    orderFromBindUserModel.find({orderUid: postObj.uid, state: 1, bindUidType: {$in: [1, 2]}})
+        .select('orderId bindUid bindUidType')
+        .populate(
+            {
+                'path': 'bindUid',
+                'model': memberModel,
+                'select': 'headerImg name mt'
+            }
+        )
+        .populate(
+            {
+                'path': 'orderId',
+                'model': orderModel,
+                'select': 'pingJiaState'
+            }
+        )
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                postObj.needOrderList = {
+                    jieDanOrder: [],
+                    jieDanCount: 0,//正常接单统计
+                };//需求订单
+                for (var vo in doc) {
+                    doc[vo]._doc.bindUid._doc.mt = pub.changeMt(doc[vo].bindUid.mt);
+                    switch (doc[vo].bindUidType) {
+                        case 1://主动接单 ,
+                            postObj.needOrderList.jieDanCount++;
+                            break;
+                        case 2://被动接单
+                            // beiDongJieDan: '',//被动接单人 状态 ,资料, (等待userName接单),
+                            doc[vo].beiDongJieDan = doc[vo].bindUid;
+                            break;
+                    }
+                    postObj.needOrderList.jieDanOrder.push(doc[vo]);//所有订单push到 需求单数组 ,然后判断type 来 给 被动接单人资料
+                }
+                defer.resolve(postObj);
+            }
+        });
+
+    return defer.promise;
+
+}
+
+/**
+ * 根据orderId 获取 接单的对应关系
+ */
+function getOrderIdBindUserFun(postObj) {
+    var defer = q.defer();
+    orderFromBindUserModel.find({orderId: postObj.orderId, bindUserType: {$ne: [4, 5]}})
+        .sort('bindUserType')
+        .select('bindUid bindUidType')
+        .populate(
+            {
+                'path': 'bindUid',
+                'model': memberModel
+            }
+        )
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                postObj.bidUserArr = [];
+                postObj.bidUser = {};
+
+                for (var vo in doc) {
+                    doc[vo]._doc.bindUid._doc.mt = pub.changeMt(doc[vo].bindUid.mt);
+                    doc[vo]._doc.bindUid._doc.headerImg = g.host.imageHost + doc[vo]._doc.bindUid._doc.headerImg;
+                    var endDoc = doc[vo];
+                    endDoc._doc.uid = doc[vo].bindUid._id;
+                    if (doc[vo].state !== 3) {//不为选单
+                        postObj.bidUserArr.push(endDoc);
+                    } else {
+                        postObj.bindUser = endDoc;
+                    }
+                }
+                defer.resolve(postObj);
+            }
+        });
+    return defer.promise;
+}
+
+
+/**
+ *修改对应关系, 根据orderid 其他对应关系 都改为失效。
+ */
+function changeSelectOrderFromFun(postObj) {
+    var defer = q.defer();
+    orderFromBindUserModel.update(
+        {
+            orderId: g.Schema.Types.ObjectId(postObj.orderId),
+            bindUidType: {$in: [1, 2]},
+            bindUid: {$ne: postObj.bindUid}
+        },
+        {
+            bindUidType: 5
+        },
+        {multi: true}, function (err, doc) {
+            if (err) {
+                defer.reject(JSON.stringify(err));
+            } else {
+                defer.resolve(postObj);
+            }
+        });
+
+    return defer.promise;
+}
+
+
+/**
+ *修改对应关系, 根据orderid 当前uid 对应关系改为 3选单
+ */
+function changeSelectOrderFromNextFun(postObj) {
+    var defer = q.defer();
+    orderFromBindUserModel.update(
+        {
+            orderId: g.Schema.Types.ObjectId(postObj.orderId),
+            bindUid: g.Schema.Types.ObjectId(postObj.bindUid)
+        },
+        {
+            bindUidType: 3
+        },
+        {}, function (err, doc) {
+            if (err) {
+                defer.reject(JSON.stringify(err));
+            } else {
                 defer.resolve(postObj);
             }
         });

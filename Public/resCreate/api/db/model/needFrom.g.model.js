@@ -49,6 +49,14 @@ var needFromSchema = new g.Schema({
     service: {type: Number, default: 0},//服务方式 (‘0’:不限,’1’:’线上’,’2’:’线下’)
     type: {type: String, default: 'orderFrom'},//前端判断用
     gpsSearch: {type: Array, default: [0, 0]},//mongo 地理位置
+    /**
+     * 评价状态
+     * 0 双方都未评价
+     * 1 orderuid 已评, bindUid 未评
+     * 2 bindUid 已评, orderUid 未评
+     * 3 双方已评
+     */
+    pingJiaState: {type: Number, default: 0},
 
 });
 

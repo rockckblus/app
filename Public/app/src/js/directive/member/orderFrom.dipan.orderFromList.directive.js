@@ -36,6 +36,8 @@
 
         $scope.isHaveNeedOrderFrom = true;//有需求订单显示
         $scope.isHaveJinengOrderFrom = true;//有技能订单显示
+        $scope.isHaveSelectOrderFrom = true;//有选单订单显示
+        $scope.isHaveLoseOrderFrom = true;//有失效订单显示
         $scope.list = undefined;//订单列表数据
 
 

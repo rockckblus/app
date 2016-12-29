@@ -46,5 +46,52 @@
                 </div>
             </div>
         </div>
+
+
+        <div id="selectOrderFrom" style="margin-top: 2.5rem" ng-show="isHaveSelectOrderFrom">
+            <div class="lan" style="font-size: 1rem;margin-left: 1rem;margin-bottom: 2rem">成交订单</div>
+            <div class="clear" style="margin-top: 1rem" bindonce="list.selectOrderList"
+                 ng-repeat="vo3 in list.selectOrderList" bo-id="'selectOrder_'+vo3.orderId">
+                <div class=""
+                     style="width: 100%;height:40px;padding:10px;text-align: left;font-size: 1rem;color:#777;border-color: #fff;background-color: #f7e2e1">
+                    <div class="left lan" style="margin-left: 1rem;" bo-text="vo3.needOrderTitle"></div>
+                    <div class="left" style="margin-left: 1rem">
+                        <span class="left" style="color: red;font-weight: bolder;font-size: 0.8rem"
+                              bo-text="vo3.needOrederJionCount"></span>
+                        <span class="left " style="font-size: 0.8rem">人接单</span>
+                        <span class="left">
+                        <i class="fa fa-ellipsis-h fa-2x"
+                           style="width: 7px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;"
+                           bo-if="vo3.isNoRead"></i>
+                        </span>
+                    </div>
+                    <div class="right  fa fa-angle-right" style="margin-top: 3px"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="loseOrderFrom" style="margin-top: 2.5rem" ng-show="isHaveLoseOrderFrom">
+            <div class="lan" style="font-size: 1rem;margin-left: 1rem;margin-bottom: 2rem">失效订单</div>
+            <div class="clear" style="margin-top: 1rem" bindonce="list.loseOrderList"
+                 ng-repeat="vo4 in list.loseOrderList" bo-id="'loseOrder_'+vo4.orderId">
+                <div class=""
+                     style="width: 100%;height:40px;padding:10px;text-align: left;font-size: 1rem;color:#777;border-color: #fff;background-color: #f0f0ec">
+                    <div class="left lan" style="margin-left: 1rem;" bo-text="vo4.needOrderTitle"></div>
+                    <div class="left" style="margin-left: 1rem">
+                        <span class="left" style="color: red;font-weight: bolder;font-size: 0.8rem"
+                              bo-text="vo4.needOrederJionCount"></span>
+                        <span class="left " style="font-size: 0.8rem">人接单</span>
+                        <span class="left">
+                        <i class="fa fa-ellipsis-h fa-2x"
+                           style="width: 7px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;"
+                           bo-if="vo4.isNoRead"></i>
+                        </span>
+                    </div>
+                    <div class="right  fa fa-angle-right" style="margin-top: 3px"></div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 </div>

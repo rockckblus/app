@@ -38,6 +38,7 @@ var fun = {
     getOrderFromContent: getOrderFromContent,//订单详情
     forAddMember: forAddMember,//循环添加1000个用户
     getOrderFromListCtrl: getOrderFromListCtrl,//我的订单
+    selectOrderFromCtrl: selectOrderFromCtrl,//选单
 
 };
 
@@ -422,15 +423,16 @@ function trueJieDan(postObj, callBack) {
 
 /**
  * 我的订单
- * 0.根据uid取技能订单列表的订单id 与 对应关系
+ * 0.根据uid取技能订单列表的订单id 与 对应关系 ,返回4种 状态 的 技能 订单
  * 1.jiNengOrderList 取技能订单列表
  * 2.needOrderList 取需求订单列表
  */
 function getOrderFromListCtrl(postObj, callBack) {
 
-    bindUserCtrl.getJiNengListOrderIdCtrl(postObj)
-        .then(function (re1) {
-            console.log(re1);
+    bindUserCtrl.getJiNengListOrderIdCtrl(postObj)//返回当前uid的 接单 order
+        .then(bindUserCtrl.getNeedListOrderIdCtrl)//返回当前uid的 需求 order 包括统计
+        .then(function (postObj) {
+            console.log(postObj);
         });
 
     // snsArticleFun.jiNengOrderListFun(postObj)
@@ -444,6 +446,28 @@ function getOrderFromListCtrl(postObj, callBack) {
         pubFun.pubReturn(re, {}, '', '订单列表获取失败', callBack);
     }
 }
+
+/**
+ * 选单, postobj.bindUid postObj.orderI
+ * 1.修改对应关系, 根据orderid 其他对应关系 都改为失效。当前uid 对应关系改为 3选单
+ * 2.修改订单状态 为3选单
+ */
+function selectOrderFromCtrl(postObj, callBack) {
+    bindUserCtrl.changeSelectOrderFromCtrl(postObj)
+        .then(bindUserCtrl.changeSelectOrderFromNextCtrl)
+        .then(needFromFun.editOrderStateFun(postObj, 3))
+        .then(_call, _err);
+
+    function _call(re) {
+        pubFun.pubReturn(false, re, '选单成功', '', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '选单失败', callBack);
+    }
+}
+
+
 module.exports = fun;
 
 

@@ -667,7 +667,9 @@ function xiaDanFun(postObj) {
  *接单
  *0.根据orderId获取订单的uid
  *1.判断接单的重复id 订单id 订单uid 技能uid 是否存在,
+ *
  *2.入库订单用户关系
+ * 3.    //修改订单表的 订单状态为 2 接单
  */
 function jieDanFun(postObj) {
     var defer = q.defer();
@@ -675,7 +677,20 @@ function jieDanFun(postObj) {
     needFromFun.getOrderUidFun(postObj)//根据orderId获取订单的uid
         .then(orderFromBindUserCtrl.trueIsHave)//判断接单的重复id 订单id 订单uid 技能uid 是否存在 返回 postObj.trueIsHav = true
         .then(_editBindUserData)//编辑订单用户关系入库数据
+        .then(_editOrderState)//修改订单表的 订单状态为 2 接单
         .then(_call, _err);
+
+    //修改订单表的 订单状态为 2 接单
+    function _editOrderState(re3) {
+        var deferE = q.defer();
+        needFromFun.editOrderStateFun(re3, 2)
+            .then(function (re4) {
+                deferE.resolve(re4);
+            }, function (err) {
+                deferE.reject(err);
+            });
+        return deferE.promise;
+    }
 
 
     //编辑订单用户关系入库数据
@@ -770,16 +785,6 @@ function homeGetListFun(postObj) {
         whereCondition._id.$gt = postObj.endId;
     }
 
-    //如果有搜索关键词
-    if (postObj.condition && postObj.condition.searchKey) {
-        // whereCondition.title = {
-        //     $regex: postObj.condition.searchKey,
-        // };
-        whereCondition.$text = {
-            $search: postObj.condition.searchKey
-        }
-        delete whereCondition.master;
-    }
 
     try {//如果是附近搜索
         if (postObj.condition.area.city.cityCode == '777') {//如果是附近搜索
@@ -794,6 +799,30 @@ function homeGetListFun(postObj) {
         }
     } catch (e) {
         console.error(e);
+    }
+
+    //如果有搜索关键词
+    if (postObj.condition && postObj.condition.searchKey) {
+        whereCondition.$or = [
+            {
+                title: {
+                    $regex: postObj.condition.searchKey
+                }
+            },
+            {
+                content: {
+                    $regex: postObj.condition.searchKey
+                }
+            }
+
+        ];
+
+
+        //下面为中文全文检索,mongo3.4测试未成功,中文不能分词
+        // whereCondition.$text = {$search: postObj.condition.searchKey, $language: "hans"};
+        // whereCondition.score = {$meta: "textScore"};
+        // delete whereCondition.gpsSearch;
+        delete whereCondition.master;
     }
 
     //如果有筛选

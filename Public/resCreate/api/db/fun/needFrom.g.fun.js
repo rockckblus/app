@@ -2,6 +2,7 @@ var orderModel = require('../model/needFrom.g.model');
 var q = require('q');//异步编程对象
 var moment = require('moment');//日期插件
 var memberModel = require('../model/member.g.model');
+var bindUserCtrl = require('../controller/orderFromBindUser.g.controller');//对应关系ctrl
 var pub = require('../fun/pub.g.fun');//公共方法
 var g = require('../../g.config');
 
@@ -14,7 +15,7 @@ var fun = {
     getOrderUidFun: getOrderUidFun,//根据订单id 获取用户的uid,返回postObj
     myNeedFun: myNeedFun,//我的需求
     delNeedFun: delNeedFun,//删除一条需求
-
+    editOrderStateFun: editOrderStateFun,//修改order的订单状态 传 12345
 };
 
 /**
@@ -291,12 +292,18 @@ function getOrederContentFun(postObj) {
                     reDoc.thisNeed.price = doc[0]._doc.attr.price;
                     reDoc.thisNeed.priceUnit = pub.getDefaultVal('kill_priceUnit', doc[0]._doc.attr.priceUnit);
                     reDoc.thisNeed.service = pub.getDefaultVal('kill_service', doc[0]._doc.attr.service);
-                    getUserIdOrderListFun(doc[0].uid._id, doc[0]._doc._id).then(function (doc) {//取用户发布的其他
-                        reDoc.needList = doc;
-                        defer.resolve(reDoc);
-                    }, function (err) {
-                        defer.reject(err);
-                    });
+
+                    bindUserCtrl.getOrderIdBindUserCtrl({orderId: postObj.orderId})
+                        .then(function (reData) {
+                            reDoc.thisNeed.bidUserArr = reData.bidUserArr;
+                            reDoc.thisNeed.bidUser = reData.bidUser;
+                            getUserIdOrderListFun(doc[0].uid._id, doc[0]._doc._id).then(function (doc) {//取用户发布的其他
+                                reDoc.needList = doc;
+                                defer.resolve(reDoc);
+                            }, function (err) {
+                                defer.reject(err);
+                            });
+                        });
                 } else {
                     defer.reject('doc为空');
                 }
@@ -322,7 +329,6 @@ function getOrderUidFun(postObj) {
         });
     return defer.promise;
 }
-
 
 /**
  * 查询用户发布的所有 需求
@@ -370,7 +376,6 @@ function myNeedFun(postObj) {
     return defer.promise;
 }
 
-
 /**
  * 删除一条需求
  */
@@ -410,5 +415,19 @@ function delNeedFun(postObj) {
     return defer.promise;
 }
 
+/**
+ * 修改order的订单状态 传 postObj.orderId 12345
+ */
+function editOrderStateFun(postObj, state) {
+    var defer = q.defer();
+    orderModel.update({_id: g.Schema.Types.ObjectId(postObj.orderId)}, {state: state}, {multi: false}, function (err, numberAffected, raw) {
+        if (err) {
+            defer.reject(err);
+        } else {
+            defer.resolve(postObj);
+        }
+    });
+    return defer.promise;
+}
 
 module.exports = fun;

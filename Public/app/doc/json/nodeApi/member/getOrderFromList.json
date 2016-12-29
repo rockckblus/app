@@ -28,6 +28,60 @@
         "needOrderId": "kksdfllllasdfkkkksldf",
         "needOrederJionCount": "3"
       }
+    ],
+    "selectOrderList": [
+      {
+        "orderId": "123456",
+        "gUserNameShow": "rockblus客户",
+        "gUserId": "kkdfjkksdfsdf",
+        "orderTitle": "订单标题1",
+        "pingJia": 1
+      },
+      {
+        "orderId": "123456",
+        "gUserNameShow": "rockblus客户",
+        "gUserId": "kkdfjkksdfsdf",
+        "orderTitle": "订单标题2",
+        "pingJia": 2
+      }
+    ],
+    "loseOrderList": [
+      {
+        "orderId": "123456",
+        "gUserNameShow": "rockblus客户",
+        "gUserId": "kkdfjkksdfsdf",
+        "orderTitle": "失效订单标题1"
+      },
+      {
+        "orderId": "123456",
+        "gUserNameShow": "rockblus客户",
+        "gUserId": "kkdfjkksdfsdf",
+        "orderTitle": "失效订单标题2"
+      },
+      {
+        "orderId": "123456",
+        "gUserNameShow": "rockblus客户",
+        "gUserId": "kkdfjkksdfsdf",
+        "orderTitle": "失效订单标题1"
+      },
+      {
+        "orderId": "123456",
+        "gUserNameShow": "rockblus客户",
+        "gUserId": "kkdfjkksdfsdf",
+        "orderTitle": "失效订单标题1"
+      },
+      {
+        "orderId": "123456",
+        "gUserNameShow": "rockblus客户",
+        "gUserId": "kkdfjkksdfsdf",
+        "orderTitle": "失效订单标题2"
+      },
+      {
+        "orderId": "123456",
+        "gUserNameShow": "rockblus客户",
+        "gUserId": "kkdfjkksdfsdf",
+        "orderTitle": "失效订单标题1"
+      }
     ]
   }
 }

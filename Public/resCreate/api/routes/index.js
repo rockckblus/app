@@ -544,6 +544,11 @@ function postMember(req, res) {
                 res.json(re);
             });
             break;
+        case 'selectOrderFrom' ://选单
+            memberCtrl.selectOrderFromCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
 
 
     }
