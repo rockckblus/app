@@ -5,6 +5,7 @@ var sessionCtrl = require('../db/controller/session.g.controller');//session Ctr
 var categoryServiceCtrl = require('../db/controller/category_service.g.controller');//category_service Ctrl
 var snsArticleServiceCtrl = require('../db/controller/snsArticle.g.controller');//sns文章 Ctrl
 var memberCtrl = require('../db/controller/member.g.controller');//会员相关 Ctrl
+var pingJiaCtrl = require('../db/controller/pingJia.g.controller');//评价ctrl
 var imApi = require('../db/controller/imApi.imApi.controller');//请求及时通讯api接口
 
 
@@ -535,6 +536,11 @@ function postMember(req, res) {
             break;
         case 'getOrderFromList' ://我的订单
             memberCtrl.getOrderFromListCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+        case 'pingJia' ://评价提交
+            pingJiaCtrl.addPingJiaCtrl(req.body, function (re) {
                 res.json(re);
             });
             break;
