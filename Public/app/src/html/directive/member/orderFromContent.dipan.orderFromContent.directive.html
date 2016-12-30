@@ -62,13 +62,40 @@
                     <span class="clear" bindonce="data.userData.mt" bo-text="data.userData.mt"></span>
                 </div>
             </div>
+
+            <div class="clear line" style="margin-top: 1rem"></div>
+            <div class="lan clear " style="margin-top: 1rem;font-size: 0.8rem" ng-show="data.userPingJia[0]">评价:
+            </div>
+            <div class="clear itemFrom " style="margin-top:3px" ng-show="data.userPingJia[0]">
+                <div class="clear " style="font-size: 1rem; width: 100%;">
+                    <!--评价-->
+                    <div class="clear" style="margin-top: 5px"
+                         bindonce="data.userPingJia"
+                         ng-repeat="voUping in data.userPingJia" ng-if="data.userPingJia[0]">
+                        <div class="left">
+                            <img bindonce="voUping.uid.headerImg" bo-if="voUping.uid.headerImg"
+                                 bo-src="voUping.uid.headerImg"
+                                 style="width: 20px;height: 20px;border-radius:20px;"
+                                 alt="">
+                        </div>
+                        <div class="left hui" style="font-size: 0.8rem;margin-left: 3px" bindonce="voUping"
+                             bo-if="voUping.uid.name"
+                             bo-text="voUping.uid.name"></div>
+                        <div class="left hui" style="font-size: 0.8rem;margin-left: 3px" bindonce="voUping"
+                             bo-if="!voUping && !voUping.uid &&!voUping.uid.name"
+                             bo-text="voUping.uid.mt"></div>
+                        <div class="left" style="font-size: 0.8rem;margin-left: 10px;"
+                             bindonce="voUping.content" bo-text="voUping.content"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="clear" ng-if="userShow">
             <!--其他需求-->
             <div class="line" style="margin-top: 2.5rem"></div>
             <div class="clear"></div>
-            <div class="clear" style="margin-top: 1.5rem;width: 100%">
+            <div class="clear" style="margin-top: 1.5rem;width: 100%" ng-if="data.needList[0]">
                 <div class="clear" style="font-size: 0.8rem; width: 100%">
                     <span class="clear lan">更多需求:</span>
                 </div>
@@ -97,52 +124,53 @@
                             <div class="clear item" style="margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px"
                                  bindonce="data.thisNeed.bidUser"
                                  bo-attr
-                                 bo-attr-uid="data.bindUser.uid"
+                                 bo-attr-uid="data.thisNeed.bidUser.uid"
                             >
                                 <div class="left">
                                     <!--头像-->
                                     <div class="left"
                                          style="width: 30px;height: 30px;overflow: hidden;">
-                                        <img bindonce="data.thisNeed.binUser.headerImg"
-                                             bo-src="data.thisNeed.binUser.headerImg" alt=""
+                                        <img bindonce="data.thisNeed.bidUser.bindUid.headerImg"
+                                             bo-src="data.thisNeed.bidUser.bindUid.headerImg" alt=""
                                              style="width: 30px;height: auto">
                                     </div>
                                     <!--姓名显示-->
                                     <div class="left lan" style="font-size: 14px;margin-left: 3px;line-height: 14px">
-                                        <span class="clear" bindonce="data.thisNeed.binUser.userNameShow"
-                                              bo-text="data.thisNeed.binUser.userNameShow"></span>
+                                        <span class="clear" bindonce="data.thisNeed.bidUser.bindUid.name"
+                                              bo-text="data.thisNeed.bidUser.bindUid.name"></span>
                                         <!--城市显示-->
                                         <span class="left hui"
-                                              style="font-size:12px;" bindonce="data.thisNeed.binUser.city"
-                                              bo-text="data.thisNeed.binUser.city">
+                                              style="font-size:12px;" bindonce="data.thisNeed.bidUser.bindUid.city"
+                                              bo-text="data.thisNeed.bidUser.bindUid.city">
 
                                     </span>
                                         <!--性别-->
                                         <span class="left hui"
-                                              style="font-size: 12px;" bindonce="data.thisNeed.binUser.sex"
-                                              bo-text="'&nbsp;'+data.thisNeed.binUser.sex">
+                                              style="font-size: 12px;" bindonce="data.thisNeed.bidUser.bindUid.sex"
+                                              bo-text="'&nbsp;'+data.thisNeed.bidUser.bindUid.sex">
                                     </span>
                                         <!--年龄-->
                                         <span class="left hui"
-                                              style="font-size: 12px;" bindonce="data.thisNeed.binUser.age"
-                                              bo-text="'&nbsp;'+data.thisNeed.binUser.age">
+                                              style="font-size: 12px;" bindonce="data.thisNeed.bidUser.bindUid.age"
+                                              bo-text="'&nbsp;'+data.thisNeed.bidUser.bindUid.age">
                                     </span>
                                     </div>
+
                                 </div>
                                 <div class="left mui-btn " style="margin-left: 1rem;border-color: #fff;color: #777"
-                                     bindonce="data.thisNeed.binUser.uid" bo-attr
-                                     bo-attr-uid="data.thisNeed.binUser.uid"
-                                     bo-id="'telCallSelect_' + data.thisNeed.binUser.uid"
-                                     ng-show="data.thisNeed.binUser.isCanCallTel">
+                                     bindonce="data.thisNeed.bidUser.uid" bo-attr
+                                     bo-attr-uid="data.thisNeed.bidUser.uid"
+                                     bo-id="'telCallSelect_' + data.thisNeed.bidUser.uid"
+                                     ng-show="data.thisNeed.bidUser.bindUid.telType == 'yunXun'">
                                     <i class="fa fa-phone fa-1x"></i>
                                 </div>
                                 <div class="left mui-btn" style="margin-left: 1rem;border-color: #fff;color: #777"
-                                     bindonce="data.thisNeed.binUser.uid"
+                                     bindonce="data.thisNeed.bidUser.uid"
                                      bo-attr
-                                     bo-attr-uid="data.thisNeed.binUser.uid"
-                                     bo-attr-headerimg="data.thisNeed.binUser.headerImg"
-                                     bo-attr-gname="data.thisNeed.binUser.userNameShow"
-                                     bo-id="'imCallSelect_' + data.thisNeed.binUser.uid">
+                                     bo-attr-uid="data.thisNeed.bidUser.uid"
+                                     bo-attr-headerimg="data.thisNeed.bidUser.bindUid.headerImg"
+                                     bo-attr-gname="data.thisNeed.bidUser.bindUid.name"
+                                     bo-id="'imCallSelect_' + data.thisNeed.bidUser.uid">
                                     <i class="fa fa-comments fa-1x"></i>
                                 </div>
 
@@ -151,22 +179,46 @@
                                 >
                                     <i class="fa fa-1x fa-check"></i>
                                 </div>
+
                             </div>
+
+                            <div class="clear"></div>
+
+                            <!--评价-->
+
+                            <div class="clear" style="margin-top: 5px"
+                                 bindonce="data.pingJia" ng-if="data.thisNeed.pingJiaState == 3"
+                                 ng-repeat="voPj in data.pingJia">
+                                <div class="left">
+                                    <img bindonce="voPj.uid.headerImg" bo-if="voPj.uid.headerImg"
+                                         bo-src="voPj.uid.headerImg"
+                                         style="width: 20px;height: 20px;border-radius:20px;"
+                                         alt="">
+                                </div>
+                                <div class="left" style="font-size: 0.8rem;margin-left: 3px" bindonce="voPj"
+                                     bo-if="voPj.uid.name"
+                                     bo-text="voPj.uid.name"></div>
+                                <div class="left" style="font-size: 0.8rem;margin-left: 3px" bindonce="voPj"
+                                     bo-if="!voPj.uid.name"
+                                     bo-text="voPj.uid.mt"></div>
+                                <div class="left" style="font-size: 0.8rem;margin-left: 10px;"
+                                     bindonce="voPj.content" bo-text="voPj.content"></div>
+                            </div>
+
                         </div>
                     </div>
                     <div class="clear" style="margin-top: 2rem">
-                        <textarea ng-if="!data.thisNeed.binUser.pingJia" name=""
+                        <textarea ng-if="!data.pingJiaTrue" name=""
                                   style="width: 100%;height: 100px;"
                                   placeholder="给个评价吧..." id="pingJia"></textarea>
-                        <div class="clear" ng-if="data.thisNeed.binUser.pingJia"
-                             bindonce="data.thisNeed.binUser.pingJia"
-                             bo-text="'评价:&nbsp;'+data.thisNeed.binUser.pingJia" style="font-size:0.8rem;"></div>
                     </div>
-                    <div class="clear" ng-if="!data.thisNeed.binUser.pingJia" style="margin-top: 0rem;width: 100%">
+                    <div class="clear" ng-if="!data.pingJiaTrue" style="margin-top: 0rem;width: 100%">
                         <div class="mui-btn" id="givePingJiaBtn"
                              style="width: 100%;background-color: #30a080;color: #fff">提&nbsp;交
                         </div>
                     </div>
+
+
                 </div>
 
                 <!--过期-->

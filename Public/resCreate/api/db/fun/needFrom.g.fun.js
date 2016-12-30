@@ -16,6 +16,9 @@ var fun = {
     myNeedFun: myNeedFun,//我的需求
     delNeedFun: delNeedFun,//删除一条需求
     editOrderStateFun: editOrderStateFun,//修改order的订单状态 传 12345
+    editPingJiaStateFun: editPingJiaStateFun,//修改订单评价状态
+    getAllOrderIdFun: getAllOrderIdFun,//获取订单用户的所有orderId by orderId
+    getUidbyOrderIdFun: getUidbyOrderIdFun,//根据orderid 获取 orderUid
 };
 
 /**
@@ -151,7 +154,6 @@ function needGetListFun(postObj) {
  * @param postObj
  */
 function needAdd(postObj) {
-
 
 
     var defer = q.defer();
@@ -297,6 +299,8 @@ function getOrederContentFun(postObj) {
                         .then(function (reData) {
                             reDoc.thisNeed.bidUserArr = reData.bidUserArr;
                             reDoc.thisNeed.bidUser = reData.bidUser;
+                            reDoc.orderId = postObj.orderId;
+                            reDoc.uid = postObj.uid;
                             getUserIdOrderListFun(doc[0].uid._id, doc[0]._doc._id).then(function (doc) {//取用户发布的其他
                                 reDoc.needList = doc;
                                 defer.resolve(reDoc);
@@ -430,4 +434,106 @@ function editOrderStateFun(postObj, state) {
     return defer.promise;
 }
 
+/**
+ * 修改订单评价状态
+ */
+function editPingJiaStateFun(postObj) {
+    var defer = q.defer();
+    getOrederContentFun(postObj)//获取订单详情
+        .then(function (re) {
+            var pingJiaState;//当前评价状态
+            if (re && re.thisNeed && re.thisNeed.pingJiaState !== undefined) {
+                pingJiaState = re.thisNeed.pingJiaState;
+            }
+
+            if (pingJiaState !== undefined) {
+                switch (pingJiaState) {
+                    case 0://双方都未评价
+                        if (postObj.type == 1) {//需求方 发来的评价
+                            pingJiaState = 1;//order评价状态 改为 1 orderuid 已评, bindUid 未评
+                        } else if (postObj.type == 2) {//技能方 发来的评价
+                            pingJiaState = 2;//order评价状态 改为 2 bindUid 已评, orderUid 未评
+                        }
+                        break;
+                    case 1://orderuid 已评, bindUid 未评
+                        if (postObj.type == 2) {
+                            pingJiaState = 3;//order评价状态 改为 3 双方已评价
+                        } else if (postObj.type == 1) { //需求方发来的评价
+                            defer.reject('需求方评价过了');
+                        }
+                        break;
+                    case 2://bindUid 已评, orderUid 未评
+                        if (postObj.type == 1) {
+                            pingJiaState = 3;//order评价状态 改为 3 双方已评价
+                        } else if (postObj.type == 2) { //技能方发来的评价
+                            defer.reject('技能方评价过了');
+                        }
+                        break;
+                    case 3://双方已评价
+                        defer.reject('双方已评价过了');
+                        break;
+                }
+
+                orderModel.update(
+                    {_id: postObj.orderId},
+                    {pingJiaState: pingJiaState},
+                    {},
+                    function (err, doc) {
+                        if (err) {
+                            defer.reject(err);
+                        } else {
+                            defer.reject(doc);
+                        }
+                    }
+                );
+            } else {
+                defer.reject('订单评价状态获取失败');
+            }
+        });
+    return defer.promise;
+}
+
+/**
+ * 获取订单用户的所有orderId by orderId
+ */
+function getAllOrderIdFun(postObj) {
+    var defer = q.defer();
+
+    //获取uid
+    getUidbyOrderIdFun(postObj.orderId)
+        .then(function (uid) {
+            orderModel.find({uid: uid})
+                .select('_id')
+                .exec(function (err, doc) {
+                    if (err) {
+                        defer.reject(err);
+                    } else {
+                        postObj.allOrderList = doc;
+                        defer.resolve(postObj);
+                    }
+                });
+        });
+
+    return defer.promise;
+}
+
+/**
+ * 根据orderid 获取 orderUid
+ */
+function getUidbyOrderIdFun(postObj) {
+    var defer = q.defer();
+    orderModel.findOne(postObj.orderId)
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                if (doc && doc.uid) {
+                    defer.resolve(doc.uid);
+                } else {
+                    defer.reject('获取uid失败');
+                }
+            }
+        });
+    return defer.promise;
+}
 module.exports = fun;

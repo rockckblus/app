@@ -21,7 +21,6 @@
 
     function thisController($scope, $rootScope, $timeout, $state, config, tools, header) {
 
-
         var clickType = 'tap';
         tools.trueWeb(function () {
             clickType = 'click';
@@ -151,7 +150,7 @@
                 });
                 var binId;
                 if ($scope.data.thisNeed.bidUser && $scope.data.thisNeed.bidUser.uid) {
-                    binId = $scope.data.thisNeed.binUser.uid;
+                    binId = $scope.data.thisNeed.bidUser.uid;
                 }
                 if (binId) {
                     tools.bindClick('telCallSelect_' + binId, telCall);

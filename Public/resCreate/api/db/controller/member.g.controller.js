@@ -14,6 +14,7 @@ var memberFun = require('../fun/member.g.fun');
 var snsArticleFun = require('../fun/snsArticle.g.fun');//技能方法相关
 var needFromFun = require('../fun/needFrom.g.fun');//订单方法
 var bindUserCtrl = require('../controller/orderFromBindUser.g.controller');//订单对应关系
+var pingJiaCtrl = require('../controller/pingJia.g.controller');//评价ctrl
 
 var fun = {
 
@@ -305,7 +306,14 @@ function getUserTelCtrl(postObj, callBack) {
  * 获取技能详情_根据id
  */
 function getKillContent(postObj, callBack) {
-    snsArticleFun.getKillContent(postObj).then(getImgS).then(_call, _err);
+    snsArticleFun.getKillContent(postObj)
+    //获取技能图片
+        .then(getImgS)
+        //根据uid获取此用户的所有成交订单 postObj.allOrderId
+        .then(bindUserCtrl.getAllOrderIdbyBindUIdCtrl)
+        //获取所有order的评价 data.userPingJia ,条件type 选需求方 orderid
+        .then(pingJiaCtrl.getAllOrderNeedPingJiaCtrl)
+        .then(_call, _err);
     //获取技能图片
     function getImgS(re) {
         var defer = q.defer();
@@ -338,7 +346,15 @@ function getKillContent(postObj, callBack) {
  * orderId
  */
 function getOrderFromContent(postObj, callBack) {
-    needFromFun.getOrederContentFun(postObj).then(_call, _err);
+    needFromFun.getOrederContentFun(postObj)
+        .then(pingJiaCtrl.findPingJiaByOrderIdCtrl)
+        //判断当前uid是否评价了 pingJiaTrue
+        .then(pingJiaCtrl.trueThisUidIsPingJiaCtrl)
+        //获取当前用户的所有orderId data.allOrderList
+        .then(needFromFun.getAllOrderIdFun)
+        //获取所有order的评价 data.userPingJia ,条件type 选技能方 orderid
+        .then(pingJiaCtrl.getAllOrderPingJiaCtrl)
+        .then(_call, _err);
     function _call(re) {
         var reData = {
             _doc: re

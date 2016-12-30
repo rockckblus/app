@@ -45,7 +45,12 @@
         <img class="clear" bindonce="data.doc.thisJiNeng.imgs" bo-src="vo" ng-repeat="vo in data.doc.thisJiNeng.imgs"
              style="width: 100%;max-width: 25rem;"/>
 
-        <div class="line" style="margin-top: 1rem"></div>
+        <div class="line" style="margin-top: 1rem" ng-if="data.doc.thisJiNeng.imgs[0]"></div>
+
+        <!--评价-->
+        <div class="clear">
+
+        </div>
 
         <!--其他技能-->
         <div class="clear"></div>

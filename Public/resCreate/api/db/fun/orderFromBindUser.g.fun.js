@@ -15,6 +15,8 @@ var fun = {
     getOrderIdBindUserFun: getOrderIdBindUserFun,//根据orderId 获取 接单的对应关系
     changeSelectOrderFromFun: changeSelectOrderFromFun,//修改对应关系, 根据orderid 其他对应关系 都改为失效。
     changeSelectOrderFromNextFun: changeSelectOrderFromNextFun,//修改对应关系, 根据orderid 当前uid 对应关系改为 3选单
+    getPingJiaTypeByUidFun: getPingJiaTypeByUidFun,//根据orderId，uid 获取 当前uid 的 type （技能方。还是需求方）
+    getAllOrderIdbyBindUIdFun: getAllOrderIdbyBindUIdFun,//根据uid获取此用户的所有成交订单 postObj.allOrderId
 };
 
 /**
@@ -273,16 +275,15 @@ function getOrderIdBindUserFun(postObj) {
             } else {
                 postObj.bidUserArr = [];
                 postObj.bidUser = {};
-
                 for (var vo in doc) {
                     doc[vo]._doc.bindUid._doc.mt = pub.changeMt(doc[vo].bindUid.mt);
                     doc[vo]._doc.bindUid._doc.headerImg = g.host.imageHost + doc[vo]._doc.bindUid._doc.headerImg;
                     var endDoc = doc[vo];
                     endDoc._doc.uid = doc[vo].bindUid._id;
-                    if (doc[vo].state !== 3) {//不为选单
+                    if (doc[vo].bindUidType !== 3) {//不为选单
                         postObj.bidUserArr.push(endDoc);
                     } else {
-                        postObj.bindUser = endDoc;
+                        postObj.bidUser = endDoc;
                     }
                 }
                 defer.resolve(postObj);
@@ -290,7 +291,6 @@ function getOrderIdBindUserFun(postObj) {
         });
     return defer.promise;
 }
-
 
 /**
  *修改对应关系, 根据orderid 其他对应关系 都改为失效。
@@ -317,7 +317,6 @@ function changeSelectOrderFromFun(postObj) {
     return defer.promise;
 }
 
-
 /**
  *修改对应关系, 根据orderid 当前uid 对应关系改为 3选单
  */
@@ -339,6 +338,65 @@ function changeSelectOrderFromNextFun(postObj) {
             }
         });
 
+    return defer.promise;
+}
+
+/**
+ * 根据orderId，uid 获取 当前uid 的 type （技能方。还是需求方）
+ * 返回type
+ */
+function getPingJiaTypeByUidFun(postObj) {
+    var defer = q.defer();
+
+    orderFromBindUserModel.findOne({
+        orderId: postObj.orderId,
+        bindUidType: 3//被选单
+    })
+        .select('bindUid orderUid')
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                var type;
+                if (doc.bindUid == postObj.uid) {
+                    type = 2;//技能方
+                }
+                else if (doc.orderUid == postObj.uid) {
+                    type = 1;//需求方
+                }
+                if (type) {
+                    postObj.type = type;
+                    defer.resolve(postObj);
+                } else {
+                    defer.reject('用户角色获取失败');
+                }
+            }
+        });
+
+    return defer.promise;
+}
+
+/**
+ * 根据uid获取此用户的所有成交订单 postObj.allOrderId
+ */
+function getAllOrderIdbyBindUIdFun(postObj) {
+    var bindUid = postObj.userData._id;
+    var defer = q.defer();
+    orderFromBindUserModel.find(
+        {
+            bindUid: bindUid,
+            bindUidType: 3
+        }
+    )
+        .select('orderId orderUid')
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                postObj.allOrderId = doc;
+                defer.resolve(postObj);
+            }
+        });
     return defer.promise;
 }
 

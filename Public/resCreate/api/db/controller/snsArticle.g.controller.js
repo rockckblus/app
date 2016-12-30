@@ -26,6 +26,7 @@ var fun = {
     delKillCtrl: delKillCtrl,//删除一条技能
     setMasterCtrl: setMasterCtrl,//设置主技能
     delNeedCtrl: delNeedCtrl,//删除一条需求
+    editPingJiaStateCtrl: needFromFun.editPingJiaStateFun,//修改orderId 评价状态
 };
 
 /**
