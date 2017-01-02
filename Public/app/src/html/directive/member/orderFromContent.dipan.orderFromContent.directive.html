@@ -111,9 +111,17 @@
             </div>
         </div>
 
-        <div class="clear" ng-if="bindUserShow">
-            <span>a等待您接单</span>
-            <span class="mui-btn">接单</span>
+        <div class="clear" style="margin-top: 1rem;width: 100%" ng-if="bindUserShow">
+            <div class="clear" style="text-align: center;width: 100%">
+                <div style="color: #30a080">{{bindUserShowName}} 等您接单</div>
+            </div>
+            <div id="bindJieDan" class="mui-btn clear"
+                 style="width: 100%;margin-top: 1rem; background-color: #30a080;color: #fff;font-size: 1rem"
+                 binduid="{{bindUserShowData.bindUid}}"
+                 orderuid="{{bindUserShowData.orderUid}}"
+                 orederid="{{bindUserShowData.orderId}}"
+            >接 单
+            </div>
         </div>
 
 
@@ -127,7 +135,8 @@
                         <div class="clear"></div>
                         <div class="clear lan" style="margin-top: 1.5rem">已选单</div>
                         <div class="clear">
-                            <div class="clear item" style="margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px"
+                            <div class="clear item"
+                                 style="margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px"
                                  bindonce="data.thisNeed.bidUser"
                                  bo-attr
                                  bo-attr-uid="data.thisNeed.bidUser.uid"
@@ -141,7 +150,8 @@
                                              style="width: 30px;height: auto">
                                     </div>
                                     <!--姓名显示-->
-                                    <div class="left lan" style="font-size: 14px;margin-left: 3px;line-height: 14px">
+                                    <div class="left lan"
+                                         style="font-size: 14px;margin-left: 3px;line-height: 14px">
                                         <span class="clear" bindonce="data.thisNeed.bidUser.bindUid.name"
                                               bo-text="data.thisNeed.bidUser.bindUid.name"></span>
                                         <!--城市显示-->
@@ -236,7 +246,8 @@
 
             <!--发起-->
             <div ng-show="data.thisNeed.state == 1">
-                <div class="clear lan mui-btn" style="margin-top: 1.5rem" id="noOrderGoHome">{{seeOtherKillInfo}}</div>
+                <div class="clear lan mui-btn" style="margin-top: 1.5rem" id="noOrderGoHome">{{seeOtherKillInfo}}
+                </div>
             </div>
             <!--选单-->
             <div class="clear" ng-show="data.thisNeed.state == 2">

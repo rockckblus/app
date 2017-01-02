@@ -37,7 +37,8 @@
 
         $scope.userShow = false;//技能方进入   判断是不是此用户发的,是此用户发的,就不显示个人资料
         $scope.userSelect = false;//需求方(自己进入)  判断是不是此用户发的,是此用户发的,就不显示个人资料
-        $scope.bindUserShow = true;//技能方进入并且 是 下单,(等待技能方接单)
+        $scope.bindUserShow = false;//技能方进入并且 是 下单,(等待技能方接单)
+        $scope.bindUserShowName = '';
 
         $scope.seeOtherKillInfo = '暂时无人接单,去看看其他人的技能吧!';
 
@@ -89,34 +90,51 @@
 
                         };//判断是下单,等待技能方接单的情况
                         angular.forEach(re.data.doc.thisNeed.bidUserArr, function (vo2) {
-                            if (!vo2.headerImg) {
-                                vo2.headerImg = header.defaultHeader;
+                                if (!vo2.headerImg) {
+                                    vo2.headerImg = header.defaultHeader;
+                                }
+
+
+                                if (vo2.bindUidType == 2) {//被动接单(点击下单)
+                                    trueXiaDan.isHaveXiaDan = true;
+                                    trueXiaDan.bindUid = vo2.uid;
+                                    trueXiaDan.orderUid = re.data.doc.thisNeed.uid._id;
+                                    trueXiaDan.orderId = re.data.doc.orderId;
+                                    trueXiaDan.showName = re.data.doc.thisNeed.uid.name;
+                                    if (!trueXiaDan.showName) {
+                                        trueXiaDan.showName = re.data.doc.thisNeed.uid.mt;
+                                    }
+                                    if (vo2.bindUid && vo2.bindUid.name) {
+                                        $timeout(function () {
+                                            $scope.seeOtherKillInfo = '等待\"' + vo2.bindUid.name + '\"接单';
+                                        }, 0);
+                                    }
+                                    else {
+                                        $timeout(function () {
+                                            $scope.seeOtherKillInfo = '等待\"' + vo2.bindUid.mt + '\"接单';
+                                        }, 0);
+                                    }
+                                }
                             }
+                        );
 
-
-                            if (vo2.bindUidType == 2) {//被动接单(点击下单)
-                                trueXiaDan.isHaveXiaDan = true;
-                                trueXiaDan.bindUid = vo2.uid;
-                                trueXiaDan.orderUid = vo2.if(vo2.bindUid && vo2.bindUid.name)
-                                {
+                        if (trueXiaDan.isHaveXiaDan) {//如果是下单,等待技能方接单的情况
+                            //判断当前uid, 是否接单id(bindUid),是就显示接单按钮,(接单后直接 成交)
+                            console.log(trueXiaDan);
+                            var thisUidLocal = tools.getLocalStorageObj('userData');
+                            if (thisUidLocal && thisUidLocal.uid) {
+                                if (thisUidLocal.uid == trueXiaDan.bindUid) {
                                     $timeout(function () {
-                                        $scope.seeOtherKillInfo = '等待\"' + vo2.bindUid.name + '\"接单';
+                                        $scope.bindUserShow = true;
+                                        $scope.bindUserShowName = trueXiaDan.showName;
+                                        $scope.bindUserShowData = trueXiaDan;
+                                        tools.bindClick('bindJieDan', bindJieDan);//bind接单点击
                                     }, 0);
                                 }
-                            else
-                                {
-                                    $timeout(function () {
-                                        $scope.seeOtherKillInfo = '等待\"' + vo2.bindUid.mt + '\"接单';
-                                    }, 0);
-                                }
+                            } else {
+                                $state.go('loginout');
                             }
-                        });
-
-                        if (trueXiaDan) {
-                            console.log('trueXiaDan', trueXiaDan);
                         }
-
-
                     }
 
 
@@ -151,6 +169,34 @@
                 }
             }
         }
+
+
+        /**bindJieDan
+         * bind接单点击事件,(等您接单)
+         */
+        function bindJieDan(dom) {
+            var url = g.host.nodeHost + '/member/bindJieDan';
+            var postObj = {
+                bindUid: dom.getAttribute('binduid'),
+                orderUid: dom.getAttribute('orederuid'),
+                orderId: dom.getAttribute('orderid')
+            };
+            tools.postJsp(url, postObj).then(_call, _err);
+            function _call(re) {
+                if (re && re.data && re.data.code == 'S') {
+                    console.log('接单成功,后续uitodo');
+                } else {
+                    _err('接单失败');
+                }
+            }
+
+            function _err(err) {
+                err = err || '接单失败';
+                tools.alert({title: err});
+            }
+
+        }
+
 
         /**
          * 根据不同的角色进入,显示不同ui
@@ -330,4 +376,5 @@
         }
 
     }
-})();
+})
+();
