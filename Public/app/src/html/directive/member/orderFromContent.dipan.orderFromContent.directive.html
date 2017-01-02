@@ -111,6 +111,12 @@
             </div>
         </div>
 
+        <div class="clear" ng-if="bindUserShow">
+            <span>a等待您接单</span>
+            <span class="mui-btn">接单</span>
+        </div>
+
+
         <!--选单-->
         <div class="clear" ng-show="userSelect">
             <div class="clear" ng-show="(data.thisNeed.state != 1) && (data.thisNeed.state !=2)">
@@ -230,7 +236,7 @@
 
             <!--发起-->
             <div ng-show="data.thisNeed.state == 1">
-                <div class="clear lan mui-btn" style="margin-top: 1.5rem" id="noOrderGoHome">暂时无人接单,去看看其他人的技能吧!</div>
+                <div class="clear lan mui-btn" style="margin-top: 1.5rem" id="noOrderGoHome">{{seeOtherKillInfo}}</div>
             </div>
             <!--选单-->
             <div class="clear" ng-show="data.thisNeed.state == 2">
@@ -248,26 +254,32 @@
                                 <!--头像-->
                                 <div class="left"
                                      style="width: 30px;height: 30px;overflow: hidden;">
-                                    <img bindonce="vo.headerImg" bo-src="vo.headerImg" alt=""
+                                    <img bindonce="vo.bindUid.headerImg"
+                                         bo-src="vo.bindUid.headerImg" alt=""
                                          style="width: 30px;height: auto">
                                 </div>
                                 <!--姓名显示-->
                                 <div class="left lan" style="font-size: 14px;margin-left: 3px;line-height: 14px">
-                                    <span class="clear" bindonce="vo.userNameShow" bo-text="vo.userNameShow"></span>
+                                        <span class="clear" bindonce="vo.bindUid.name"
+                                              bo-text="vo.bindUid.name"></span>
                                     <!--城市显示-->
                                     <span class="left hui"
-                                          style="font-size:12px;" bindonce="vo.city" bo-text="vo.city">
+                                          style="font-size:12px;" bindonce="vo.bindUid.city"
+                                          bo-text="vo.bindUid.city">
 
                                     </span>
                                     <!--性别-->
                                     <span class="left hui"
-                                          style="font-size: 12px;" bindonce="vo.sex" bo-text="'&nbsp;'+vo.sex">
+                                          style="font-size: 12px;" bindonce="vo.bindUid.sex"
+                                          bo-text="'&nbsp;'+vo.bindUid.sex">
                                     </span>
                                     <!--年龄-->
                                     <span class="left hui"
-                                          style="font-size: 12px;" bindonce="vo.age" bo-text="'&nbsp;'+vo.age">
+                                          style="font-size: 12px;" bindonce="vo.bindUid.age"
+                                          bo-text="'&nbsp;'+vo.bindUid.age">
                                     </span>
                                 </div>
+
                             </div>
                             <div class="left mui-btn " style="margin-left: 1rem;border-color: #fff;color: #777"
                                  bindonce="vo.uid" bo-attr bo-attr-uid="vo.uid" bo-id="'telCall_' + vo.uid"
@@ -279,13 +291,13 @@
                                  bo-attr
                                  bo-attr-uid="vo.uid"
                                  bo-attr-headerimg="vo.headerImg"
-                                 bo-attr-gname="vo.userNameShow"
+                                 bo-attr-gname="vo.bindUid.name"
                                  bo-id="'imCall_' + vo.uid">
                                 <i class="fa fa-comments fa-1x"></i>
                             </div>
 
                             <div class="right mui-btn" style="margin-left: 1rem;color: #dadada" bindonce="vo.uid"
-                                 bo-attr bo-attr-gname="vo.userNameShow" bo-attr-uid="vo.uid"
+                                 bo-attr bo-attr-gname="vo.bindUid.name" bo-attr-uid="vo.uid"
                                  bo-id="'selectUser_' + vo.uid">
                                 选
                             </div>

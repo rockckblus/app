@@ -324,8 +324,8 @@ function changeSelectOrderFromNextFun(postObj) {
     var defer = q.defer();
     orderFromBindUserModel.update(
         {
-            orderId: g.Schema.Types.ObjectId(postObj.orderId),
-            bindUid: g.Schema.Types.ObjectId(postObj.bindUid)
+            orderId: postObj.orderId,
+            bindUid: postObj.bindUid
         },
         {
             bindUidType: 3

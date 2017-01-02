@@ -13,7 +13,6 @@ var fun = {
     trueThisUidIsPingJiaFun: trueThisUidIsPingJiaFun,//判断当前uid是否评价了
     getAllOrderPingJiaFun: getAllOrderPingJiaFun,//获取所有order的评价 data.userPingJia ,条件type 选技能方 orderid
     getAllOrderNeedPingJiaFun: getAllOrderNeedPingJiaFun,////获取所有order的评价 data.userPingJia ,条件type 选需求方 orderid
-
 };
 
 /**************************
@@ -116,11 +115,12 @@ function findJiNengPingJiaByOrderIdFun(orderId) {
             if (err) {
                 defer.reject(err);
             } else {
-                try {
+
+                if (doc && doc._doc && doc._doc.uid && doc._doc.uid._doc && doc._doc.uid._doc.mt) {
                     doc._doc.uid._doc.mt = pub.changeMt(doc._doc.uid._doc.mt);
+                }
+                if (doc && doc._doc && doc._doc.uid && doc._doc.uid._doc && doc._doc.uid._doc.headerImg) {
                     doc._doc.uid._doc.headerImg = g.host.imageHost + doc._doc.uid._doc.headerImg;
-                } catch (e) {
-                    console.log(e);
                 }
                 defer.resolve(doc);
             }
@@ -218,10 +218,14 @@ function getAllOrderNeedPingJiaFun(postObj) {
     var defer = q.defer();
     postObj.userPingJia = [];
     var count = 0;
-    for (var vo in postObj.allOrderId) {
-        count++;
-        findNeedPingJiaByOrderIdFun(postObj.allOrderId[vo]._id)
-            .then(_Push);
+    if (postObj.allOrderId && postObj.allOrderId[0]) {
+        for (var vo in postObj.allOrderId) {
+            count++;
+            findNeedPingJiaByOrderIdFun(postObj.allOrderId[vo]._id)
+                .then(_Push);
+        }
+    } else {
+        defer.resolve(postObj);
     }
 
     function _Push(doc) {

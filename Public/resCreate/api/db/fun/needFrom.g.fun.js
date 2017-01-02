@@ -424,7 +424,7 @@ function delNeedFun(postObj) {
  */
 function editOrderStateFun(postObj, state) {
     var defer = q.defer();
-    orderModel.update({_id: g.Schema.Types.ObjectId(postObj.orderId)}, {state: state}, {multi: false}, function (err, numberAffected, raw) {
+    orderModel.update(g.Schema.Types.ObjectId(postObj.orderId), {state: state}, {multi: false}, function (err, numberAffected, raw) {
         if (err) {
             defer.reject(err);
         } else {

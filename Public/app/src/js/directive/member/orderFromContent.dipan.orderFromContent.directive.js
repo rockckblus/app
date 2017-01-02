@@ -37,7 +37,9 @@
 
         $scope.userShow = false;//技能方进入   判断是不是此用户发的,是此用户发的,就不显示个人资料
         $scope.userSelect = false;//需求方(自己进入)  判断是不是此用户发的,是此用户发的,就不显示个人资料
+        $scope.bindUserShow = true;//技能方进入并且 是 下单,(等待技能方接单)
 
+        $scope.seeOtherKillInfo = '暂时无人接单,去看看其他人的技能吧!';
 
         function init() {
             getOrderContent();//获取订单详情
@@ -71,7 +73,6 @@
 
                     }
 
-
                     angular.forEach(re.data.doc.needList, function (vo) {
                         if (vo.priceUnit == '面议') {
                             vo.priceStr = '';
@@ -81,11 +82,41 @@
                     });
 
                     if (re.data.doc && re.data.doc.thisNeed && re.data.doc.thisNeed.bidUserArr) {
+                        var trueXiaDan = {
+                            isHaveXiaDan: false, //是否有下单
+                            bindUid: '',//被下单的uid
+                            orderUid: '',//orderUid
+
+                        };//判断是下单,等待技能方接单的情况
                         angular.forEach(re.data.doc.thisNeed.bidUserArr, function (vo2) {
                             if (!vo2.headerImg) {
                                 vo2.headerImg = header.defaultHeader;
                             }
+
+
+                            if (vo2.bindUidType == 2) {//被动接单(点击下单)
+                                trueXiaDan.isHaveXiaDan = true;
+                                trueXiaDan.bindUid = vo2.uid;
+                                trueXiaDan.orderUid = vo2.if(vo2.bindUid && vo2.bindUid.name)
+                                {
+                                    $timeout(function () {
+                                        $scope.seeOtherKillInfo = '等待\"' + vo2.bindUid.name + '\"接单';
+                                    }, 0);
+                                }
+                            else
+                                {
+                                    $timeout(function () {
+                                        $scope.seeOtherKillInfo = '等待\"' + vo2.bindUid.mt + '\"接单';
+                                    }, 0);
+                                }
+                            }
                         });
+
+                        if (trueXiaDan) {
+                            console.log('trueXiaDan', trueXiaDan);
+                        }
+
+
                     }
 
 
@@ -133,8 +164,10 @@
                 }, 0);
             }
             if (type == 'show') {
-                $scope.userShow = true;
-                $scope.userSelect = false;
+                $timeout(function () {
+                    $scope.userShow = true;
+                    $scope.userSelect = false;
+                }, 0);
             }
         }
 
@@ -220,7 +253,7 @@
                 if (e.index === 0) {
                     selectOrderFrom(uid, $state.params.orderId);
                 }
-            }, "确定选择" + gName + '?', ["确定", "取消"]);
+            }, "确定选择\"" + gName + '\"?', ["确定", "取消"]);
         }
 
         /**
