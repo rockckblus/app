@@ -423,8 +423,10 @@ function delNeedFun(postObj) {
  * 修改order的订单状态 传 postObj.orderId 12345
  */
 function editOrderStateFun(postObj, state) {
+
+
     var defer = q.defer();
-    orderModel.update(g.Schema.Types.ObjectId(postObj.orderId), {state: state}, {multi: false}, function (err, numberAffected, raw) {
+    orderModel.update({_id: postObj.orderId}, {state: state}, {multi: false}, function (err, numberAffected, raw) {
         if (err) {
             defer.reject(err);
         } else {
@@ -482,7 +484,7 @@ function editPingJiaStateFun(postObj) {
                         if (err) {
                             defer.reject(err);
                         } else {
-                            defer.reject(doc);
+                            defer.resolve(doc);
                         }
                     }
                 );
@@ -522,7 +524,7 @@ function getAllOrderIdFun(postObj) {
  */
 function getUidbyOrderIdFun(postObj) {
     var defer = q.defer();
-    orderModel.findOne(postObj.orderId)
+    orderModel.findOne(postObj)
         .exec(function (err, doc) {
             if (err) {
                 defer.reject(err);

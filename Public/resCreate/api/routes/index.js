@@ -146,6 +146,14 @@ router.post('/member/pingJia', limiter, function (req, res, next) {
 });
 
 /**
+ * post member:fun 会员相关 限制重复点击方法
+ * 选单
+ * 16/3/8 */
+router.post('/member/selectOrderFrom', limiter, function (req, res, next) {
+    next();
+});
+
+/**
  * post member:fun 会员相关
  * 16/3/8 */
 router.post('/member/:fun', function (req, res) {

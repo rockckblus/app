@@ -392,19 +392,29 @@
                 // 需求id
                 var orderId = $state.params.orderId;
                 var uid = tools.getLocalStorageObj('userData').uid;
-                if (uid) {
-                    var postData = {
-                        uid: uid,//下单用户id
-                        orderId: orderId //订单id
-                    };
-                    var url = config.host.nodeHost + "/member/jieDan";
-                    tools.postJsp(url, postData, true).then(_s, _err);
+                var isUser = tools.getLocalStorageObj('userData').isUser;
+                if (!isUser) {//先补充会员资料
+                    plus.nativeUI.confirm("请补充用户资料", function (e) {
+                        $state.go('editMemberInfo');
+                    }, "请补充用户资料", ["确定", "取消"]);
+                } else {
+                    if (uid) {
+                        var postData = {
+                            uid: uid,//下单用户id
+                            orderId: orderId //订单id
+                        };
+                        var url = config.host.nodeHost + "/member/jieDan";
+                        tools.postJsp(url, postData, true).then(_s, _err);
+                    }
                 }
+
+
             }
 
             function _s(re) {
                 if (re.data && re.data.code == 'S') {
                     $timeout(function () {
+                        $rootScope.$broadcast('getOrderContent');
                         $scope.xiaDan = true;
                     }, 0);
                 } else {

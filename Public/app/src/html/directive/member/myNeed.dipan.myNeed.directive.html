@@ -43,6 +43,12 @@
              bindonce="listTypeTwo" ng-repeat="vo in listTypeTwo"
         >
             <div class="clear" style="margin-top: 1rem">
+                <div class="left" style="color: red;font-size: 0.8rem;margin-top: 5px" bindonce="vo.state"
+                     bo-if="vo.state == 3">[成交]
+                </div>
+                <div class="left" style="color: red;font-size: 0.8rem;margin-top: 5px" bindonce="vo.state"
+                     bo-if="vo.state == 4">[过期]
+                </div>
                 <div class="left mui-btn "
                      style="padding-left: 10px;padding-right: 10px;color: #777;min-width: 70%;text-align: left;border: none"
                      bo-text="vo.title"

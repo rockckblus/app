@@ -50,7 +50,11 @@
                         var typeTwo = [];
                         angular.forEach(re.data.doc, function (vo) {
                             if (vo.state !== 4) {
-                                typeOne.push(vo);
+                                if (vo.state == 3) {
+                                    typeTwo.push(vo);
+                                } else {
+                                    typeOne.push(vo);
+                                }
                             } else {
                                 typeTwo.push(vo);
                             }

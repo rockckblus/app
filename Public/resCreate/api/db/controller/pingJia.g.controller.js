@@ -41,7 +41,10 @@ function addPingJiaCtrl(postObj, callBack) {
         .then(_call, _err);
 
     function _call(re) {
-        pubFun.pubReturn(false, re, '评价成功', '', callBack);
+        var endRe = {
+            data: re
+        };
+        pubFun.pubReturn(false, endRe, '评价成功', '', callBack);
     }
 
     function _err(re) {

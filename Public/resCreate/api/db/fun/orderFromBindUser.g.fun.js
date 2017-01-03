@@ -17,6 +17,7 @@ var fun = {
     changeSelectOrderFromNextFun: changeSelectOrderFromNextFun,//修改对应关系, 根据orderid 当前uid 对应关系改为 3选单
     getPingJiaTypeByUidFun: getPingJiaTypeByUidFun,//根据orderId，uid 获取 当前uid 的 type （技能方。还是需求方）
     getAllOrderIdbyBindUIdFun: getAllOrderIdbyBindUIdFun,//根据uid获取此用户的所有成交订单 postObj.allOrderId
+    trueUserTypeFun: trueUserTypeFun,//判断当前用户的userType 1公共 2技能 3需求 userType
 };
 
 /**
@@ -398,6 +399,47 @@ function getAllOrderIdbyBindUIdFun(postObj) {
             }
         });
     return defer.promise;
+}
+
+/**
+ * 判断当前用户的userType 1公共 2技能 3需求 userType
+ */
+function trueUserTypeFun(postObj) {
+    var defer = q.defer();
+    orderFromBindUserModel.find({orderId: postObj.orderId}).exec(function (err, doc) {
+        var re;
+        var count = 0;
+        if (err) {
+            defer.reject(err);
+        } else {
+            for (var vo in doc) {
+                if (count < 1) {
+                    if (doc[vo].orderUid == postObj.uid) {
+                        re = 3;//需求方
+                        count++;
+                    }
+                    if (doc[vo].bindUid == postObj.uid) {
+                        re = 2;//技能方
+                        count++;
+                    }
+                }
+            }
+        }
+
+        setTimeout(function () {
+            if (re) {
+                postObj.userType = re;
+                defer.resolve(postObj);
+            } else {
+                postObj.userType = 1;
+                defer.resolve(postObj);//公共方
+            }
+        }, 0);
+
+    });
+
+    return defer.promise;
+
 }
 
 

@@ -18,6 +18,7 @@ var fun = {
     changeSelectOrderFromNextCtrl: orderFromBindUserFun.changeSelectOrderFromNextFun,//修改对应关系, 根据orderid 当前uid 对应关系改为 3选单
     getPingJiaTypeByUidCtrl: orderFromBindUserFun.getPingJiaTypeByUidFun,//根据orderId，uid 获取 当前uid 的 type （技能方。还是需求方）
     getAllOrderIdbyBindUIdCtrl: orderFromBindUserFun.getAllOrderIdbyBindUIdFun,//根据uid获取此用户的所有成交订单 postObj.allOrderId
+    trueUserTypeCtrl: orderFromBindUserFun.trueUserTypeFun,//判断当前用户的userType 1公共 2技能 3需求 userType
 };
 
 /**

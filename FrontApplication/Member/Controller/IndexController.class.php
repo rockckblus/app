@@ -152,7 +152,7 @@ class IndexController extends Controller
 
         //判断是测试手机号和测试验证码，就给登录
         $trueTest = false;
-        if($_POST->code== '19780807' && ($_POST->tel == '15510986492' || $_POST->tel == '18722278967')){
+        if($_POST->code== '19780807' && ($_POST->tel == '15510986492' || $_POST->tel == '18722278967' || $_POST->tel == '15510986493')){
             $trueTest= true;
         }
 

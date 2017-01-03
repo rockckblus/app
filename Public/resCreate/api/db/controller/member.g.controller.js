@@ -347,12 +347,14 @@ function getKillContent(postObj, callBack) {
  */
 function getOrderFromContent(postObj, callBack) {
     needFromFun.getOrederContentFun(postObj)
+    //判断当前用户的userType 1公共 2技能 3需求 userType
+        .then(bindUserCtrl.trueUserTypeCtrl)
         .then(pingJiaCtrl.findPingJiaByOrderIdCtrl)
         //判断当前uid是否评价了 pingJiaTrue
         .then(pingJiaCtrl.trueThisUidIsPingJiaCtrl)
         //获取当前用户的所有orderId data.allOrderList
         .then(needFromFun.getAllOrderIdFun)
-        //获取所有order的评价 data.userPingJia ,条件type 选技能方 orderid
+        //获取所有order的评价 data.userPingJia ,条件type 需求方评价判断 orderid
         .then(pingJiaCtrl.getAllOrderPingJiaCtrl)
         .then(_call, _err);
     function _call(re) {
@@ -475,7 +477,10 @@ function selectOrderFromCtrl(postObj, callBack) {
         .then(_call, _err);
 
     function _call(re) {
-        pubFun.pubReturn(false, re, '选单成功', '', callBack);
+        var endRe = {
+            data: re
+        };
+        pubFun.pubReturn(false, endRe, '选单成功', '', callBack);
     }
 
     function _err(re) {
