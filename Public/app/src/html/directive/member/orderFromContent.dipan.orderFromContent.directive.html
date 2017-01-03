@@ -43,21 +43,21 @@
 
         <!--过期 公共-->
         <div ng-show="data.thisNeed.state == 4">
-            <div class="clear lan " style="margin-top: 1.5rem">订单已过期</div>
+            <div class="clear lan " style="margin-top: 1.5rem">【订单已过期】</div>
         </div>
 
         <!--选单 公共-->
         <div ng-show="data.thisNeed.state == 2">
-            <div class="clear lan " style="margin-top: 1.5rem">订单选单中</div>
+            <div class="clear lan " style="margin-top: 1.5rem">【订单选单中】</div>
         </div>
 
         <!--选单 公共-->
         <div ng-show="data.thisNeed.state == 3">
-            <div class="clear lan " style="margin-top: 1.5rem">订单已成交</div>
+            <div class="clear lan " style="margin-top: 1.5rem">【订单已成交】</div>
         </div>
 
         <!--公共展示选单和接单情况-->
-        <div class="clear" ng-show="userType == 1">
+        <div class="clear" ng-show="userType == 1 || userType == 2 ">
             <div class="clear" ng-show="(data.thisNeed.state != 1) && (data.thisNeed.state !=2)">
                 <!--已经选好-->
                 <div class="clear" style="margin-top: 2rem" ng-show="data.thisNeed.state == 3">
@@ -342,7 +342,7 @@
                 </div>
 
                 <!--评价 技能方已评价-->
-                <div class="clear" style="margin-top: 25px;font-size: 0.8rem;color: red"
+                <div class="clear" style="margin-top: 25px;width: 100%;text-align: center;font-size: 0.8rem;color: red"
                      ng-if="data.thisNeed.pingJiaState == 2">
                     技能方已评价,双方互评之后显示
                 </div>
@@ -500,13 +500,15 @@
                             </div>
 
                             <!--评价 需求方已评价-->
-                            <div class="clear" style="margin-top: 5px"
+                            <div class="clear"
+                                 style="margin-top: 25px;width: 100%;text-align: center;font-size: 0.8rem;color: red"
                                  ng-if="data.thisNeed.pingJiaState == 1">
                                 需求方已评价,双方互评之后显示
                             </div>
 
                             <!--评价 技能方已评价-->
-                            <div class="clear" style="margin-top: 5px"
+                            <div class="clear"
+                                 style="margin-top: 25px;width: 100%;text-align: center;font-size: 0.8rem;color: red"
                                  ng-if="data.thisNeed.pingJiaState == 2">
                                 技能方已评价,双方互评之后显示
                             </div>
