@@ -40,6 +40,7 @@ var fun = {
     forAddMember: forAddMember,//循环添加1000个用户
     getOrderFromListCtrl: getOrderFromListCtrl,//我的订单
     selectOrderFromCtrl: selectOrderFromCtrl,//选单
+    editIsReatMarkCtrl: editIsReatMarkCtrl,//修改已经读取过订单 标记
 
 };
 
@@ -441,23 +442,25 @@ function trueJieDan(postObj, callBack) {
 
 /**
  * 我的订单
+ *postObj.jiNengOrderList = [];//被动接单,点击下单 bindUsertype  2
+ *postObj.needOrderList = {jieDanOrder: [],jieDanCount: 0,//正常接单统计};//需求orderList 主动接单 bindUsertype 1
+ *postObj.selectOrderList = [];//成交订单 被选单 bindUserType 3
+ *postObj.loseOrderList = [];//失效订单 超时 选其他人
  * 0.根据uid取技能订单列表的订单id 与 对应关系 ,返回4种 状态 的 技能 订单
  * 1.jiNengOrderList 取技能订单列表
  * 2.needOrderList 取需求订单列表
  */
 function getOrderFromListCtrl(postObj, callBack) {
 
-    bindUserCtrl.getJiNengListOrderIdCtrl(postObj)//返回当前uid的 接单 order
+    bindUserCtrl.getJiNengListOrderIdCtrl(postObj)// postObj.jiNengOrderList 返回当前uid的 接单 order  被动接单,点击下单 主动接单 bindUsertype 1 2
         .then(bindUserCtrl.getNeedListOrderIdCtrl)//返回当前uid的 需求 order 包括统计
-        .then(function (postObj) {
-            console.log(postObj);
-        });
-
-    // snsArticleFun.jiNengOrderListFun(postObj)
-    //     .then(needFromFun)
-    //     .then(_call, _err);
+        // snsArticleFun.jiNengOrderListFun(postObj)
+        //     .then(needFromFun)
+        .then(_call, _err);
     function _call(re) {
-        pubFun.pubReturn(false, re, '订单列表获取成功', '', callBack);
+        var reEnd = {};
+        reEnd.data = re;
+        pubFun.pubReturn(false, reEnd, '订单列表获取成功', '', callBack);
     }
 
     function _err(re) {
@@ -488,6 +491,23 @@ function selectOrderFromCtrl(postObj, callBack) {
     }
 }
 
+/**
+ * 修改已经读取过订单 标记
+ * @param postObj.orderId
+ * @param callBack
+ */
+function editIsReatMarkCtrl(postObj, callBack) {
+    bindUserCtrl.editIsReatMarkCtrl(postObj)
+        .then(_call, _err);
+
+    function _call(re) {
+        pubFun.pubReturn(false, re, '成功', '', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '选单失败', callBack);
+    }
+}
 
 module.exports = fun;
 

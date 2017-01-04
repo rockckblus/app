@@ -7,6 +7,7 @@ var g = require('../../g.config');
 
 var fun = {
     addOneBindUserFun: addOneBindUserFun,//添加一条对应关系
+    editIsReatMarkFun: editIsReatMarkFun,//修改已经读取过订单 标记
     trueIsHaveFun: trueIsHaveFun,//判断接单的重复id 订单id 订单uid 技能uid 是否存在,
     trueXianDanBindUserFun: trueXianDanBindUserFun,//判断技能id是否被当前uid下单
     trueJieDanBindUserFun: trueJieDanBindUserFun,//判断orderId是否被当前uid接单
@@ -61,6 +62,26 @@ function addOneBindUserFun(postObj, type) {
             }
         }
     );
+    return defer.promise;
+}
+
+/**
+ * 修改已经读取过订单 标记
+ */
+function editIsReatMarkFun(postObj) {
+    var defer = q.defer();
+    orderFromBindUserModel.update({
+        orderId: postObj.orderId,
+        bindUid: postObj.uid//技能方的uid
+    }, {bindUidIsReadMark: true}, {multi: false}, function (err, row) {
+        if (err) {
+            defer.reject(err);
+        } else {
+            var reObj = {};
+            reObj.data = row;
+            defer.resolve(reObj);
+        }
+    });
     return defer.promise;
 }
 
@@ -167,10 +188,11 @@ function getJiNengListOrderIdFun(postObj) {
             {
                 'path': 'orderId',
                 'model': orderModel,
-                'select': 'pingJiaState'
+                'select': 'pingJiaState title'
             }
         )
-        .select('orderId orderUid jiNengId bindUidType')
+        .sort('bindUidIsReadMark')
+        .select('orderId orderUid jiNengId bindUidType bindUidIsReadMark')
         .sort('bindUidType')
         .exec(function (err, doc) {
             if (err) {
@@ -182,10 +204,7 @@ function getJiNengListOrderIdFun(postObj) {
                 for (var vo in doc) {
                     doc[vo]._doc.orderUid._doc.mt = pub.changeMt(doc[vo].orderUid.mt);
                     switch (doc[vo].bindUidType) {
-                        case 1://被动接单
-                            postObj.jiNengOrderList.push(doc[vo]);
-                            break;
-                        case 2://主动接单
+                        case 2://被动接单
                             postObj.jiNengOrderList.push(doc[vo]);
                             break;
                         case 3://选单 返回 当前 uid 对此订单的 评价状态 (需求uid 是否 对 接单uid 评价, 接单uid )
@@ -211,7 +230,13 @@ function getJiNengListOrderIdFun(postObj) {
  */
 function getNeedListOrderIdFun(postObj) {
     var defer = q.defer();
-    orderFromBindUserModel.find({orderUid: postObj.uid, state: 1, bindUidType: {$in: [1, 2]}})
+    orderFromBindUserModel.find(
+        {
+            orderUid: postObj.uid,
+            state: 1,
+            bindUidType: {$in: [1, 2]},
+        }
+    )
         .select('orderId bindUid bindUidType')
         .populate(
             {
@@ -224,30 +249,49 @@ function getNeedListOrderIdFun(postObj) {
             {
                 'path': 'orderId',
                 'model': orderModel,
-                'select': 'pingJiaState'
+                'select': 'pingJiaState state title',
+                'match': {state: {$in: [1, 2]}}//发起(此处有判断被动接单逻辑),接单
             }
         )
         .exec(function (err, doc) {
             if (err) {
                 defer.reject(err);
             } else {
-                postObj.needOrderList = {
-                    jieDanOrder: [],
-                    jieDanCount: 0,//正常接单统计
-                };//需求订单
+                var tempOrderIdArr = [];
+                var countOrderId = [];
                 for (var vo in doc) {
-                    doc[vo]._doc.bindUid._doc.mt = pub.changeMt(doc[vo].bindUid.mt);
-                    switch (doc[vo].bindUidType) {
-                        case 1://主动接单 ,
-                            postObj.needOrderList.jieDanCount++;
-                            break;
-                        case 2://被动接单
-                            // beiDongJieDan: '',//被动接单人 状态 ,资料, (等待userName接单),
-                            doc[vo].beiDongJieDan = doc[vo].bindUid;
-                            break;
+                    if (doc[vo].orderId) {
+                        var orderId = doc[vo].orderId._id.toString();
+                        if (countOrderId.indexOf(orderId) == -1) {
+                            countOrderId.push(orderId);
+                            tempOrderIdArr[orderId] = {
+                                orderId: orderId,
+                                title: doc[vo].orderId.title,
+                                jieDanCount: [],
+                                beiDongJieDan: []
+                            };
+                        }
+                        switch (doc[vo].bindUidType) {
+                            case 1://主动接单 ,
+                                tempOrderIdArr[orderId].jieDanCount.push(1);
+                                break;
+                            case 2://被动接单
+                                // beiDongJieDan: '',//被动接单人 状态 ,资料, (等待userName接单),
+                                tempOrderIdArr[orderId].beiDongJieDan.push(doc[vo].bindUid);
+                                break;
+                        }
                     }
-                    postObj.needOrderList.jieDanOrder.push(doc[vo]);//所有订单push到 需求单数组 ,然后判断type 来 给 被动接单人资料
                 }
+
+                var tempOrderIdArrEnd = [];
+                //统计个数,去掉orderId
+                for (var vo in tempOrderIdArr) {
+                    tempOrderIdArr[vo].jieDanCount = tempOrderIdArr[vo].jieDanCount.length;
+                    tempOrderIdArrEnd.push(tempOrderIdArr[vo]);
+                }
+
+                postObj.needOrderList = tempOrderIdArrEnd;//所有订单push到 需求单数组 ,然后判断type 来 给 被动接单人资料
+
                 defer.resolve(postObj);
             }
         });

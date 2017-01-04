@@ -84,9 +84,10 @@
                 });
                 function _bindClick(dom) {//点击
                     var needId = dom.getAttribute('needid');
-                    goNeedUrl(needId);//跳转到需求详情
+                    // upDateIsReadMark(needId, function () {//更新当前订单为已读
+                        goNeedUrl(needId);//跳转到需求详情
+                    // });
                 }
-
 
                 function _bindDel(dom) {//删除
                     var needId = dom.getAttribute('needid');

@@ -564,6 +564,12 @@ function postMember(req, res) {
                 res.json(re);
             });
             break;
+        case 'editIsReatMark' ://修改已经读取过订单 标记
+            memberCtrl.editIsReatMarkCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+
 
 
     }

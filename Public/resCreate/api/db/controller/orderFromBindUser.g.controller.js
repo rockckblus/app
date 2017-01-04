@@ -8,6 +8,7 @@ var q = require('q');
 
 var fun = {
     addOneBindUser: orderFromBindUserFun.addOneBindUserFun,//添加一条对应关系
+    editIsReatMarkCtrl: orderFromBindUserFun.editIsReatMarkFun,//修改已经读取过订单 标记
     trueIsHave: orderFromBindUserFun.trueIsHaveFun,//判断接单的重复id 订单id 订单uid 技能uid 是否存在,
     trueXianDanBindUser: orderFromBindUserFun.trueXianDanBindUserFun,//判断技能id是否被当前uid下单
     trueJieDanBindUser: orderFromBindUserFun.trueJieDanBindUserFun,//判断orderId是否被当前uid接单

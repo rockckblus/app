@@ -192,19 +192,19 @@ function getAllOrderPingJiaFun(postObj) {
     postObj.userPingJia = [];
     var count = 0;
     for (var vo in postObj.allOrderList) {
-        count++;
         findJiNengPingJiaByOrderIdFun(postObj.allOrderList[vo]._id)
             .then(_Push);
     }
 
     function _Push(doc) {
+        count++;
         if (doc) {
             postObj.userPingJia.push(doc);
         }
         if (count == postObj.allOrderList.length) {
             setTimeout(function () {
                 defer.resolve(postObj);
-            }, 0);
+            }, 100);
         }
     }
 

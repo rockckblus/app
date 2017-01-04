@@ -36,11 +36,13 @@
         // $scope.userSelect = false;//需求方(自己进入)  判断是不是此用户发的,是此用户发的,就不显示个人资料
         $scope.bindUserShow = false;//技能方进入并且 是 下单,(等待技能方接单)
         $scope.userType = false;//判断进入的用户角色显示不同ui 1公共 2 技能方进入 3需求方进入
+        $scope.showUserData = false;//显示用户资料面板
 
         $scope.bindUserShowName = '';//bindUserShowName 等您接单
         $scope.seeOtherKillInfo = '暂时无人接单,去看看其他人的技能吧!';
         $scope.bindUserShowAlreadyJieDan = false;//技能方 已经成交 给评价
         $scope.$on('getOrderContent', getOrderContent);//监听获取订单详情
+
 
         function init() {
             getOrderContent();//获取订单详情
@@ -166,11 +168,33 @@
                         $timeout(function () {
                             bindClick();//bind用户列表 打电话,发消息,评价,没有订单 点击事件
                             bindJiNengListClick();//绑定更多需求点击事件
+                            bindUserDataClick();//绑定用户数据弹窗事件
                         }, 0);
                     }, 0);
                 }
             }
         }
+
+
+        /**
+         * 绑定用户数据弹窗事件
+         */
+        function bindUserDataClick() {
+
+
+            function _bindShow() {
+                $timeout(function () {
+                    $scope.showUserData = true;//显示用户资料面板
+                }, 0);
+            }
+
+            function _bindClose() {
+                $timeout(function () {
+                    $scope.showUserData = false;//显示用户资料面板
+                }, 0);
+            }
+        }
+
 
         /**bindJieDan
          * bind接单点击事件,(等您接单)

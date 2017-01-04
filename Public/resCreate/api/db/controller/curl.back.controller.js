@@ -29,7 +29,7 @@ function _get(urlStr, callback) {
             }
         },
         function (error, response, body) {
-            console.error('res', response);
+            // console.error('res', response);
             try {
                 if (response.statusCode == 200) {
                     callback(body);
