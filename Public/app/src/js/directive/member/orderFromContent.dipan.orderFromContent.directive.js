@@ -294,7 +294,7 @@
          * bind点击
          */
         function bindClick() {
-            if ($scope.data && $scope.data.thisNeed && $scope.data.thisNeed.bidUserArr) {
+            if ($scope.data && $scope.data.thisNeed && $scope.data.thisNeed.bidUserArr && $scope.data.thisNeed.bidUserArr[0]) {
                 angular.forEach($scope.data.thisNeed.bidUserArr, function (vo) {
                     tools.bindClick('telCall_' + vo.uid, telCall);
                     tools.bindClick('imCall_' + vo.uid, imCall);
@@ -311,6 +311,7 @@
                     tools.bindClick('givePingJiaBtnKill', pingJiaSubKill);
                 }
             } else {
+                console.log('22222222');
                 tools.bindClick('noOrderGoHome', goHome);
             }
 
