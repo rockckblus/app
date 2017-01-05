@@ -187,8 +187,8 @@
                 </div>
             </div>
 
-            <!--选单-->
-            <div class="clear" ng-show="data.thisNeed.state !=1 && data.thisNeed.state !=2 ">
+            <!--有人接单 没有选好-->
+            <div class="clear" ng-show="data.thisNeed.state !=1">
                 <div class="clear " style="font-size: 1rem; width: 100%;">
                     <div class="clear"></div>
                     <div class="clear lan" style="margin-top: 1.5rem">接单列表:</div>
@@ -248,6 +248,71 @@
                 </div>
             </div>
         </div>
+
+        <!--未成交 接单方显示 -->
+        <div class="clear" ng-show="userType == 2 && data.thisNeed.state == 2">
+            <!--有人接单 没有选好-->
+            <div class="clear" ng-show="data.thisNeed.state !=1">
+                <div class="clear " style="font-size: 1rem; width: 100%;">
+                    <div class="clear"></div>
+                    <div class="clear lan" style="margin-top: 1.5rem">接单列表:</div>
+                    <div class="clear">
+                        <div class="clear item" style="margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px"
+                             bindonce="data.thisNeed.bidUserArr"
+                             ng-repeat="vo in data.thisNeed.bidUserArr"
+                             bo-attr
+                             bo-attr-uid="vo.uid"
+                        >
+                            <div class="left">
+                                <!--头像-->
+                                <div class="left"
+                                     style="width: 30px;height: 30px;overflow: hidden;">
+                                    <img bindonce="vo.bindUid.headerImg"
+                                         bo-src="vo.bindUid.headerImg" alt=""
+                                         style="width: 30px;height: auto">
+                                </div>
+                                <!--姓名显示-->
+                                <div class="left lan" style="font-size: 14px;margin-left: 3px;line-height: 14px">
+                                    <div class="clear">
+                                        <div class="left" bindonce="vo.bindUid.name"
+                                             bo-text="vo.bindUid.name"></div>
+
+                                        <!--需求方主动接单-->
+                                        <div class="left" style="font-size: 12px;color: red;margin-left: 3px"
+                                             bindonce="vo.bindUidType"
+                                             bo-if="vo.bindUidType==2"
+                                        >
+                                    <span bindonce="data.userData" bo-if="data.userData.name"
+                                          bo-text="'('+data.userData.name + ' 主动下单)'"></span>
+                                            <span bindonce="data.userData" bo-if="!data.userData.name"
+                                                  bo-text="'('+data.userData.mt + ' 主动下单)'"></span>
+                                        </div>
+                                    </div>
+                                    <!--城市显示-->
+                                    <span class="left hui"
+                                          style="font-size:12px;" bindonce="vo.bindUid.city"
+                                          bo-text="vo.bindUid.city">
+
+                                    </span>
+                                    <!--性别-->
+                                    <span class="left hui"
+                                          style="font-size: 12px;" bindonce="vo.bindUid.sex"
+                                          bo-text="'&nbsp;'+vo.bindUid.sex">
+                                    </span>
+                                    <!--年龄-->
+                                    <span class="left hui"
+                                          style="font-size: 12px;" bindonce="vo.bindUid.age"
+                                          bo-text="'&nbsp;'+vo.bindUid.age">
+                                    </span>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!--如果不是需求方 或接单放 就显示其他需求-->
         <div class="clear" ng-if="userType ==1">

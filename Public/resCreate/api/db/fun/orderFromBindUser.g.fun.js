@@ -319,13 +319,6 @@ function getLoseListOrderIdFun(postObj) {
         }
     )
         .select('orderId bindUid bindUidType')
-        // .populate(
-        //     {
-        //         'path': 'bindUid',
-        //         'model': memberModel,
-        //         'select': 'headerImg name mt'
-        //     }
-        // )
         .populate(
             {
                 'path': 'orderId',
@@ -335,28 +328,36 @@ function getLoseListOrderIdFun(postObj) {
             }
         )
         .exec(function (err, doc) {
+            var count = 0;
+            var endArr = [];
             if (err) {
                 defer.reject(err);
             } else {
-
-                var count = 0;
-                var endArr = [];
-                for (var vo in doc) {
-                    if (doc[vo].bindUidType == 5) {//如果选别人,就传orderid, 查bindUidType = 3 的 bindUid
-                        _getSelectBindUidByOrderId(doc[vo], endArr);
-                    } else {
-                        endArr.push(doc[vo]);
-                    }
-                    count++;
-                    if (count == doc.length) {
-                        setTimeout(function () {
-                            postObj.loseOrderList = endArr;
-                            defer.resolve(postObj);
-                        }, 100);
+                if (!doc[0]) {
+                    postObj.loseOrderList = [];
+                    defer.resolve(postObj);
+                } else {
+                    for (var vo in doc) {
+                        if (doc[vo].bindUidType == 5) {//如果选别人,就传orderid, 查bindUidType = 3 的 bindUid
+                            _getSelectBindUidByOrderId(doc[vo], endArr);
+                        } else {
+                            endArr.push(doc[vo]);
+                        }
+                        count++;
+                        _count();
                     }
                 }
-
             }
+
+            function _count() {
+                if (count == doc.length) {
+                    setTimeout(function () {
+                        postObj.loseOrderList = endArr;
+                        defer.resolve(postObj);
+                    }, 100);
+                }
+            }
+
         });
 
     return defer.promise;

@@ -157,7 +157,7 @@
                         } else {
                             tools.alert({title: '删除失败'});
                         }
-                    })
+                    });
             }
 
             //删除过期订单 作为 bindUid
@@ -174,7 +174,7 @@
                         } else {
                             tools.alert({title: '删除失败'});
                         }
-                    })
+                    });
             }
 
             //删除过期订单 作为 orderUid
@@ -191,7 +191,7 @@
                         } else {
                             tools.alert({title: '删除失败'});
                         }
-                    })
+                    });
             }
 
         }
