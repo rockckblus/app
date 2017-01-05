@@ -35,7 +35,7 @@
         // $scope.userShow = false;//技能方进入   判断是不是此用户发的,是此用户发的,就不显示个人资料
         // $scope.userSelect = false;//需求方(自己进入)  判断是不是此用户发的,是此用户发的,就不显示个人资料
         $scope.bindUserShow = false;//技能方进入并且 是 下单,(等待技能方接单)
-        $scope.userType = false;//判断进入的用户角色显示不同ui 1公共 2 技能方进入 3需求方进入
+        $scope.userType = false;//判断进入的用户角色显示不同ui 1公共 2 技能方进入  3需求方进入
         $scope.showUserData = false;//显示用户资料面板
 
         $scope.bindUserShowName = '';//bindUserShowName 等您接单
@@ -148,6 +148,8 @@
                             }, 0);
                         }
                         else if (re.data.doc.userType == 2) {//技能方
+
+
                             if (re.data.doc.userData.isJion) {//如果当前用户已经接了这单,隐藏接单按钮
                                 $rootScope.$broadcast('hideXiaDan');
                             } else if ((re.data.doc.thisNeed.state !== 1) && (re.data.doc.thisNeed.state !== 2)) {//如果隐藏打电话
@@ -155,7 +157,12 @@
                             }
 
                             $timeout(function () {
-                                $scope.userType = 2;//技能方
+                                //如果当前已选单,并且被选技能方不是 当前 技能方的 uid , 那摸当前技能方就转换为公共方角色
+                                if (trueKillType(re)) {
+                                    $scope.userType = 1;//转换为公共方
+                                } else {
+                                    $scope.userType = 2;//技能方
+                                }
                                 showUi('show');
                             }, 0);
                         }
@@ -175,12 +182,32 @@
             }
         }
 
+        /**
+         * 如果当前已选单,并且被选技能方不是 当前 技能方的 uid , 那摸当前技能方就转换为公共方角色
+         */
+        function trueKillType(re) {
+            console.log('re', re);
+            if (tools.getLocalStorageObj('userData')) {
+                var uid = tools.getLocalStorageObj('userData').uid;
+                if (re.data && re.data.doc && re.data.doc.thisNeed && re.data.doc.thisNeed.state == 3) {//如果已选单
+                    //判断当前uid 是不选单的 技能uid
+                    if (re.data && re.data.doc && re.data.doc.thisNeed && re.data.doc.thisNeed.bidUser && re.data.doc.thisNeed.bidUser.uid != uid) {
+                        return true;
+                    }
+                    return false;
+                } else {
+                    return false;
+                }
+            }
+        }
 
         /**
          * 绑定用户数据弹窗事件
          */
         function bindUserDataClick() {
 
+            tools.bindClick('showUserDataFromBtn', _bindShow);
+            tools.bindClick('closeUserDataFromePage', _bindClose);
 
             function _bindShow() {
                 $timeout(function () {
@@ -194,7 +221,6 @@
                 }, 0);
             }
         }
-
 
         /**bindJieDan
          * bind接单点击事件,(等您接单)
@@ -263,7 +289,6 @@
                 }, 0);
             }
         }
-
 
         /**
          * bind点击

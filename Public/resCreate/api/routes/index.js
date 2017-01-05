@@ -569,7 +569,11 @@ function postMember(req, res) {
                 res.json(re);
             });
             break;
-
+        case 'delBindUser' ://删除bindUser 在我的订单列表不显示 修改state
+            memberCtrl.delBindUserCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
 
 
     }

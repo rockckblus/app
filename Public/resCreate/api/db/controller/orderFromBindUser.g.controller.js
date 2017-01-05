@@ -20,6 +20,10 @@ var fun = {
     getPingJiaTypeByUidCtrl: orderFromBindUserFun.getPingJiaTypeByUidFun,//根据orderId，uid 获取 当前uid 的 type （技能方。还是需求方）
     getAllOrderIdbyBindUIdCtrl: orderFromBindUserFun.getAllOrderIdbyBindUIdFun,//根据uid获取此用户的所有成交订单 postObj.allOrderId
     trueUserTypeCtrl: orderFromBindUserFun.trueUserTypeFun,//判断当前用户的userType 1公共 2技能 3需求 userType
+    getSelectListOrderIdCtrl: orderFromBindUserFun.getSelectListOrderIdFun,//关系表查orderid的成交数据 postObj.selectOrderList 传 postObj.allSelectOrder
+    getLoseListOrderIdCtrl: orderFromBindUserFun.getLoseListOrderIdFun,//返回当前uid的关系表的 过期||选别人的 postObj.loseOrderList,
+    delBindUserCtrl: orderFromBindUserFun.delBindUserFun,//删除bindUser 在我的订单列表不显示 修改state
+
 };
 
 /**

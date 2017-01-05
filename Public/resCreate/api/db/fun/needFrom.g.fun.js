@@ -19,6 +19,8 @@ var fun = {
     editPingJiaStateFun: editPingJiaStateFun,//修改订单评价状态
     getAllOrderIdFun: getAllOrderIdFun,//获取订单用户的所有orderId by orderId
     getUidbyOrderIdFun: getUidbyOrderIdFun,//根据orderid 获取 orderUid
+    getSelectOrderIdByUidFun: getSelectOrderIdByUidFun,//根据uid 获取 所有已经成交的 订单
+    getLoseOrderIdByUidFun: getLoseOrderIdByUidFun,//返回当前uid的order 表的 过期的order postObj.loseOrderNeedList
 };
 
 /**
@@ -379,6 +381,44 @@ function myNeedFun(postObj) {
         });
     return defer.promise;
 }
+
+/**************************
+ * 根据uid 获取 所有已经成交的 订单 返回postObj.allSelectOrder
+ * 16/12/26 下午10:07 ByRockBlus
+ **************************/
+function getSelectOrderIdByUidFun(postObj) {
+    var defer = q.defer();
+    orderModel.find({uid: postObj.uid, state: 3})
+        .select('_id title state')
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                postObj.allSelectOrder = doc;
+                defer.resolve(postObj);
+            }
+        });
+    return defer.promise;
+}
+
+/**************************
+ *返回当前uid的order 表的 过期的order postObj.loseOrderNeedList
+ **************************/
+function getLoseOrderIdByUidFun(postObj) {
+    var defer = q.defer();
+    orderModel.find({uid: postObj.uid, state: 4})
+        .select('_id title')
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                postObj.loseOrderNeedList = doc;
+                defer.resolve(postObj);
+            }
+        });
+    return defer.promise;
+}
+
 
 /**
  * 删除一条需求

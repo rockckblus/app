@@ -41,6 +41,7 @@ var fun = {
     getOrderFromListCtrl: getOrderFromListCtrl,//我的订单
     selectOrderFromCtrl: selectOrderFromCtrl,//选单
     editIsReatMarkCtrl: editIsReatMarkCtrl,//修改已经读取过订单 标记
+    delBindUserCtrl: delBindUserCtrl,//删除bindUser 在我的订单列表不显示 修改state
 
 };
 
@@ -454,9 +455,12 @@ function getOrderFromListCtrl(postObj, callBack) {
 
     bindUserCtrl.getJiNengListOrderIdCtrl(postObj)// postObj.jiNengOrderList 返回当前uid的 接单 order  被动接单,点击下单 主动接单 bindUsertype 1 2
         .then(bindUserCtrl.getNeedListOrderIdCtrl)//返回当前uid的 需求 order 包括统计
-        // snsArticleFun.jiNengOrderListFun(postObj)
-        //     .then(needFromFun)
+        .then(needFromFun.getSelectOrderIdByUidFun)//返回当前uid的成交订单 已经选好的订单 先查 当前uid的 oreder 已经成交的orderId数组,postObj.allSelectOrder
+        .then(bindUserCtrl.getSelectListOrderIdCtrl)//然后去 关系表查orderid的成交数据 postObj.selectOrderList
+        .then(needFromFun.getLoseOrderIdByUidFun)//返回当前uid的order 表的 过期的order postObj.loseOrderNeedList
+        .then(bindUserCtrl.getLoseListOrderIdCtrl)//返回当前uid 技能方 的关系表的 过期||选别人的 postObj.loseOrderList
         .then(_call, _err);
+
     function _call(re) {
         var reEnd = {};
         reEnd.data = re;
@@ -508,6 +512,24 @@ function editIsReatMarkCtrl(postObj, callBack) {
         pubFun.pubReturn(re, {}, '', '选单失败', callBack);
     }
 }
+
+/**
+ *删除bindUser 在我的订单列表不显示 修改state
+ */
+function delBindUserCtrl(postObj, callBack) {
+    bindUserCtrl.delBindUserCtrl(postObj)
+        .then(_call, _err);
+
+    function _call(re) {
+        pubFun.pubReturn(false, re, '成功', '', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '删除失败', callBack);
+    }
+
+}
+
 
 module.exports = fun;
 

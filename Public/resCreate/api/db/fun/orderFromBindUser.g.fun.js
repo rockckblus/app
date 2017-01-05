@@ -14,11 +14,15 @@ var fun = {
     getJiNengListOrderIdFun: getJiNengListOrderIdFun,//根据uid取技能订单列表的订单id 与 对应关系
     getNeedListOrderIdFun: getNeedListOrderIdFun,//根据uid 获取需求订单 的对应关系 订单
     getOrderIdBindUserFun: getOrderIdBindUserFun,//根据orderId 获取 接单的对应关系
+    getLoseListOrderIdFun: getLoseListOrderIdFun,//返回当前uid的关系表的 过期||选别人的 postObj.loseOrderList
     changeSelectOrderFromFun: changeSelectOrderFromFun,//修改对应关系, 根据orderid 其他对应关系 都改为失效。
     changeSelectOrderFromNextFun: changeSelectOrderFromNextFun,//修改对应关系, 根据orderid 当前uid 对应关系改为 3选单
     getPingJiaTypeByUidFun: getPingJiaTypeByUidFun,//根据orderId，uid 获取 当前uid 的 type （技能方。还是需求方）
     getAllOrderIdbyBindUIdFun: getAllOrderIdbyBindUIdFun,//根据uid获取此用户的所有成交订单 postObj.allOrderId
     trueUserTypeFun: trueUserTypeFun,//判断当前用户的userType 1公共 2技能 3需求 userType
+    getSelectListOrderIdFun: getSelectListOrderIdFun,//关系表查orderid的成交数据 postObj.selectOrderList 传 postObj.allSelectOrder
+    _getUserBindUserBySelectOrderIdFun: _getUserBindUserBySelectOrderIdFun,//根据  orderId 查 被选的 技能uid数据 传orderId
+    delBindUserFun: delBindUserFun,//删除bindUser 在我的订单列表不显示 修改state
 };
 
 /**
@@ -124,6 +128,7 @@ function trueXianDanBindUserFun(postObj) {
     var findObj = {
         jiNengId: postObj.jiNengId,//对当前的技能id
         orderUid: postObj.uid,// 发订单的用户id
+        bindUidType: {$nin: [3, 4, 5]}
     };
     orderFromBindUserModel.find(findObj)
         .exec(function (err, doc) {
@@ -176,7 +181,7 @@ function trueJieDanBindUserFun(postObj) {
  */
 function getJiNengListOrderIdFun(postObj) {
     var defer = q.defer();
-    orderFromBindUserModel.find({bindUid: postObj.uid, state: 1})
+    orderFromBindUserModel.find({bindUid: postObj.uid, state: 1, bindUserType: 2})
         .populate(
             {
                 'path': 'orderUid',
@@ -199,23 +204,23 @@ function getJiNengListOrderIdFun(postObj) {
                 defer.reject(err);
             } else {
                 postObj.jiNengOrderList = [];//被动接单,点击下单 主动接单 bindUsertype 1 2
-                postObj.selectOrderList = [];//被选单
-                postObj.loseOrderList = [];//失效订单
+                // postObj.selectOrderList = [];//被选单 3
+                // postObj.loseOrderList = [];//失效订单
                 for (var vo in doc) {
                     doc[vo]._doc.orderUid._doc.mt = pub.changeMt(doc[vo].orderUid.mt);
                     switch (doc[vo].bindUidType) {
                         case 2://被动接单
                             postObj.jiNengOrderList.push(doc[vo]);
                             break;
-                        case 3://选单 返回 当前 uid 对此订单的 评价状态 (需求uid 是否 对 接单uid 评价, 接单uid )
-                            postObj.selectOrderList.push(doc[vo]);
-                            break;
-                        case 4://超时失效
-                            postObj.loseOrderList.push(doc[vo]);
-                            break;
-                        case 5://选其他人 失效
-                            postObj.loseOrderList.push(doc[vo]);
-                            break;
+                        // case 3://选单 返回 当前 uid 对此订单的 评价状态 (需求uid 是否 对 接单uid 评价, 接单uid )
+                        //     postObj.selectOrderList.push(doc[vo]);
+                        //     break;
+                        // case 4://超时失效
+                        //     postObj.loseOrderList.push(doc[vo]);
+                        //     break;
+                        // case 5://选其他人 失效
+                        //     postObj.loseOrderList.push(doc[vo]);
+                        //     break;
                     }
                 }
                 defer.resolve(postObj);
@@ -285,9 +290,9 @@ function getNeedListOrderIdFun(postObj) {
 
                 var tempOrderIdArrEnd = [];
                 //统计个数,去掉orderId
-                for (var vo in tempOrderIdArr) {
-                    tempOrderIdArr[vo].jieDanCount = tempOrderIdArr[vo].jieDanCount.length;
-                    tempOrderIdArrEnd.push(tempOrderIdArr[vo]);
+                for (var vo2 in tempOrderIdArr) {
+                    tempOrderIdArr[vo2].jieDanCount = tempOrderIdArr[vo2].jieDanCount.length;
+                    tempOrderIdArrEnd.push(tempOrderIdArr[vo2]);
                 }
 
                 postObj.needOrderList = tempOrderIdArrEnd;//所有订单push到 需求单数组 ,然后判断type 来 给 被动接单人资料
@@ -298,6 +303,89 @@ function getNeedListOrderIdFun(postObj) {
 
     return defer.promise;
 
+}
+
+/**
+ * 返回当前uid的关系表的 过期||选别人的 postObj.loseOrderList bindUid为uid
+ */
+function getLoseListOrderIdFun(postObj) {
+
+    var defer = q.defer();
+    orderFromBindUserModel.find(
+        {
+            bindUid: postObj.uid,
+            state: 1,
+            bindUidType: {$in: [4, 5]},//过期,选别人,如果选别人,就查出 所选 的binUid
+        }
+    )
+        .select('orderId bindUid bindUidType')
+        // .populate(
+        //     {
+        //         'path': 'bindUid',
+        //         'model': memberModel,
+        //         'select': 'headerImg name mt'
+        //     }
+        // )
+        .populate(
+            {
+                'path': 'orderId',
+                'model': orderModel,
+                'select': 'pingJiaState state title',
+                'match': {state: {$in: [3, 4, 5]}}// 选单,过期,删除
+            }
+        )
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+
+                var count = 0;
+                var endArr = [];
+                for (var vo in doc) {
+                    if (doc[vo].bindUidType == 5) {//如果选别人,就传orderid, 查bindUidType = 3 的 bindUid
+                        _getSelectBindUidByOrderId(doc[vo], endArr);
+                    } else {
+                        endArr.push(doc[vo]);
+                    }
+                    count++;
+                    if (count == doc.length) {
+                        setTimeout(function () {
+                            postObj.loseOrderList = endArr;
+                            defer.resolve(postObj);
+                        }, 100);
+                    }
+                }
+
+            }
+        });
+
+    return defer.promise;
+}
+
+/**
+ * 根orderid 查 bindUidType = 3 的bindUid
+ */
+function _getSelectBindUidByOrderId(voDoc, endArr) {
+    orderFromBindUserModel.findOne({
+        orderId: voDoc.orderId,
+        bindUidType: 3
+    })
+        .select('bindUid')
+        .populate({
+            'path': 'bindUid',
+            'model': memberModel,
+            'select': 'name mt headerImg'
+        })
+        .exec(function (err, doc) {
+            if (err) {
+                console.error('查询selectBindUser失败');
+            } else {
+                doc._doc.bindUid._doc.mt = pub.changeMt(doc.bindUid.mt);
+                doc._doc.bindUid._doc.headerImg = g.host.imageHost + doc._doc.bindUid.headerImg;
+                voDoc._doc.selectBindUser = doc;
+                endArr.push(voDoc);
+            }
+        });
 }
 
 /**
@@ -484,6 +572,94 @@ function trueUserTypeFun(postObj) {
 
     return defer.promise;
 
+}
+
+/**
+ * 关系表查orderid的成交数据 postObj.selectOrderList 传 postObj.allSelectOrder
+ */
+function getSelectListOrderIdFun(postObj) {
+    var defer = q.defer();
+    var count = 0;
+    postObj.selectOrderList = [];
+    if (postObj.allSelectOrder && postObj.allSelectOrder[0]) {
+        for (var vo in postObj.allSelectOrder) {
+            console.log('_id', postObj.allSelectOrder[vo]);
+            _getUserBindUserBySelectOrderIdFun(postObj.allSelectOrder[vo]._id, postObj.allSelectOrder[vo].title)
+                .then(_push);
+        }
+
+    } else {
+        defer.resolve(postObj);
+    }
+
+
+    function _push(oneBindUid) {
+        postObj.selectOrderList.push(oneBindUid);
+        count++;
+        if (count == postObj.allSelectOrder.length) {
+            defer.resolve(postObj);
+        }
+    }
+
+
+    return defer.promise;
+}
+
+/**
+ * 根据  orderId 查 被选的 技能uid数据
+ */
+function _getUserBindUserBySelectOrderIdFun(orderId, orderTitle) {
+    var defer = q.defer();
+    orderFromBindUserModel.findOne(
+        {
+            orderId: orderId,
+            bindUidType: 3
+        }
+    )
+        .select('orderId bindUid')
+        .populate(
+            {
+                'path': 'bindUid',
+                'model': memberModel,
+                'select': 'headerImg name mt'
+            }
+        )
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                if (doc._doc.bindUid.headerImg) {
+                    doc._doc.bindUid._doc.headerImg = g.host.imageHost + doc.bindUid.headerImg;
+                    doc._doc.bindUid._doc.mt = pub.changeMt(doc._doc.bindUid._doc.mt);
+                }
+                doc._doc.orderTitle = orderTitle;
+                defer.resolve(doc);
+            }
+        });
+    return defer.promise;
+}
+
+
+/**
+ * 删除bindUser 在我的订单列表不显示 修改state
+ */
+function delBindUserFun(postObj) {
+    var defer = q.defer();
+    orderFromBindUserModel.update({
+            orderId: postObj.orderId,
+            bindUid: postObj.uid
+        },
+        {state: 0}, {multi: false}, function (err, row) {
+            if (err) {
+                defer.reject(err);
+            } else {
+
+                defer.resolve({data: row});
+            }
+        }
+    );
+
+    return defer.promise;
 }
 
 

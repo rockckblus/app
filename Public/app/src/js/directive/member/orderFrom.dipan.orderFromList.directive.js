@@ -39,6 +39,7 @@
         $scope.isHaveSelectOrderFrom = false;//有选单订单显示
         $scope.isHaveLoseOrderFrom = false;//有失效订单显示
         $scope.list = undefined;//订单列表数据
+        $scope.defaultHeader = header.defaultHeader; //默认头像
 
         function init() {
             getList();//获取技能,需求订单
@@ -62,7 +63,7 @@
                         if (re.data.selectOrderList[0]) {
                             $scope.isHaveSelectOrderFrom = true;
                         }
-                        if (re.data.loseOrderList[0]) {
+                        if (re.data.loseOrderList[0] || re.data.loseOrderNeedList[0]) {
                             $scope.isHaveLoseOrderFrom = true;
                         }
                         $scope.list = re.data;
@@ -92,6 +93,11 @@
                 });
             });
 
+            //成交订单 跳转绑定
+            angular.forEach($scope.list.selectOrderList, function (vo) {
+                tools.bindClick('selectListGo_' + vo.orderId, _bindJiNengByDom);
+            });
+
             //需求绑定
             angular.forEach($scope.list.needOrderList, function (vo) {
                 var dom = document.getElementById('needOrder_' + vo.orderId);
@@ -100,10 +106,92 @@
                 });
             });
 
+            //选别人和 作为bindUid过期 跳转绑定
+            angular.forEach($scope.list.loseOrderList, function (vo) {
+                tools.bindClick('loseOrderGo_' + vo.orderId._id, _bindJiNengByDom);
+            });
+
+            // 作为orderUid 过期 跳转绑定
+            angular.forEach($scope.list.loseOrderNeedList, function (vo) {
+                tools.bindClick('loseNeedOrderGo_' + vo._id, _bindJiNengByDom);
+            });
+
+
+            //删除成交订单 绑定
+            angular.forEach($scope.list.selectOrderList, function (vo) {
+                tools.bindClick('delSelect_' + vo.orderId, delSelectOrderId);
+            });
+
+            //删除bindUid 过期订单 绑定
+            angular.forEach($scope.list.loseOrderList, function (vo) {
+                tools.bindClick('delLose_' + vo.orderId._id, delLoseOrderId);
+            });
+
+            //删除orderUid 过期订单 绑定
+            angular.forEach($scope.list.loseOrderNeedList, function (vo) {
+                tools.bindClick('delLoseNeed_' + vo._id, delLoseNeedOrderId);
+            });
 
             //跳转订单详情
             function _bindJiNeng(dom, orderId, type) {
                 $state.go('orderFromContent', {'orderId': orderId, 'type': type});
+            }
+
+            //跳转订单详情 by domOrder
+            function _bindJiNengByDom(dom) {
+                var orderId = dom.getAttribute('orderId');
+                $state.go('orderFromContent', {'orderId': orderId, 'type': 'select'});
+            }
+
+            //删除成交订单
+            function delSelectOrderId(dom) {
+                var thisOrderId = dom.getAttribute('orderid');
+                var url = config.host.nodeHost + '/sns/delNeed';
+                tools.postJsp(url, {needId: thisOrderId})
+                    .then(function (re) {
+                        if (re.data && re.data.code == 'S') {
+                            $timeout(function () {
+                                $scope.isHaveSelectOrderFrom = false;//有选单订单显示
+                                getList();
+                            }, 0);
+                        } else {
+                            tools.alert({title: '删除失败'});
+                        }
+                    })
+            }
+
+            //删除过期订单 作为 bindUid
+            function delLoseOrderId(dom) {
+                var thisOrderId = dom.getAttribute('orderid');
+                var url = config.host.nodeHost + '/member/delBindUser';
+                tools.postJsp(url, {orderId: thisOrderId})
+                    .then(function (re) {
+                        if (re.data && re.data.code == 'S') {
+                            $timeout(function () {
+                                $scope.isHaveLoseOrderFrom = false;//有选单订单显示
+                                getList();
+                            }, 0);
+                        } else {
+                            tools.alert({title: '删除失败'});
+                        }
+                    })
+            }
+
+            //删除过期订单 作为 orderUid
+            function delLoseNeedOrderId(dom) {
+                var thisOrderId = dom.getAttribute('orderid');
+                var url = config.host.nodeHost + '/sns/delNeed';
+                tools.postJsp(url, {needId: thisOrderId})
+                    .then(function (re) {
+                        if (re.data && re.data.code == 'S') {
+                            $timeout(function () {
+                                $scope.isHaveLoseOrderFrom = false;//有选单订单显示
+                                getList();
+                            }, 0);
+                        } else {
+                            tools.alert({title: '删除失败'});
+                        }
+                    })
             }
 
         }
@@ -119,7 +207,7 @@
             tools.postJsp(url, {orderId: needId}, true)
                 .then(function () {
                     callBack();
-                })
+                });
         }
 
 

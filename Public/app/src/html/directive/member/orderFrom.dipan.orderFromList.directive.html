@@ -1,7 +1,7 @@
 <div id="orderFrom">
     <div class="clear" style="margin-top: 1.5rem;width: 100%">
         <div class="lan clear" style="font-size: 1rem;margin-left: 1rem;margin-bottom: 2rem"
-             ng-show="!isHaveJinengOrderFrom && !isHaveNeedOrderFrom">
+             ng-show="!isHaveJinengOrderFrom && !isHaveNeedOrderFrom && !isHaveSelectOrderFrom && !isHaveLoseOrderFrom">
             暂无订单!
         </div>
         <div id="jinengOrderFrom" ng-show="isHaveJinengOrderFrom">
@@ -85,44 +85,85 @@
                  ng-repeat="vo3 in list.selectOrderList" bo-id="'selectOrder_'+vo3.orderId">
                 <div class="clear"
                      style="width: 100%;padding:10px;text-align: left;font-size: 1rem;color:#777;border-color: #fff;background-color: #f7e2e1">
-                    <div class="left lan" style="margin-left: 1rem;" bo-text="vo3.needOrderTitle"></div>
-                    <div class="left" style="margin-left: 1rem">
-                        <span class="left" style="color: red;font-weight: bolder;font-size: 0.8rem"
-                              bo-text="vo3.needOrederJionCount"></span>
-                        <span class="left " style="font-size: 0.8rem">人接单</span>
-                        <span class="left">
-                        <i class="fa fa-ellipsis-h fa-2x"
-                           style="width: 7px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;"
-                           bo-if="vo3.isNoRead"></i>
-                        </span>
+
+                    <div class="left" bo-id="'selectListGo_'+vo3.orderId" bo-attr bo-attr-orderid="vo3.orderId">
+                        <div class="left lan" style="margin-left: 1rem;" bo-text="vo3.orderTitle"></div>
+                        <div class="left" style="margin-left: 1rem">
+                        <span style="font-size: 0.8rem" bindonce="vo3.bindUid"
+                              bo-text="vo3.bindUid.name || vo3.bindUid.mt"></span>
+                        </div>
                     </div>
-                    <div class="right  fa fa-angle-right" style="margin-top: 3px"></div>
+
+                    <div class="right  fa fa-times mui-btn" bo-id="'delSelect_'+vo3.orderId"
+                         bo-attr
+                         bo-attr-orderid="vo3.orderId"
+                         style="margin-top: -2px;border: none;background:none"></div>
                 </div>
             </div>
         </div>
 
         <div id="loseOrderFrom" style="margin-top: 2.5rem" ng-show="isHaveLoseOrderFrom">
             <div class="lan" style="font-size: 1rem;margin-left: 1rem;margin-bottom: 2rem">失效订单</div>
+            <!--当前uid 作为 bindUser 失效 时间失效,和选别人了-->
             <div class="clear" style="margin-top: 1rem" bindonce="list.loseOrderList"
                  ng-repeat="vo4 in list.loseOrderList" bo-id="'loseOrder_'+vo4.orderId">
                 <div class="clear"
-                     style="width: 100%;padding:10px;text-align: left;font-size: 1rem;color:#777;border-color: #fff;background-color: #f0f0ec">
-                    <div class="left lan" style="margin-left: 1rem;" bo-text="vo4.needOrderTitle"></div>
-                    <div class="left" style="margin-left: 1rem">
-                        <span class="left" style="color: red;font-weight: bolder;font-size: 0.8rem"
-                              bo-text="vo4.needOrederJionCount"></span>
-                        <span class="left " style="font-size: 0.8rem">人接单</span>
-                        <span class="left">
-                        <i class="fa fa-ellipsis-h fa-2x"
-                           style="width: 7px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;"
-                           bo-if="vo4.isNoRead"></i>
-                        </span>
+                     style="width: 100%;padding:10px;text-align: left;font-size: 1rem;color:#777;border-color: #fff;background-color: #e9e9e9">
+
+                    <div class="left" bo-id="'loseOrderGo_'+vo4.orderId._id" bo-attr bo-attr-orderid="vo4.orderId._id">
+
+                        <!--过期-->
+                        <div class="left" style="margin-left: 1rem" bindonce="vo4.bindUidType"
+                             bo-if="vo4.bindUidType==4">
+                            <span style="font-size: 0.8rem">[过期了]</span>
+                        </div>
+
+                        <!--选别人-->
+                        <div class="left" style="margin-left: 1rem" bindonce="vo4.bindUidType"
+                             bo-if="vo4.bindUidType==5">
+                            <span style="font-size: 0.8rem">[选</span>
+                            <img style="width: 15px;height: 15px;border-radius: 15px;"
+                                 bindonce="vo4.selectBindUser.bindUid"
+                                 bo-src="vo4.selectBindUser.bindUid.headerImg || defaultHeader" alt="">
+                            <span style="font-size: 0.8rem;color: red" bindonce="vo4.selectBindUser.bindUid"
+                                  bo-text="vo4.selectBindUser.bindUid.name || vo4.selectBindUser.bindUid.mt"></span>
+                            <span bindonce="vo4.bindUidType" bo-if="vo4.bindUidType==5"
+                                  style="font-size: 0.8rem">了]</span>
+                        </div>
+
+                        <div class="left lan" style="margin-left: 1rem;" bo-text="vo4.orderId.title"></div>
+
                     </div>
-                    <div class="right  fa fa-angle-right" style="margin-top: 3px"></div>
+
+                    <!--删除 改关系表状态 -->
+                    <div class="right fa fa-times mui-btn" bo-id="'delLose_'+vo4.orderId._id"
+                         bo-attr
+                         bo-attr-orderid="vo4.orderId._id"
+                         style="margin-top: -2px;border: none;background:none"></div>
                 </div>
             </div>
+
+
+            <!--当前uid 作为 orderUid 失效 时间失效-->
+            <div class="clear" style="margin-top: 1rem" bindonce="list.loseOrderNeedList"
+                 ng-repeat="vo5 in list.loseOrderNeedList" bo-id="'loseNeedOrder_'+vo5.orderId">
+                <div class="clear"
+                     style="width: 100%;padding:10px;text-align: left;font-size: 1rem;color:#777;border-color: #fff;background-color: #e9e9e9">
+
+                    <div class="left" bo-id="'loseNeedOrderGo_'+vo5._id" bo-attr bo-attr-orderid="vo5._id">
+                        <div class="left" style="margin-left: 1rem;font-size: 0.8rem">
+                            [过期了]
+                        </div>
+                        <div class="left lan" style="margin-left: 1rem;" bo-text="vo5.title"></div>
+                    </div>
+
+                    <div class="right  fa fa-times mui-btn" bo-id="'delLoseNeed_'+vo5._id"
+                         bo-attr
+                         bo-attr-orderid="vo5._id"
+                         style="margin-top: -2px;border: none;background:none"></div>
+                </div>
+            </div>
+
         </div>
-
-
     </div>
 </div>
