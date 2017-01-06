@@ -50,7 +50,13 @@
 
         function getOrderContent() {
             var url = config.host.nodeHost + '/member/getOrderFromContent';
-            var uid = tools.getLocalStorageObj('userData').uid;
+            var gpsObj,uid;
+            var userData = tools.getLocalStorageObj('userData');
+            if(userData && userData.uid)
+            {
+                uid = 
+            }
+            var uid = .uid;
             tools.postJsp(url,
                 {
                     uid: uid,
