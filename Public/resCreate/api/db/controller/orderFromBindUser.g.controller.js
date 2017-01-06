@@ -24,7 +24,9 @@ var fun = {
     getSelectListOrderIdCtrl: orderFromBindUserFun.getSelectListOrderIdFun,//关系表查orderid的成交数据 postObj.selectOrderList 传 postObj.allSelectOrder
     getLoseListOrderIdCtrl: orderFromBindUserFun.getLoseListOrderIdFun,//返回当前uid的关系表的 过期||选别人的 postObj.loseOrderList,
     delBindUserCtrl: orderFromBindUserFun.delBindUserFun,//删除bindUser 在我的订单列表不显示 修改state
-
+    trueOrderIsReadyCtrl: orderFromBindUserFun.trueOrderIsReadyFun,//判断orderid 是否有未读消息 ,传orderid
+    editOrderIsReadyCtrl: orderFromBindUserFun.editOrderIsReadyFun,//修改orderid 的所有对应关系的 orderUidIsReadMark 为已读 ,传orderid
+    eidtOrderIdToNoReadCtrl: orderFromBindUserFun.eidtOrderIdToNoReadFun,//修改orderId 的   orderUidIsReadMark 为未读 传postObj 返回postObj
 };
 
 /**

@@ -21,7 +21,6 @@
 
     function thisController($scope, $rootScope, $timeout, $state, config, tools, header) {
 
-
         var clickType = 'tap';
         tools.trueWeb(function () {
             clickType = 'click';
@@ -119,7 +118,9 @@
             angular.forEach($scope.list.needOrderList, function (vo) {
                 var dom = document.getElementById('needOrder_' + vo.orderId);
                 dom.addEventListener(clickType, function () {
-                    _bindJiNeng(dom, vo.orderId, 'select');
+                    upDateNeedOrderIsReadMark(vo.orderId, function () {//标记需求为已读
+                        _bindJiNeng(dom, vo.orderId, 'select');
+                    });
                 });
             });
 
@@ -221,7 +222,7 @@
 
 
         /**
-         * 更新当前订单为已读
+         * 更新当前技能订单为已读
          * @param callBack
          */
 
@@ -233,6 +234,17 @@
                 });
         }
 
+        /**
+         * 更新当前需求订单为已读
+         * @param callBack
+         */
 
+        function upDateNeedOrderIsReadMark(needId, callBack) {
+            var url = config.host.nodeHost + '/member/editNeedOrderIsReadMark';
+            tools.postJsp(url, {orderId: needId}, true)
+                .then(function (re) {
+                    callBack();
+                });
+        }
     }
 })();

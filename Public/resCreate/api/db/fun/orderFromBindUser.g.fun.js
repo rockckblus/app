@@ -24,8 +24,9 @@ var fun = {
     getSelectListOrderIdFun: getSelectListOrderIdFun,//关系表查orderid的成交数据 postObj.selectOrderList 传 postObj.allSelectOrder
     _getUserBindUserBySelectOrderIdFun: _getUserBindUserBySelectOrderIdFun,//根据  orderId 查 被选的 技能uid数据 传orderId
     delBindUserFun: delBindUserFun,//删除bindUser 在我的订单列表不显示 修改state
-    trueOrderIsReadyFun: trueOrderIsReadyFun,//判断orderid 是否有未读消息
-    editOrderIsReadyFun: editOrderIsReadyFun,//修改orderid 的所有对应关系的 orderUidIsReadMark 为已读
+    trueOrderIsReadyFun: trueOrderIsReadyFun,//判断orderid 是否有未读消息 ,传orderid 返回{code:S,msg:}
+    editOrderIsReadyFun: editOrderIsReadyFun,//修改orderid 的所有对应关系的 orderUidIsReadMark 为已读 ,传orderid
+    eidtOrderIdToNoReadFun: eidtOrderIdToNoReadFun,//修改orderId 的   orderUidIsReadMark 为未读 传postObj 返回postObj
 };
 
 /**
@@ -124,7 +125,6 @@ function trueIsHaveFun(postObj) {
 /**
  * 判断技能id是否被当前uid下单
  */
-
 function trueXianDanBindUserFun(postObj) {
     var defer = q.defer();
 
@@ -153,7 +153,6 @@ function trueXianDanBindUserFun(postObj) {
 /**
  *判断orderId是否被当前uid接单
  */
-
 function trueJieDanBindUserFun(postObj) {
     var defer = q.defer();
 
@@ -258,7 +257,6 @@ function getNeedListOrderIdFun(postObj) {
                 'path': 'orderId',
                 'model': orderModel,
                 'select': 'pingJiaState state title',
-                // 'match': {state: {$in: [1, 2, 3, 5]}}//发起(此处有判断被动接单逻辑),接单
                 'match': {state: {$in: [1, 2]}}//发起(此处有判断被动接单逻辑),接单
             }
         )
@@ -271,11 +269,14 @@ function getNeedListOrderIdFun(postObj) {
                 for (var vo in doc) {
                     if (doc[vo].orderId) {
                         var orderId = doc[vo].orderId._id.toString();
+
+
                         if (countOrderId.indexOf(orderId) == -1) {
                             countOrderId.push(orderId);
                             tempOrderIdArr[orderId] = {
                                 orderId: orderId,
                                 title: doc[vo].orderId.title,
+                                isNoReady: false,//未读
                                 jieDanCount: [],
                                 beiDongJieDan: []
                             };
@@ -298,17 +299,12 @@ function getNeedListOrderIdFun(postObj) {
                     tempOrderIdArr[vo2].jieDanCount = tempOrderIdArr[vo2].jieDanCount.length;
                     tempOrderIdArrEnd.push(tempOrderIdArr[vo2]);
                 }
-
                 postObj.needOrderList = tempOrderIdArrEnd;//所有订单push到 需求单数组 ,然后判断type 来 给 被动接单人资料
-
                 defer.resolve(postObj);
             }
         });
-
     return defer.promise;
-
 }
-
 
 /**
  * 返回当前用户作为 bindUid 的成交订单 postObj.selectBindUidOrderList
@@ -358,7 +354,6 @@ function getSelectBindUidListOrderIdFun(postObj) {
     return defer.promise;
 
 }
-
 
 /**
  * 返回当前uid的关系表的 过期||选别人的 postObj.loseOrderList bindUid为uid
@@ -698,7 +693,6 @@ function _getUserBindUserBySelectOrderIdFun(orderId, orderTitle, pingJiaState) {
     return defer.promise;
 }
 
-
 /**
  * 删除bindUser 在我的订单列表不显示 修改state
  */
@@ -724,9 +718,9 @@ function delBindUserFun(postObj) {
 /**
  * 判断orderid 是否有未读消息
  */
-function trueOrderIsReadyFun(orderId) {
+function trueOrderIsReadyFun(orderId, obj) {
     var defer = q.defer();
-    orderFromBindUserModel.findOne({orderId: orderId, orderUidIsReadMark: false})
+    orderFromBindUserModel.findOne({orderId: orderId, orderUidIsReadMark: true})
         .exec(function (err, doc) {
             if (err) {
                 defer.reject(err);
@@ -734,12 +728,14 @@ function trueOrderIsReadyFun(orderId) {
                 if (doc) {
                     defer.resolve({
                         code: 'S',
-                        msg: '当前order有未读消息'
+                        msg: '当前order有未读消息',
+                        obj: obj
                     });
                 } else {
                     defer.resolve({
                         code: 'F',
-                        msg: '当前order没有未读消息'
+                        msg: '当前order没有未读消息',
+                        obj: obj
                     });
                 }
             }
@@ -748,20 +744,46 @@ function trueOrderIsReadyFun(orderId) {
 }
 
 /**
- * 修改orderid 的所有对应关系的 orderUidIsReadMark 为已读
+ * 修改orderid 的所有对应关系的  orderUidIsReadMark 为已读
  */
 function editOrderIsReadyFun(orderId) {
     var defer = q.defer();
-    orderFromBindUserModel.update({orderId: orderId}, {orderUidIsReadMark: true}, {multi: true}, function (err, row) {
-        if (err) {
-            defer.reject(err);
-        } else {
-            defer.resolve(row);
-        }
-    });
+    orderFromBindUserModel.update(
+        {orderId: orderId},
+        {orderUidIsReadMark: false},
+        {multi: true},
+        function (err, row) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                defer.resolve({data: row});
+            }
+        });
     return defer.promise;
 }
 
+/**************************
+ * 修改orderId 的    orderUidIsReadMark 为未读
+ * 返回postObj
+ * 17/1/6 下午7:25 ByRockBlus
+ **************************/
+function eidtOrderIdToNoReadFun(postObj) {
+    var defer = q.defer();
+    orderFromBindUserModel.update(
+        {orderId: postObj.orderId, orderUid: postObj.orderUid},
+        {orderUidIsReadMark: true},
+        {multi: false},
+        function (err, row) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                defer.resolve(postObj);
+            }
+        }
+    );
+
+    return defer.promise;
+}
 
 module.exports = fun;
 

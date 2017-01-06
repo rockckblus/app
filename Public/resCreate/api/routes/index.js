@@ -574,8 +574,11 @@ function postMember(req, res) {
                 res.json(re);
             });
             break;
-
-
+        case 'editNeedOrderIsReadMark'://标记需求订单为已读
+            memberCtrl.editNeedOrderIsReadMarkCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
     }
 }
 

@@ -33,7 +33,7 @@ var fun = {
     getUserTelCtrl: getUserTelCtrl,//查询电话
     getKillContent: getKillContent,//获取技能详情_根据id
     xiaDan: xiaDan,//下单
-    jieDan: jieDan,//接单
+    jieDan: jieDan,//抢单
     trueXianDan: trueXianDan,//判断技能id是否被当前uid下单
     trueJieDan: trueJieDan,//判断orderId是否被当前uid接单
     getOrderFromContent: getOrderFromContent,//订单详情
@@ -42,7 +42,7 @@ var fun = {
     selectOrderFromCtrl: selectOrderFromCtrl,//选单
     editIsReatMarkCtrl: editIsReatMarkCtrl,//修改已经读取过订单 标记
     delBindUserCtrl: delBindUserCtrl,//删除bindUser 在我的订单列表不显示 修改state
-
+    editNeedOrderIsReadMarkCtrl: editNeedOrderIsReadMarkCtrl,//标记需求订单为已读
 };
 
 /**
@@ -384,10 +384,13 @@ function xiaDan(postObj, callBack) {
 }
 
 /**
- * 接单
+ *  抢单
  */
 function jieDan(postObj, callBack) {
-    snsArticleFun.jieDanFun(postObj).then(_call, _err);
+    snsArticleFun.jieDanFun(postObj)
+        .then(bindUserCtrl.eidtOrderIdToNoReadCtrl)
+        .then(_call, _err);
+
     function _call(re) {
         pubFun.pubReturn(false, re, '接单成功', '接单失败', callBack);
     }
@@ -450,12 +453,44 @@ function getOrderFromListCtrl(postObj, callBack) {
 
     bindUserCtrl.getJiNengListOrderIdCtrl(postObj)// postObj.jiNengOrderList 返回当前uid的 接单 order  被动接单,点击下单 主动接单 bindUsertype 1 2
         .then(bindUserCtrl.getNeedListOrderIdCtrl)//返回当前uid的 需求 order 包括统计
+        .then(_trueNeedOrderListIsRead)//遍历needOrderList有未读信息
         .then(needFromFun.getSelectOrderIdByUidFun)//返回当前uid的成交订单 已经选好的订单 先查 当前uid的 oreder 已经成交的orderId数组,postObj.allSelectOrder
         .then(bindUserCtrl.getSelectListOrderIdCtrl)//然后去 关系表查orderid的成交数据 postObj.selectOrderList
         .then(bindUserCtrl.getSelectBindUidListOrderIdCtrl)//返回当前用户作为 bindUid 的成交订单 postObj.selectBindUidOrderList
         .then(needFromFun.getLoseOrderIdByUidFun)//返回当前uid的order 表的 过期的order postObj.loseOrderNeedList
         .then(bindUserCtrl.getLoseListOrderIdCtrl)//返回当前uid 技能方 的关系表的 过期||选别人的 postObj.loseOrderList
         .then(_call, _err);
+
+    /**************************
+     *  遍历needOrderList有未读信息
+     **************************/
+    function _trueNeedOrderListIsRead(postObj) {
+        var defer = q.defer();
+        var count = 0;
+        if (postObj.needOrderList && postObj.needOrderList[0]) {
+            for (var vo in postObj.needOrderList) {
+                count++;
+                bindUserCtrl.trueOrderIsReadyCtrl(postObj.needOrderList[vo].orderId, postObj.needOrderList[vo])
+                    .then(__editReTrueIsReady)
+            }
+        }
+
+        //编辑判断有未读消息 数据，回调到 needOrderList
+        function __editReTrueIsReady(reObj) {
+            if (reObj.code == 'S') {
+                reObj.obj.isNoRead = true;
+            } else {
+                reObj.obj.isNoRead = false;
+            }
+            if (count === postObj.needOrderList.length) {
+                setTimeout(function () {
+                    defer.resolve(postObj);
+                }, 100);
+            }
+        }
+
+        return defer.promise;
+    }
 
     function _call(re) {
         var reEnd = {};
@@ -528,6 +563,23 @@ function delBindUserCtrl(postObj, callBack) {
 
 }
 
+/**************************
+ *标记需求订单为已读
+ * 17/1/6 下午9:16 ByRockBlus
+ **************************/
+function editNeedOrderIsReadMarkCtrl(postObj, callBack) {
+    bindUserCtrl.editOrderIsReadyCtrl(postObj.orderId)
+        .then(_call, _err);
+
+    function _call(re) {
+        pubFun.pubReturn(false, re, '标记已读成功', '', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '标记已读失败', callBack);
+    }
+
+}
 
 module.exports = fun;
 
