@@ -24,6 +24,8 @@ var fun = {
     getSelectListOrderIdFun: getSelectListOrderIdFun,//关系表查orderid的成交数据 postObj.selectOrderList 传 postObj.allSelectOrder
     _getUserBindUserBySelectOrderIdFun: _getUserBindUserBySelectOrderIdFun,//根据  orderId 查 被选的 技能uid数据 传orderId
     delBindUserFun: delBindUserFun,//删除bindUser 在我的订单列表不显示 修改state
+    trueOrderIsReadyFun: trueOrderIsReadyFun,//判断orderid 是否有未读消息
+    editOrderIsReadyFun: editOrderIsReadyFun,//修改orderid 的所有对应关系的 orderUidIsReadMark 为已读
 };
 
 /**
@@ -716,6 +718,47 @@ function delBindUserFun(postObj) {
         }
     );
 
+    return defer.promise;
+}
+
+/**
+ * 判断orderid 是否有未读消息
+ */
+function trueOrderIsReadyFun(orderId) {
+    var defer = q.defer();
+    orderFromBindUserModel.findOne({orderId: orderId, orderUidIsReadMark: false})
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                if (doc) {
+                    defer.resolve({
+                        code: 'S',
+                        msg: '当前order有未读消息'
+                    });
+                } else {
+                    defer.resolve({
+                        code: 'F',
+                        msg: '当前order没有未读消息'
+                    });
+                }
+            }
+        });
+    return defer.promise;
+}
+
+/**
+ * 修改orderid 的所有对应关系的 orderUidIsReadMark 为已读
+ */
+function editOrderIsReadyFun(orderId) {
+    var defer = q.defer();
+    orderFromBindUserModel.update({orderId: orderId}, {orderUidIsReadMark: true}, {multi: true}, function (err, row) {
+        if (err) {
+            defer.reject(err);
+        } else {
+            defer.resolve(row);
+        }
+    });
     return defer.promise;
 }
 
