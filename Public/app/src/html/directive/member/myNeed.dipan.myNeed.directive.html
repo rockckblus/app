@@ -59,9 +59,16 @@
                 <div class="right">
                     <div class="left hui mui-btn fa fa-times"
                          bo-id="'myNeedListDel_'+vo._id"
+                         bo-if="vo.pingJiaState ==3"
                          bo-attr
                          bo-attr-needid="vo._id"
                          style="margin-left: 0rem;border: none"></div>
+                    <div class="left hui mui-btn "
+                         bo-id="'myNeedListGo_'+vo._id"
+                         bo-if="vo.pingJiaState !=3 || vo.state==4"
+                         bo-attr
+                         bo-attr-needid="vo._id"
+                         style="margin-left: 0rem;border: none">等待互评</div>
                 </div>
             </div>
             <div class="clear line"></div>

@@ -372,7 +372,7 @@ function getUserIdOrderListFun(userId, orderId) {
 function myNeedFun(postObj) {
     var defer = q.defer();
     orderModel.find({uid: postObj.uid, state: {$ne: 5}})
-        .select('_id title state')
+        .select('_id title state pingJiaState')
         .exec(function (err, doc) {
             if (err) {
                 defer.reject(err);

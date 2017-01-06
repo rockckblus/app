@@ -57,14 +57,32 @@
             var age3Dom = document.getElementById('editRadio4_2');//35+
 
             var userData = tools.getLocalStorageObj('userData');
-            if (userData.sex) {
-                _changeSex(userData.sex);
-            }
-            if (userData.age) {
-                _changeAge(userData.age);
-            }
-            if (userData.name) {
-                _changeName(userData.name);
+            if (userData) {
+                if (userData.sex) {
+                    _changeSex(userData.sex);
+                }
+                if (userData.age) {
+                    _changeAge(userData.age);
+                }
+                if (userData.name) {
+                    _changeName(userData.name);
+                }
+            } else {
+                $timeout(function () {
+                    try {
+                        if (userData.sex) {
+                            _changeSex(userData.sex);
+                        }
+                        if (userData.age) {
+                            _changeAge(userData.age);
+                        }
+                        if (userData.name) {
+                            _changeName(userData.name);
+                        }
+                    } catch (e) {
+                        console.error('未获取到用户数据');
+                    }
+                }, 300);
             }
 
             function _changeSex(sex) {

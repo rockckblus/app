@@ -172,12 +172,22 @@
          */
         function getUserData() {
             var url = config.host.nodeHost + '/member/getUserData';
-            var uid = tools.getLocalStorageObj('userData');
-            $timeout(function () {
-                uid = uid.uid;
+
+            var userData = tools.getLocalStorageObj('userData');
+            var uid;
+            if (userData && userData.uid) {
+                uid = userData.uid;
+            }
+
+            if (uid) {
                 tools.postJsp(url, {uid: uid}, true).then(_scuess, function () {
                 });
-            }, 0);
+            } else {
+                $timeout(function () {
+                    tools.postJsp(url, {uid: uid}, true).then(_scuess, function () {
+                    });
+                }, 200);
+            }
 
             function _scuess(re) {
                 if (re.data.code == 'S') {

@@ -39,9 +39,22 @@
         function getList() {
             var defer = $q.defer();
             var url = config.host.nodeHost + '/sns/myKill';
+            var userData = tools.getLocalStorageObj('userData');
+            var uid;
+            if (userData && userData.uid) {
+                uid = userData.uid;
+            }
 
-            tools.postJsp(url, {uid: tools.getLocalStorageObj('userData').uid})
-                .then(_call, _err);
+            if (uid) {
+                tools.postJsp(url, {uid: uid})
+                    .then(_call, _err);
+            } else {
+                $timeout(function () {
+                    tools.postJsp(url, {uid: uid})
+                        .then(_call, _err);
+                }, 200);
+            }
+
             function _call(re) {
                 if (re.data && re.data.code == 'S' && re.data.doc && re.data.doc[0]) {
                     $timeout(function () {

@@ -662,7 +662,7 @@ function getSelectListOrderIdFun(postObj) {
 /**
  * 根据  orderId 查 被选的 技能uid数据
  */
-function _getUserBindUserBySelectOrderIdFun(orderId, orderTitle,pingJiaState) {
+function _getUserBindUserBySelectOrderIdFun(orderId, orderTitle, pingJiaState) {
     var defer = q.defer();
     orderFromBindUserModel.findOne(
         {
@@ -688,7 +688,7 @@ function _getUserBindUserBySelectOrderIdFun(orderId, orderTitle,pingJiaState) {
                 }
                 if (doc && doc._doc) {
                     doc._doc.orderTitle = orderTitle;
-                    doc._doc.pingJiaState= pingJiaState;
+                    doc._doc.pingJiaState = pingJiaState;
                 }
                 defer.resolve(doc);
             }

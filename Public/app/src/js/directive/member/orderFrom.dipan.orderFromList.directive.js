@@ -47,8 +47,21 @@
 
         function getList() {
             var url = config.host.nodeHost + '/member/getOrderFromList';
-            var uid = tools.getLocalStorageObj('userData').uid;
-            tools.postJsp(url, {uid: uid}, true).then(_s, _err);
+
+            var userData = tools.getLocalStorageObj('userData');
+            var uid;
+            if (userData && userData.uid) {
+                uid = userData.uid;
+            }
+
+            if (uid) {
+                tools.postJsp(url, {uid: uid}, true).then(_s, _err);
+            } else {
+                $timeout(function () {
+                    tools.postJsp(url, {uid: uid}, true).then(_s, _err);
+                }, 200);
+            }
+
             function _s(re) {
                 if (re.data.code == 'S') {
                     re.data = re.data.doc;
@@ -120,10 +133,10 @@
                 tools.bindClick('loseNeedOrderGo_' + vo._id, _bindJiNengByDom);
             });
 
-
-            //删除成交订单 绑定
+            //删除成交订单 绑定 ,如果没评价就跳转
             angular.forEach($scope.list.selectOrderList, function (vo) {
                 tools.bindClick('delSelect_' + vo.orderId, delSelectOrderId);
+                tools.bindClick('pingJiaGo_' + vo.orderId, _bindJiNengByDom);
             });
 
             //删除bindUid 过期订单 绑定
@@ -131,9 +144,10 @@
                 tools.bindClick('delLose_' + vo.orderId._id, delLoseOrderId);
             });
 
-            //删除bindUid 成交订单 绑定
+            //删除 bindUid 成交订单 绑定 如果没评价就跳转
             angular.forEach($scope.list.selectBindUidOrderList, function (vo) {
                 tools.bindClick('delLose_' + vo.orderId._id, delLoseOrderId);
+                tools.bindClick('pingJiaGo_' + vo.orderId._id, _bindJiNengByDom);
             });
 
             //删除orderUid 过期订单 绑定

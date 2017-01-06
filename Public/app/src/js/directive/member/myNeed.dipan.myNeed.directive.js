@@ -42,35 +42,79 @@
         function getList() {//获取需求列表
             var defer = $q.defer();
             var url = config.host.nodeHost + '/sns/myNeed';
-            tools.postJsp(url, {})
-                .then(function (re) {
-                    if (re && re.data && re.data.code == 'S' && re.data.doc) {
 
-                        var typeOne = [];
-                        var typeTwo = [];
-                        angular.forEach(re.data.doc, function (vo) {
-                            if (vo.state !== 4) {
-                                if (vo.state == 3) {
-                                    typeTwo.push(vo);
+
+            var userData = tools.getLocalStorageObj('userData');
+            var uid;
+            if (userData && userData.uid) {
+                uid = userData.uid;
+            }
+
+            if (uid) {
+                tools.postJsp(url, {uid: uid})
+                    .then(function (re) {
+                        if (re && re.data && re.data.code == 'S' && re.data.doc) {
+
+                            var typeOne = [];
+                            var typeTwo = [];
+                            angular.forEach(re.data.doc, function (vo) {
+                                if (vo.state !== 4) {
+                                    if (vo.state == 3) {
+                                        typeTwo.push(vo);
+                                    } else {
+                                        typeOne.push(vo);
+                                    }
                                 } else {
-                                    typeOne.push(vo);
+                                    typeTwo.push(vo);
                                 }
-                            } else {
-                                typeTwo.push(vo);
-                            }
-                        });
+                            });
 
-                        $timeout(function () {
-                            $scope.listTypeOne = typeOne;
-                            $scope.listTypeTwo = typeTwo;
-                            defer.resolve(re.data.doc);//成功
-                        }, 0);
-                    } else {
+                            $timeout(function () {
+                                $scope.listTypeOne = typeOne;
+                                $scope.listTypeTwo = typeTwo;
+                                defer.resolve(re.data.doc);//成功
+                            }, 0);
+                        } else {
+                            defer.reject('获取需求列表失败');
+                        }
+                    }, function (err) {
                         defer.reject('获取需求列表失败');
-                    }
-                }, function (err) {
-                    defer.reject('获取需求列表失败');
-                });
+                    });
+            } else {
+                $timeout(function () {
+
+                    tools.postJsp(url, {uid: uid})
+                        .then(function (re) {
+                            if (re && re.data && re.data.code == 'S' && re.data.doc) {
+
+                                var typeOne = [];
+                                var typeTwo = [];
+                                angular.forEach(re.data.doc, function (vo) {
+                                    if (vo.state !== 4) {
+                                        if (vo.state == 3) {
+                                            typeTwo.push(vo);
+                                        } else {
+                                            typeOne.push(vo);
+                                        }
+                                    } else {
+                                        typeTwo.push(vo);
+                                    }
+                                });
+
+                                $timeout(function () {
+                                    $scope.listTypeOne = typeOne;
+                                    $scope.listTypeTwo = typeTwo;
+                                    defer.resolve(re.data.doc);//成功
+                                }, 0);
+                            } else {
+                                defer.reject('获取需求列表失败');
+                            }
+                        }, function (err) {
+                            defer.reject('获取需求列表失败');
+                        });
+                }, 200);
+            }
+
             return defer.promise;
         }
 
@@ -79,13 +123,15 @@
                 angular.forEach(list, function (vo) {
                     var domId = 'myNeedListClick_' + vo._id;
                     var domIdDel = 'myNeedListDel_' + vo._id;
+                    var goPingJiaDom = 'myNeedListGo_' + vo._id;
                     tools.bindClick(domId, _bindClick);
+                    tools.bindClick(goPingJiaDom, _bindClick);
                     tools.bindClick(domIdDel, _bindDel);
                 });
                 function _bindClick(dom) {//点击
                     var needId = dom.getAttribute('needid');
                     // upDateIsReadMark(needId, function () {//更新当前订单为已读
-                        goNeedUrl(needId);//跳转到需求详情
+                    goNeedUrl(needId);//跳转到需求详情
                     // });
                 }
 

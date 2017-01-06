@@ -16,7 +16,21 @@ var orderFromBindUserSchema = new g.Schema({
     bindUid: {type: g.Schema.Types.ObjectId},//抢订单的用户id
     bindUidType: {type: Number, default: 1},//抢订单的用户，对应订单 的 关系 1 主动接单(点击接单) ，2 。被动接单(点击下单) 3.被选单 4.超时失效订单 5.选其他人了
     jiNengId: {type: g.Schema.Types.ObjectId},//如果是被动接单,就记录被下单的技能id,作为以后判断用
-    bindUidIsReadMark: {type: Boolean, default: false},//如果是被动接单,就默认给技能方未读标记,如果从会员中心点击读过订单了,就 标记为已读
+
+    /**
+     * 如果是被动接单,就默认给技能方未读标记,如果从会员中心点击读过订单了,就 标记为已读,
+     */
+    bindUidIsReadMark: {type: Boolean, default: false},
+    /**
+     * 默认生成订单的时候都标记为 true
+     *
+     * 如果是抢单,就标记false 会员中心点击读了之后,就遍历此orderId对应的所有关系表都改为已读,
+     *
+     * 如果是被选技能方点击接单,就修改此属性为 false, 会员中心点击 成交订单列表下面的这条订单 已读,就改为 true
+     *
+     */
+    orderUidIsReadMark: {type: Boolean, default: true},
+
     state: {type: Number, default: 1},//是否对应这个用户显示这条记录, 1正常,0删除 ,只有被选单,和失效订单 才能删除
     selectOrderTime: {type: Date},//被选单时间
     clickJieOrderTime: {type: Date}, //点击接单时间
