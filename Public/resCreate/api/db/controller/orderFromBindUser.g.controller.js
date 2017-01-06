@@ -14,6 +14,7 @@ var fun = {
     trueJieDanBindUser: orderFromBindUserFun.trueJieDanBindUserFun,//判断orderId是否被当前uid接单
     getJiNengListOrderIdCtrl: orderFromBindUserFun.getJiNengListOrderIdFun,//根据uid取技能订单列表的订单id 与 对应关系
     getNeedListOrderIdCtrl: orderFromBindUserFun.getNeedListOrderIdFun,//根据uid 获取需求订单 的对应关系 订单
+    getSelectBindUidListOrderIdCtrl: orderFromBindUserFun.getSelectBindUidListOrderIdFun,//返回当前用户作为 bindUid 的成交订单 postObj.selectBindUidOrderList
     getOrderIdBindUserCtrl: orderFromBindUserFun.getOrderIdBindUserFun,//根据orderId 获取 接单的对应关系
     changeSelectOrderFromCtrl: orderFromBindUserFun.changeSelectOrderFromFun,//修改对应关系, 根据orderid 其他对应关系 都改为失效。
     changeSelectOrderFromNextCtrl: orderFromBindUserFun.changeSelectOrderFromNextFun,//修改对应关系, 根据orderid 当前uid 对应关系改为 3选单

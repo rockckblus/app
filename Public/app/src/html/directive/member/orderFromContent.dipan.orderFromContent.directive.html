@@ -2,7 +2,6 @@
     <div class="mui-table-view mui-table-view-chevron clear"
          style="margin-top: 40px;margin-bottom: 60px">
 
-
         <!--如果不是需求方就显示头像和公共评价-->
         <div class="left" ng-if="userType !== 3">
             <div class="mui-btn" id="showUserDataFromBtn" style="background-color: #f4f4f4">
@@ -278,7 +277,7 @@
                                              bo-text="vo.bindUid.name"></div>
 
                                         <!--需求方主动接单-->
-                                        <div class="left" style="font-size: 12px;color: red;margin-left: 3px"
+                                        <div class="left" style="font-size: 12px;color: red;margin-left: 5px"
                                              bindonce="vo.bindUidType"
                                              bo-if="vo.bindUidType==2"
                                         >
@@ -312,7 +311,6 @@
                 </div>
             </div>
         </div>
-
 
         <!--如果不是需求方 或接单放 就显示其他需求-->
         <div class="clear" ng-if="userType ==1">
@@ -350,10 +348,12 @@
         </div>
 
         <!--已成交 技能方(当前uid接的单)显示评价-->
-        <div class="clear" style="margin-top: 2rem" ng-show="data.thisNeed.state == 3 && userType == 2 ">
+        <div class="clear" style="margin-top: 2rem" ng-show="(data.thisNeed.state == 3)  && userType == 2 ">
             <div class="clear line" style="font-size: 1rem; width: 100%;">
 
-                <div class="clear lan" style="margin-top: 1.5rem">接单列表</div>
+                <div class="clear lan" ng-if="data.thisNeed.bindUserArr"
+                     style="margin-top: 1.5rem">接单列表
+                </div>
                 <div class="clear">
                     <div class="clear item" style="margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px"
                          bindonce="data.thisNeed.bidUserArr"
@@ -390,7 +390,7 @@
                                       bo-text="'&nbsp;'+vo.bindUid.age">
                                     </span>
                                 <!--需求方主动接单-->
-                                <div class="left" style="font-size: 12px;color: red"
+                                <div class="left" style="font-size: 12px;color: red;margin-left: 5px"
                                      bindonce="vo.bindUidType"
                                      bo-if="vo.bindUidType==2"
                                 >
@@ -485,13 +485,11 @@
                     需求方已评价,双方互评之后显示
                 </div>
 
-
-                <!--评价 k 技能方已评价-->
+                <!--评价  技能方已评价-->
                 <div class="clear" style="margin-top: 25px;width: 100%;text-align: center;font-size: 0.8rem;color: red"
                      ng-if="data.thisNeed.pingJiaState == 2">
                     技能方已评价,双方互评之后显示
                 </div>
-
 
                 <div class="clear" style="margin-top: 1rem">
                         <textarea ng-if="!data.pingJiaTrue" name=""
@@ -506,6 +504,121 @@
 
             </div>
         </div>
+
+        <!--已成交,并删除,对技能方(被选单,和未被选单都显示接单列表 与 被选技能方) -->
+
+        <div class="clear" style="margin-top: 2rem" ng-show="(data.thisNeed.state == 5)  && userType == 2 ">
+            <div class="clear line" style="font-size: 1rem; width: 100%;">
+
+                <div class="clear lan" ng-if="data.thisNeed.bindUserArr" style="margin-top: 1.5rem">接单列表</div>
+                <div class="clear">
+                    <div class="clear item" style="margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px"
+                         bindonce="data.thisNeed.bidUserArr"
+                         ng-repeat="vo in data.thisNeed.bidUserArr"
+                         bo-attr
+                         bo-attr-uid="vo.uid"
+                    >
+                        <div class="left">
+                            <!--头像-->
+                            <div class="left"
+                                 style="width: 30px;height: 30px;border-radius:30px;overflow: hidden;">
+                                <img bindonce="vo.bindUid.headerImg"
+                                     bo-src="vo.bindUid.headerImg" alt=""
+                                     style="width: 30px;height: auto">
+                            </div>
+                            <!--姓名显示-->
+                            <div class="left " style="font-size: 12px;margin-left: 3px;line-height: 14px;color: #777">
+                                        <span class="clear" bindonce="vo.bindUid.name"
+                                              bo-text="vo.bindUid.name"></span>
+                                <!--城市显示-->
+                                <span class="left hui"
+                                      style="font-size:12px;" bindonce="vo.bindUid.city"
+                                      bo-text="vo.bindUid.city">
+
+                                    </span>
+                                <!--性别-->
+                                <span class="left hui"
+                                      style="font-size: 12px;" bindonce="vo.bindUid.sex"
+                                      bo-text="'&nbsp;'+vo.bindUid.sex">
+                                    </span>
+                                <!--年龄-->
+                                <span class="left hui"
+                                      style="font-size: 12px;" bindonce="vo.bindUid.age"
+                                      bo-text="'&nbsp;'+vo.bindUid.age">
+                                    </span>
+                                <!--需求方主动接单-->
+                                <div class="left" style="font-size: 12px;color: red;margin-left: 5px"
+                                     bindonce="vo.bindUidType"
+                                     bo-if="vo.bindUidType==2"
+                                >
+                                    <span bindonce="data.userData" bo-if="data.userData.name"
+                                          bo-text="data.userData.name + '主动下单'"></span>
+                                    <span bindonce="data.userData" bo-if="!data.userData.name"
+                                          bo-text="data.userData.mt + '主动下单'"></span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="clear"></div>
+                <div class="clear lan" style="margin-top: 1.5rem">已选单</div>
+                <div class="clear">
+                    <div class="clear item"
+                         style="margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px"
+                         bindonce="data.thisNeed.bidUser"
+                         bo-attr
+                         bo-attr-uid="data.thisNeed.bidUser.uid"
+                    >
+                        <div class="left">
+                            <!--头像-->
+                            <div class="left"
+                                 style="width: 30px;height: 30px;overflow: hidden;border-radius:30px">
+                                <img bindonce="data.thisNeed.bidUser.bindUid.headerImg"
+                                     bo-src="data.thisNeed.bidUser.bindUid.headerImg" alt=""
+                                     style="width: 30px;height: auto;">
+                            </div>
+                            <!--姓名显示-->
+                            <div class="left lan"
+                                 style="font-size: 14px;margin-left: 3px;line-height: 14px">
+                                        <span class="clear" bindonce="data.thisNeed.bidUser.bindUid.name"
+                                              bo-text="data.thisNeed.bidUser.bindUid.name"></span>
+                                <!--城市显示-->
+                                <span class="left hui"
+                                      style="font-size:12px;" bindonce="data.thisNeed.bidUser.bindUid.city"
+                                      bo-text="data.thisNeed.bidUser.bindUid.city">
+
+                                    </span>
+                                <!--性别-->
+                                <span class="left hui"
+                                      style="font-size: 12px;" bindonce="data.thisNeed.bidUser.bindUid.sex"
+                                      bo-text="'&nbsp;'+data.thisNeed.bidUser.bindUid.sex">
+                                    </span>
+                                <!--年龄-->
+                                <span class="left hui"
+                                      style="font-size: 12px;" bindonce="data.thisNeed.bidUser.bindUid.age"
+                                      bo-text="'&nbsp;'+data.thisNeed.bidUser.bindUid.age">
+                                    </span>
+                            </div>
+                        </div>
+
+                        <div class="right mui-btn"
+                             style="margin-left: 1rem;color: red;border-color: #fff"
+                        >
+                            <i class="fa fa-1x fa-check"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="clear"></div>
+
+            </div>
+        </div>
+
 
         <!--选单 需求方显示-->
         <div class="clear" ng-show="userType == 3">
@@ -630,6 +743,7 @@
                 </div>
 
             </div>
+
             <!--发起-->
             <div ng-show="data.thisNeed.state == 1">
                 <div class="clear lan mui-btn" style="margin-top: 1.5rem" id="noOrderGoHome">{{seeOtherKillInfo}}
@@ -693,11 +807,23 @@
                                 <i class="fa fa-comments fa-1x"></i>
                             </div>
 
-                            <div class="right mui-btn" style="margin-left: 1rem;color: #dadada" bindonce="vo.uid"
+                            <div class="right mui-btn" style="margin-left: 1rem;color: #dadada"
+                                 bindonce="vo"
+                                 bo-if="vo.bindUidType == 1"
                                  bo-attr bo-attr-gname="vo.bindUid.name" bo-attr-uid="vo.uid"
                                  bo-id="'selectUser_' + vo.uid">
                                 选
                             </div>
+                            <div class="right " style="margin-left: 1rem;color: red;font-size: 0.8rem"
+                                 bindonce="vo"
+                                 bo-if="vo.bindUidType == 2"
+                                 bo-attr bo-attr-gname="vo.bindUid.name" bo-attr-uid="vo.uid"
+                                 bo-id="'waitJieDan_' + vo.uid">
+                                <span style="color: #777">等待</span><span bindonce="vo.bindUid"
+                                                                         bo-text="vo.bindUid.name || vo.bindUid.mt"></span><span
+                                    style="color: #777">接单</span>
+                            </div>
+
                         </div>
                     </div>
                 </div>

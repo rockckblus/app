@@ -11,7 +11,12 @@
                  ng-repeat="vo in list.jiNengOrderList" bo-id="'jinengOreder_'+vo.orderId._id">
                 <div class="clear"
                      style="width: 100%;padding:10px;text-align: left;font-size: 1rem;color:#777;border-color: #fff;background-color: #e3f5f9">
-                    <div class="left hui">{{$index + 1}}.</div>
+                    <div class="left " style="font-size: 0.8rem;color: red;" bindonce="vo.bindUidType"
+                         bo-if="vo.bindUidType == 1">[抢]
+                    </div>
+                    <div class="left " style="font-size: 0.8rem;color:#30a080 ;" bindonce="vo.bindUidType"
+                         bo-if="vo.bindUidType == 2">[接]
+                    </div>
                     <div class="left lan" style="margin-left: 1rem" bo-text="vo.orderId.title"></div>
                     <div class="left" style="margin-left: 1rem">
                         <span class="left" style="color: #777;font-size: 0.8rem" bindonce="vo.orderUid"
@@ -20,7 +25,7 @@
                               bo-if="!vo.orderUid.name" bo-text="vo.orderUid.mt"></span>
                         <span class="left">
                         <i class="fa fa-ellipsis-h fa-2x"
-                           style="width: 7px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;"
+                           style="width: 7px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;height: 25px"
                            bo-if="!vo.bindUidIsReadMark"></i>
                         </span>
                     </div>
@@ -81,6 +86,8 @@
 
         <div id="selectOrderFrom" style="margin-top: 2.5rem" ng-show="isHaveSelectOrderFrom">
             <div class="lan" style="font-size: 1rem;margin-left: 1rem;margin-bottom: 2rem">成交订单</div>
+
+            <!--作为orderId成功的订单-->
             <div class="clear" style="margin-top: 1rem" bindonce="list.selectOrderList"
                  ng-repeat="vo3 in list.selectOrderList" bo-id="'selectOrder_'+vo3.orderId">
                 <div class="clear"
@@ -95,9 +102,46 @@
                     </div>
 
                     <div class="right  fa fa-times mui-btn" bo-id="'delSelect_'+vo3.orderId"
+                         bo-if="vo3.pingJiaState == 3"
                          bo-attr
                          bo-attr-orderid="vo3.orderId"
                          style="margin-top: -2px;border: none;background:none"></div>
+                    <div class="right  mui-btn" bo-id="'pingJiaGo_'+vo3.orderId"
+                         bo-if="vo3.pingJiaState != 3"
+                         bo-attr
+                         bo-attr-orderid="vo3.orderId"
+                         style="margin-top: -2px;border: none;background:none;font-size: 12px">等待互评
+                    </div>
+                </div>
+            </div>
+
+            <!--作为bindUid成功的订单-->
+            <div class="clear" style="margin-top: 1rem" bindonce="list.selectBindUidOrderList"
+                 ng-repeat="vo31 in list.selectBindUidOrderList" bo-id="'selectOrder_'+vo31.orderId._id">
+                <div class="clear"
+                     style="width: 100%;padding:10px;text-align: left;font-size: 1rem;color:#777;border-color: #fff;background-color: #f7e2e1">
+
+                    <div class="left" bo-id="'selectListGo_'+vo31.orderId._id" bo-attr
+                         bo-attr-orderid="vo31.orderId._id">
+                        <div class="left lan" style="margin-left: 1rem;" bo-text="vo31.orderId.title"></div>
+                        <div class="left" style="margin-left: 1rem">
+                        <span style="font-size: 0.8rem" bindonce="vo31.orderUid"
+                              bo-text="vo31.orderUid.name || vo31.orderUid.mt"></span>
+                        </div>
+                    </div>
+
+                    <div class="right fa fa-times mui-btn" bo-id="'delLose_'+vo31.orderId._id"
+                         bo-if="vo31.orderId.pingJiaState == 3"
+                         bo-attr
+                         bo-attr
+                         bo-attr-orderid="vo31.orderId._id"
+                         style="margin-top: -2px;border: none;background:none"></div>
+                    <div class="right  mui-btn" bo-id="'pingJiaGo_'+vo31.orderId._id"
+                         bo-if="vo31.orderId.pingJiaState != 3"
+                         bo-attr
+                         bo-attr-orderid="vo31.orderId._id"
+                         style="margin-top: -2px;border: none;background:none;font-size: 12px">等待互评
+                    </div>
                 </div>
             </div>
         </div>

@@ -49,19 +49,24 @@
         }
 
         function getOrderContent() {
+            $timeout(function () {
+                $scope.jieDanShiBai = false;//接单失败提示信息 显示
+            }, 0);
             var url = config.host.nodeHost + '/member/getOrderFromContent';
-            var gpsObj,uid;
+            var gpsObj, uid;
             var userData = tools.getLocalStorageObj('userData');
-            if(userData && userData.uid)
-            {
-                uid = 
+            if (userData && userData.uid) {
+                uid = userData.uid;
             }
-            var uid = .uid;
+            var areaGps = tools.getLocalStorageObj('areaGps');
+            if (areaGps && areaGps.gpsObj) {
+                gpsObj = areaGps.gpsObj;
+            }
             tools.postJsp(url,
                 {
                     uid: uid,
                     orderId: $state.params.orderId,
-                    areaGps: tools.getLocalStorageObj('areaGps').gpsObj
+                    areaGps: gpsObj
                 }, true).then(_s);
             function _s(re) {
                 if (re.data && re.data.code == 'S' && re.data.doc) {
@@ -125,7 +130,7 @@
                             //判断当前uid, 是否接单id(bindUid),是就显示接单按钮,(接单后直接 成交)
                             var thisUidLocal = tools.getLocalStorageObj('userData');
                             if (thisUidLocal && thisUidLocal.uid) {
-                                if (thisUidLocal.uid == trueXiaDan.bindUid) {
+                                if ((thisUidLocal.uid == trueXiaDan.bindUid) && (re.data.doc.thisNeed.state != 3 && re.data.doc.thisNeed.state != 4 && re.data.doc.thisNeed.state != 5 )) {
                                     $timeout(function () {
                                         $scope.bindUserShow = true;
                                         $scope.bindUserShowName = trueXiaDan.showName;
@@ -300,12 +305,14 @@
          * bind点击
          */
         function bindClick() {
-            if ($scope.data && $scope.data.thisNeed && $scope.data.thisNeed.bidUserArr && $scope.data.thisNeed.bidUserArr[0]) {
-                angular.forEach($scope.data.thisNeed.bidUserArr, function (vo) {
-                    tools.bindClick('telCall_' + vo.uid, telCall);
-                    tools.bindClick('imCall_' + vo.uid, imCall);
-                    tools.bindClick('selectUser_' + vo.uid, selectUser);
-                });
+            if ($scope.data && $scope.data.thisNeed && (($scope.data.thisNeed.bidUserArr && $scope.data.thisNeed.bidUserArr[0]) || ($scope.data.thisNeed.bidUser && $scope.data.thisNeed.bidUser.uid))) {
+                if ($scope.data.thisNeed.bidUserArr && $scope.data.thisNeed.bidUserArr[0]) {
+                    angular.forEach($scope.data.thisNeed.bidUserArr, function (vo) {
+                        tools.bindClick('telCall_' + vo.uid, telCall);
+                        tools.bindClick('imCall_' + vo.uid, imCall);
+                        tools.bindClick('selectUser_' + vo.uid, selectUser);
+                    });
+                }
                 var binId;
                 if ($scope.data.thisNeed.bidUser && $scope.data.thisNeed.bidUser.uid) {
                     binId = $scope.data.thisNeed.bidUser.uid;
@@ -317,7 +324,6 @@
                     tools.bindClick('givePingJiaBtnKill', pingJiaSubKill);
                 }
             } else {
-                console.log('22222222');
                 tools.bindClick('noOrderGoHome', goHome);
             }
 
@@ -394,7 +400,7 @@
                 if (re.data && re.data.code == 'S') {
                     getOrderContent();//从新获取数据
                 } else {
-                    _e(re.data.msg);
+                    _e('.' + re.data.msg);
                 }
             }
 

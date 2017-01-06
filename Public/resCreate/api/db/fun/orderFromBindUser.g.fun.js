@@ -13,6 +13,7 @@ var fun = {
     trueJieDanBindUserFun: trueJieDanBindUserFun,//判断orderId是否被当前uid接单
     getJiNengListOrderIdFun: getJiNengListOrderIdFun,//根据uid取技能订单列表的订单id 与 对应关系
     getNeedListOrderIdFun: getNeedListOrderIdFun,//根据uid 获取需求订单 的对应关系 订单
+    getSelectBindUidListOrderIdFun: getSelectBindUidListOrderIdFun,//返回当前用户作为 bindUid 的成交订单 postObj.selectBindUidOrderList
     getOrderIdBindUserFun: getOrderIdBindUserFun,//根据orderId 获取 接单的对应关系
     getLoseListOrderIdFun: getLoseListOrderIdFun,//返回当前uid的关系表的 过期||选别人的 postObj.loseOrderList
     changeSelectOrderFromFun: changeSelectOrderFromFun,//修改对应关系, 根据orderid 其他对应关系 都改为失效。
@@ -181,7 +182,7 @@ function trueJieDanBindUserFun(postObj) {
  */
 function getJiNengListOrderIdFun(postObj) {
     var defer = q.defer();
-    orderFromBindUserModel.find({bindUid: postObj.uid, state: 1, bindUserType: 2})
+    orderFromBindUserModel.find({bindUid: postObj.uid, state: 1, bindUidType: {$in: [1, 2]}})
         .populate(
             {
                 'path': 'orderUid',
@@ -196,20 +197,20 @@ function getJiNengListOrderIdFun(postObj) {
                 'select': 'pingJiaState title'
             }
         )
-        .sort('bindUidIsReadMark')
+        .sort('bindUidIsReadMark bindUidType')
         .select('orderId orderUid jiNengId bindUidType bindUidIsReadMark')
-        .sort('bindUidType')
         .exec(function (err, doc) {
             if (err) {
                 defer.reject(err);
             } else {
                 postObj.jiNengOrderList = [];//被动接单,点击下单 主动接单 bindUsertype 1 2
-                // postObj.selectOrderList = [];//被选单 3
-                // postObj.loseOrderList = [];//失效订单
                 for (var vo in doc) {
                     doc[vo]._doc.orderUid._doc.mt = pub.changeMt(doc[vo].orderUid.mt);
                     switch (doc[vo].bindUidType) {
                         case 2://被动接单
+                            postObj.jiNengOrderList.push(doc[vo]);
+                            break;
+                        case 1://主动接单
                             postObj.jiNengOrderList.push(doc[vo]);
                             break;
                         // case 3://选单 返回 当前 uid 对此订单的 评价状态 (需求uid 是否 对 接单uid 评价, 接单uid )
@@ -255,6 +256,7 @@ function getNeedListOrderIdFun(postObj) {
                 'path': 'orderId',
                 'model': orderModel,
                 'select': 'pingJiaState state title',
+                // 'match': {state: {$in: [1, 2, 3, 5]}}//发起(此处有判断被动接单逻辑),接单
                 'match': {state: {$in: [1, 2]}}//发起(此处有判断被动接单逻辑),接单
             }
         )
@@ -304,6 +306,57 @@ function getNeedListOrderIdFun(postObj) {
     return defer.promise;
 
 }
+
+
+/**
+ * 返回当前用户作为 bindUid 的成交订单 postObj.selectBindUidOrderList
+ */
+function getSelectBindUidListOrderIdFun(postObj) {
+    var defer = q.defer();
+    orderFromBindUserModel.find(
+        {
+            bindUid: postObj.uid,
+            state: 1,
+            bindUidType: 3,
+        }
+    )
+        .select('orderId orderUid bindUidType')
+        .populate(
+            {
+                'path': 'orderUid',
+                'model': memberModel,
+                'select': 'headerImg name mt'
+            }
+        )
+        .populate(
+            {
+                'path': 'orderId',
+                'model': orderModel,
+                'select': 'pingJiaState state title',
+                'match': {state: {$in: [3, 5]}}//成交,删除
+            }
+        )
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                if (doc && doc[0]) {
+                    for (var vo2 in doc) {
+                        doc[vo2]._doc.orderUid._doc.mt = pub.changeMt(doc[vo2].orderUid.mt);
+                        if (doc[vo2]._doc.orderUid._doc.headerImg) {
+                            doc[vo2]._doc.headerImg = g.host.imageHost + doc[vo2]._doc.orderUid._doc.headerImg;
+                        }
+                    }
+                }
+                postObj.selectBindUidOrderList = doc;
+                defer.resolve(postObj);
+            }
+        });
+
+    return defer.promise;
+
+}
+
 
 /**
  * 返回当前uid的关系表的 过期||选别人的 postObj.loseOrderList bindUid为uid
@@ -433,17 +486,18 @@ function changeSelectOrderFromFun(postObj) {
     var defer = q.defer();
     orderFromBindUserModel.update(
         {
-            orderId: g.Schema.Types.ObjectId(postObj.orderId),
+            orderId: postObj.orderId,
             bindUidType: {$in: [1, 2]},
             bindUid: {$ne: postObj.bindUid}
         },
         {
             bindUidType: 5
         },
-        {multi: true}, function (err, doc) {
+        {multi: true}, function (err, row) {
             if (err) {
                 defer.reject(JSON.stringify(err));
             } else {
+                console.log('row', row);
                 defer.resolve(postObj);
             }
         });
@@ -584,8 +638,7 @@ function getSelectListOrderIdFun(postObj) {
     postObj.selectOrderList = [];
     if (postObj.allSelectOrder && postObj.allSelectOrder[0]) {
         for (var vo in postObj.allSelectOrder) {
-            console.log('_id', postObj.allSelectOrder[vo]);
-            _getUserBindUserBySelectOrderIdFun(postObj.allSelectOrder[vo]._id, postObj.allSelectOrder[vo].title)
+            _getUserBindUserBySelectOrderIdFun(postObj.allSelectOrder[vo]._id, postObj.allSelectOrder[vo].title, postObj.allSelectOrder[vo].pingJiaState)
                 .then(_push);
         }
 
@@ -609,7 +662,7 @@ function getSelectListOrderIdFun(postObj) {
 /**
  * 根据  orderId 查 被选的 技能uid数据
  */
-function _getUserBindUserBySelectOrderIdFun(orderId, orderTitle) {
+function _getUserBindUserBySelectOrderIdFun(orderId, orderTitle,pingJiaState) {
     var defer = q.defer();
     orderFromBindUserModel.findOne(
         {
@@ -629,11 +682,14 @@ function _getUserBindUserBySelectOrderIdFun(orderId, orderTitle) {
             if (err) {
                 defer.reject(err);
             } else {
-                if (doc._doc.bindUid.headerImg) {
+                if (doc && doc._doc && doc._doc.bindUid && doc._doc.bindUid.headerImg) {
                     doc._doc.bindUid._doc.headerImg = g.host.imageHost + doc.bindUid.headerImg;
                     doc._doc.bindUid._doc.mt = pub.changeMt(doc._doc.bindUid._doc.mt);
                 }
-                doc._doc.orderTitle = orderTitle;
+                if (doc && doc._doc) {
+                    doc._doc.orderTitle = orderTitle;
+                    doc._doc.pingJiaState= pingJiaState;
+                }
                 defer.resolve(doc);
             }
         });

@@ -21,6 +21,7 @@ var fun = {
     getUidbyOrderIdFun: getUidbyOrderIdFun,//根据orderid 获取 orderUid
     getSelectOrderIdByUidFun: getSelectOrderIdByUidFun,//根据uid 获取 所有已经成交的 订单
     getLoseOrderIdByUidFun: getLoseOrderIdByUidFun,//返回当前uid的order 表的 过期的order postObj.loseOrderNeedList
+    trueOrderAleadySelectFun: trueOrderAleadySelectFun,//判断订单是否已经选单,或者失效
 };
 
 /**
@@ -389,7 +390,7 @@ function myNeedFun(postObj) {
 function getSelectOrderIdByUidFun(postObj) {
     var defer = q.defer();
     orderModel.find({uid: postObj.uid, state: 3})
-        .select('_id title state')
+        .select('_id title state pingJiaState')
         .exec(function (err, doc) {
             if (err) {
                 defer.reject(err);
@@ -407,7 +408,7 @@ function getSelectOrderIdByUidFun(postObj) {
 function getLoseOrderIdByUidFun(postObj) {
     var defer = q.defer();
     orderModel.find({uid: postObj.uid, state: 4})
-        .select('_id title')
+        .select('_id title ')
         .exec(function (err, doc) {
             if (err) {
                 defer.reject(err);
@@ -578,4 +579,26 @@ function getUidbyOrderIdFun(postObj) {
         });
     return defer.promise;
 }
+
+/**
+ * 判断订单是否已经选单,或者失效
+ */
+function trueOrderAleadySelectFun(postObj) {
+    var defer = q.defer();
+    orderModel.findOne({_id: postObj.orderId})
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                if (doc && (doc.state == 3 || doc.state == 4 || doc.state == 5)) {
+                    defer.reject('订单不能被选单');
+                } else {
+                    defer.resolve(postObj);
+                }
+            }
+        });
+    return defer.promise;
+}
+
+
 module.exports = fun;

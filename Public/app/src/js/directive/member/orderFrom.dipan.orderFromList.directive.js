@@ -60,7 +60,7 @@
                         if (re.data.needOrderList[0]) {
                             $scope.isHaveNeedOrderFrom = true;
                         }
-                        if (re.data.selectOrderList[0]) {
+                        if (re.data.selectOrderList[0] || re.data.selectBindUidOrderList[0]) {
                             $scope.isHaveSelectOrderFrom = true;
                         }
                         if (re.data.loseOrderList[0] || re.data.loseOrderNeedList[0]) {
@@ -97,6 +97,10 @@
             angular.forEach($scope.list.selectOrderList, function (vo) {
                 tools.bindClick('selectListGo_' + vo.orderId, _bindJiNengByDom);
             });
+            //成交订单 跳转绑定
+            angular.forEach($scope.list.selectBindUidOrderList, function (vo) {
+                tools.bindClick('selectListGo_' + vo.orderId._id, _bindJiNengByDom);
+            });
 
             //需求绑定
             angular.forEach($scope.list.needOrderList, function (vo) {
@@ -124,6 +128,11 @@
 
             //删除bindUid 过期订单 绑定
             angular.forEach($scope.list.loseOrderList, function (vo) {
+                tools.bindClick('delLose_' + vo.orderId._id, delLoseOrderId);
+            });
+
+            //删除bindUid 成交订单 绑定
+            angular.forEach($scope.list.selectBindUidOrderList, function (vo) {
                 tools.bindClick('delLose_' + vo.orderId._id, delLoseOrderId);
             });
 

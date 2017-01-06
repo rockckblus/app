@@ -268,7 +268,6 @@ function telType(postObj, callBack) {
 
 }
 
-
 /**
  * 判断是否有打电话权限
  * @param postObj
@@ -286,7 +285,6 @@ function trueTelCallCtrl(postObj, callBack) {
     }
 
 }
-
 
 /**
  * 查询电话
@@ -341,7 +339,6 @@ function getKillContent(postObj, callBack) {
 
 }
 
-
 /**
  * 订单详情
  * uid
@@ -370,7 +367,6 @@ function getOrderFromContent(postObj, callBack) {
         pubFun.pubReturn(re, {}, '', '订单详情获取失败', callBack);
     }
 }
-
 
 /**
  * 下单
@@ -401,7 +397,6 @@ function jieDan(postObj, callBack) {
 
     }
 }
-
 
 /**
  * 判断技能id是否被当前uid下单
@@ -457,6 +452,7 @@ function getOrderFromListCtrl(postObj, callBack) {
         .then(bindUserCtrl.getNeedListOrderIdCtrl)//返回当前uid的 需求 order 包括统计
         .then(needFromFun.getSelectOrderIdByUidFun)//返回当前uid的成交订单 已经选好的订单 先查 当前uid的 oreder 已经成交的orderId数组,postObj.allSelectOrder
         .then(bindUserCtrl.getSelectListOrderIdCtrl)//然后去 关系表查orderid的成交数据 postObj.selectOrderList
+        .then(bindUserCtrl.getSelectBindUidListOrderIdCtrl)//返回当前用户作为 bindUid 的成交订单 postObj.selectBindUidOrderList
         .then(needFromFun.getLoseOrderIdByUidFun)//返回当前uid的order 表的 过期的order postObj.loseOrderNeedList
         .then(bindUserCtrl.getLoseListOrderIdCtrl)//返回当前uid 技能方 的关系表的 过期||选别人的 postObj.loseOrderList
         .then(_call, _err);
@@ -474,11 +470,13 @@ function getOrderFromListCtrl(postObj, callBack) {
 
 /**
  * 选单, postobj.bindUid postObj.orderI
+ * 0.先判断订单是否已经选单
  * 1.修改对应关系, 根据orderid 其他对应关系 都改为失效。当前uid 对应关系改为 3选单
  * 2.修改订单状态 为3选单
  */
 function selectOrderFromCtrl(postObj, callBack) {
-    bindUserCtrl.changeSelectOrderFromCtrl(postObj)
+    needFromFun.trueOrderAleadySelectFun(postObj)
+        .then(bindUserCtrl.changeSelectOrderFromCtrl)
         .then(bindUserCtrl.changeSelectOrderFromNextCtrl)
         .then(needFromFun.editOrderStateFun(postObj, 3))
         .then(_call, _err);
