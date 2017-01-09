@@ -101,8 +101,6 @@
                 if (re.data.code == 'S') {
                     $timeout(function () {
                         $scope.showNoReadFromCount = true;
-                        $scope.noReadFromCount = re.data.itemStrAllCount;
-                        $scope.noReadFrom = re.data.itemStr;
                     }, 0);
                 }
             }

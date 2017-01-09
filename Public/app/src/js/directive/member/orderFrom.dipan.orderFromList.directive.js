@@ -107,11 +107,21 @@
 
             //成交订单 跳转绑定
             angular.forEach($scope.list.selectOrderList, function (vo) {
-                tools.bindClick('selectListGo_' + vo.orderId, _bindJiNengByDom);
+                tools.bindClick('selectListGo_' + vo.orderId, function (dom) {
+                    upDateSelectOrderUidOrderIsReadMark(vo.orderId,
+                        function () {
+                            _bindJiNengByDom(dom);
+                        }
+                    );
+                });
             });
             //成交订单 跳转绑定
             angular.forEach($scope.list.selectBindUidOrderList, function (vo) {
-                tools.bindClick('selectListGo_' + vo.orderId._id, _bindJiNengByDom);
+                tools.bindClick('selectListGo_' + vo.orderId._id, function (dom) {
+                    upDateSelectBindUidOrderIsReadMark(vo.orderId._id, function () {
+                        _bindJiNengByDom(dom);
+                    })
+                });
             });
 
             //需求绑定
@@ -163,7 +173,7 @@
 
             //跳转订单详情 by domOrder
             function _bindJiNengByDom(dom) {
-                var orderId = dom.getAttribute('orderId');
+                var orderId = dom.getAttribute('orderid');
                 $state.go('orderFromContent', {'orderId': orderId, 'type': 'select'});
             }
 
@@ -238,7 +248,6 @@
          * 更新当前需求订单为已读
          * @param callBack
          */
-
         function upDateNeedOrderIsReadMark(needId, callBack) {
             var url = config.host.nodeHost + '/member/editNeedOrderIsReadMark';
             tools.postJsp(url, {orderId: needId}, true)
@@ -246,5 +255,30 @@
                     callBack();
                 });
         }
+
+        /**
+         * 更新当前bindUid成交订单为已读
+         * @param callBack
+         */
+        function upDateSelectBindUidOrderIsReadMark(needId, callBack) {
+            var url = config.host.nodeHost + '/member/upDateSelectBindUidOrderIsReadMark';
+            tools.postJsp(url, {orderId: needId}, true)
+                .then(function (re) {
+                    callBack();
+                });
+        }
+
+        /**
+         * 更新当前orderUid成交订单为已读
+         * @param callBack
+         */
+        function upDateSelectOrderUidOrderIsReadMark(needId, callBack) {
+            var url = config.host.nodeHost + '/member/upDateSelectOrderUidOrderIsReadMark';
+            tools.postJsp(url, {orderId: needId}, true)
+                .then(function (re) {
+                    callBack();
+                });
+        }
+
     }
 })();

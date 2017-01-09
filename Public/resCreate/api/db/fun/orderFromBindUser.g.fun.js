@@ -27,6 +27,9 @@ var fun = {
     trueOrderIsReadyFun: trueOrderIsReadyFun,//判断orderid 是否有未读消息 ,传orderid 返回{code:S,msg:}
     editOrderIsReadyFun: editOrderIsReadyFun,//修改orderid 的所有对应关系的 orderUidIsReadMark 为已读 ,传orderid
     eidtOrderIdToNoReadFun: eidtOrderIdToNoReadFun,//修改orderId 的   orderUidIsReadMark 为未读 传postObj 返回postObj
+    editSelectOrderUidOrderIsReadyFun: editSelectOrderUidOrderIsReadyFun,//修改orderId 的   selectReadMark.orderUidIsRead 为以 读 传postObj 返回postObj
+    editSelectBindUidOrderIsReadyFun: editSelectBindUidOrderIsReadyFun,//修改orderId 的 selectReadMark.bindUidIsReady  为已读 传postObj 返回postObj
+    noReadOrderFromCountFunm: noReadOrderFromCountFun,//判断有未读订单消息
 };
 
 /**
@@ -318,7 +321,7 @@ function getSelectBindUidListOrderIdFun(postObj) {
             bindUidType: 3,
         }
     )
-        .select('orderId orderUid bindUidType')
+        .select('orderId orderUid bindUidType  selectReadMark_bindUidIsReady')
         .populate(
             {
                 'path': 'orderUid',
@@ -643,7 +646,6 @@ function getSelectListOrderIdFun(postObj) {
         defer.resolve(postObj);
     }
 
-
     function _push(oneBindUid) {
         postObj.selectOrderList.push(oneBindUid);
         count++;
@@ -651,7 +653,6 @@ function getSelectListOrderIdFun(postObj) {
             defer.resolve(postObj);
         }
     }
-
 
     return defer.promise;
 }
@@ -667,7 +668,7 @@ function _getUserBindUserBySelectOrderIdFun(orderId, orderTitle, pingJiaState) {
             bindUidType: 3
         }
     )
-        .select('orderId bindUid')
+        .select('orderId bindUid selectReadMark_orderUidIsReady')
         .populate(
             {
                 'path': 'bindUid',
@@ -781,6 +782,91 @@ function eidtOrderIdToNoReadFun(postObj) {
             }
         }
     );
+
+    return defer.promise;
+}
+
+/**************************
+ * 修改orderId 的   selectReadMark.orderUidIsRead 为以 读 传postObj 返回postObj
+ * 17/1/9 下午3:12 ByRockBlus
+ **************************/
+function editSelectOrderUidOrderIsReadyFun(postObj) {
+    var defer = q.defer();
+    orderFromBindUserModel.update(
+        {orderId: postObj.orderId, bindUidType: 3},
+        {selectReadMark_orderUidIsReady: true},
+        {multi: false},
+        function (err, row) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                defer.resolve(postObj);
+            }
+        }
+    );
+
+    return defer.promise;
+
+}
+
+/**************************
+ * 修改orderId 的 selectReadMark.bindUidIsReady  为已读 传postObj 返回postObj
+ * 17/1/9 下午3:12 ByRockBlus
+ **************************/
+function editSelectBindUidOrderIsReadyFun(postObj) {
+    var defer = q.defer();
+    orderFromBindUserModel.update(
+        {orderId: postObj.orderId, bindUidType: 3},
+        {selectReadMark_bindUidIsReady: true},
+        {multi: false},
+        function (err, row) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                defer.resolve(postObj);
+            }
+        }
+    );
+
+    return defer.promise;
+
+}
+
+
+/**************************
+ *  判断有未读订单消息
+ *  0,根据uid，获取 order状态，postObj.orderIdContent
+ *  1.uid 判断用户type trueUserTypeFun 1公共 2技能 3需求 postObj.userType
+ *  2.遍历order状态(1,2,3)  发起1，接单2,选单3,过期4，删除5 ，去筛选不同未读的条件 state
+ *
+ **************************/
+function noReadOrderFromCountFun(postObj) {
+    var defer = q.defer();
+
+    //0
+    _getOrderCount(postObj)
+    //1
+        .then(trueUserTypeFun)
+
+    //获取 order状态
+    function _getOrderCount() {
+        var defer1 = q.defer();
+        orderModel.find({uid: postObj.uid})
+            .select('state')
+            .exec(function (err, doc) {
+                if (err) {
+                    defer1.reject(err);
+                } else {
+                    postObj.allOrderId= doc;
+                    defer1.resolve(postObj);
+                }
+            });
+        return defer1.promise;
+    }
+
+
+    // orderFromBindUserModel
+    // defer.resolve(doc);
 
     return defer.promise;
 }

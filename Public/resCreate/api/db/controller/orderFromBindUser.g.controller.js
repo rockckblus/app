@@ -27,6 +27,10 @@ var fun = {
     trueOrderIsReadyCtrl: orderFromBindUserFun.trueOrderIsReadyFun,//判断orderid 是否有未读消息 ,传orderid
     editOrderIsReadyCtrl: orderFromBindUserFun.editOrderIsReadyFun,//修改orderid 的所有对应关系的 orderUidIsReadMark 为已读 ,传orderid
     eidtOrderIdToNoReadCtrl: orderFromBindUserFun.eidtOrderIdToNoReadFun,//修改orderId 的   orderUidIsReadMark 为未读 传postObj 返回postObj
+    editSelectOrderUidOrderIsReadyCtrl: orderFromBindUserFun.editSelectOrderUidOrderIsReadyFun,//修改orderId 的 selectReadMark.orderUidIsReady  为已读传postObj 返回postObj
+    editSelectBindUidOrderIsReadyCtrl: orderFromBindUserFun.editSelectBindUidOrderIsReadyFun,//修改orderId 的 selectReadMark.bindUidIsReady  为已读传postObj 返回postObj
+    noReadOrderFromCountCtrl: orderFromBindUserFun.noReadOrderFromCountFunm,//判断有未读订单消息
+
 };
 
 /**

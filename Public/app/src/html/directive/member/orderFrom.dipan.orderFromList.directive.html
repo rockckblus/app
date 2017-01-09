@@ -73,7 +73,7 @@
                         >人抢单</span>
                         <span class="left">
                         <i class="fa fa-ellipsis-h fa-2x"
-                           style="width: 7px;height:25px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;"
+                           style="width: 7px;heightoverflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;"
                            bo-if="vo2.isNoRead"></i>
                         </span>
                     </div>
@@ -97,6 +97,15 @@
                         <span style="font-size: 0.8rem" bindonce="vo3.bindUid"
                               bo-text="vo3.bindUid.name || vo3.bindUid.mt"></span>
                         </div>
+
+
+                        <!--未读标记-->
+                        <span class="left">
+                        <i class="fa fa-ellipsis-h fa-2x"
+                           style="width: 7px;height:25px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;"
+                           bo-if="vo3.selectReadMark_orderUidIsReady===false"></i>
+                        </span>
+
                     </div>
 
                     <div class="right  fa fa-times mui-btn" bo-id="'delSelect_'+vo3.orderId"
@@ -113,18 +122,28 @@
                 </div>
             </div>
 
+
             <!--作为bindUid成功的订单-->
             <div class="clear" style="margin-top: 1rem" bindonce="list.selectBindUidOrderList"
                  ng-repeat="vo31 in list.selectBindUidOrderList" bo-id="'selectOrder_'+vo31.orderId._id">
                 <div class="clear"
                      style="width: 100%;padding:10px;text-align: left;font-size: 1rem;color:#777;border-color: #fff;background-color: #f7e2e1">
 
-                    <div class="left" bo-id="'selectListGo_'+vo31.orderId._id" bo-attr
+                    <div class="left" bo-id="'selectListGo_'+vo31.orderId._id"
+                         bo-attr
                          bo-attr-orderid="vo31.orderId._id">
                         <div class="left lan" style="margin-left: 1rem;" bo-text="vo31.orderId.title"></div>
                         <div class="left" style="margin-left: 1rem">
-                        <span style="font-size: 0.8rem" bindonce="vo31.orderUid"
+                        <span class="left" style="font-size: 0.8rem" bindonce="vo31.orderUid"
                               bo-text="vo31.orderUid.name || vo31.orderUid.mt"></span>
+
+                            <!--未读标记-->
+                            <span class="left">
+                                <i class="fa fa-ellipsis-h fa-2x"
+                                   style="width: 7px;height:25px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;"
+                                   bo-if="vo31.selectReadMark_bindUidIsReady===false"></i>
+                            </span>
+
                         </div>
                     </div>
 

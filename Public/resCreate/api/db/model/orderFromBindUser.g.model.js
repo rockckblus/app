@@ -21,6 +21,7 @@ var orderFromBindUserSchema = new g.Schema({
      * 如果是被动接单,就默认给技能方未读标记,如果从会员中心点击读过订单了,就 标记为已读,
      */
     bindUidIsReadMark: {type: Boolean, default: false},
+
     /**
      * 默认生成订单的时候都标记为 true
      *
@@ -30,6 +31,13 @@ var orderFromBindUserSchema = new g.Schema({
      *
      */
     orderUidIsReadMark: {type: Boolean, default: true},
+
+    /**************************
+     * 成交单之后 bindUid orderUid 未读状态对象
+     * 17/1/9 上午9:35 ByRockBlus
+     **************************/
+    selectReadMark_bindUidIsReady: {type: Boolean, default: false},//默认未读 ,技能方
+    selectReadMark_orderUidIsReady: {type: Boolean, default: false},//默认未读 ,需求方
 
     state: {type: Number, default: 1},//是否对应这个用户显示这条记录, 1正常,0删除 ,只有被选单,和失效订单 才能删除
     selectOrderTime: {type: Date},//被选单时间

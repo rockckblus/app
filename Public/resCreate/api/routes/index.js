@@ -579,6 +579,23 @@ function postMember(req, res) {
                 res.json(re);
             });
             break;
+        case 'upDateSelectOrderUidOrderIsReadMark'://更新当前orderUid成交订单标记为已读
+            memberCtrl.upDateSelectOrderUidOrderIsReadMarkCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+        case 'upDateSelectBindUidOrderIsReadMark'://更新当前BindUid成交订单标记为已读
+            memberCtrl.upDateSelectBindUidOrderIsReadMarkCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+        case 'noReadOrderFromCount'://判断是否有未读订单
+            memberCtrl.noReadOrderFromCountCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+
+
     }
 }
 

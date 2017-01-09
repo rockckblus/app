@@ -43,6 +43,9 @@ var fun = {
     editIsReatMarkCtrl: editIsReatMarkCtrl,//修改已经读取过订单 标记
     delBindUserCtrl: delBindUserCtrl,//删除bindUser 在我的订单列表不显示 修改state
     editNeedOrderIsReadMarkCtrl: editNeedOrderIsReadMarkCtrl,//标记需求订单为已读
+    upDateSelectBindUidOrderIsReadMarkCtrl: upDateSelectBindUidOrderIsReadMarkCtrl,//更新当前bindUid成交订单标记为已读
+    upDateSelectOrderUidOrderIsReadMarkCtrl: upDateSelectOrderUidOrderIsReadMarkCtrl,//更新当前orderUid成交订单标记为已读
+    noReadOrderFromCountCtrl: noReadOrderFromCountCtrl,//判断是否有未读订单消息，技能订单，需求订单，成功的订单
 };
 
 /**
@@ -473,6 +476,8 @@ function getOrderFromListCtrl(postObj, callBack) {
                 bindUserCtrl.trueOrderIsReadyCtrl(postObj.needOrderList[vo].orderId, postObj.needOrderList[vo])
                     .then(__editReTrueIsReady)
             }
+        } else {
+            defer.resolve(postObj);
         }
 
         //编辑判断有未读消息 数据，回调到 needOrderList
@@ -581,5 +586,62 @@ function editNeedOrderIsReadMarkCtrl(postObj, callBack) {
     }
 
 }
+
+
+/**************************
+ * 更新当前OrderUid成交订单标记为已读
+ * 17/1/9 下午12:58 ByRockBlus
+ **************************/
+function upDateSelectOrderUidOrderIsReadMarkCtrl(postObj, callBack) {
+    bindUserCtrl.editSelectOrderUidOrderIsReadyCtrl(postObj)
+        .then(_call, _err);
+
+    function _call(re) {
+        pubFun.pubReturn(false, re, '标记已读成功', '', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '标记已读失败', callBack);
+    }
+
+}
+
+
+/**************************
+ * 更新当前bindUid成交订单标记为已读
+ * 17/1/9 下午12:58 ByRockBlus
+ **************************/
+function upDateSelectBindUidOrderIsReadMarkCtrl(postObj, callBack) {
+    bindUserCtrl.editSelectBindUidOrderIsReadyCtrl(postObj)
+        .then(_call, _err);
+
+    function _call(re) {
+        pubFun.pubReturn(false, re, '标记已读成功', '', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '标记已读失败', callBack);
+    }
+
+}
+
+
+/**************************
+ *判断是否有未读订单消息，技能订单，需求订单，成功的订单
+ * 17/1/9 下午4:49 ByRockBlus
+ **************************/
+function noReadOrderFromCountCtrl(postObj, callBack) {
+    bindUserCtrl.noReadOrderFromCountCtrl(postObj)
+        .then(_call, _err);
+
+    function _call(re) {
+        pubFun.pubReturn(false, re, '获取未读消息成功', '', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '获取未读消息失败', callBack);
+    }
+}
+
 
 module.exports = fun;
