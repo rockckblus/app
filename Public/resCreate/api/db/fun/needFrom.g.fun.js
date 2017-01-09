@@ -420,7 +420,6 @@ function getLoseOrderIdByUidFun(postObj) {
     return defer.promise;
 }
 
-
 /**
  * 删除一条需求
  */
@@ -593,12 +592,14 @@ function trueOrderAleadySelectFun(postObj) {
                 if (doc && (doc.state == 3 || doc.state == 4 || doc.state == 5)) {
                     defer.reject('订单不能被选单');
                 } else {
+                    if (doc && doc.uid) {
+                        postObj.orderUid = doc.uid;
+                    }
                     defer.resolve(postObj);
                 }
             }
         });
     return defer.promise;
 }
-
 
 module.exports = fun;

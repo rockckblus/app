@@ -506,13 +506,14 @@ function getOrderFromListCtrl(postObj, callBack) {
 /**
  * 选单, postobj.bindUid postObj.orderI
  * 0.先判断订单是否已经选单
- * 1.修改对应关系, 根据orderid 其他对应关系 都改为失效。当前uid 对应关系改为 3选单
+ * 1.修改对应关系, 根据orderid 其他对应关系 都改为失效。当前uid 对应关系改为 3选单 , orderUid未读 状态 改为 未读
  * 2.修改订单状态 为3选单
  */
 function selectOrderFromCtrl(postObj, callBack) {
     needFromFun.trueOrderAleadySelectFun(postObj)
         .then(bindUserCtrl.changeSelectOrderFromCtrl)
         .then(bindUserCtrl.changeSelectOrderFromNextCtrl)
+        .then(bindUserCtrl.eidtOrderIdToNoReadCtrl)//修改对应关系 orderUid 标记未读
         .then(needFromFun.editOrderStateFun(postObj, 3))
         .then(_call, _err);
 
@@ -582,8 +583,3 @@ function editNeedOrderIsReadMarkCtrl(postObj, callBack) {
 }
 
 module.exports = fun;
-
-
-
-
-

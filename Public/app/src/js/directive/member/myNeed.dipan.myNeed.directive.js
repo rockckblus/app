@@ -29,6 +29,7 @@
         $scope.errMsg = '';//错误提示
 
         init();
+
         function init() {
             $timeout(function () {
                 $scope.listTypeOne = '';
@@ -143,7 +144,6 @@
             }, 0);
 
         }
-
 
         /**
          * 删除1条需求
