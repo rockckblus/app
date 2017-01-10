@@ -1,11 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var cityCtrl = require('../db/controller/city.g.controller');//城市Ctrl
+var lianXiangCtrl = require('../db/controller/lianXiangKey.g.controller');//联想keyCtrl
 var sessionCtrl = require('../db/controller/session.g.controller');//session Ctrl
 var categoryServiceCtrl = require('../db/controller/category_service.g.controller');//category_service Ctrl
 var snsArticleServiceCtrl = require('../db/controller/snsArticle.g.controller');//sns文章 Ctrl
 var memberCtrl = require('../db/controller/member.g.controller');//会员相关 Ctrl
 var pingJiaCtrl = require('../db/controller/pingJia.g.controller');//评价ctrl
+var lunXunCtrl = require('../db/controller/lunXun.g.controller');//轮询ctrl
 var imApi = require('../db/controller/imApi.imApi.controller');//请求及时通讯api接口
 
 
@@ -17,7 +19,6 @@ var limiter = new RateLimit({
     max: 1, // limit each IP to 100 requests per windowMs
     delayMs: 400// disable delaying - full speed until the max limit is reached
 });
-
 
 var all = require('./default');//公共路由all方法
 //var oeoeSchema = new mongoose.Schema(
@@ -106,7 +107,6 @@ router.post('/category/:fun', function (req, res) {
     postCategory(req, res);
 });
 
-
 /**
  * post sns:fun 社区相关api 技能发布控制点击
  * 16/3/8 */
@@ -122,7 +122,6 @@ router.post('/sns/postNeedFrom', limiter, function (req, res, next) {//需求发
 router.post('/sns/:fun', function (req, res) {
     postSns(req, res);
 });
-
 
 /**
  * post member:fun 会员相关 限制重复点击方法
@@ -160,12 +159,18 @@ router.post('/member/:fun', function (req, res) {
     postMember(req, res);
 });
 
-
 /**
  * post im:fun 及时通讯相关
  * 16/3/8 */
 router.post('/imApi/:fun', function (req, res) {
     postIm(req, res);
+});
+
+/**
+ * post lianXiangKey
+ */
+router.post('/key/:fun', function (req, res) {
+    postKey(req, res);
 });
 
 router.get('/', function (req, res) {
@@ -260,8 +265,53 @@ function postSystem(req, res) {
         case 'findSessionContent' ://根据post的sessionId,获取sessionContent
             _findSessionContent();
             break;
+        case 'lunXunStart'://轮询启动入口,postMen提交,验证权限
+            lunXunCtrl.lunXunStart(req.body);
+            break;
     }
 
+    /**
+     * saveSession
+     * * 16/3/8 */
+    function _saveSession() {
+        sessionCtrl.saveSession(req.body);
+        res.json('okSession');
+    }
+
+    /**
+     * 根据post的sessionId,获取sessionContent
+     * * 16/3/8 */
+    function _findSessionContent() {
+        sessionCtrl.findSessionContent(req.body, callback);
+        function callback(err, doc) {
+            res.json({err: err, doc: doc});
+        }
+    }
+}
+
+/**
+ * post key 联想key
+ * 16/3/8 */
+function postKey(req, res) {
+    var fun = req.params.fun;
+    switch (fun) {
+        case 'addOneKey' ://添加一条 联想key
+            lianXiangCtrl.addOneKeyPubCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+        case 'lianXiangKey' ://随机 联想key
+            lianXiangCtrl.findKeyListCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+        case 'commendKey' ://随机 联想key
+            lianXiangCtrl.findKeyListCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+
+    }
 
     /**
      * saveSession
@@ -590,12 +640,15 @@ function postMember(req, res) {
             });
             break;
         case 'noReadOrderFromCount'://判断是否有未读订单
-            memberCtrl.noReadOrderFromCountCtrl(req.body, function (re) {
+            memberCtrl.noReadOrderFromCount_memberCtrl(req.body, function (re) {
                 res.json(re);
             });
             break;
-
-
+        case 'getUserNews'://用户心跳包心跳ctrl,获取有新消息, 新订单, 写入liveMember表
+            memberCtrl.getUserNewsCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
     }
 }
 

@@ -15,6 +15,7 @@ var snsArticleFun = require('../fun/snsArticle.g.fun');//技能方法相关
 var needFromFun = require('../fun/needFrom.g.fun');//订单方法
 var bindUserCtrl = require('../controller/orderFromBindUser.g.controller');//订单对应关系
 var pingJiaCtrl = require('../controller/pingJia.g.controller');//评价ctrl
+var liveMemberCtrl = require('../controller/liveMember.g.controller');//活跃用户ctrl
 
 var fun = {
 
@@ -45,7 +46,8 @@ var fun = {
     editNeedOrderIsReadMarkCtrl: editNeedOrderIsReadMarkCtrl,//标记需求订单为已读
     upDateSelectBindUidOrderIsReadMarkCtrl: upDateSelectBindUidOrderIsReadMarkCtrl,//更新当前bindUid成交订单标记为已读
     upDateSelectOrderUidOrderIsReadMarkCtrl: upDateSelectOrderUidOrderIsReadMarkCtrl,//更新当前orderUid成交订单标记为已读
-    noReadOrderFromCountCtrl: noReadOrderFromCountCtrl,//判断是否有未读订单消息，技能订单，需求订单，成功的订单
+    noReadOrderFromCount_memberCtrl: noReadOrderFromCount_memberCtrl,//判断是否有未读订单消息，技能订单，需求订单，成功的订单
+    getUserNewsCtrl: getUserNewsCtrl,//心跳ctrl,获取有新消息, 新订单, 写入liveMember表
 };
 
 /**
@@ -474,7 +476,7 @@ function getOrderFromListCtrl(postObj, callBack) {
             for (var vo in postObj.needOrderList) {
                 count++;
                 bindUserCtrl.trueOrderIsReadyCtrl(postObj.needOrderList[vo].orderId, postObj.needOrderList[vo])
-                    .then(__editReTrueIsReady)
+                    .then(__editReTrueIsReady);
             }
         } else {
             defer.resolve(postObj);
@@ -630,7 +632,7 @@ function upDateSelectBindUidOrderIsReadMarkCtrl(postObj, callBack) {
  *判断是否有未读订单消息，技能订单，需求订单，成功的订单
  * 17/1/9 下午4:49 ByRockBlus
  **************************/
-function noReadOrderFromCountCtrl(postObj, callBack) {
+function noReadOrderFromCount_memberCtrl(postObj, callBack) {
     bindUserCtrl.noReadOrderFromCountCtrl(postObj)
         .then(_call, _err);
 
@@ -643,5 +645,21 @@ function noReadOrderFromCountCtrl(postObj, callBack) {
     }
 }
 
+
+/**
+ * 心跳ctrl,获取有新消息, 新订单, 写入liveMember表
+ */
+function getUserNewsCtrl(postObj, callBack) {
+    liveMemberCtrl.addOneLiveCtrl(postObj)
+        .then(_call, _err);
+
+    function _call(re) {
+        pubFun.pubReturn(false, re, '获取消息成功', '', callBack);
+    }
+
+    function _err(re) {
+        pubFun.pubReturn(re, {}, '', '获取消息失败', callBack);
+    }
+}
 
 module.exports = fun;

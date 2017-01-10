@@ -14,6 +14,7 @@ var fun = {
     delKillImg: delKillImg,//删除技能图片
     getKillContent: getKillContent,//获取技能详情_根据id
     homeGetListFun: homeGetListFun,//获取首页技能列表
+    getLianXiangKeyFun: getLianXiangKeyFun,//获取搜索技能联想关键词
     getUserIdKillList: getUserIdKillList,//查询用户发布的所有 技能
     getKillImgs: getKillImgs,//技能图片选择
     xiaDanFun: xiaDanFun,//下单
@@ -952,5 +953,28 @@ function upDateKillGpsFun(obj) {
     });
     return defer.promise;
 }
+
+/**
+ * 获取搜索技能联想关键词
+ */
+function getLianXiangKeyFun(postObj) {
+    var defer = q.defer();
+    snsArticleModel.find({
+        title: {
+            $regex: postObj.key
+        }
+    })
+        .sort('hot')
+        .exec(function (err, doc) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                defer.resolve(doc);
+            }
+
+        });
+    return defer.promise;
+}
+
 
 module.exports = fun;

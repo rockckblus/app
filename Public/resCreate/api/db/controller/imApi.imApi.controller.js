@@ -7,7 +7,6 @@ var request = require('request'); //curl 控件
 var fun = {
     getOnLine: getOnLine,//获取在线状态
     noReadNewsCount: noReadNewsCount,//获取im用户未读消息数量
-    getNoReadNewsEnd: getNoReadNewsEnd,//获取用户未读消息list 每一条会话id的 最后一条记录
 };
 
 /**
@@ -16,7 +15,6 @@ var fun = {
  * @param callback
  */
 function getOnLine(uidArr, callback) {
-
     request({
             method: 'POST',
             url: 'https://leancloud.cn/1.1/rtm/online',
@@ -51,7 +49,7 @@ function noReadNewsCount(uid, callback, errCall) {
 
     request({
             method: 'GET',
-            url: '  https://leancloud.cn/1.1/rtm/messages/unread/' + uid,
+            url: 'https://leancloud.cn/1.1/rtm/messages/unread/' + uid,
             headers: {
                 "X-LC-Id": "jFnAKF8oIWzB7INn2GpNyPAt-gzGzoHsz",
                 "X-LC-Key": "OvRQhBzP5fW4Uer1gLfPbpzl",
@@ -71,20 +69,6 @@ function noReadNewsCount(uid, callback, errCall) {
             }
         }
     );
-}
-
-/**
- * 获取用户未读消息list 每一条会话id的 最后一条记录
- */
-function getNoReadNewsEnd() {
-
-}
-
-/**
- * 获取某个对话的聊天记录 的最后一条记录 ,传会话id
- */
-function getHistoryByCid() {
-
 }
 
 

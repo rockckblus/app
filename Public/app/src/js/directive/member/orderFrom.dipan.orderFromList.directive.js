@@ -120,7 +120,7 @@
                 tools.bindClick('selectListGo_' + vo.orderId._id, function (dom) {
                     upDateSelectBindUidOrderIsReadMark(vo.orderId._id, function () {
                         _bindJiNengByDom(dom);
-                    })
+                    });
                 });
             });
 

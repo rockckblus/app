@@ -67,13 +67,22 @@
          */
         function getNoReadNews() {
             var url = config.host.nodeHost + "/imApi/noReadNewsCount";
-            var postData = {};
-            try {
-                postData.uid = tools.getLocalStorageObj('userData').uid;
-            } catch (e) {
-                postData.uid = '';
+            var userData = tools.getLocalStorageObj('userData');
+            var uid;
+            if (userData && userData.uid) {
+                uid = userData.uid;
             }
-            tools.postJsp(url, postData, true).then(_s);
+
+            if (uid) {
+                tools.postJsp(url, {uid: uid}, true).then(_s, function () {
+                });
+            } else {
+                $timeout(function () {
+                    tools.postJsp(url, {uid: uid}, true).then(_s, function () {
+                    });
+                }, 200);
+            }
+
             function _s(re) {
                 if (re.data.code == 'S') {
                     $timeout(function () {
@@ -90,15 +99,25 @@
          */
         function getNoReadFrom() {
             var url = config.host.nodeHost + "/member/noReadOrderFromCount";
-            var postData = {};
-            try {
-                postData.uid = tools.getLocalStorageObj('userData').uid;
-            } catch (e) {
-                postData.uid = '';
+
+            var userData = tools.getLocalStorageObj('userData');
+            var uid;
+            if (userData && userData.uid) {
+                uid = userData.uid;
             }
-            tools.postJsp(url, postData, true).then(_s);
+
+            if (uid) {
+                tools.postJsp(url, {uid: uid}, true).then(_s, function () {
+                });
+            } else {
+                $timeout(function () {
+                    tools.postJsp(url, {uid: uid}, true).then(_s, function () {
+                    });
+                }, 200);
+            }
+
             function _s(re) {
-                if (re.data.code == 'S') {
+                if (re.data && re.data.doc && re.data.doc.code == 'S') {
                     $timeout(function () {
                         $scope.showNoReadFromCount = true;
                     }, 0);
@@ -128,13 +147,24 @@
          */
         function getNewsData() {
             var url = config.host.nodeHost + "/member/getUserNews";
-            var postData = {};
-            try {
-                postData.uid = tools.getLocalStorageObj('userData').uid;
-            } catch (e) {
-                postData.uid = '';
+
+            var userData = tools.getLocalStorageObj('userData');
+            var uid;
+            if (userData && userData.uid) {
+                uid = userData.uid;
             }
-            tools.postJsp(url, postData, true).then(_s);
+
+            if (uid) {
+                tools.postJsp(url, {uid: uid}, true).then(_s, function () {
+                });
+            } else {
+                $timeout(function () {
+                    tools.postJsp(url, {uid: uid}, true).then(_s, function () {
+                    });
+                }, 200);
+            }
+
+
             function _s(re) {
                 if (re.data.code == 'S') {
                     if (re.data.haveNews) {

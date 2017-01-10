@@ -62,10 +62,12 @@
             tools.postJsp(url, {key: key}, true).then(_call);
             function _call(re) {
                 $timeout(function () {
-                    $scope.list = re.list;
-                    $timeout(function () {
-                        _bindKeyClick();
-                    }, 0);
+                    if (re.data && re.data.doc && re.data.code == "S") {
+                        $scope.list = re.data.doc;
+                        $timeout(function () {
+                            _bindKeyClick();
+                        }, 0);
+                    }
                 }, 0);
             }
         }

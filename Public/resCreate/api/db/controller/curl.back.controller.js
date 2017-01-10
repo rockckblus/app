@@ -21,6 +21,7 @@ var fun = {
  * 16/3/21 */
 function _get(urlStr, callback) {
 
+
     urlStr = encodeURI(urlStr);
     request.get({
             url: urlStr,

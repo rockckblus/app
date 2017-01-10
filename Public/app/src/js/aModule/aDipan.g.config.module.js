@@ -299,11 +299,11 @@
                 reUrl = 'http://127.0.0.1';//degetOrderFromListv
             }, function () {//app
                 if (mui.os.android) {
-                    // reUrl = 'http://192.168.0.25';//dev
-                    reUrl = 'http://192.168.18.9';//dev
+                    reUrl = 'http://192.168.0.25';//dev
+                    // reUrl = 'http://192.168.18.9';//dev
                 } else {
-                    reUrl = 'http://192.168.18.9';//dev ipad
-                    // reUrl = 'http://127.0.0.1';//dev ios模拟器
+                    // reUrl = 'http://192.168.18.9';//dev ipad
+                    reUrl = 'http://127.0.0.1';//dev ios模拟器
                 }
             });
 

@@ -58,10 +58,12 @@
             tools.postJsp(url, {}, true).then(_res);
             function _res(re) {
                 $timeout(function () {
-                    $scope.list = re.list;
-                    $timeout(function () {
-                        bindCommendClick();
-                    }, 0);
+                    if (re.data && re.data.doc && re.data.code == "S") {
+                        $scope.list = re.data.doc;
+                        $timeout(function () {
+                            bindCommendClick();
+                        }, 0);
+                    }
                 }, 0);
             }
         }
@@ -105,7 +107,7 @@
          * 技能列表点击事件
          */
         function clickCommendKey(vo) {//广播frome.title
-            $rootScope.$broadcast('giveFromTitle', vo.key);
+            $rootScope.$broadcast('giveFromTitle', vo.title);
         }
 
     }

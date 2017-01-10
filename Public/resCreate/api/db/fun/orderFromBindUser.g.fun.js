@@ -721,7 +721,7 @@ function delBindUserFun(postObj) {
  */
 function trueOrderIsReadyFun(orderId, obj) {
     var defer = q.defer();
-    orderFromBindUserModel.findOne({orderId: orderId, orderUidIsReadMark: true})
+    orderFromBindUserModel.findOne({orderId: orderId, orderUidIsReadMark: false})
         .exec(function (err, doc) {
             if (err) {
                 defer.reject(err);
@@ -751,7 +751,7 @@ function editOrderIsReadyFun(orderId) {
     var defer = q.defer();
     orderFromBindUserModel.update(
         {orderId: orderId},
-        {orderUidIsReadMark: false},
+        {orderUidIsReadMark: true},
         {multi: true},
         function (err, row) {
             if (err) {
@@ -832,45 +832,158 @@ function editSelectBindUidOrderIsReadyFun(postObj) {
 
 }
 
-
 /**************************
  *  判断有未读订单消息
  *  0,根据uid，获取 order状态，postObj.orderIdContent
- *  1.uid 判断用户type trueUserTypeFun 1公共 2技能 3需求 postObj.userType
  *  2.遍历order状态(1,2,3)  发起1，接单2,选单3,过期4，删除5 ，去筛选不同未读的条件 state
  *
  **************************/
 function noReadOrderFromCountFun(postObj) {
     var defer = q.defer();
 
-    //0
-    _getOrderCount(postObj)
-    //1
-        .then(trueUserTypeFun)
+    //获取作为需求方 的所有order
+    _getOrderConent()
+    //遍历order 对应关系表,有没有未读消息
+        .then(__getOrderContent_Bind)
+        //作为技能方 对应关系表,有没有未读消息
+        .then(_getKillContent)
+        .then(function (endPostObj) {
+            if (endPostObj.endCount) {
+                defer.resolve({
+                    data: {
+                        code: 'S',
+                        msg: '有未读订单消息'
+                    }
+                });
+            } else {
+                defer.resolve({
+                    data: {
+                        code: 'F',
+                        msg: '没有未读订单消息'
+                    }
+                });
+            }
+        }, function (err) {
+            defer.reject(err);
+        });
 
-    //获取 order状态
-    function _getOrderCount() {
+    //获取 order状态 ,作为需求方的所有订单
+    function _getOrderConent() {
         var defer1 = q.defer();
-        orderModel.find({uid: postObj.uid})
+        orderModel.find({uid: postObj.uid, state: {$in: [1, 2, 3]}})//订单发起,抢单,选单
             .select('state')
             .exec(function (err, doc) {
                 if (err) {
                     defer1.reject(err);
                 } else {
-                    postObj.allOrderId= doc;
+                    postObj.allOrderId = doc;
                     defer1.resolve(postObj);
                 }
             });
         return defer1.promise;
     }
 
+    //遍历查关系表,orderId,orderUid, 如果有选单未读的 state:1 orderUidIsReadMark:false selectReadMark_orderUidIsReady :false
+    function __getOrderContent_Bind() {
+        var defer2 = q.defer();
+        var count = 0;
+        var endCount = false;
+        if (postObj.allOrderId[0]) {
+            for (var vo in postObj.allOrderId) {
+                count++;
+                __bindTrue(postObj.allOrderId[vo]._id)
+                    .then(giveTrue);
+            }
 
-    // orderFromBindUserModel
-    // defer.resolve(doc);
+            if (count == postObj.allOrderId.length) {
+                setTimeout(function () {
+                    postObj.endCount = endCount;//证明有未读消息了
+                    defer2.resolve(postObj);
+                }, 200);
+            }
+        } else {
+            defer2.resolve(postObj);
+        }
+
+        function giveTrue(bindTrueRe) {
+            if (bindTrueRe) {
+                endCount = true;
+            }
+        }
+
+        function __bindTrue(orderId) {
+            var defer5 = q.defer();
+            orderFromBindUserModel.count(
+                {
+                    orderId: orderId,
+                    orderUid: postObj.uid,
+                    state: 1,
+                    $or: [
+                        {
+                            bindUidType: {$in: [1, 2]},
+                            orderUidIsReadMark: false
+                        },
+                        {
+                            bindUidType: 3,
+                            selectReadMark_orderUidIsReady: false
+                        }
+                    ]
+                },
+                function (err, row) {
+                    if (err) {
+                        defer5.resolve(false);
+                    } else {
+                        if (row > 0) {
+                            defer5.resolve(true);
+                        } else {
+                            defer5.resolve(false);
+                        }
+                    }
+                });
+
+            return defer5.promise;
+        }
+
+
+        return defer2.promise;
+    }
+
+    //获取作为技能方的 ,被选单 bindUid bindUidIsReadMark:false selectReadMark_bindUidIsReady:false state:1
+    function _getKillContent() {
+        var defer3 = q.defer();
+        orderFromBindUserModel.count({
+                bindUid: postObj.uid,
+                state: 1,
+                $or: [
+                    {
+                        bindUidType: {$in: [1, 2]},
+                        bindUidIsReadMark: false
+                    },
+                    {
+                        bindUidType: {$in: [3]},
+                        selectReadMark_bindUidIsReady: false
+                    }
+                ]
+
+            },
+
+            function (err, row) {
+                if (err) {
+                    defer3.reject(err);
+                } else {
+                    if (row > 0) {
+                        postObj.endCount = true;//证明有未读消息了
+                    }
+                    defer3.resolve(postObj);
+                }
+            }
+        );
+
+        return defer3.promise;
+    }
 
     return defer.promise;
 }
-
 
 module.exports = fun;
 
