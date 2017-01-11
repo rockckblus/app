@@ -16,10 +16,24 @@ var fun = {
  *  */
 function lunXunStart(postObj) {
     if (postObj.passWord === 'HDZrockblus8') {
+        var memberId;
         setInterval(function () {
-            var tempLiveMemberSkip = 0;//循环去取member前多少名,去api 取 在线统计
             console.log('遍历在线用户,去api 取有没有 新消息');
             //遍历在线用户,去api 取有没有 新消息
+            liveMemberCtrl.findOneLiveMemberCtrl(memberId)
+            //变换memberId
+                .then(changeMemberId);
+
+            //变换memberId
+            function changeMemberId(re) {
+                console.log('re', re);
+                if (re === null) {
+                    memberId = undefined;
+                } else {
+                    memberId = re.uid;
+                }
+            }
+
         }, 6000);
     }
 }

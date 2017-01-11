@@ -8,7 +8,7 @@ var q = require('q');
 
 var fun = {
     addOneLiveCtrl: liveMemberFun.addOneLiveFun,//添加一条key
-    selectOneMemberCtrl:liveMemberFun.selectOneMember,//传skip ,取一个会员,如果 没有 结果,就返回状态,使tempLiveCount 归0
+    findOneLiveMemberCtrl:liveMemberFun.findOneLiveMemberFun,//传skip ,取一个会员,如果 没有 结果,就返回状态,使tempLiveCount 归0
 };
 
 /**

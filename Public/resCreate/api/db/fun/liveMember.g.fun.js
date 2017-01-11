@@ -5,6 +5,7 @@ var g = require('../../g.config');
 
 var fun = {
     addOneLiveFun: addOneLiveFun,//添加一条key
+    findOneLiveMemberFun: findOneLiveMemberFun,//find 一条 member，返回 member id
 };
 
 /**
@@ -23,6 +24,31 @@ function addOneLiveFun(postObj) {
     });
     return defer.promise;
 }
+
+/**************************
+ * find 一条 member，返回 member id
+ **************************/
+function findOneLiveMemberFun(memberId) {
+    var condition = {};
+    if (memberId) {
+        condition._id = {
+            $gt: memberId
+        }
+    }
+
+    var defer = q.defer();
+    liveMemberModel.findOne(condition, function (err, doc) {
+        if (err) {
+            defer.reject(err);
+        } else {
+            console.log('findOneDoc', doc);
+            defer.resolve(doc);
+        }
+    });
+
+    return defer.promise;
+}
+
 
 module.exports = fun;
 

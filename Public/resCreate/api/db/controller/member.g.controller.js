@@ -589,7 +589,6 @@ function editNeedOrderIsReadMarkCtrl(postObj, callBack) {
 
 }
 
-
 /**************************
  * 更新当前OrderUid成交订单标记为已读
  * 17/1/9 下午12:58 ByRockBlus
@@ -607,7 +606,6 @@ function upDateSelectOrderUidOrderIsReadMarkCtrl(postObj, callBack) {
     }
 
 }
-
 
 /**************************
  * 更新当前bindUid成交订单标记为已读
@@ -627,7 +625,6 @@ function upDateSelectBindUidOrderIsReadMarkCtrl(postObj, callBack) {
 
 }
 
-
 /**************************
  *判断是否有未读订单消息，技能订单，需求订单，成功的订单
  * 17/1/9 下午4:49 ByRockBlus
@@ -644,7 +641,6 @@ function noReadOrderFromCount_memberCtrl(postObj, callBack) {
         pubFun.pubReturn(re, {}, '', '获取未读消息失败', callBack);
     }
 }
-
 
 /**
  * 心跳ctrl,获取有新消息, 新订单, 写入liveMember表
