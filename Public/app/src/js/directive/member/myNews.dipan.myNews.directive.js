@@ -68,16 +68,13 @@
         function bindListClick() {
             angular.forEach($scope.list, function (vo) {
                 document.getElementById(vo.cid).addEventListener(clickType, function () {
-
                     _click(vo);
                 });
             });
 
 
             function _click(vo) {
-
                 aleryRead(vo.cid);//请求接口修改 当前用户的当前会话状态
-
                 var userHeader = header.defaultHeader;
                 var userId = tools.getLocalStorageObj('userData').uid;
                 // * @param gHeader 来宾联系人的头像

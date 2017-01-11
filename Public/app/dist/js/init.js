@@ -34,6 +34,7 @@
      *************************/
     function init(appPath) {
 
+
         /*************************
          * 生产环境 配置
          * 16/8/22 上午11:32 ByRockBlus
@@ -73,8 +74,6 @@
                 document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/mui.min.css"/>');
                 document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/font-awesome.min.css"/>');
                 document.write('<link rel="stylesheet" href="' + window.basePath + '/src/css/app.css"/>');
-
-
                 document.write('<script src="' + window.basePath + '/dist/js/appDev.js?' + jsDate + '"><\/script>');
             } else {
                 //app端

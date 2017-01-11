@@ -16,6 +16,7 @@ var needFromFun = require('../fun/needFrom.g.fun');//订单方法
 var bindUserCtrl = require('../controller/orderFromBindUser.g.controller');//订单对应关系
 var pingJiaCtrl = require('../controller/pingJia.g.controller');//评价ctrl
 var liveMemberCtrl = require('../controller/liveMember.g.controller');//活跃用户ctrl
+var isReadCtrl = require('../controller/isReadByUid.g.controller');//判断有新消息ctrl
 
 var fun = {
 
@@ -646,11 +647,21 @@ function noReadOrderFromCount_memberCtrl(postObj, callBack) {
  * 心跳ctrl,获取有新消息, 新订单, 写入liveMember表
  */
 function getUserNewsCtrl(postObj, callBack) {
+    //写入livemember 写入用户 isRead表
     liveMemberCtrl.addOneLiveCtrl(postObj)
+    //判断有没有未读消息,或未读订单
+        .then(isReadCtrl.getReadStateCtrl)
         .then(_call, _err);
 
     function _call(re) {
-        pubFun.pubReturn(false, re, '获取消息成功', '', callBack);
+        if (re === null) {
+            _err('没有未读消息或者未读订单');
+        } else {
+            var reEdn = {
+                data: re
+            };
+            pubFun.pubReturn(false, reEdn, '有未读消息', '', callBack);
+        }
     }
 
     function _err(re) {
