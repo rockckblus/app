@@ -123,13 +123,6 @@ function getCallListFun(postObj) {
     })
         .populate(
             {
-                'path': 'cid',
-                'model': memberModel,
-                'select': 'headerImg name mt'
-            }
-        )
-        .populate(
-            {
                 'path': 'gUserId',
                 'model': memberModel,
                 'select': 'headerImg name mt'
