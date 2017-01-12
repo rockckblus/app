@@ -222,7 +222,15 @@
                             if (!gName) {
                                 gName = re.data.doc.userData.mt;
                             }
-                            openIm(gHeader, re.data.doc.userData._id, gName, userHeader, uid);
+
+                            //入库联系人表
+                            var inUidToUserIdUrl = config.host.nodeHost + '/member/inUidToUserId';
+                            console.log('uidGuid', uid, re.data.doc.userData._id);
+                            tools.postJsp(inUidToUserIdUrl, {uid: uid, gUserId: re.data.doc.userData._id}, true)
+                                .then(function () {
+                                    openIm(gHeader, re.data.doc.userData._id, gName, userHeader, uid);
+                                }, _err);
+
                         } else {
                             _err(re.msg);
                         }

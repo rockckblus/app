@@ -22,7 +22,7 @@ function lunXunStart(postObj) {
 }
 
 /**
- * 遍历请求接口去获取在线用户有没有未读消息,1秒查询1个用户
+ * 遍历请求接口去获取在线用户有没有未读消息,1秒查询5个用户 10秒是 50个用户 ,此值根据 用户在线情况修改
  */
 function eachHaveNews(postObj) {
     if (postObj.passWord === 'HDZrockblus8') {
@@ -41,7 +41,7 @@ function eachHaveNews(postObj) {
                     _id = re._id;
                 }
             }
-        }, 1000);
+        }, 200);
     }
 }
 

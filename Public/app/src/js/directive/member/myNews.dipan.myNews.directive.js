@@ -72,7 +72,6 @@
                 });
             });
 
-
             function _click(vo) {
                 aleryRead(vo.cid);//请求接口修改 当前用户的当前会话状态
                 var userHeader = header.defaultHeader;

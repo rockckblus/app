@@ -1,7 +1,9 @@
 var liveMemberModel = require('../model/liveMember.g.model');
-var imCtrl = require('../controller/imApi.imApi.controller');//im ctrl
+var imApiCtrl = require('../controller/imApi.imApi.controller');//imApi ctrl
+var imCtrl = require('../controller/im.g.controller');//imCtrl
 var isReadCtrl = require('../controller/isReadByUid.g.controller');//isRead ctrl
 var q = require('q');//异步编程对象
+var moment = require('moment');//日期插件
 var pub = require('../fun/pub.g.fun');//公共方法
 var g = require('../../g.config');
 
@@ -175,15 +177,55 @@ function findOneLiveMemberFun(_id) {
  * @private
  */
 function _trueIsGetApi(doc) {
-    if (doc && !doc.isHaveRead) {//如果没有未读消息状态 就去接口取数据
-        imCtrl.noReadNewsCount(doc.uid, function (re) {
-            if (re && re.count > 0) {//如果有未读消息 ,更新状态 为 true
-                updateIsReadTrueFun(doc);//修改true
-                isReadCtrl.updateOneReadNewsCtrl(doc);//修改isRead 为有新消息
+    if (doc && !doc.isHaveRead) {//如果没有未读消息状态 并且addTime 超过1分钟 就去接口取数据
+        //判断心跳时间超过 50秒 ,心跳是 60秒一次,50秒之后, 10秒内需要 把所有在线 用户 都遍历过来,所以 轮询的时间是需要调整的
+        countTim(doc.addTime)
+            .then(function (isOverTime) {
+                if (isOverTime) {
+                    _next();
+                }
+            });
+        function _next() {
+            imApiCtrl.noReadNewsCount(doc.uid.toString(), function (re) {
+                if (re && re.count > 0) {//如果有未读消息 ,更新状态 为 true
+                    updateIsReadTrueFun(doc);//修改true
+                    isReadCtrl.updateOneReadNewsCtrl(doc);//修改isRead 为有新消息
+                    forGetUidLastNewsInDb(doc.uid.toString());//去接口取当前uid的未读消息,然后进im表
+                }
+            });
+        }
+    }
+}
+
+/**
+ * 计算addTime 超过50秒
+ */
+function countTim(addTime) {
+    var defer = q.defer();
+    var addTime = moment(addTime).unix();
+    var thisTime = moment(Date.now()).unix();
+    var chaTime = thisTime - addTime;
+    if (chaTime > 30) {
+        defer.resolve(true);
+    } else {
+        defer.resolve(false);
+    }
+    return defer.promise;
+}
+
+/**
+ * 去接口取当前uid的未读消息,然后进im表
+ */
+function forGetUidLastNewsInDb(uid) {
+    imApiCtrl.getMemberListCtrl(uid)
+        .then(function (re) {
+            if (re && re[0]) {
+                for (var vo in re) {
+                    imCtrl.addOneLastNewsCtrl(re[vo]);
+                }
 
             }
         });
-    }
 }
 
 module.exports = fun;

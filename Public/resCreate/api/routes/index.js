@@ -9,6 +9,7 @@ var memberCtrl = require('../db/controller/member.g.controller');//会员相关 
 var pingJiaCtrl = require('../db/controller/pingJia.g.controller');//评价ctrl
 var lunXunCtrl = require('../db/controller/lunXun.g.controller');//轮询ctrl
 var imApi = require('../db/controller/imApi.imApi.controller');//请求及时通讯api接口
+var imCtrl = require('../db/controller/im.g.controller');//imCtrl 消息列表
 
 
 var RateLimit = require('express-rate-limit');
@@ -649,6 +650,18 @@ function postMember(req, res) {
                 res.json(re);
             });
             break;
+        case 'getCallList'://获取用户联系人 传postObj.uid
+            imCtrl.getCallListCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+        case 'inUidToUserId'://当前uid给其他人发消息 入库 联系人表,传uid,gUserId
+            imCtrl.inUidToUserIdCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+
+
     }
 }
 

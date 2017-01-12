@@ -11,7 +11,7 @@ var TextMessage = require('leancloud-realtime').TextMessage;//im
 var fun = {
     getOnLine: getOnLine,//获取在线状态
     noReadNewsCount: noReadNewsCount,//获取im用户未读消息数量
-    getMemberListCtrl: getMemberListCtrl,//
+    getMemberListCtrl: getMemberListCtrl,//请求接口获取未读统计的数量,返回 未读信息的 数据
 };
 
 /**
@@ -84,7 +84,7 @@ function noReadNewsCount(uid, callback, errCall) {
  * @param cid 用户id
  * @returns {*}
  */
-function getMemberList(cid) {
+function getMemberListCtrl(cid) {
     var defer = q.defer();
 
 // 应用 ID，用来识别应用
@@ -105,22 +105,21 @@ function getMemberList(cid) {
             reData.cid = cid;//客户端id
             for (var vo in memberArr) {
                 if (memberArr[vo] !== cid) {
+                    reData.uid = cid;
                     reData.gUserId = memberArr[vo];
+                    reData.lastMessage = conversation.lastMessage;
+                    reData.lastTime = payload.lastMessageTimestamp;
+                    reData.noReadCount = payload.count;
+                    endReArr.push(reData);
                 }
-                reData.lastMessage = conversation.lastMessage;
-                reData.lastTime = payload.lastMessageTimestamp;
-                endReArr.push(reData);
             }
         });
     });
     setTimeout(function () {
         defer.resolve(endReArr);
-    }, 200);
+    }, 800);
     return defer.promise;
 }
-
-getMemberList();
-
 
 module.exports = fun;
 
