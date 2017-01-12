@@ -142,7 +142,18 @@ function getCallListFun(postObj) {
             } else {
                 if (doc && doc[0]) {
                     for (var vo in doc) {
-                       if(do)
+                        if (doc[vo] && doc[vo].gUserId && doc[vo].gUserId.headerImg) {
+                            doc[vo]._doc.gUserId._doc.headerImg = g.host.imageHost + doc[vo].gUserId.headerImg;
+                        }
+                        if (doc[vo] && doc[vo].gUserId && doc[vo].gUserId.mt) {
+                            doc[vo]._doc.gUserId._doc.mt = pub.changeMt(doc[vo].gUserId.mt);
+                        }
+                        if (doc[vo] && doc[vo].cid && doc[vo].cid.headerImg) {
+                            doc[vo]._doc.cid._doc.headerImg = g.host.imageHost + doc[vo].cid.headerImg;
+                        }
+                        if (doc[vo] && doc[vo].cid && doc[vo].cid.mt) {
+                            doc[vo]._doc.cid._doc.mt = pub.changeMt(doc[vo].cid.mt);
+                        }
                     }
                 }
                 defer.resolve(doc);
