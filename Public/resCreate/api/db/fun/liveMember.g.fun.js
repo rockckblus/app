@@ -44,19 +44,20 @@ function addOneLiveFun(postObj) {
 function upOneLiveFun(postObj) {
     var defer = q.defer();
     if (postObj.isSet) {//判断如果存在就更新
-        var thisTime = Date.now();
-        liveMemberModel.update({
-                uid: postObj.uid
-            },
-            {addTime: thisTime},
-            {multi: false},
-            function (err, doc) {
-                if (err) {
-                    defer.reject(err);
-                } else {
-                    defer.resolve(postObj);
-                }
-            });
+        defer.resolve(postObj);
+        // var thisTime = Date.now();
+        // liveMemberModel.update({
+        //         uid: postObj.uid
+        //     },
+        //     {addTime: thisTime},
+        //     {multi: false},
+        //     function (err, doc) {
+        //         if (err) {
+        //             defer.reject(err);
+        //         } else {
+        //             defer.resolve(postObj);
+        //         }
+        //     });
     } else {//不存在就直接返回postObj
         defer.resolve(postObj);
     }
@@ -147,10 +148,12 @@ function findMember(postObj) {
 }
 
 /**************************
- * find 一条 member，返回 member id
+ * find 一条 未请求过接口的 member，返回 member id
  **************************/
 function findOneLiveMemberFun(_id) {
-    var condition = {};
+    var condition = {
+        isAleadyGetApi: false
+    };
     if (_id) {
         condition._id = {
             $gt: _id
@@ -177,24 +180,38 @@ function findOneLiveMemberFun(_id) {
  * @private
  */
 function _trueIsGetApi(doc) {
-    if (doc && !doc.isHaveRead) {//如果没有未读消息状态 并且addTime 超过1分钟 就去接口取数据
+    if (doc && !doc.isAleadyGetApi) {//如果没有未读消息状态 并且addTime 超过1分钟 就去接口取数据
         //判断心跳时间超过 50秒 ,心跳是 60秒一次,50秒之后, 10秒内需要 把所有在线 用户 都遍历过来,所以 轮询的时间是需要调整的
-        countTim(doc.addTime)
-            .then(function (isOverTime) {
-                if (isOverTime) {
-                    _next();
-                }
+        // countTim(doc.addTime)
+
+        //改变已读接口状态
+        changeLiveMemberState(doc.uid)
+            .then(function () {
+                _next(doc);
             });
-        function _next() {
-            imApiCtrl.noReadNewsCount(doc.uid.toString(), function (re) {
-                if (re && re.count > 0) {//如果有未读消息 ,更新状态 为 true
-                    updateIsReadTrueFun(doc);//修改true
-                    isReadCtrl.updateOneReadNewsCtrl(doc);//修改isRead 为有新消息
-                    forGetUidLastNewsInDb(doc.uid.toString());//去接口取当前uid的未读消息,然后进im表
-                }
-            });
-        }
     }
+    function _next() {
+        imApiCtrl.noReadNewsCount(doc.uid.toString(), function (re) {
+            console.log('请求uid' + doc.uid.toString());
+            if (re && re.count > 0) {//如果有未读消息 ,更新状态 为 true
+                updateIsReadTrueFun(doc);//修改true
+                isReadCtrl.updateOneReadNewsCtrl(doc);//修改isRead 为有新消息
+                forGetUidLastNewsInDb(doc.uid.toString());//去接口取当前uid的未读消息,然后进im表
+            }
+        });
+    }
+}
+
+/**
+ * 修改已经读取过接口了
+ */
+function changeLiveMemberState(uid) {
+    console.log('修改接口为已经请求api了' + uid);
+    var defer = q.defer();
+    liveMemberModel.update({uid: uid}, {isAleadyGetApi: true}, {multi: false}, function (err, row) {
+        defer.resolve(err || row);
+    });
+    return defer.promise;
 }
 
 /**
@@ -202,9 +219,9 @@ function _trueIsGetApi(doc) {
  */
 function countTim(addTime) {
     var defer = q.defer();
-    var addTime = moment(addTime).unix();
+    var thisAddTime = moment(addTime).unix();
     var thisTime = moment(Date.now()).unix();
-    var chaTime = thisTime - addTime;
+    var chaTime = thisTime - thisAddTime;
     if (chaTime > 30) {
         defer.resolve(true);
     } else {

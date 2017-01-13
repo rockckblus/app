@@ -219,7 +219,9 @@
             if (!data.roundCodeId) {
                 try {
                     data.roundCodeId = localStorage.getItem(config.localSaveName.user.roundCodeId);
-                    data.uid = re.getLocalStorageObj('userData').uid;
+                    if (!data.uid) {
+                        data.uid = re.getLocalStorageObj('userData').uid;
+                    }
                     data.mt = re.getLocalStorageObj('userData').mt;
                 } catch (e) {
                     console.error('未获取到userData');
@@ -303,10 +305,12 @@
                         $rootScope.$broadcast('closeLoading'); //http请求成功 关闭loading
                     }
                     defer.reject(err);
-                    re.alert({
-                        title: '网络请求失败',
-                        content: '请检查网络设置'
-                    });
+                    if (!isNoLoading) {
+                        re.alert({
+                            title: '网络请求失败',
+                            content: '请检查网络设置'
+                        });
+                    }
                 });
                 return defer.promise;
             }

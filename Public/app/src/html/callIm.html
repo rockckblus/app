@@ -402,8 +402,6 @@
         // 应用 ID，用来识别应用
         var APP_ID = 'jFnAKF8oIWzB7INn2GpNyPAt-gzGzoHsz';
 
-        // 应用 Key，用来校验权限（Web 端可以配置安全域名来保护数据安全）
-        var APP_KEY = 'OvRQhBzP5fW4Uer1gLfPbpzl';
 
         var Realtime = AV.Realtime;
         var TextMessage = AV.TextMessage;
@@ -439,20 +437,24 @@
             userHeader = selfG.userHeader;
             guestHeader = selfG.gusetHeader;
             var showKeyboard = function () {
-                if ($.os.ios) {
-                    var webView = plus.webview.currentWebview().nativeInstanceObject();
-                    webView.plusCallMethod({
-                        "setKeyboardDisplayRequiresUserAction": false
-                    });
-                } else {
-                    var Context = plus.android.importClass("android.content.Context");
-                    var InputMethodManager = plus.android.importClass("android.view.inputmethod.InputMethodManager");
-                    var main = plus.android.runtimeMainActivity();
-                    var imm = main.getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
-                    //var view = ((ViewGroup)main.findViewById(android.R.id.content)).getChildAt(0);
-                    imm.showSoftInput(main.getWindow().getDecorView(), InputMethodManager.SHOW_IMPLICIT);
-                    //alert("ll");
+                try {
+                    if ($.os.ios) {
+                        var webView = plus.webview.currentWebview().nativeInstanceObject();
+                        webView.plusCallMethod({
+                            "setKeyboardDisplayRequiresUserAction": false
+                        });
+                    } else {
+                        var Context = plus.android.importClass("android.content.Context");
+                        var InputMethodManager = plus.android.importClass("android.view.inputmethod.InputMethodManager");
+                        var main = plus.android.runtimeMainActivity();
+                        var imm = main.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+                        //var view = ((ViewGroup)main.findViewById(android.R.id.content)).getChildAt(0);
+                        imm.showSoftInput(main.getWindow().getDecorView(), InputMethodManager.SHOW_IMPLICIT);
+                        //alert("ll");
+                    }
+                } catch (e) {
+                    console.log(e);
                 }
             };
             var record = [];
@@ -695,12 +697,11 @@
             //					});
             ui.footerRight.addEventListener('release', function (event) {
                 if (ui.btnMsgType.classList.contains('mui-icon-paperplane')) {
-                    //showKeyboard();
                     ui.boxMsgText.focus();
                     setTimeout(function () {
                         ui.boxMsgText.focus();
                     }, 150);
-                    //							event.detail.gesture.preventDefault();
+//                    event.detail.gesture.preventDefault();
                     send({
                         sender: 'self',
                         type: 'text',
@@ -868,6 +869,7 @@
             });
             var focus = false;
             ui.boxMsgText.addEventListener('tap', function (event) {
+                showKeyboard();
                 ui.boxMsgText.focus();
                 setTimeout(function () {
                     ui.boxMsgText.focus();

@@ -21,6 +21,8 @@
 
     function thisController($scope, $rootScope, $timeout, localData, config, tools, header) {
 
+        $scope.defaultHeader = header.defaultHeader;
+
         var clickType = 'tap';
         tools.trueWeb(function () {
             clickType = 'click';
@@ -31,7 +33,7 @@
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
         });
-        $scope.list = '';//联系人列表
+        $scope.list = undefined;//联系人列表
 
         init();
         function init() {
@@ -53,7 +55,7 @@
             function _s(re) {
                 if (re.data && re.data.code == 'S') {
                     $timeout(function () {
-                        $scope.list = re.data.list;
+                        $scope.list = re.data.doc;
                         $timeout(function () {
                             bindListClick();//绑定list点击
                         }, 0);
@@ -67,29 +69,30 @@
          */
         function bindListClick() {
             angular.forEach($scope.list, function (vo) {
-                document.getElementById(vo.cid).addEventListener(clickType, function () {
+                tools.bindClick(vo._id, function () {
                     _click(vo);
                 });
             });
 
             function _click(vo) {
-                aleryRead(vo.cid);//请求接口修改 当前用户的当前会话状态
-                var userHeader = header.defaultHeader;
-                var userId = tools.getLocalStorageObj('userData').uid;
+                aleryRead(vo._id);//请求接口修改 当前用户的当前会话状态
+
                 // * @param gHeader 来宾联系人的头像
                 //     * @param gUId 来宾联系人的id
                 //     * @param gName 来宾联系人的name
                 //     * @param userHeader 用户头像
                 //     * @param userId 用户id
-                var goObj = {
-                    gHeader: vo.userHeader,
-                    gUId: vo.gUserId,
-                    gName: vo.userNameShow,
-                    userHeader: userHeader,
-                    userId: userId
-                };
+                if (vo && vo.gUserId && vo.cid) {
+                    var goObj = {
+                        gHeader: vo.gUserId.headerImg || $scope.defaultHeader,
+                        gUId: vo.gUserId._id,
+                        gName: vo.gUserId.name || vo.gUserId.mt,
+                        userHeader: vo.cid.headerImg || $scope.defaultHeader,
+                        userId: vo.cid._id
+                    };
+                    $rootScope.$broadcast('openIm', goObj);
+                }
 
-                $rootScope.$broadcast('openIm', goObj);
             }
 
         }
@@ -103,12 +106,7 @@
             }
             var uid = '';
             var url = config.host.nodeHost + "/member/myNewsIsRead";
-            try {
-                uid = tools.getLocalStorageObj('userData').uid;
-            } catch (e) {
-                uid = '';
-            }
-            tools.postJsp(url, {uid: uid, cid: newsId}, true).then(_s);
+            tools.postJsp(url, {newsId: newsId}, true).then(_s);
             function _s(re) {
                 if (re.data.code == 'S') {
                     console.log(newsId + 'uid' + uid + '会话消息已读');

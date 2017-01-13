@@ -167,6 +167,21 @@ router.post('/imApi/:fun', function (req, res) {
     postIm(req, res);
 });
 
+
+/**
+ * 限制重复点击方法 key/linXiangKey
+ * 16/3/8 */
+router.post('/key/lianXiangKey', limiter, function (req, res, next) {
+    next();
+});
+
+/**
+ * 限制重复点击方法 key/linXiangKey
+ * 16/3/8 */
+router.post('/key/commendKey', limiter, function (req, res, next) {
+    next();
+});
+
 /**
  * post lianXiangKey
  */
@@ -494,15 +509,14 @@ function postIm(req, res) {
      * @returns {'results':['rockblus']}
      */
     function _noReadNewsCount(body) {
-        imApi.noReadNewsCount(body.uid, _s, _e);
+        imCtrl.noReadNewsCountCtrl(body, _s, _e);
         function _s(re) {
             var reData = {
                 "complete": true,
                 "data": {
                     "code": "S",
                     "msg": "查询成功",
-                    "results": re.count,
-                    "noReadNews": re.noReadNews
+                    "results": re.results,
                 }
             };
             res.json(reData);
@@ -657,6 +671,11 @@ function postMember(req, res) {
             break;
         case 'inUidToUserId'://当前uid给其他人发消息 入库 联系人表,传uid,gUserId
             imCtrl.inUidToUserIdCtrl(req.body, function (re) {
+                res.json(re);
+            });
+            break;
+        case 'myNewsIsRead'://修改当前im消息为 count 0  传 postObj.newsId
+            imCtrl.myNewsIsReadCtrl(req.body, function (re) {
                 res.json(re);
             });
             break;

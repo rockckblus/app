@@ -701,7 +701,7 @@ function jieDanFun(postObj) {
             var bindUserData = {
                 orderId: re.orderId,
                 orderUid: re.orderUid,
-                bindUid: re.uid
+                bindUid: re.uid,
             };
             orderFromBindUserCtrl.addOneBindUser(bindUserData, 1).then(function (re2) {
                 ____defer.resolve(re2);

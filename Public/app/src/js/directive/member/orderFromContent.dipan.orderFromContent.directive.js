@@ -114,12 +114,31 @@
                                     }
                                     if (vo2.bindUid && vo2.bindUid.name) {
                                         $timeout(function () {
-                                            $scope.seeOtherKillInfo = '等待\"' + vo2.bindUid.name + '\"接单';
+                                            $scope.seeOtherKillInfo = '等待\"' + vo2.bindUid.name + '\"接单,点击在线联系';
+                                            tools.bindClick('noOrderGoHome', function () {
+                                                $rootScope.$broadcast('openIm', {
+                                                    gHeader: vo2.bindUid.headerImg || header.defaultHeader,
+                                                    gUId: vo2.bindUid._id,
+                                                    gName: vo2.bindUid.name,
+                                                    userHeader: tools.getLocalStorageObj('userData').headerImg || header.defaultHeader,
+                                                    userId: tools.getLocalStorageObj('userData').uid
+                                                });
+                                            });
                                         }, 0);
                                     }
                                     else {
                                         $timeout(function () {
-                                            $scope.seeOtherKillInfo = '等待\"' + vo2.bindUid.mt + '\"接单';
+                                            $scope.seeOtherKillInfo = '等待\"' + vo2.bindUid.mt + '\"接单,点击在线联系';
+
+                                            tools.bindClick('noOrderGoHome', function () {
+                                                $rootScope.$broadcast('openIm', {
+                                                    gHeader: vo2.bindUid.headerImg || header.defaultHeader,
+                                                    gUId: vo2.bindUid._id,
+                                                    gName: vo2.bindUid.mt,
+                                                    userHeader: tools.getLocalStorageObj('userData').headerImg || header.defaultHeader,
+                                                    userId: tools.getLocalStorageObj('userData').uid
+                                                });
+                                            });
                                         }, 0);
                                     }
                                 }

@@ -63,6 +63,7 @@
             giveListTop();//根据url 给内容部分marginTop
             bindTitleInfo();//bind titleInfo clcik
             getLocalKey();//判断有搜索关键词缓存,去geititleINfo数据
+            getNewsData();//获取用户消息
         }
 
         /**
@@ -109,6 +110,38 @@
             }
 
         }
+
+
+        /**
+         * 去socket请求最新消息
+         */
+        function getNewsData() {
+            var url = config.host.nodeHost + "/member/getUserNews";
+            var userData = tools.getLocalStorageObj('userData');
+            if (userData && userData.uid) {
+                tools.postJsp(url, {uid: userData.uid}, true).then(_s);
+            } else {
+                $timeout(function () {
+                    try {
+                        var userData2 = tools.getLocalStorageObj('userData');
+                        tools.postJsp(url, {uid: userData2.uid}, true).then(_s);
+                    } catch (e) {
+                        console.log(e);
+                    }
+                }, 1000);
+            }
+
+            function _s(re) {
+                if (re && re.data && re.data.code == 'S') {
+                    $rootScope.$broadcast('showNews');//广播显示 有新消息
+                }
+
+                else {
+                    $rootScope.$broadcast('hideNews');//广播显示 没有有新消息
+                }
+            }
+        }
+
 
         /**
          * 判断有搜索关键词缓存,去geititleINfo数据

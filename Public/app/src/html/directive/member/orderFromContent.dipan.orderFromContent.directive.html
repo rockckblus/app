@@ -7,12 +7,13 @@
             <div class="mui-btn" id="showUserDataFromBtn" style="background-color: #f4f4f4">
                 <img bindonce="data.userData" bo-src="data.userData.headerImg"
                      style="width: 20px;height: 20px;border-radius: 20px;" alt="">
-                <span bindonce="data.userPingJia" style="margin-top: -10px;font-size: 0.8rem" class="hui"
-                      bo-text="data.userPingJia.length "></span>
+                <span bindonce="data.userPingJia" style="color:red;margin-top: -10px;font-size: 0.5rem" class="hui"
+                      bo-text="data.userPingJia.length +'评'"></span>
                 <span class="clear"></span>
                 <span style="margin-left: 5px;margin-top: -5px" class="lan" bindonce="data.userData"
                       bo-text="data.userData.name || data.userData.mt "></span>
-                <span class="fa fa-chevron-down" style="color: red;"></span>
+                <span class="" style="color: red;font-size: 0.5rem">详细</span>
+                <span class="fa fa-chevron-down" style="color: red;font-size: 0.5rem"></span>
             </div>
             <div id="userDataFromePage" ng-show="showUserData">
                 <div id="closeUserDataFromePage" class="fa fa-2x  fa-times"></div>
@@ -746,7 +747,8 @@
 
             <!--发起-->
             <div ng-show="data.thisNeed.state == 1">
-                <div class="clear lan mui-btn" style="margin-top: 1.5rem" id="noOrderGoHome">{{seeOtherKillInfo}}
+                <div class="clear lan mui-btn" style="margin-top: 1.5rem" id="noOrderGoHome">
+                    {{seeOtherKillInfo}}
                 </div>
             </div>
             <!--选单-->

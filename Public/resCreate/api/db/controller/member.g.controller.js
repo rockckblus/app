@@ -16,7 +16,9 @@ var needFromFun = require('../fun/needFrom.g.fun');//订单方法
 var bindUserCtrl = require('../controller/orderFromBindUser.g.controller');//订单对应关系
 var pingJiaCtrl = require('../controller/pingJia.g.controller');//评价ctrl
 var liveMemberCtrl = require('../controller/liveMember.g.controller');//活跃用户ctrl
-var isReadCtrl = require('../controller/isReadByUid.g.controller');//判断有新消息ctrl
+var imCtrl = require('../controller/im.g.controller');//联系ctrl
+
+// var isReadCtrl = require('../controller/isReadByUid.g.controller');//判断有新消息ctrl
 
 var fun = {
 
@@ -48,7 +50,7 @@ var fun = {
     upDateSelectBindUidOrderIsReadMarkCtrl: upDateSelectBindUidOrderIsReadMarkCtrl,//更新当前bindUid成交订单标记为已读
     upDateSelectOrderUidOrderIsReadMarkCtrl: upDateSelectOrderUidOrderIsReadMarkCtrl,//更新当前orderUid成交订单标记为已读
     noReadOrderFromCount_memberCtrl: noReadOrderFromCount_memberCtrl,//判断是否有未读订单消息，技能订单，需求订单，成功的订单
-    getUserNewsCtrl: getUserNewsCtrl,//心跳ctrl,获取有新消息, 新订单, 写入liveMember表
+    getUserNewsCtrl: getUserNewsCtrl,//心跳ctrl,获取有新消息, 新订单,
 };
 
 /**
@@ -650,22 +652,53 @@ function getUserNewsCtrl(postObj, callBack) {
     //写入livemember 写入用户 isRead表
     liveMemberCtrl.addOneLiveCtrl(postObj)
     //判断有没有未读消息,或未读订单
-        .then(isReadCtrl.getReadStateCtrl)
+        .then(getOrederAndNews)
         .then(_call, _err);
 
-    function _call(re) {
-        if (re === null) {
-            _err('没有未读消息或者未读订单');
-        } else {
-            var reEdn = {
-                data: re
-            };
-            pubFun.pubReturn(false, reEdn, '有未读消息', '', callBack);
-        }
+
+    function getOrederAndNews() {
+        var defer = q.defer();
+        bindUserCtrl.noReadOrderFromCountCtrl(postObj)
+            .then(function (re) {
+                postObj.orderIsHave = re;//有没有未读订单
+                imCtrl.noReadNewsCountCtrl(postObj, function (re2) {
+                    postObj.newsIsHave = re2;//有没有未读消息
+                    if (postObj.orderIsHave && postObj.orderIsHave.data && postObj.orderIsHave.data.code == 'S') {
+                        defer.reject(
+                            {
+                                data: {
+                                    code: 'S',
+                                    msg: '有新订单消息'
+                                }
+                            });
+                    } else if (postObj.newsIsHave && postObj.newsIsHave.results && postObj.newsIsHave.results !== 0) {
+                        defer.reject(
+                            {
+                                data: {
+                                    code: 'S',
+                                    msg: '有新联系消息'
+                                }
+                            });
+                    } else {
+                        defer.reject({
+                            code: 'F',
+                            msg: '没有新消息'
+                        });
+                    }
+                });
+            }, function (err) {
+                defer.reject(err);
+            });
+
+        return defer.promise;
     }
 
-    function _err(re) {
-        pubFun.pubReturn(re, {}, '', '获取消息失败', callBack);
+    function _call(re) {
+        callBack(re);
+    }
+
+    function _err(err) {
+        callBack(err);
     }
 }
 

@@ -157,8 +157,7 @@
 
 
             function _success(re) {
-                console.log('re', re);
-                if (re.data.code == 'S') {
+                if (re.data && re.data.code == 'S') {
                     localStorage.setItem('isLogin', 'true');//缓存登录状态
                     tools.saveLocalStorageObj('userData', re.data.userData);//缓存用户数据
                     $state.go('home');

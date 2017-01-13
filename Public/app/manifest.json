@@ -42,7 +42,7 @@
         
         "Events": {
             "description": "应用扩展事件"
-        },"Webview":{},"Storage":{},"NativeUI":{},"Runtime":{},"Geolocation":{},"Statistic":{},"Camera":{},"Gallery":{},"File":{},"Device":{},"Speech":{},"Audio":{}
+        },"Webview":{},"Storage":{},"NativeUI":{},"Runtime":{},"Geolocation":{},"Statistic":{},"Camera":{},"Gallery":{},"File":{},"Device":{},"Speech":{},"Audio":{},"NativeObj":{},"Invocation":{}
     },
     "plus": {
         "splashscreen": {

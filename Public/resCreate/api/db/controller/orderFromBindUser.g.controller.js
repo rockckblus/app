@@ -30,6 +30,7 @@ var fun = {
     editSelectOrderUidOrderIsReadyCtrl: orderFromBindUserFun.editSelectOrderUidOrderIsReadyFun,//修改orderId 的 selectReadMark.orderUidIsReady  为已读传postObj 返回postObj
     editSelectBindUidOrderIsReadyCtrl: orderFromBindUserFun.editSelectBindUidOrderIsReadyFun,//修改orderId 的 selectReadMark.bindUidIsReady  为已读传postObj 返回postObj
     noReadOrderFromCountCtrl: orderFromBindUserFun.noReadOrderFromCountFunm,//判断有未读订单消息
+    changeOrderTimeOutCtrl: orderFromBindUserFun.changeOrderTimeOutFun,//根据orderid 修改对应关系为4 超时
 
 };
 

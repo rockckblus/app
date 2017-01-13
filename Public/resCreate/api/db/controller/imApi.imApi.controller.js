@@ -71,6 +71,7 @@ function noReadNewsCount(uid, callback, errCall) {
                     console.log('responseCode', response.statusCode);
                 }
             } catch (e) {
+                console.log('请求imapi网络错误', e);
                 if (errCall) {
                     errCall(e);
                 }

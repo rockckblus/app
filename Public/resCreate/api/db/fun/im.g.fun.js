@@ -11,12 +11,15 @@ var fun = {
     findOneLastNewsFun: findOneLastNewsFun,//find 一条 lastNews 判断是否存在
     getCallListFun: getCallListFun,//获取用户联系人
     inUidToUserIdFun: inUidToUserIdFun,//当前uid给其他人发消息 入库 联系人表,传uid,gUserId
+    myNewsIsReadFun: myNewsIsReadFun,//修改当前im消息为 count 0  传 postObj.newsId
+    noReadNewsCountFun: noReadNewsCountFun,//判断当前uid 有没有未读联系 count  返回 code:s  results:2
 };
 
 /**
  * 添加一条LastNews
  */
 function addOneLastNewsFun(postObj) {
+    console.log('addLastNewsFun', postObj);
     var defer = q.defer();
 
     //判断uid是否存在
@@ -42,13 +45,13 @@ function upOneLastNewsFun(postObj) {
     var defer = q.defer();
     if (postObj.isSet) {//判断如果存在就更新
         imModel.update({
-                uid: postObj.uid,
+                cid: postObj.cid || postObj.uid,
                 gUserId: postObj.gUserId
             },
             {
                 lastMessage: postObj.lastMessage,
                 lastTime: postObj.lastTime,
-                count: postObj.noReadCount,
+                noReadCount: postObj.noReadCount,
                 state: 1
             },
             {multi: false},
@@ -97,6 +100,7 @@ function addOneLastNewsFun_Sub(postObj) {
 function findOneLastNewsFun(postObj) {
     var defer = q.defer();
     imModel.findOne({cid: postObj.uid, gUserId: postObj.gUserId}).exec(function (err, doc) {
+        console.log('errrrrr', err, doc);
         if (err) {
             defer.reject(err);
         } else {
@@ -124,6 +128,13 @@ function getCallListFun(postObj) {
         .populate(
             {
                 'path': 'gUserId',
+                'model': memberModel,
+                'select': 'headerImg name mt'
+            }
+        )
+        .populate(
+            {
+                'path': 'cid',
                 'model': memberModel,
                 'select': 'headerImg name mt'
             }
@@ -179,6 +190,36 @@ function inUidToUserIdFun(postObj) {
             defer.reject(err);
         });
 
+    return defer.promise;
+}
+
+/**
+ * 修改当前im消息为 count 0  传 postObj.newsId
+ */
+function myNewsIsReadFun(postObj) {
+    var defer = q.defer();
+    imModel.update({_id: postObj.newsId}, {noReadCount: 0}, {multi: false}, function (err, row) {
+        defer.resolve(err || row);
+    });
+    return defer.promise;
+}
+
+/**
+ * 判断当前uid 有没有未读联系 count  返回 code:s  results:2
+ */
+function noReadNewsCountFun(postObj) {
+    var defer = q.defer();
+    imModel.findOne({cid: postObj.uid}).exec(function (err, doc) {
+        if (err) {
+            defer.reject(err);
+        } else {
+            if (doc !== null && doc.noReadCount !== 0) {
+                defer.resolve({results: doc.noReadCount});
+            } else {
+                defer.resolve({results: 0});
+            }
+        }
+    });
     return defer.promise;
 }
 

@@ -23,6 +23,10 @@ var liveMemberSchema = new g.Schema({
      * 轮询的时候如果 是true(有未读),就不去 接口拿未读消息,如果已读激活的话,就改为 false
      */
     isHaveRead: {type: Boolean, default: false},
+    /**
+     * 新加之后是未读,然后去请求接口之后判断已读 改为true
+     */
+    isAleadyGetApi: {type: Boolean, default: false}
 });
 
 

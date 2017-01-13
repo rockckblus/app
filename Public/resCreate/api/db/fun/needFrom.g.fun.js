@@ -22,6 +22,7 @@ var fun = {
     getSelectOrderIdByUidFun: getSelectOrderIdByUidFun,//根据uid 获取 所有已经成交的 订单
     getLoseOrderIdByUidFun: getLoseOrderIdByUidFun,//返回当前uid的order 表的 过期的order postObj.loseOrderNeedList
     trueOrderAleadySelectFun: trueOrderAleadySelectFun,//判断订单是否已经选单,或者失效
+    findOneTimeOutNeedFun: findOneTimeOutNeedFun,//find 一条 已经过期的数据 ，返回 need _id
 };
 
 /**
@@ -463,8 +464,6 @@ function delNeedFun(postObj) {
  * 修改order的订单状态 传 postObj.orderId 12345
  */
 function editOrderStateFun(postObj, state) {
-
-
     var defer = q.defer();
     orderModel.update({_id: postObj.orderId}, {state: state}, {multi: false}, function (err, numberAffected, raw) {
         if (err) {
@@ -601,5 +600,54 @@ function trueOrderAleadySelectFun(postObj) {
         });
     return defer.promise;
 }
+
+
+/**************************
+ * find 一条 已经过期的数据 ，返回 need _id
+ **************************/
+function findOneTimeOutNeedFun(_id) {
+    var condition = {
+        state: {$in: [1, 2]}//状态为 发起,接单
+    };
+    if (_id) {
+        condition._id = {
+            $gt: _id
+        };
+    }
+
+    var defer = q.defer();
+    orderModel.findOne(condition, function (err, doc) {
+        if (err) {
+            defer.reject(err);
+        } else {
+            if (doc !== null) {
+                var now = moment();
+                var endTime = moment(doc.endTime);
+
+                if (now > endTime) {
+                    //修改当前orderId为4 超时
+                    editOrderStateFun({orderId: doc._id}, 4)
+
+                    //如果有符合条件的 就去修改order状态,和对应关系表的状态
+                        .then(function () {
+                            bindUserCtrl.changeOrderTimeOutCtrl({orderId: doc._id})
+                                .then(function (row) {
+                                    console.log('修改对应关系超时成功', row);
+                                }, function (err) {
+                                    console.log('修改对应关系超时状态失败', err);
+                                });
+                        }, function (err) {
+                            console.log('修改order为4失败', err);
+                        });
+                }
+
+            }
+            defer.resolve(doc);
+        }
+    });
+
+    return defer.promise;
+}
+
 
 module.exports = fun;

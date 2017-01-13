@@ -27,16 +27,15 @@
             }
             tools.postJsp(url, postData, true).then(_s);
             function _s(re) {
-                if (re.data.code == 'S') {
-                    if (re.data.haveNews) {
-                        $rootScope.$broadcast('showNews');//广播显示 有新消息
-                    } else {
-                        $rootScope.$broadcast('hideNews');//广播显示 没有有新消息
-                    }
+                if (re && re.data && re.data.code == 'S') {
+                    $rootScope.$broadcast('showNews');//广播显示 有新消息
+                }
+
+                else {
+                    $rootScope.$broadcast('hideNews');//广播显示 没有有新消息
                 }
             }
         }
-
 
     }
 
@@ -258,6 +257,8 @@
          * @param userId 用户id
          */
         function openIm(gHeader, gUId, gName, userHeader, userId) {
+
+            console.log('v', gUId, userId);
             if (gUId && userId) {
                 mui.openWindow({
                     url: 'callIm.html',
@@ -341,7 +342,7 @@
                     }
 
                     function __err() {
-                        tools.alert({title: '拨打电话失败'});
+                        tools.alert({title: '拨打电话失败,用户设置不允许电话咨询'});
                     }
                 });
             } else {

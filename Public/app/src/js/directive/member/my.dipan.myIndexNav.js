@@ -84,7 +84,7 @@
             }
 
             function _s(re) {
-                if (re.data.code == 'S') {
+                if (re && re.data && re.data.code == 'S' && re.data.results !== 0) {
                     $timeout(function () {
                         $scope.showNewsHistory = true;
                         $scope.getNoReadNewsEnd = re.data.getNoReadNewsEnd;//联系的未读消息显示的消息内容
@@ -166,13 +166,11 @@
 
 
             function _s(re) {
-                if (re.data.code == 'S') {
-                    if (re.data.haveNews) {
-                        $rootScope.$broadcast('showNews');//广播显示 有新消息
-                    }
-                    else {
-                        $rootScope.$broadcast('hideNews');//广播显示 没有有新消息
-                    }
+                if (re && re.data && re.data.code == 'S') {
+                    $rootScope.$broadcast('showNews');//广播显示 有新消息
+                }
+                else {
+                    $rootScope.$broadcast('hideNews');//广播显示 没有有新消息
                 }
             }
         }
