@@ -210,7 +210,7 @@
     function config() {
         return {
             //是否开启模拟调试Api
-            debugApi: true,
+            debugApi: false,
 
             //版本号默认设置
             version: {
@@ -294,16 +294,16 @@
             }
 
             trueWeb(function () {//web
-                // return 'http://www.dipan.so';// 生产
                 // reUrl = 'http://169.254.210.14';//dev
-                reUrl = 'http://127.0.0.1';//degetOrderFromListv
+                // reUrl = 'http://127.0.0.1';//degetOrderFromListv
+                reUrl = 'http://dipan.so';//degetOrderFromListv
             }, function () {//app
                 if (mui.os.android) {
-                    reUrl = 'http://192.168.0.25';//dev
+                    reUrl = 'http://dipan.so';//dev
                     // reUrl = 'http://192.168.18.9';//dev
                 } else {
                     // reUrl = 'http://192.168.18.9';//dev ipad
-                    reUrl = 'http://127.0.0.1';//dev ios模拟器
+                    reUrl = 'http://dipan.so';//dev ios模拟器
                 }
             });
 

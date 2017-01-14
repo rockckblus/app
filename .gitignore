@@ -56,3 +56,5 @@ Application/.idea/*
 Public/resCreate/api/.idea/*
 
 Public/app/node_modules/*
+
+FrontApplication/Home/View/Index/index.html
