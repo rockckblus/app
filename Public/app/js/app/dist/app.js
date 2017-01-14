@@ -428,3697 +428,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         })
     })
 }();
-;(function () {
-    'use strict';
-
-    /**
-     * @preserve FastClick: polyfill to remove click delays on browsers with touch UIs.
-     *
-     * @codingstandard ftlabs-jsv2
-     * @copyright The Financial Times Limited [All Rights Reserved]
-     * @license MIT License (see LICENSE.txt)
-     */
-
-    /*jslint browser:true, node:true*/
-    /*global define, Event, Node*/
-
-
-    /**
-     * Instantiate fast-clicking listeners on the specified layer.
-     *
-     * @constructor
-     * @param {Element} layer The layer to listen on
-     * @param {Object} [options={}] The options to override the defaults
-     */
-    function FastClick(layer, options) {
-        var oldOnClick;
-
-        options = options || {};
-
-        /**
-         * Whether a click is currently being tracked.
-         *
-         * @type boolean
-         */
-        this.trackingClick = false;
-
-
-        /**
-         * Timestamp for when click tracking started.
-         *
-         * @type number
-         */
-        this.trackingClickStart = 0;
-
-
-        /**
-         * The element being tracked for a click.
-         *
-         * @type EventTarget
-         */
-        this.targetElement = null;
-
-
-        /**
-         * X-coordinate of touch start event.
-         *
-         * @type number
-         */
-        this.touchStartX = 0;
-
-
-        /**
-         * Y-coordinate of touch start event.
-         *
-         * @type number
-         */
-        this.touchStartY = 0;
-
-
-        /**
-         * ID of the last touch, retrieved from Touch.identifier.
-         *
-         * @type number
-         */
-        this.lastTouchIdentifier = 0;
-
-
-        /**
-         * Touchmove boundary, beyond which a click will be cancelled.
-         *
-         * @type number
-         */
-        this.touchBoundary = options.touchBoundary || 10;
-
-
-        /**
-         * The FastClick layer.
-         *
-         * @type Element
-         */
-        this.layer = layer;
-
-        /**
-         * The minimum time between tap(touchstart and touchend) events
-         *
-         * @type number
-         */
-        this.tapDelay = options.tapDelay || 200;
-
-        /**
-         * The maximum time for a tap
-         *
-         * @type number
-         */
-        this.tapTimeout = options.tapTimeout || 700;
-
-        if (FastClick.notNeeded(layer)) {
-            return;
-        }
-
-        // Some old versions of Android don't have Function.prototype.bind
-        function bind(method, context) {
-            return function () {
-                return method.apply(context, arguments);
-            };
-        }
-
-
-        var methods = ['onMouse', 'onClick', 'onTouchStart', 'onTouchMove', 'onTouchEnd', 'onTouchCancel'];
-        var context = this;
-        for (var i = 0, l = methods.length; i < l; i++) {
-            context[methods[i]] = bind(context[methods[i]], context);
-        }
-
-        // Set up event handlers as required
-        if (deviceIsAndroid) {
-            layer.addEventListener('mouseover', this.onMouse, true);
-            layer.addEventListener('mousedown', this.onMouse, true);
-            layer.addEventListener('mouseup', this.onMouse, true);
-        }
-
-        layer.addEventListener('click', this.onClick, true);
-        layer.addEventListener('touchstart', this.onTouchStart, false);
-        layer.addEventListener('touchmove', this.onTouchMove, false);
-        layer.addEventListener('touchend', this.onTouchEnd, false);
-        layer.addEventListener('touchcancel', this.onTouchCancel, false);
-
-        // Hack is required for browsers that don't support Event#stopImmediatePropagation (e.g. Android 2)
-        // which is how FastClick normally stops click events bubbling to callbacks registered on the FastClick
-        // layer when they are cancelled.
-        if (!Event.prototype.stopImmediatePropagation) {
-            layer.removeEventListener = function (type, callback, capture) {
-                var rmv = Node.prototype.removeEventListener;
-                if (type === 'click') {
-                    rmv.call(layer, type, callback.hijacked || callback, capture);
-                } else {
-                    rmv.call(layer, type, callback, capture);
-                }
-            };
-
-            layer.addEventListener = function (type, callback, capture) {
-                var adv = Node.prototype.addEventListener;
-                if (type === 'click') {
-                    adv.call(layer, type, callback.hijacked || (callback.hijacked = function (event) {
-                            if (!event.propagationStopped) {
-                                callback(event);
-                            }
-                        }), capture);
-                } else {
-                    adv.call(layer, type, callback, capture);
-                }
-            };
-        }
-
-        // If a handler is already declared in the element's onclick attribute, it will be fired before
-        // FastClick's onClick handler. Fix this by pulling out the user-defined handler function and
-        // adding it as listener.
-        if (typeof layer.onclick === 'function') {
-
-            // Android browser on at least 3.2 requires a new reference to the function in layer.onclick
-            // - the old one won't work if passed to addEventListener directly.
-            oldOnClick = layer.onclick;
-            layer.addEventListener('click', function (event) {
-                oldOnClick(event);
-            }, false);
-            layer.onclick = null;
-        }
-    }
-
-    /**
-     * Windows Phone 8.1 fakes user agent string to look like Android and iPhone.
-     *
-     * @type boolean
-     */
-    var deviceIsWindowsPhone = navigator.userAgent.indexOf("Windows Phone") >= 0;
-
-    /**
-     * Android requires exceptions.
-     *
-     * @type boolean
-     */
-    var deviceIsAndroid = navigator.userAgent.indexOf('Android') > 0 && !deviceIsWindowsPhone;
-
-
-    /**
-     * iOS requires exceptions.
-     *
-     * @type boolean
-     */
-    var deviceIsIOS = /iP(ad|hone|od)/.test(navigator.userAgent) && !deviceIsWindowsPhone;
-
-
-    /**
-     * iOS 4 requires an exception for select elements.
-     *
-     * @type boolean
-     */
-    var deviceIsIOS4 = deviceIsIOS && (/OS 4_\d(_\d)?/).test(navigator.userAgent);
-
-
-    /**
-     * iOS 6.0-7.* requires the target element to be manually derived
-     *
-     * @type boolean
-     */
-    var deviceIsIOSWithBadTarget = deviceIsIOS && (/OS [6-7]_\d/).test(navigator.userAgent);
-
-    /**
-     * BlackBerry requires exceptions.
-     *
-     * @type boolean
-     */
-    var deviceIsBlackBerry10 = navigator.userAgent.indexOf('BB10') > 0;
-
-    /**
-     * Determine whether a given element requires a native click.
-     *
-     * @param {EventTarget|Element} target Target DOM element
-     * @returns {boolean} Returns true if the element needs a native click
-     */
-    FastClick.prototype.needsClick = function (target) {
-        switch (target.nodeName.toLowerCase()) {
-
-            // Don't send a synthetic click to disabled inputs (issue #62)
-            case 'button':
-            case 'select':
-            case 'textarea':
-                if (target.disabled) {
-                    return true;
-                }
-
-                break;
-            case 'input':
-
-                // File inputs need real clicks on iOS 6 due to a browser bug (issue #68)
-                if ((deviceIsIOS && target.type === 'file') || target.disabled) {
-                    return true;
-                }
-
-                break;
-            case 'label':
-            case 'iframe': // iOS8 homescreen apps can prevent events bubbling into frames
-            case 'video':
-                return true;
-        }
-
-        return (/\bneedsclick\b/).test(target.className);
-    };
-
-
-    /**
-     * Determine whether a given element requires a call to focus to simulate click into element.
-     *
-     * @param {EventTarget|Element} target Target DOM element
-     * @returns {boolean} Returns true if the element requires a call to focus to simulate native click.
-     */
-    FastClick.prototype.needsFocus = function (target) {
-        switch (target.nodeName.toLowerCase()) {
-            case 'textarea':
-                return true;
-            case 'select':
-                return !deviceIsAndroid;
-            case 'input':
-                switch (target.type) {
-                    case 'button':
-                    case 'checkbox':
-                    case 'file':
-                    case 'image':
-                    case 'radio':
-                    case 'submit':
-                        return false;
-                }
-
-                // No point in attempting to focus disabled inputs
-                return !target.disabled && !target.readOnly;
-            default:
-                return (/\bneedsfocus\b/).test(target.className);
-        }
-    };
-
-
-    /**
-     * Send a click event to the specified element.
-     *
-     * @param {EventTarget|Element} targetElement
-     * @param {Event} event
-     */
-    FastClick.prototype.sendClick = function (targetElement, event) {
-        var clickEvent, touch;
-
-        // On some Android devices activeElement needs to be blurred otherwise the synthetic click will have no effect (#24)
-        if (document.activeElement && document.activeElement !== targetElement) {
-            document.activeElement.blur();
-        }
-
-        touch = event.changedTouches[0];
-
-        // Synthesise a click event, with an extra attribute so it can be tracked
-        clickEvent = document.createEvent('MouseEvents');
-        clickEvent.initMouseEvent(this.determineEventType(targetElement), true, true, window, 1, touch.screenX, touch.screenY, touch.clientX, touch.clientY, false, false, false, false, 0, null);
-        clickEvent.forwardedTouchEvent = true;
-        targetElement.dispatchEvent(clickEvent);
-    };
-
-    FastClick.prototype.determineEventType = function (targetElement) {
-
-        //Issue #159: Android Chrome Select Box does not open with a synthetic click event
-        if (deviceIsAndroid && targetElement.tagName.toLowerCase() === 'select') {
-            return 'mousedown';
-        }
-
-        return 'click';
-    };
-
-
-    /**
-     * @param {EventTarget|Element} targetElement
-     */
-    FastClick.prototype.focus = function (targetElement) {
-        var length;
-
-        // Issue #160: on iOS 7, some input elements (e.g. date datetime month) throw a vague TypeError on setSelectionRange. These elements don't have an integer value for the selectionStart and selectionEnd properties, but unfortunately that can't be used for detection because accessing the properties also throws a TypeError. Just check the type instead. Filed as Apple bug #15122724.
-        if (deviceIsIOS && targetElement.setSelectionRange && targetElement.type.indexOf('date') !== 0 && targetElement.type !== 'time' && targetElement.type !== 'month') {
-            length = targetElement.value.length;
-            targetElement.setSelectionRange(length, length);
-        } else {
-            targetElement.focus();
-        }
-    };
-
-
-    /**
-     * Check whether the given target element is a child of a scrollable layer and if so, set a flag on it.
-     *
-     * @param {EventTarget|Element} targetElement
-     */
-    FastClick.prototype.updateScrollParent = function (targetElement) {
-        var scrollParent, parentElement;
-
-        scrollParent = targetElement.fastClickScrollParent;
-
-        // Attempt to discover whether the target element is contained within a scrollable layer. Re-check if the
-        // target element was moved to another parent.
-        if (!scrollParent || !scrollParent.contains(targetElement)) {
-            parentElement = targetElement;
-            do {
-                if (parentElement.scrollHeight > parentElement.offsetHeight) {
-                    scrollParent = parentElement;
-                    targetElement.fastClickScrollParent = parentElement;
-                    break;
-                }
-
-                parentElement = parentElement.parentElement;
-            } while (parentElement);
-        }
-
-        // Always update the scroll top tracker if possible.
-        if (scrollParent) {
-            scrollParent.fastClickLastScrollTop = scrollParent.scrollTop;
-        }
-    };
-
-
-    /**
-     * @param {EventTarget} targetElement
-     * @returns {Element|EventTarget}
-     */
-    FastClick.prototype.getTargetElementFromEventTarget = function (eventTarget) {
-
-        // On some older browsers (notably Safari on iOS 4.1 - see issue #56) the event target may be a text node.
-        if (eventTarget.nodeType === Node.TEXT_NODE) {
-            return eventTarget.parentNode;
-        }
-
-        return eventTarget;
-    };
-
-
-    /**
-     * On touch start, record the position and scroll offset.
-     *
-     * @param {Event} event
-     * @returns {boolean}
-     */
-    FastClick.prototype.onTouchStart = function (event) {
-        var targetElement, touch, selection;
-
-        // Ignore multiple touches, otherwise pinch-to-zoom is prevented if both fingers are on the FastClick element (issue #111).
-        if (event.targetTouches.length > 1) {
-            return true;
-        }
-
-        targetElement = this.getTargetElementFromEventTarget(event.target);
-        touch = event.targetTouches[0];
-
-        if (deviceIsIOS) {
-
-            // Only trusted events will deselect text on iOS (issue #49)
-            selection = window.getSelection();
-            if (selection.rangeCount && !selection.isCollapsed) {
-                return true;
-            }
-
-            if (!deviceIsIOS4) {
-
-                // Weird things happen on iOS when an alert or confirm dialog is opened from a click event callback (issue #23):
-                // when the user next taps anywhere else on the page, new touchstart and touchend events are dispatched
-                // with the same identifier as the touch event that previously triggered the click that triggered the alert.
-                // Sadly, there is an issue on iOS 4 that causes some normal touch events to have the same identifier as an
-                // immediately preceeding touch event (issue #52), so this fix is unavailable on that platform.
-                // Issue 120: touch.identifier is 0 when Chrome dev tools 'Emulate touch events' is set with an iOS device UA string,
-                // which causes all touch events to be ignored. As this block only applies to iOS, and iOS identifiers are always long,
-                // random integers, it's safe to to continue if the identifier is 0 here.
-                if (touch.identifier && touch.identifier === this.lastTouchIdentifier) {
-                    event.preventDefault();
-                    return false;
-                }
-
-                this.lastTouchIdentifier = touch.identifier;
-
-                // If the target element is a child of a scrollable layer (using -webkit-overflow-scrolling: touch) and:
-                // 1) the user does a fling scroll on the scrollable layer
-                // 2) the user stops the fling scroll with another tap
-                // then the event.target of the last 'touchend' event will be the element that was under the user's finger
-                // when the fling scroll was started, causing FastClick to send a click event to that layer - unless a check
-                // is made to ensure that a parent layer was not scrolled before sending a synthetic click (issue #42).
-                this.updateScrollParent(targetElement);
-            }
-        }
-
-        this.trackingClick = true;
-        this.trackingClickStart = event.timeStamp;
-        this.targetElement = targetElement;
-
-        this.touchStartX = touch.pageX;
-        this.touchStartY = touch.pageY;
-
-        // Prevent phantom clicks on fast double-tap (issue #36)
-        if ((event.timeStamp - this.lastClickTime) < this.tapDelay) {
-            event.preventDefault();
-        }
-
-        return true;
-    };
-
-
-    /**
-     * Based on a touchmove event object, check whether the touch has moved past a boundary since it started.
-     *
-     * @param {Event} event
-     * @returns {boolean}
-     */
-    FastClick.prototype.touchHasMoved = function (event) {
-        var touch = event.changedTouches[0], boundary = this.touchBoundary;
-
-        if (Math.abs(touch.pageX - this.touchStartX) > boundary || Math.abs(touch.pageY - this.touchStartY) > boundary) {
-            return true;
-        }
-
-        return false;
-    };
-
-
-    /**
-     * Update the last position.
-     *
-     * @param {Event} event
-     * @returns {boolean}
-     */
-    FastClick.prototype.onTouchMove = function (event) {
-        if (!this.trackingClick) {
-            return true;
-        }
-
-        // If the touch has moved, cancel the click tracking
-        if (this.targetElement !== this.getTargetElementFromEventTarget(event.target) || this.touchHasMoved(event)) {
-            this.trackingClick = false;
-            this.targetElement = null;
-        }
-
-        return true;
-    };
-
-
-    /**
-     * Attempt to find the labelled control for the given label element.
-     *
-     * @param {EventTarget|HTMLLabelElement} labelElement
-     * @returns {Element|null}
-     */
-    FastClick.prototype.findControl = function (labelElement) {
-
-        // Fast path for newer browsers supporting the HTML5 control attribute
-        if (labelElement.control !== undefined) {
-            return labelElement.control;
-        }
-
-        // All browsers under test that support touch events also support the HTML5 htmlFor attribute
-        if (labelElement.htmlFor) {
-            return document.getElementById(labelElement.htmlFor);
-        }
-
-        // If no for attribute exists, attempt to retrieve the first labellable descendant element
-        // the list of which is defined here: http://www.w3.org/TR/html5/forms.html#category-label
-        return labelElement.querySelector('button, input:not([type=hidden]), keygen, meter, output, progress, select, textarea');
-    };
-
-
-    /**
-     * On touch end, determine whether to send a click event at once.
-     *
-     * @param {Event} event
-     * @returns {boolean}
-     */
-    FastClick.prototype.onTouchEnd = function (event) {
-        var forElement, trackingClickStart, targetTagName, scrollParent, touch, targetElement = this.targetElement;
-
-        if (!this.trackingClick) {
-            return true;
-        }
-
-        // Prevent phantom clicks on fast double-tap (issue #36)
-        if ((event.timeStamp - this.lastClickTime) < this.tapDelay) {
-            this.cancelNextClick = true;
-            return true;
-        }
-
-        if ((event.timeStamp - this.trackingClickStart) > this.tapTimeout) {
-            return true;
-        }
-
-        // Reset to prevent wrong click cancel on input (issue #156).
-        this.cancelNextClick = false;
-
-        this.lastClickTime = event.timeStamp;
-
-        trackingClickStart = this.trackingClickStart;
-        this.trackingClick = false;
-        this.trackingClickStart = 0;
-
-        // On some iOS devices, the targetElement supplied with the event is invalid if the layer
-        // is performing a transition or scroll, and has to be re-detected manually. Note that
-        // for this to function correctly, it must be called *after* the event target is checked!
-        // See issue #57; also filed as rdar://13048589 .
-        if (deviceIsIOSWithBadTarget) {
-            touch = event.changedTouches[0];
-
-            // In certain cases arguments of elementFromPoint can be negative, so prevent setting targetElement to null
-            targetElement = document.elementFromPoint(touch.pageX - window.pageXOffset, touch.pageY - window.pageYOffset) || targetElement;
-            targetElement.fastClickScrollParent = this.targetElement.fastClickScrollParent;
-        }
-
-        targetTagName = targetElement.tagName.toLowerCase();
-        if (targetTagName === 'label') {
-            forElement = this.findControl(targetElement);
-            if (forElement) {
-                this.focus(targetElement);
-                if (deviceIsAndroid) {
-                    return false;
-                }
-
-                targetElement = forElement;
-            }
-        } else if (this.needsFocus(targetElement)) {
-
-            // Case 1: If the touch started a while ago (best guess is 100ms based on tests for issue #36) then focus will be triggered anyway. Return early and unset the target element reference so that the subsequent click will be allowed through.
-            // Case 2: Without this exception for input elements tapped when the document is contained in an iframe, then any inputted text won't be visible even though the value attribute is updated as the user types (issue #37).
-            if ((event.timeStamp - trackingClickStart) > 100 || (deviceIsIOS && window.top !== window && targetTagName === 'input')) {
-                this.targetElement = null;
-                return false;
-            }
-
-            this.focus(targetElement);
-            this.sendClick(targetElement, event);
-
-            // Select elements need the event to go through on iOS 4, otherwise the selector menu won't open.
-            // Also this breaks opening selects when VoiceOver is active on iOS6, iOS7 (and possibly others)
-            if (!deviceIsIOS || targetTagName !== 'select') {
-                this.targetElement = null;
-                event.preventDefault();
-            }
-
-            return false;
-        }
-
-        if (deviceIsIOS && !deviceIsIOS4) {
-
-            // Don't send a synthetic click event if the target element is contained within a parent layer that was scrolled
-            // and this tap is being used to stop the scrolling (usually initiated by a fling - issue #42).
-            scrollParent = targetElement.fastClickScrollParent;
-            if (scrollParent && scrollParent.fastClickLastScrollTop !== scrollParent.scrollTop) {
-                return true;
-            }
-        }
-
-        // Prevent the actual click from going though - unless the target node is marked as requiring
-        // real clicks or if it is in the whitelist in which case only non-programmatic clicks are permitted.
-        if (!this.needsClick(targetElement)) {
-            event.preventDefault();
-            this.sendClick(targetElement, event);
-        }
-
-        return false;
-    };
-
-
-    /**
-     * On touch cancel, stop tracking the click.
-     *
-     * @returns {void}
-     */
-    FastClick.prototype.onTouchCancel = function () {
-        this.trackingClick = false;
-        this.targetElement = null;
-    };
-
-
-    /**
-     * Determine mouse events which should be permitted.
-     *
-     * @param {Event} event
-     * @returns {boolean}
-     */
-    FastClick.prototype.onMouse = function (event) {
-
-        // If a target element was never set (because a touch event was never fired) allow the event
-        if (!this.targetElement) {
-            return true;
-        }
-
-        if (event.forwardedTouchEvent) {
-            return true;
-        }
-
-        // Programmatically generated events targeting a specific element should be permitted
-        if (!event.cancelable) {
-            return true;
-        }
-
-        // Derive and check the target element to see whether the mouse event needs to be permitted;
-        // unless explicitly enabled, prevent non-touch click events from triggering actions,
-        // to prevent ghost/doubleclicks.
-        if (!this.needsClick(this.targetElement) || this.cancelNextClick) {
-
-            // Prevent any user-added listeners declared on FastClick element from being fired.
-            if (event.stopImmediatePropagation) {
-                event.stopImmediatePropagation();
-            } else {
-
-                // Part of the hack for browsers that don't support Event#stopImmediatePropagation (e.g. Android 2)
-                event.propagationStopped = true;
-            }
-
-            // Cancel the event
-            event.stopPropagation();
-            event.preventDefault();
-
-            return false;
-        }
-
-        // If the mouse event is permitted, return true for the action to go through.
-        return true;
-    };
-
-
-    /**
-     * On actual clicks, determine whether this is a touch-generated click, a click action occurring
-     * naturally after a delay after a touch (which needs to be cancelled to avoid duplication), or
-     * an actual click which should be permitted.
-     *
-     * @param {Event} event
-     * @returns {boolean}
-     */
-    FastClick.prototype.onClick = function (event) {
-        var permitted;
-
-        // It's possible for another FastClick-like library delivered with third-party code to fire a click event before FastClick does (issue #44). In that case, set the click-tracking flag back to false and return early. This will cause onTouchEnd to return early.
-        if (this.trackingClick) {
-            this.targetElement = null;
-            this.trackingClick = false;
-            return true;
-        }
-
-        // Very odd behaviour on iOS (issue #18): if a submit element is present inside a form and the user hits enter in the iOS simulator or clicks the Go button on the pop-up OS keyboard the a kind of 'fake' click event will be triggered with the submit-type input element as the target.
-        if (event.target.type === 'submit' && event.detail === 0) {
-            return true;
-        }
-
-        permitted = this.onMouse(event);
-
-        // Only unset targetElement if the click is not permitted. This will ensure that the check for !targetElement in onMouse fails and the browser's click doesn't go through.
-        if (!permitted) {
-            this.targetElement = null;
-        }
-
-        // If clicks are permitted, return true for the action to go through.
-        return permitted;
-    };
-
-
-    /**
-     * Remove all FastClick's event listeners.
-     *
-     * @returns {void}
-     */
-    FastClick.prototype.destroy = function () {
-        var layer = this.layer;
-
-        if (deviceIsAndroid) {
-            layer.removeEventListener('mouseover', this.onMouse, true);
-            layer.removeEventListener('mousedown', this.onMouse, true);
-            layer.removeEventListener('mouseup', this.onMouse, true);
-        }
-
-        layer.removeEventListener('click', this.onClick, true);
-        layer.removeEventListener('touchstart', this.onTouchStart, false);
-        layer.removeEventListener('touchmove', this.onTouchMove, false);
-        layer.removeEventListener('touchend', this.onTouchEnd, false);
-        layer.removeEventListener('touchcancel', this.onTouchCancel, false);
-    };
-
-
-    /**
-     * Check whether FastClick is needed.
-     *
-     * @param {Element} layer The layer to listen on
-     */
-    FastClick.notNeeded = function (layer) {
-        var metaViewport;
-        var chromeVersion;
-        var blackberryVersion;
-        var firefoxVersion;
-
-        // Devices that don't support touch don't need FastClick
-        if (typeof window.ontouchstart === 'undefined') {
-            return true;
-        }
-
-        // Chrome version - zero for other browsers
-        chromeVersion = +(/Chrome\/([0-9]+)/.exec(navigator.userAgent) || [, 0])[1];
-
-        if (chromeVersion) {
-
-            if (deviceIsAndroid) {
-                metaViewport = document.querySelector('meta[name=viewport]');
-
-                if (metaViewport) {
-                    // Chrome on Android with user-scalable="no" doesn't need FastClick (issue #89)
-                    if (metaViewport.content.indexOf('user-scalable=no') !== -1) {
-                        return true;
-                    }
-                    // Chrome 32 and above with width=device-width or less don't need FastClick
-                    if (chromeVersion > 31 && document.documentElement.scrollWidth <= window.outerWidth) {
-                        return true;
-                    }
-                }
-
-                // Chrome desktop doesn't need FastClick (issue #15)
-            } else {
-                return true;
-            }
-        }
-
-        if (deviceIsBlackBerry10) {
-            blackberryVersion = navigator.userAgent.match(/Version\/([0-9]*)\.([0-9]*)/);
-
-            // BlackBerry 10.3+ does not require Fastclick library.
-            // https://github.com/ftlabs/fastclick/issues/251
-            if (blackberryVersion[1] >= 10 && blackberryVersion[2] >= 3) {
-                metaViewport = document.querySelector('meta[name=viewport]');
-
-                if (metaViewport) {
-                    // user-scalable=no eliminates click delay.
-                    if (metaViewport.content.indexOf('user-scalable=no') !== -1) {
-                        return true;
-                    }
-                    // width=device-width (or less than device-width) eliminates click delay.
-                    if (document.documentElement.scrollWidth <= window.outerWidth) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        // IE10 with -ms-touch-action: none or manipulation, which disables double-tap-to-zoom (issue #97)
-        if (layer.style.msTouchAction === 'none' || layer.style.touchAction === 'manipulation') {
-            return true;
-        }
-
-        // Firefox version - zero for other browsers
-        firefoxVersion = +(/Firefox\/([0-9]+)/.exec(navigator.userAgent) || [, 0])[1];
-
-        if (firefoxVersion >= 27) {
-            // Firefox 27+ does not have tap delay if the content is not zoomable - https://bugzilla.mozilla.org/show_bug.cgi?id=922896
-
-            metaViewport = document.querySelector('meta[name=viewport]');
-            if (metaViewport && (metaViewport.content.indexOf('user-scalable=no') !== -1 || document.documentElement.scrollWidth <= window.outerWidth)) {
-                return true;
-            }
-        }
-
-        // IE11: prefixed -ms-touch-action is no longer supported and it's recomended to use non-prefixed version
-        // http://msdn.microsoft.com/en-us/library/windows/apps/Hh767313.aspx
-        if (layer.style.touchAction === 'none' || layer.style.touchAction === 'manipulation') {
-            return true;
-        }
-
-        return false;
-    };
-
-
-    /**
-     * Factory method for creating a FastClick object
-     *
-     * @param {Element} layer The layer to listen on
-     * @param {Object} [options={}] The options to override the defaults
-     */
-    FastClick.attach = function (layer, options) {
-        return new FastClick(layer, options);
-    };
-
-
-    if (typeof define === 'function' && typeof define.amd === 'object' && define.amd) {
-
-        // AMD. Register as an anonymous module.
-        define(function () {
-            return FastClick;
-        });
-    } else if (typeof module !== 'undefined' && module.exports) {
-        module.exports = FastClick.attach;
-        module.exports.FastClick = FastClick;
-    } else {
-        window.FastClick = FastClick;
-    }
-}());
-
-/**
- @module mobile-angular-ui.core.activeLinks
- @description
-
- `mobile-angular-ui.activeLinks` module sets up `.active` class for `a` elements those `href` attribute matches the current angular `$location` url. It takes care of excluding both search part and hash part from comparison.
-
- `.active` classes are added/removed each time one of `$locationChangeSuccess` or `$includeContentLoaded` is fired.
-
- ## Usage
-
- Just declare it as a dependency to your app unless you have already included one of its super-modules.
-
- ```
- angular.module('myApp', ['mobile-angular-ui.core.activeLinks']);
- ```
-
- **NOTE:** if you are using it without Bootstrap you may need to add some css to your stylesheets to reflect the activation state of links. I.e.
-
- ``` css
- a.active {
-  color: blue;
-}
- ```
-
- */
-(function () {
-    'use strict';
-
-    angular.module("mobile-angular-ui.core.activeLinks", [])
-
-        .run([
-            '$rootScope',
-            '$window',
-            '$document',
-            '$location',
-            function ($rootScope, $window, $document, $location) {
-
-                var setupActiveLinks = function () {
-                    // Excludes both search part and hash part from
-                    // comparison.
-                    var url = $location.url(),
-                        firstHash = url.indexOf('#'),
-                        firstSearchMark = url.indexOf('?'),
-                        locationHref = $window.location.href,
-                        plainUrlLength = locationHref.indexOf(url),
-                        newPath;
-
-                    if (firstHash === -1 && firstSearchMark === -1) {
-                        newPath = locationHref;
-                    } else if (firstHash !== -1 && firstHash > firstSearchMark) {
-                        newPath = locationHref.slice(0, plainUrlLength + firstHash);
-                    } else if (firstSearchMark !== -1 && firstSearchMark > firstHash) {
-                        newPath = locationHref.slice(0, plainUrlLength + firstSearchMark);
-                    }
-
-                    var domLinks = $document[0].links;
-                    for (var i = 0; i < domLinks.length; i++) {
-                        var domLink = domLinks[i];
-                        var link = angular.element(domLink);
-                        if (link.attr('href') && link.attr('href') !== '' && domLink.href === newPath) {
-                            link.addClass('active');
-                        } else if (link.attr('href') && link.attr('href') !== '' && domLink.href && domLink.href.length) {
-                            link.removeClass('active');
-                        }
-                    }
-                };
-
-                $rootScope.$on('$locationChangeSuccess', setupActiveLinks);
-                $rootScope.$on('$includeContentLoaded', setupActiveLinks);
-            }
-        ]);
-
-}());
-
-
-/**
- * @module mobile-angular-ui.core.capture
- * @description
- *
- * The `capture` module exposes directives to let you extract markup which can be used in other parts of a template using `uiContentFor` and `uiYieldTo` directives.
- *
- * It provides a way to move or clone a block of markup to other parts of the document.
- *
- * This method is particularly useful to setup parts of the layout within an angular view. Since blocks of html are transplanted within their original `$scope` is easy to create layout interactions depending on the context. Some tipical task you can accomplish with these directives are: _setup the navbar title depending on the view_ or _place a submit button for a form inside a navbar_.
- *
- * ## Usage
- *
- * Declare it as a dependency to your app unless you have already included some of its super-modules.
- *
- * ```
- * angular.module('myApp', ['mobile-angular-ui']);
- * ```
- *
- * Or
- *
- * ```
- * angular.module('myApp', ['mobile-angular-ui']);
- * ```
- *
- * Or
- *
- * ```
- * angular.module('myApp', ['mobile-angular-ui.core.capture']);
- * ```
- *
- * Use `ui-yield-to` as a placeholder.
- *
- * ``` html
- * <!-- index.html -->
- *
- * <div class="navbar">
- *   <div ui-yield-to="title" class="navbar-brand">
- *     <span>Default Title</span>
- *   </div>
- * </div>
- *
- * <div class="app-body">
- *   <ng-view class="app-content"></ng-view>
- * </div>
- * ```
- *
- * Use `ui-content-for` inside any view to populate the `ui-yield-to` content.
- *
- * ``` html
- * <!-- myView.html -->
- *
- * <div ui-content-for="title">
- *   <span>My View Title</span>
- * </div>
- * ```
- *
- * Since the original scope is preserved you can use directives inside `ui-content-for` blocks to interact with the current scope. In the following example we will add a navbar button to submit a form inside a nested view.
- *
- *
- * ``` html
- * <!-- index.html -->
- *
- * <div class="navbar">
- *   <div ui-yield-to="navbarAction">
- *   </div>
- * </div>
- *
- * <div class="app-body">
- *   <ng-view class="app-content"></ng-view>
- * </div>
- * ```
- *
- * ``` html
- * <!-- newCustomer.html -->
- *
- * <form ng-controller="newCustomerController">
- *
- *   <div class="inputs">
- *     <input type="text" ng-model="customer.name" />
- *   </div>
- *
- *   <div ui-content-for="navbarAction">
- *     <button ng-click="createCustomer()">
- *       Save
- *     </button>
- *   </div>
- *
- * </form>
- * ```
- *
- * ``` javascript
- * app.controller('newCustomerController', function($scope, Store){
- *   $scope.customer = {};
- *   $scope.createCustomer = function(){
- *     Store.create($scope.customer);
- *     // ...
- *   }
- * });
- * ```
- *
- * If you wish you can also duplicate markup instead of move it. Just add `duplicate` parameter to `uiContentFor` directive to specify this behaviour.
- *
- * ``` html
- * <div ui-content-for="navbarAction" duplicate>
- *   <button ng-click="createCustomer()">
- *     Save
- *   </button>
- * </div>
- * ```
- */
-(function () {
-    'use strict';
-
-    angular.module('mobile-angular-ui.core.capture', [])
-
-        .run([
-            'Capture',
-            '$rootScope',
-            function (Capture, $rootScope) {
-                $rootScope.$on('$routeChangeSuccess', function () {
-                    Capture.resetAll();
-                });
-            }
-        ])
-
-        .factory('Capture', [
-            '$compile',
-            function ($compile) {
-                var yielders = {};
-
-                return {
-                    resetAll: function () {
-                        for (var name in yielders) {
-                            if (yielders.hasOwnProperty(name)) {
-                                this.resetYielder(name);
-                            }
-                        }
-                    },
-
-                    resetYielder: function (name) {
-                        var b = yielders[name];
-                        this.setContentFor(name, b.defaultContent, b.defaultScope);
-                    },
-
-                    putYielder: function (name, element, defaultScope, defaultContent) {
-                        var yielder = {};
-                        yielder.name = name;
-                        yielder.element = element;
-                        yielder.defaultContent = defaultContent || '';
-                        yielder.defaultScope = defaultScope;
-                        yielders[name] = yielder;
-                    },
-
-                    getYielder: function (name) {
-                        return yielders[name];
-                    },
-
-                    removeYielder: function (name) {
-                        delete yielders[name];
-                    },
-
-                    setContentFor: function (name, content, scope) {
-                        var b = yielders[name];
-                        if (!b) {
-                            return;
-                        }
-                        b.element.html(content);
-                        $compile(b.element.contents())(scope);
-                    }
-
-                };
-            }
-        ])
-
-        /**
-         * @directive uiContentFor
-         * @restrict A
-         * @description
-         *
-         * `ui-content-for` makes inner contents to replace the corresponding
-         * `ui-yield-to` placeholder contents.
-         *
-         * `uiContentFor` is intended to be used inside a view in order to populate outer placeholders.
-         * Any content you send to placeholders via `ui-content-for` is
-         * reverted to placeholder defaults after view changes (ie. on `$routeChangeStart`).
-         *
-         * @param {string} uiContentFor The id of the placeholder to be replaced
-         * @param {boolean} uiDuplicate If present duplicates the content instead of moving it (default to `false`)
-         *
-         */
-        .directive('uiContentFor', [
-            'Capture',
-            function (Capture) {
-                return {
-                    compile: function (tElem, tAttrs) {
-                        var rawContent = tElem.html();
-                        if (tAttrs.uiDuplicate === null || tAttrs.uiDuplicate === undefined) {
-                            // no need to compile anything!
-                            tElem.html('');
-                            tElem.remove();
-                        }
-                        return function (scope, elem, attrs) {
-                            Capture.setContentFor(attrs.uiContentFor, rawContent, scope);
-                        };
-                    }
-                };
-            }
-        ])
-
-        /**
-         * @directive uiYieldTo
-         * @restrict A
-         * @description
-         *
-         * `ui-yield-to` defines a placeholder which contents will be further replaced by `ui-content-for` directive.
-         *
-         * Inner html is considered to be a default. Default is restored any time `$routeChangeStart` happens.
-         *
-         * @param {string} uiYieldTo The unique id of this placeholder.
-         *
-         */
-        .directive('uiYieldTo', [
-            '$compile', 'Capture', function ($compile, Capture) {
-                return {
-                    link: function (scope, element, attr) {
-                        Capture.putYielder(attr.uiYieldTo, element, scope, element.html());
-
-                        element.on('$destroy', function () {
-                            Capture.removeYielder(attr.uiYieldTo);
-                        });
-
-                        scope.$on('$destroy', function () {
-                            Capture.removeYielder(attr.uiYieldTo);
-                        });
-                    }
-                };
-            }
-        ]);
-
-}());
-
-(function () {
-    'use strict';
-    var module = angular.module('mobile-angular-ui.core.fastclick', []);
-
-    module.run(['$window', function ($window) {
-
-        //Temporarly bugfix in overthrow/fastclick:
-        var orgHandler = FastClick.prototype.onTouchEnd;
-
-        // Some old versions of Android don't have Function.prototype.bind
-        function bind(method, context) {
-            return function () {
-                return method.apply(context, arguments);
-            };
-        }
-
-        FastClick.prototype.onTouchEnd = function (event) {
-
-            if (!event.changedTouches) {
-                event.changedTouches = [{}];
-            }
-
-            orgHandler = bind(orgHandler, this);
-            orgHandler(event);
-        };
-
-        FastClick.attach($window.document.body);
-
-    }]);
-
-    angular.forEach(['select', 'input', 'textarea'], function (directiveName) {
-
-        module.directive(directiveName, function () {
-            return {
-                restrict: 'E',
-                compile: function (elem) {
-                    elem.addClass('needsclick');
-                }
-            };
-        });
-    });
-}());
-
-/**
-
- @module mobile-angular-ui.core.outerClick
- @description
-
- Provides a directive to specifiy a behaviour when click/tap events
- happen outside an element. This can be easily used
- to implement eg. __close on outer click__ feature for a dropdown.
-
- ## Usage
-
- Declare it as a dependency to your app unless you have already
- included some of its super-modules.
-
- ```
- angular.module('myApp', ['mobile-angular-ui']);
- ```
-
- Or
-
- ```
- angular.module('myApp', ['mobile-angular-ui.core']);
- ```
-
- Or
-
- ```
- angular.module('myApp', ['mobile-angular-ui.core.outerClick']);
- ```
-
- Use `ui-outer-click` to define an expression to evaluate when an _Outer Click_ event happens.
- Use `ui-outer-click-if` parameter to define a condition to enable/disable the listener.
-
- ``` html
- <div class="btn-group">
- <a ui-turn-on='myDropdown' class='btn'>
- <i class="fa fa-ellipsis-v"></i>
- </a>
- <ul
- class="dropdown-menu"
- ui-outer-click="Ui.turnOff('myDropdown')"
- ui-outer-click-if="Ui.active('myDropdown')"
- role="menu"
- ui-show="myDropdown"
- ui-state="myDropdown"
- ui-turn-off="myDropdown">
-
- <li><a>Action</a></li>
- <li><a>Another action</a></li>
- <li><a>Something else here</a></li>
- <li class="divider"></li>
- <li><a>Separated link</a></li>
- </ul>
- </div>
- ```
-
- */
-(function () {
-    'use strict';
-
-    var isAncestorOrSelf = function (element, target) {
-        var parent = element;
-        while (parent.length > 0) {
-            if (parent[0] === target[0]) {
-                parent = null;
-                return true;
-            }
-            parent = parent.parent();
-        }
-        parent = null;
-        return false;
-    };
-
-    angular.module('mobile-angular-ui.core.outerClick', [])
-
-        /**
-         * @service bindOuterClick
-         * @as function
-         *
-         * @description
-         * This is a service function that binds a callback to be conditionally executed
-         * when a click event happens outside a specified element.
-         *
-         * Ie.
-         *
-         * ``` js
-         * app.directive('myDirective', function('bindOuterClick'){
-    *   return {
-    *     link: function(scope, element) {
-    *       bindOuterClick(element, function(scope, extra){
-    *         alert('You clicked ouside me!');
-    *       }, function(e){
-    *         return element.hasClass('disabled') ? true : false;
-    *       });
-    *     }
-    *   };
-    * });
-         * ```
-         * @scope {scope} the scope to eval callbacks
-         * @param {DomElement|$element} element The element to bind to.
-         * @param {function} callback A `function(scope, options)`, usually the result of `$parse`, that is called when an _outer click_ event happens.
-         * @param {string|function} condition Angular `$watch` expression to decide whether to run `callback` or not.
-         */
-        .factory('bindOuterClick', [
-            '$document',
-            '$timeout',
-            function ($document, $timeout) {
-
-                return function (scope, element, outerClickFn, outerClickIf) {
-                    var handleOuterClick = function (event) {
-                        if (!isAncestorOrSelf(angular.element(event.target), element)) {
-                            scope.$apply(function () {
-                                outerClickFn(scope, {$event: event});
-                            });
-                        }
-                    };
-
-                    var stopWatching = angular.noop;
-                    var t = null;
-
-                    if (outerClickIf) {
-                        stopWatching = scope.$watch(outerClickIf, function (value) {
-                            $timeout.cancel(t);
-
-                            if (value) {
-                                // prevents race conditions
-                                // activating with other click events
-                                t = $timeout(function () {
-                                    $document.on('click tap', handleOuterClick);
-                                }, 0);
-
-                            } else {
-                                $document.unbind('click tap', handleOuterClick);
-                            }
-                        });
-                    } else {
-                        $timeout.cancel(t);
-                        $document.on('click tap', handleOuterClick);
-                    }
-
-                    scope.$on('$destroy', function () {
-                        stopWatching();
-                        $document.unbind('click tap', handleOuterClick);
-                    });
-                };
-            }
-        ])
-
-
-        /**
-         * @directive outerClick
-         *
-         * @description
-         * Evaluates an expression when an _Outer Click_ event happens.
-         *
-         * @param {expression} uiOuterClick Expression to evaluate when an _Outer Click_ event happens.
-         * @param {expression} uiOuterClickIf Condition to enable/disable the listener. Defaults to `true`.
-         */
-        .directive('uiOuterClick', [
-            'bindOuterClick',
-            '$parse',
-            function (bindOuterClick, $parse) {
-                return {
-                    restrict: 'A',
-                    compile: function (elem, attrs) {
-                        var outerClickFn = $parse(attrs.uiOuterClick);
-                        var outerClickIf = attrs.uiOuterClickIf;
-                        return function (scope, elem) {
-                            bindOuterClick(scope, elem, outerClickFn, outerClickIf);
-                        };
-                    }
-                };
-            }
-        ]);
-}());
-(function () {
-    'use strict';
-    /**
-     * @module mobile-angular-ui.core.sharedState
-     *
-     * @description
-     * `mobile-angular-ui.core.sharedState` is expose the homonymous service
-     * `SharedState` and a group of directives to access it.
-     *
-     * `SharedState` allows to use elementary angular or angularish directives
-     * to create interactive components.
-     *
-     * Ie.
-     *
-     * ``` html
-     * <div class="nav nav-tabs" ui-state='activeTab'>
-     *   <a ui-set="{activeTab: 1}">Tab1</a>
-     *   <a ui-set="{activeTab: 2}">Tab2</a>
-     *   <a ui-set="{activeTab: 3}">Tab3</a>
-     * </div>
-     * <div class="tabs">
-     *   <div ui-if="activeTab == 1">Tab1</div>
-     *   <div ui-if="activeTab == 2">Tab2</div>
-     *   <div ui-if="activeTab == 3">Tab3</div>
-     * </div>
-     * ```
-     *
-     * Using `SharedState` you will be able to:
-     *
-     * - Create interactive components without having to write javascript code
-     * - Have your controller free from UI logic
-     * - Separe `ng-click` triggering application logic from those having a visual effect only
-     * - Export state of components to urls
-     * - Easily make components comunicate each other
-     *
-     * Also note that:
-     *
-     * Data structures retaining statuses will stay outside angular scopes
-     * thus they are not evaluated against digest cycle until its necessary.
-     * Also although statuses are sort of global variables `SharedState` will
-     * take care of disposing them when no scopes are requiring them anymore.
-     *
-     * A set of `ui-*` directives are available to interact with `SharedState`
-     * module and will hopefully let you spare your controllers and your time
-     * for something that is more meaningful than this:
-     *
-     * ``` js
-     * $scope.activeTab = 1;
-     *
-     * $scope.setActiveTab = function(n) {
-   *   $scope.activeTab = n;
-   * };
-     * ```
-     *
-     * ## Usage
-     *
-     * Declare it as a dependency to your app unless you have already included some
-     * of its super-modules.
-     *
-     * ```
-     * angular.module('myApp', ['mobile-angular-ui.core.sharedState']);
-     * ```
-     *
-     * Use `ui-state` directive to require/initialize a state from the target element scope
-     *
-     * **Example.** Tabs
-     *
-     * <iframe class='embedded-example' src='/examples/tabs.html'></iframe>
-     *
-     * **Example.** Custom components
-     *
-     * <iframe class='embedded-example'  src='/examples/lightbulb.html'></iframe>
-     *
-     * NOTE: `ui-toggle/set/turnOn/turnOff` responds to `click/tap` without stopping propagation so you can use them along with ng-click too. You can also change events to respond to with `ui-triggers` attribute.
-     *
-     * Any `SharedState` method is exposed through `Ui` object in `$rootScope`. So you could always do `ng-click="Ui.turnOn('myVar')"`.
-     *
-     * Since `SharedState` is a service you can initialize/set statuses through controllers too:
-     *
-     * ``` js
-     * app.controller('myController', function($scope, SharedState){
-   *   SharedState.initialize($scope, "activeTab", 3);
-   * });
-     * ```
-     *
-     * As well as you can use `ui-default` for that:
-     *
-     * ``` html
-     * <div class="tabs" ui-state="activeTab" ui-default="thisIsAnExpression(5 + 1 - 2)"></div>
-     * ```
-     *
-     */
-    var module = angular.module('mobile-angular-ui.core.sharedState', []);
-
-    /**
-     * @ngdoc service
-     * @class SharedState
-     *
-     * @description
-     *
-     * A `SharedState` state can be considered as a global variable identified by an `id`.
-     *
-     * `SharedState` service exposes methods to interact with statuses to create, read and update states.
-     *
-     * It acts as a BUS between UI elements to share UI related state that is automatically disposed when all scopes requiring it are destroyed.
-     *
-     * eg.
-     *
-     * ``` js
-     * app.controller('controller1', function($scope, SharedState){
-   *   SharedState.initialize($scope, 'myId');
-   * });
-     *
-     * app.controller('controller2', function(SharedState){
-   *   SharedState.toggle('myId');
-   * });
-     * ```
-     *
-     * Data structures retaining statuses will stay outside angular scopes thus they are not evaluated against digest cycle until its necessary. Also although statuses are sort of global variables `SharedState` will take care of disposing them when no scopes are requiring them anymore.
-     *
-     * A set of `ui-*` directives are available to interact with `SharedState` module and will hopefully let you spare your controllers and your time for something that is more meaningful than this:
-     *
-     * ``` js
-     * $scope.activeTab = 1;
-     *
-     * $scope.setActiveTab = function(n) {
-   *   $scope.activeTab = n;
-   * };
-     * ```
-     *
-     */
-
-    /**
-     * @event 'mobile-angular-ui.state.initialized.ID'
-     * @shortname initialized
-     * @memberOf mobile-angular-ui.core.sharedState~SharedState
-     *
-     * @description
-     * Broadcasted on `$rootScope` when `#initialize` is called for a new state not referenced by any scope currently.
-     *
-     * @param {any} currentValue The value with which this state has been initialized
-     *
-     * @memberOf mobile-angular-ui.core.sharedState~SharedState
-     */
-
-    /**
-     * @event 'mobile-angular-ui.state.destroyed.ID'
-     * @shortname destroyed
-     * @memberOf mobile-angular-ui.core.sharedState~SharedState
-     *
-     * @description
-     * Broadcasted on `$rootScope` when a state is destroyed.
-     *
-     */
-
-    /**
-     * @event 'mobile-angular-ui.state.changed.ID'
-     * @shortname changed
-     * @memberOf mobile-angular-ui.core.sharedState~SharedState
-     *
-     * @description
-     * Broadcasted on `$rootScope` the value of a state changes.
-     *
-     * ``` js
-     * $scope.$on('mobile-angular-ui.state.changed.uiSidebarLeft', function(e, newVal, oldVal) {
-     *   if (newVal === true) {
-     *     console.log('sidebar opened');
-     *   } else {
-     *     console.log('sidebar closed');
-     *   }
-     * });
-     * ```
-     *
-     * @param {any} newValue
-     * @param {any} oldValue
-     *
-     */
-
-    module.factory('SharedState', [
-        '$rootScope',
-        function ($rootScope) {
-            var values = {};    // values, context object for evals
-            var statusesMeta = {};  // status info
-            var scopes = {};    // scopes references
-            var exclusionGroups = {}; // support exclusive boolean sets
-
-            return {
-                /**
-                 * @function initialize
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 * @description
-                 *
-                 * Initialize, or require if already intialized, a state identified by `id` within the provided `scope`, making it available to the rest of application.
-                 *
-                 * A `SharedState` is bound to one or more scopes. Each time `initialize` is called for an angular `scope` this will be bound to the `SharedState` and a reference count is incremented to allow garbage collection.
-                 *
-                 * Reference count is decremented once the scope is destroyed. When the counter reach 0 the state will be disposed.
-                 *
-                 * @param  {scope} scope The scope to bound this state
-                 * @param  {string} id The unique name of this state
-                 * @param  {object} [options] Options
-                 * @param  {object} [options.defaultValue] the initialization value, it is taken into account only if the state `id` is not already initialized
-                 * @param  {object} [options.exclusionGroup] Specifies an exclusion group for the state. This means that for boolean operations (ie. toggle, turnOn, turnOf) when this state is set to `true`, any other state that is in the same `exclusionGroup` will be set to `false`.
-                 */
-                initialize: function (scope, id, options) {
-                    options = options || {};
-
-                    var isNewScope = scopes[scope] === undefined,
-                        defaultValue = options.defaultValue,
-                        exclusionGroup = options.exclusionGroup;
-
-                    scopes[scope.$id] = scopes[scope.$id] || [];
-                    scopes[scope.$id].push(id);
-
-                    if (!statusesMeta[id]) { // is a brand new state
-                        // not referenced by any
-                        // scope currently
-
-                        statusesMeta[id] = angular.extend({}, options, {references: 1});
-
-                        $rootScope.$broadcast('mobile-angular-ui.state.initialized.' + id, defaultValue);
-
-                        if (defaultValue !== undefined) {
-                            this.setOne(id, defaultValue);
-                        }
-
-                        if (exclusionGroup) {
-                            // Exclusion groups are sets of statuses references
-                            exclusionGroups[exclusionGroup] = exclusionGroups[exclusionGroup] || {};
-                            exclusionGroups[exclusionGroup][id] = true;
-                        }
-
-                    } else if (isNewScope) { // is a new reference from
-                        // a different scope
-                        statusesMeta[id].references++;
-                    }
-                    scope.$on('$destroy', function () {
-                        var ids = scopes[scope.$id] || [];
-                        for (var i = 0; i < ids.length; i++) {
-                            var status = statusesMeta[ids[i]];
-
-                            if (status.exclusionGroup) {
-                                delete exclusionGroups[status.exclusionGroup][ids[i]];
-                                if (Object.keys(exclusionGroups[status.exclusionGroup]).length === 0) {
-                                    delete exclusionGroups[status.exclusionGroup];
-                                }
-                            }
-
-                            status.references--;
-                            if (status.references <= 0) {
-                                delete statusesMeta[ids[i]];
-                                delete values[ids[i]];
-                                $rootScope.$broadcast('mobile-angular-ui.state.destroyed.' + id);
-                            }
-                        }
-                        delete scopes[scope.$id];
-                    });
-                },
-
-                /**
-                 * @function setOne
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 * @description
-                 *
-                 * Set the value of the state identified by `id` to the `value` parameter.
-                 *
-                 * @param  {string} id Unique identifier for state
-                 * @param  {any} value New value for this state
-                 */
-                setOne: function (id, value) {
-                    if (statusesMeta[id] !== undefined) {
-                        var prev = values[id];
-                        values[id] = value;
-                        if (prev !== value) {
-                            $rootScope.$broadcast('mobile-angular-ui.state.changed.' + id, value, prev);
-                        }
-                        return value;
-                    } else {
-                        /* global console: false */
-                        if (console) {
-                            console.warn('Warning: Attempt to set uninitialized shared state:', id);
-                        }
-                    }
-                },
-
-                /**
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 *
-                 * @function setMany
-                 * @description
-                 *
-                 * Set multiple statuses at once. ie.
-                 *
-                 * ```
-                 * SharedState.setMany({ activeTab: 'firstTab', sidebarIn: false });
-                 * ```
-                 *
-                 * @param {object} object An object of the form `{state1: value1, ..., stateN: valueN}`
-                 */
-                setMany: function (map) {
-                    angular.forEach(map, function (value, id) {
-                        this.setOne(id, value);
-                    }, this);
-                },
-
-
-                /**
-                 * @function set
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 * @description
-                 *
-                 * A shorthand for both `setOne` and `setMany`.
-                 * When called with only one parameter that is an object
-                 * it is the same of `setMany`, otherwise is the
-                 * same of `setOne`.
-                 *
-                 * @param {string|object} idOrMap A state id or a `{state: value}` map object.
-                 * @param {any} [value] The value to assign in case idOrMap is a string.
-                 */
-                set: function (idOrMap, value) {
-                    if (angular.isObject(idOrMap) && angular.isUndefined(value)) {
-                        this.setMany(idOrMap);
-                    } else {
-                        this.setOne(idOrMap, value);
-                    }
-                },
-
-                /**
-                 * @function turnOn
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 * @description
-                 *
-                 * Set shared state identified by `id` to `true`. If the
-                 * shared state has been initialized with `exclusionGroup`
-                 * option it will also turn off (set to `false`) all other
-                 * statuses from the same exclusion group.
-                 *
-                 * @param  {string} id The unique name of this state
-                 */
-                turnOn: function (id) {
-                    // Turns off other statuses belonging to the same exclusion group.
-                    var eg = statusesMeta[id] && statusesMeta[id].exclusionGroup;
-                    if (eg) {
-                        var egStatuses = Object.keys(exclusionGroups[eg]);
-                        for (var i = 0; i < egStatuses.length; i++) {
-                            var item = egStatuses[i];
-                            if (item !== id) {
-                                this.turnOff(item);
-                            }
-                        }
-                    }
-                    return this.setOne(id, true);
-                },
-
-                /**
-                 * @function turnOff
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 *
-                 * @description
-                 * Set shared state identified by `id` to `false`.
-                 *
-                 * @param  {string} id The unique name of this state
-                 */
-                turnOff: function (id) {
-                    return this.setOne(id, false);
-                },
-
-                /**
-                 * @function toggle
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 * @description
-                 *
-                 * If current value for shared state identified by `id` evaluates
-                 * to `true` it calls `turnOff` on it otherwise calls `turnOn`.
-                 * Be aware that it will take into account `exclusionGroup` option.
-                 * See `#turnOn` and `#initialize` for more.
-                 *
-                 * @param  {string} id The unique name of this state
-                 */
-                toggle: function (id) {
-                    return this.get(id) ? this.turnOff(id) : this.turnOn(id);
-                },
-
-                /**
-                 * @function get
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 *
-                 * @description
-                 * Returns the current value of the state identified by `id`.
-                 *
-                 * @param  {string} id The unique name of this state
-                 * @returns {any}
-                 */
-                get: function (id) {
-                    return statusesMeta[id] && values[id];
-                },
-
-                /**
-                 * @function isActive
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 * @description
-                 *
-                 * Return `true` if the boolean conversion of `#get(id)` evaluates to `true`.
-                 *
-                 * @param  {string} id The unique name of this state
-                 * @returns {bool}
-                 */
-                isActive: function (id) {
-                    return !!this.get(id);
-                },
-
-                /**
-                 * @function active
-                 * @alias mobile-angular-ui.core.sharedState~SharedState.isActive
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 * @description
-                 *
-                 * Alias for `#isActive`.
-                 *
-                 * @param  {string} id The unique name of this state
-                 * @returns {bool}
-                 */
-                active: function (id) {
-                    return this.isActive(id);
-                },
-
-                /**
-                 * @function isUndefined
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 * @description
-                 *
-                 * Return `true` if state identified by `id` is not defined.
-                 *
-                 * @param  {string} id The unique name of this state
-                 * @returns {bool}
-                 */
-                isUndefined: function (id) {
-                    return statusesMeta[id] === undefined || this.get(id) === undefined;
-                },
-
-                /**
-                 * Returns `true` if state identified by `id` exsists.
-                 *
-                 * @param  {string} id The unique name of this state
-                 * @returns {bool}
-                 *
-                 * @function has
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 */
-                has: function (id) {
-                    return statusesMeta[id] !== undefined;
-                },
-
-                /**
-                 * Returns the number of references of a status.
-                 *
-                 * @param  {string} id The unique name of this state
-                 * @returns {integer}
-                 *
-                 * @function referenceCount
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 */
-                referenceCount: function (id) {
-                    var status = statusesMeta[id];
-                    return status === undefined ? 0 : status.references;
-                },
-
-                /**
-                 * Returns `true` if `#get(id)` is exactly equal (`===`) to `value` param.
-                 *
-                 * @param  {string} id The unique name of this state
-                 * @param  {any} value The value for comparison
-                 * @returns {bool}
-                 *
-                 * @function equals
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 */
-                equals: function (id, value) {
-                    return this.get(id) === value;
-                },
-
-
-                /**
-                 * Alias for `#equals`
-                 *
-                 * @param  {string} id The unique name of this state
-                 * @param  {any} value The value for comparison
-                 * @returns {bool}
-                 *
-                 * @function eq
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 * @alias mobile-angular-ui.core.sharedState~SharedState.equals
-                 */
-                eq: function (id, value) {
-                    return this.equals(id, value);
-                },
-
-                /**
-                 * Returns an object with all the status values currently stored.
-                 * It has the form of `{statusId: statusValue}`.
-                 *
-                 * Bear in mind that in order to spare resources it currently
-                 * returns just the internal object retaining statuses values.
-                 * Thus it is not intended to be modified and direct changes to it will be not tracked or notified.
-                 *
-                 * Just clone before apply any change to it.
-                 *
-                 * @returns {object}
-                 *
-                 * @function values
-                 * @memberOf mobile-angular-ui.core.sharedState~SharedState
-                 */
-                values: function () {
-                    return values;
-                }
-
-            };
-        }
-    ]);
-
-    var uiBindEvent = function (scope, element, eventNames, fn) {
-        eventNames = eventNames || 'click tap';
-        element.on(eventNames, function (event) {
-            scope.$apply(function () {
-                fn(scope, {$event: event});
-            });
-        });
-    };
-
-    /**
-     * Calls `SharedState#initialize` on the scope relative to the element using it.
-     *
-     * @param {string} uiState The shared state id
-     * @param {expression} [uiDefault] the default value
-     *
-     * @directive uiState
-     */
-    module.directive('uiState', [
-        'SharedState',
-        function (SharedState) {
-            return {
-                restrict: 'EA',
-                priority: 601, // more than ng-if
-                link: function (scope, elem, attrs) {
-                    var id = attrs.uiState || attrs.id,
-                        defaultValueExpr = attrs.uiDefault || attrs['default'],
-                        defaultValue = defaultValueExpr ? scope.$eval(defaultValueExpr) : undefined;
-
-                    SharedState.initialize(scope, id, {
-                        defaultValue: defaultValue,
-                        exclusionGroup: attrs.uiExclusionGroup
-                    });
-                }
-            };
-        }
-    ]);
-
-    angular.forEach(['toggle', 'turnOn', 'turnOff', 'set'],
-        function (methodName) {
-            var directiveName = 'ui' + methodName[0].toUpperCase() + methodName.slice(1);
-
-            /**
-             * Calls `SharedState#toggle` when triggering events happens on the element using it.
-             *
-             * @param {string} uiToggle the target shared state
-             * @param {expression} uiDefault the default value
-             *
-             * @directive uiToggle
-             */
-
-            /**
-             * @function uiTurnOn
-             *
-             * @description
-             * Calls `SharedState#turnOn` when triggering events happens on the element using it.
-             *
-             *
-             * @ngdoc directive
-             *
-             * @param {string} uiTurnOn the target shared state
-             * @param {expression} uiDefault the default value
-             */
-
-            /**
-             * @function uiTurnOff
-             *
-             * @description
-             * Calls `SharedState#turnOff` when triggering events happens on the element using it.
-             *
-             * @ngdoc directive
-             *
-             * @param {string} uiTurnOff the target shared state
-             * @param {string} [uiTriggers='click tap'] the event triggering the call.
-             */
-
-            /**
-             * @function uiSet
-             *
-             * @description
-             * Calls `SharedState#set` when triggering events happens on the element using it.
-             *
-             * @ngdoc directive
-             *
-             * @param {object} uiSet The object to pass to SharedState#set
-             * @param {string} [uiTriggers='click tap'] the event triggering the call.
-             */
-
-            module.directive(directiveName, [
-                '$parse',
-                '$interpolate',
-                'SharedState',
-                function ($parse, $interpolate, SharedState) {
-                    var method = SharedState[methodName];
-                    return {
-                        restrict: 'A',
-                        priority: 1, // This would make postLink calls happen after ngClick
-                                     // (and similar) ones, thus intercepting events after them.
-                                     //
-                                     // This will prevent eventual ng-if to detach elements
-                                     // before ng-click fires.
-
-                        compile: function (elem, attrs) {
-                            var attr = attrs[directiveName];
-                            var needsInterpolation = attr.match(/\{\{/);
-
-                            var exprFn = function ($scope) {
-                                var res = attr;
-                                if (needsInterpolation) {
-                                    var interpolateFn = $interpolate(res);
-                                    res = interpolateFn($scope);
-                                }
-                                if (methodName === 'set') {
-                                    res = ($parse(res))($scope);
-                                }
-                                return res;
-                            };
-
-                            return function (scope, elem, attrs) {
-                                var callback = function () {
-                                    var arg = exprFn(scope);
-                                    return method.call(SharedState, arg);
-                                };
-                                uiBindEvent(scope, elem, attrs.uiTriggers, callback);
-                            };
-                        }
-                    };
-                }
-            ]);
-        });
-
-    /**
-     * @name uiScopeContext
-     * @inner
-     * @description
-     *
-     * `uiScopeContext` is not a directive, but a parameter common to any of the
-     * `ui-*` directives in this module.
-     *
-     * By default all `ui-*` conditions in this module evaluates in the context of
-     * `SharedState` only, thus scope variable are not accessible. To use them you have
-     * two options:
-     *
-     * #### 1. pre-interpolation
-     *
-     * You can use pre-interpolation in expression attribute. For instance the following syntax
-     * is ligit:
-     *
-     * ``` html
-     * <div ui-if='state{{idx}}'><!-- ... --></div>
-     * ```
-     *
-     * In this case `idx` value is taken from scope and embedded into
-     * conditions before parse them.
-     *
-     * This works as expected and is fine for the most cases, but it has a little caveat:
-     *
-     * The condition has to be re-parsed at each digest loop and has to walk scopes
-     * in watchers.
-     *
-     * #### 2. uiScopeContext
-     *
-     * If you are concerned about performance issues using the first approach
-     * `uiScopeContext` is a more verbose but also lightweight alternative
-     * to accomplish the same.
-     *
-     * It allows to use current scope vars inside `ui-*` conditions, leaving
-     * other scope vars (or the entire scope if not present) apart from the
-     * condition evaluation process.
-     *
-     * Hopefully this will keep evaluation running against a flat and small data
-     * structure instead of taking into account the whole scope.
-     *
-     * It is a list `scopeVar[ as aliasName] [, ...]` specifing one of more scope
-     * variables to take into account when evaluating conditions. ie:
-     *
-     * ``` html
-     * <!-- use item from ng-repeat -->
-     * <div ui-if="openPanel == i" ui-scope-context='i' ng-repeat="i in [1,2,3]">
-     *   <div class="panel-body">
-     *     <!-- ... -->
-     *   </div>
-     * </div>
-     * ```
-     *
-     * ``` html
-     * <div ui-if="sharedState1 == myVar1 && sharedState2 == myVar2"
-     *   ui-scope-context="myVar1, myVar2"
-     * >
-     * </div>
-     * ```
-     *
-     * Be aware that scope vars will take precedence over sharedStates so,
-     * in order to avoid name clashes you can use 'as' to refer to scope vars
-     * with a different name in conditions:
-     *
-     * ``` html
-     * <div ui-if="x == myVar1 && y == myVar2"
-     *   ui-scope-context="x as myVar1, y as myVar2"
-     * >
-     * </div>
-     * ```
-     */
-    var parseScopeContext = function (attr) {
-        if (!attr || attr === '') {
-            return [];
-        }
-        var vars = attr ? attr.trim().split(/ *, */) : [];
-        var res = [];
-        for (var i = 0; i < vars.length; i++) {
-            var item = vars[i].split(/ *as */);
-            if (item.length > 2 || item.length < 1) {
-                throw new Error('Error parsing uiScopeContext="' + attr + '"');
-            }
-            res.push(item);
-        }
-        return res;
-    };
-
-    var mixScopeContext = function (context, scopeVars, scope) {
-        for (var i = 0; i < scopeVars.length; i++) {
-            var key = scopeVars[i][0];
-            var alias = scopeVars[i][1] || key;
-            context[alias] = key.split('.').reduce(function (scope, nextKey) {
-                return scope[nextKey];
-            }, scope);
-        }
-    };
-
-    var parseUiCondition = function (name, attrs, $scope, SharedState, $parse, $interpolate) {
-        var expr = attrs[name];
-        var needsInterpolation = expr.match(/\{\{/);
-        var exprFn;
-
-        if (needsInterpolation) {
-            exprFn = function (context) {
-                var interpolateFn = $interpolate(expr);
-                var parseFn = $parse(interpolateFn($scope));
-                return parseFn(context);
-            };
-        } else {
-            exprFn = $parse(expr);
-        }
-
-        var uiScopeContext = parseScopeContext(attrs.uiScopeContext);
-        return function () {
-            var context;
-            if (uiScopeContext.length) {
-                context = angular.extend({}, SharedState.values());
-                mixScopeContext(context, uiScopeContext, $scope);
-            } else {
-                context = SharedState.values();
-            }
-            return exprFn(context);
-        };
-    };
-
-
-    /**
-     * @ngdoc directive
-     * @function uiIf
-     *
-     * @description
-     * Same as `ngIf` but evaluates condition against `SharedState` statuses too
-     *
-     * @param {expression} uiIf A condition to decide wether to attach the element to the dom
-     * @param {list} [uiScopeContext] A list `scopeVar[ as aliasName] [, ...]` specifing one of more scope variables to take into account when evaluating condition.
-     */
-    module.directive('uiIf', ['$animate', 'SharedState', '$parse', '$interpolate', function ($animate, SharedState, $parse, $interpolate) {
-        function getBlockNodes(nodes) {
-            var node = nodes[0];
-            var endNode = nodes[nodes.length - 1];
-            var blockNodes = [node];
-            do {
-                node = node.nextSibling;
-                if (!node) {
-                    break;
-                }
-                blockNodes.push(node);
-            } while (node !== endNode);
-
-            return angular.element(blockNodes);
-        }
-
-        return {
-            multiElement: true,
-            transclude: 'element',
-            priority: 600,
-            terminal: true,
-            restrict: 'A',
-            $$tlb: true,
-            link: function ($scope, $element, $attr, ctrl, $transclude) {
-                var block, childScope, previousElements,
-                    uiIfFn = parseUiCondition('uiIf', $attr, $scope, SharedState, $parse, $interpolate);
-
-                $scope.$watch(uiIfFn, function uiIfWatchAction(value) {
-                    if (value) {
-                        if (!childScope) {
-                            $transclude(function (clone, newScope) {
-                                childScope = newScope;
-                                clone[clone.length++] = document.createComment(' end uiIf: ' + $attr.uiIf + ' ');
-                                // Note: We only need the first/last node of the cloned nodes.
-                                // However, we need to keep the reference to the jqlite wrapper as it might be changed later
-                                // by a directive with templateUrl when its template arrives.
-                                block = {
-                                    clone: clone
-                                };
-                                $animate.enter(clone, $element.parent(), $element);
-                            });
-                        }
-                    } else {
-                        if (previousElements) {
-                            previousElements.remove();
-                            previousElements = null;
-                        }
-                        if (childScope) {
-                            childScope.$destroy();
-                            childScope = null;
-                        }
-                        if (block) {
-                            previousElements = getBlockNodes(block.clone);
-                            var done = function () {
-                                previousElements = null;
-                            };
-                            var nga = $animate.leave(previousElements, done);
-                            if (nga) {
-                                nga.then(done);
-                            }
-                            block = null;
-                        }
-                    }
-                });
-            }
-        };
-    }]);
-
-
-    /**
-     * @ngdoc directive
-     * @function uiHide
-     *
-     * @description
-     * Same as `ngHide` but evaluates condition against `SharedState` statuses
-     *
-     * @param {expression} uiShow A condition to decide wether to hide the element
-     * @param {list} [uiScopeContext] A list `scopeVar[ as aliasName] [, ...]` specifing one of more scope variables to take into account when evaluating condition.
-     */
-    module.directive('uiHide', ['$animate', 'SharedState', '$parse', '$interpolate', function ($animate, SharedState, $parse, $interpolate) {
-        var NG_HIDE_CLASS = 'ng-hide';
-        var NG_HIDE_IN_PROGRESS_CLASS = 'ng-hide-animate';
-
-        return {
-            restrict: 'A',
-            multiElement: true,
-            link: function (scope, element, attr) {
-                var uiHideFn = parseUiCondition('uiHide', attr, scope, SharedState, $parse, $interpolate);
-                scope.$watch(uiHideFn, function uiHideWatchAction(value) {
-                    $animate[value ? 'addClass' : 'removeClass'](element, NG_HIDE_CLASS, {
-                        tempClasses: NG_HIDE_IN_PROGRESS_CLASS
-                    });
-                });
-            }
-        };
-    }]);
-
-    /**
-     * @ngdoc directive
-     * @function uiShow
-     *
-     * @description
-     * Same as `ngShow` but evaluates condition against `SharedState` statuses
-     *
-     * @param {expression} uiShow A condition to decide wether to show the element
-     * @param {list} [uiScopeContext] A list `scopeVar[ as aliasName] [, ...]` specifing one of more scope variables to take into account when evaluating condition.
-     */
-    module.directive('uiShow', ['$animate', 'SharedState', '$parse', '$interpolate', function ($animate, SharedState, $parse) {
-        var NG_HIDE_CLASS = 'ng-hide';
-        var NG_HIDE_IN_PROGRESS_CLASS = 'ng-hide-animate';
-
-        return {
-            restrict: 'A',
-            multiElement: true,
-            link: function (scope, element, attr) {
-                var uiShowFn = parseUiCondition('uiShow', attr, scope, SharedState, $parse);
-                scope.$watch(uiShowFn, function uiShowWatchAction(value) {
-                    $animate[value ? 'removeClass' : 'addClass'](element, NG_HIDE_CLASS, {
-                        tempClasses: NG_HIDE_IN_PROGRESS_CLASS
-                    });
-                });
-            }
-        };
-    }]);
-
-    /**
-     * @ngdoc directive
-     * @function uiClass
-     *
-     * @description
-     * A simplified version of `ngClass` that evaluates in context of `SharedState`, it only suppors the `{'className': expr}` syntax.
-     *
-     * @param {expression} uiClass An expression that has to evaluate to an object of the form `{'className': expr}`, where `expr` decides wether the class should appear to element's class list.
-     * @param {list} [uiScopeContext] A list `scopeVar[ as aliasName] [, ...]` specifing one of more scope variables to take into account when evaluating condition.
-     */
-    module.directive('uiClass', ['SharedState', '$parse', '$interpolate', function (SharedState, $parse) {
-        return {
-            restrict: 'A',
-            link: function (scope, element, attr) {
-                var uiClassFn = parseUiCondition('uiClass', attr, scope, SharedState, $parse);
-                scope.$watch(uiClassFn, function uiClassWatchAction(value) {
-                    var classesToAdd = '';
-                    var classesToRemove = '';
-                    angular.forEach(value, function (expr, className) {
-                        if (expr) {
-                            classesToAdd += ' ' + className;
-                        } else {
-                            classesToRemove += ' ' + className;
-                        }
-                        classesToAdd = classesToAdd.trim();
-                        classesToRemove = classesToRemove.trim();
-                        if (classesToAdd.length) {
-                            element.addClass(classesToAdd);
-                        }
-                        if (classesToRemove.length) {
-                            element.removeClass(classesToRemove);
-                        }
-                    });
-                }, true);
-            }
-        };
-    }]);
-
-    module.run([
-        '$rootScope',
-        'SharedState',
-        function ($rootScope, SharedState) {
-            $rootScope.Ui = SharedState;
-        }
-    ]);
-
-
-}());
-
-/**
- * Provides directives and service to prevent touchmove default behaviour
- * for touch devices (ie. bounce on overscroll in IOS).
- *
- * #### Usage
- *
- * Use `ui-prevent-touchmove-defaults` directive on root element of your app:
- *
- * ``` html
- * <body ng-app='myApp' ui-prevent-touchmove-defaults>
- *   <!-- ... -->
- * </body>
- * ```
- *
- * Doing so `touchmove.preventDefault` logic for inner elements is inverted,
- * so any `touchmove` default behaviour is automatically prevented.
- *
- * If you wish to allow the default behaviour, for example to allow
- * inner elements to scroll, you have to explicitly mark an event to allow
- * touchmove default.
- *
- * Mobile Angular UI already handles this for `scrollable` elements, so you don't have
- * to do anything in order to support scroll.
- *
- * If you wish to allow touchmove defaults for certain element under certain conditions
- * you can use the `allowTouchmoveDefault` service.
- *
- * ie.
- *
- * ``` js
- * // always allow touchmove default for an element
- * allowTouchmoveDefault(myelem);
- * ```
- *
- * ``` js
- * // allow touchmove default for an element only under certain conditions
- * allowTouchmoveDefault(myelem, function(touchmove){
- *   return touchmove.pageY > 100;
- * });
- * ```
- *
- * @module mobile-angular-ui.core.touchmoveDefaults
- */
-(function () {
-    'use strict';
-    var module = angular.module('mobile-angular-ui.core.touchmoveDefaults', []);
-
-    module.directive('uiPreventTouchmoveDefaults', function () {
-        var preventTouchmoveDefaultsCb = function (e) {
-            if (e.allowTouchmoveDefault !== true) {
-                e.preventDefault();
-            }
-        };
-
-        return {
-            compile: function (element) {
-                if ('ontouchmove' in document) {
-                    element.on('touchmove', preventTouchmoveDefaultsCb);
-                }
-            }
-        };
-    });
-
-    /**
-     * Bind a listener to an element to allow `touchmove` default behaviour
-     * when `touchmove` happens inside the bound element.
-     *
-     * You can also provide a function to decide when to allow and
-     * when to prevent it.
-     *
-     * ``` js
-     * // always allow touchmove default
-     * allowTouchmoveDefault(myelem);
-     *
-     * // allow touchmove default only under certain conditions
-     * allowTouchmoveDefault(myelem, function(touchmove){
-   *   return touchmove.pageY > 100;
-   * });
-     * ```
-     *
-     * @param {Element|$element} element The element to bind.
-     * @param {function} condition A `function(touchmove)⟶boolean` to decide
-     *                             whether to allow default behavior or not.
-     *
-     * @service allowTouchmoveDefault
-     * @as function
-     * @returns function Function to unbind the listener
-     */
-
-    module.factory('allowTouchmoveDefault', function () {
-        var fnTrue = function () {
-            return true;
-        };
-
-        if ('ontouchmove' in document) {
-            return function ($element, condition) {
-                condition = condition || fnTrue;
-
-                var allowTouchmoveDefaultCallback = function (e) {
-                    if (condition(e)) {
-                        e.allowTouchmoveDefault = true;
-                    }
-                };
-
-                $element = angular.element($element);
-                $element.on('touchmove', allowTouchmoveDefaultCallback);
-
-                $element.on('$destroy', function () {
-                    $element.off('touchmove', allowTouchmoveDefaultCallback);
-                    $element = null;
-                });
-
-                return function () {
-                    if ($element) {
-                        $element.off('touchmove', allowTouchmoveDefaultCallback);
-                    }
-                };
-            };
-        } else {
-            return angular.noop;
-        }
-    });
-
-}());
-/**
-
- @module mobile-angular-ui.core
-
- @description
-
- It has all the core functionalities of Mobile Angular UI. It aims to act as a common base
- for an UI framework providing services and directives to create components and implement
- UI interactions with angular.
-
- <div class="alert alert-success">
- <b>NOTE</b>
- <ul>
- <li>It has no dependency on Bootstrap.</li>
- <li>It is not related to mobile apps only.</li>
- <li>It is not requiring CSS support.</li>
- <li><b>You can use it on any Angular Application and with any CSS framework.</b></li>
- </ul>
- </div>
-
- ## Standalone Usage
-
- Although `.core` module is required by `mobile-angular-ui` by default you can use it alone.
-
- ``` js
- angular.module('myApp', ['mobile-angular-ui.core']);
- ```
-
- */
-(function () {
-    'use strict';
-    angular.module('mobile-angular-ui.core', [
-        'mobile-angular-ui.core.fastclick',
-        'mobile-angular-ui.core.activeLinks',
-        'mobile-angular-ui.core.capture',
-        'mobile-angular-ui.core.outerClick',
-        'mobile-angular-ui.core.sharedState',
-        'mobile-angular-ui.core.touchmoveDefaults'
-    ]);
-}());
-/*! Overthrow. An overflow:auto polyfill for responsive design. (c) 2012: Scott Jehl, Filament Group, Inc. http://filamentgroup.github.com/Overthrow/license.txt */
-(function (w, undefined) {
-
-    var doc = w.document,
-        docElem = doc.documentElement,
-        enabledClassName = "overthrow-enabled",
-
-    // Touch events are used in the polyfill, and thus are a prerequisite
-        canBeFilledWithPoly = "ontouchmove" in doc,
-
-    // The following attempts to determine whether the browser has native overflow support
-    // so we can enable it but not polyfill
-        nativeOverflow =
-            // Features-first. iOS5 overflow scrolling property check - no UA needed here. thanks Apple :)
-            "WebkitOverflowScrolling" in docElem.style ||
-                // Test the windows scrolling property as well
-            "msOverflowStyle" in docElem.style ||
-                // Touch events aren't supported and screen width is greater than X
-                // ...basically, this is a loose "desktop browser" check.
-                // It may wrongly opt-in very large tablets with no touch support.
-            ( !canBeFilledWithPoly && w.screen.width > 800 ) ||
-                // Hang on to your hats.
-                // Whitelist some popular, overflow-supporting mobile browsers for now and the future
-                // These browsers are known to get overlow support right, but give us no way of detecting it.
-            (function () {
-                var ua = w.navigator.userAgent,
-                // Webkit crosses platforms, and the browsers on our list run at least version 534
-                    webkit = ua.match(/AppleWebKit\/([0-9]+)/),
-                    wkversion = webkit && webkit[1],
-                    wkLte534 = webkit && wkversion >= 534;
-
-                return (
-                    /* Android 3+ with webkit gte 534
-                     ~: Mozilla/5.0 (Linux; U; Android 3.0; en-us; Xoom Build/HRI39) AppleWebKit/534.13 (KHTML, like Gecko) Version/4.0 Safari/534.13 */
-                    ua.match(/Android ([0-9]+)/) && RegExp.$1 >= 3 && wkLte534 ||
-                        /* Blackberry 7+ with webkit gte 534
-                         ~: Mozilla/5.0 (BlackBerry; U; BlackBerry 9900; en-US) AppleWebKit/534.11+ (KHTML, like Gecko) Version/7.0.0 Mobile Safari/534.11+ */
-                    ua.match(/ Version\/([0-9]+)/) && RegExp.$1 >= 0 && w.blackberry && wkLte534 ||
-                        /* Blackberry Playbook with webkit gte 534
-                         ~: Mozilla/5.0 (PlayBook; U; RIM Tablet OS 1.0.0; en-US) AppleWebKit/534.8+ (KHTML, like Gecko) Version/0.0.1 Safari/534.8+ */
-                    ua.indexOf("PlayBook") > -1 && wkLte534 && !ua.indexOf("Android 2") === -1 ||
-                        /* Firefox Mobile (Fennec) 4 and up
-                         ~: Mozilla/5.0 (Mobile; rv:15.0) Gecko/15.0 Firefox/15.0 */
-                    ua.match(/Firefox\/([0-9]+)/) && RegExp.$1 >= 4 ||
-                        /* WebOS 3 and up (TouchPad too)
-                         ~: Mozilla/5.0 (hp-tablet; Linux; hpwOS/3.0.0; U; en-US) AppleWebKit/534.6 (KHTML, like Gecko) wOSBrowser/233.48 Safari/534.6 TouchPad/1.0 */
-                    ua.match(/wOSBrowser\/([0-9]+)/) && RegExp.$1 >= 233 && wkLte534 ||
-                        /* Nokia Browser N8
-                         ~: Mozilla/5.0 (Symbian/3; Series60/5.2 NokiaN8-00/012.002; Profile/MIDP-2.1 Configuration/CLDC-1.1 ) AppleWebKit/533.4 (KHTML, like Gecko) NokiaBrowser/7.3.0 Mobile Safari/533.4 3gpp-gba
-                         ~: Note: the N9 doesn't have native overflow with one-finger touch. wtf */
-                    ua.match(/NokiaBrowser\/([0-9\.]+)/) && parseFloat(RegExp.$1) === 7.3 && webkit && wkversion >= 533
-                );
-            })();
-
-    // Expose overthrow API
-    w.overthrow = {};
-
-    w.overthrow.enabledClassName = enabledClassName;
-
-    w.overthrow.addClass = function () {
-        if (docElem.className.indexOf(w.overthrow.enabledClassName) === -1) {
-            docElem.className += " " + w.overthrow.enabledClassName;
-        }
-    };
-
-    w.overthrow.removeClass = function () {
-        docElem.className = docElem.className.replace(w.overthrow.enabledClassName, "");
-    };
-
-    // Enable and potentially polyfill overflow
-    w.overthrow.set = function () {
-
-        // If nativeOverflow or at least the element canBeFilledWithPoly, add a class to cue CSS that assumes overflow scrolling will work (setting height on elements and such)
-        if (nativeOverflow) {
-            w.overthrow.addClass();
-        }
-
-    };
-
-    // expose polyfillable
-    w.overthrow.canBeFilledWithPoly = canBeFilledWithPoly;
-
-    // Destroy everything later. If you want to.
-    w.overthrow.forget = function () {
-
-        w.overthrow.removeClass();
-
-    };
-
-    // Expose overthrow API
-    w.overthrow.support = nativeOverflow ? "native" : "none";
-
-})(this);
-
-/*! Overthrow. An overflow:auto polyfill for responsive design. (c) 2012: Scott Jehl, Filament Group, Inc. http://filamentgroup.github.com/Overthrow/license.txt */
-(function (w, undefined) {
-
-    // Auto-init
-    w.overthrow.set();
-
-}(this));
-/*! Overthrow. An overflow:auto polyfill for responsive design. (c) 2012: Scott Jehl, Filament Group, Inc. http://filamentgroup.github.com/Overthrow/license.txt */
-(function (w, o, undefined) {
-
-    // o is overthrow reference from overthrow-polyfill.js
-    if (o === undefined) {
-        return;
-    }
-
-    o.scrollIndicatorClassName = "overthrow";
-
-    var doc = w.document,
-        docElem = doc.documentElement,
-    // o api
-        nativeOverflow = o.support === "native",
-        canBeFilledWithPoly = o.canBeFilledWithPoly,
-        configure = o.configure,
-        set = o.set,
-        forget = o.forget,
-        scrollIndicatorClassName = o.scrollIndicatorClassName;
-
-    // find closest overthrow (elem or a parent)
-    o.closest = function (target, ascend) {
-        return !ascend && target.className && target.className.indexOf(scrollIndicatorClassName) > -1 && target || o.closest(target.parentNode);
-    };
-
-    // polyfill overflow
-    var enabled = false;
-    o.set = function () {
-
-        set();
-
-        // If nativeOverflow or it doesn't look like the browser canBeFilledWithPoly, our job is done here. Exit viewport left.
-        if (enabled || nativeOverflow || !canBeFilledWithPoly) {
-            return;
-        }
-
-        w.overthrow.addClass();
-
-        enabled = true;
-
-        o.support = "polyfilled";
-
-        o.forget = function () {
-            forget();
-            enabled = false;
-            // Remove touch binding (check for method support since this part isn't qualified by touch support like the rest)
-            if (doc.removeEventListener) {
-                doc.removeEventListener("touchstart", start, false);
-            }
-        };
-
-        // Fill 'er up!
-        // From here down, all logic is associated with touch scroll handling
-        // elem references the overthrow element in use
-        var elem,
-
-        // The last several Y values are kept here
-            lastTops = [],
-
-        // The last several X values are kept here
-            lastLefts = [],
-
-        // lastDown will be true if the last scroll direction was down, false if it was up
-            lastDown,
-
-        // lastRight will be true if the last scroll direction was right, false if it was left
-            lastRight,
-
-        // For a new gesture, or change in direction, reset the values from last scroll
-            resetVertTracking = function () {
-                lastTops = [];
-                lastDown = null;
-            },
-
-            resetHorTracking = function () {
-                lastLefts = [];
-                lastRight = null;
-            },
-
-        // On webkit, touch events hardly trickle through textareas and inputs
-        // Disabling CSS pointer events makes sure they do, but it also makes the controls innaccessible
-        // Toggling pointer events at the right moments seems to do the trick
-        // Thanks Thomas Bachem http://stackoverflow.com/a/5798681 for the following
-            inputs,
-            setPointers = function (val) {
-                inputs = elem.querySelectorAll("textarea, input");
-                for (var i = 0, il = inputs.length; i < il; i++) {
-                    inputs[i].style.pointerEvents = val;
-                }
-            },
-
-        // For nested overthrows, changeScrollTarget restarts a touch event cycle on a parent or child overthrow
-            changeScrollTarget = function (startEvent, ascend) {
-                if (doc.createEvent) {
-                    var newTarget = ( !ascend || ascend === undefined ) && elem.parentNode || elem.touchchild || elem,
-                        tEnd;
-
-                    if (newTarget !== elem) {
-                        tEnd = doc.createEvent("HTMLEvents");
-                        tEnd.initEvent("touchend", true, true);
-                        elem.dispatchEvent(tEnd);
-                        newTarget.touchchild = elem;
-                        elem = newTarget;
-                        newTarget.dispatchEvent(startEvent);
-                    }
-                }
-            },
-
-        // Touchstart handler
-        // On touchstart, touchmove and touchend are freshly bound, and all three share a bunch of vars set by touchstart
-        // Touchend unbinds them again, until next time
-            start = function (e) {
-
-                // Stop any throw in progress
-                if (o.intercept) {
-                    o.intercept();
-                }
-
-                // Reset the distance and direction tracking
-                resetVertTracking();
-                resetHorTracking();
-
-                elem = o.closest(e.target);
-
-                if (!elem || elem === docElem || e.touches.length > 1) {
-                    return;
-                }
-
-                setPointers("none");
-                var touchStartE = e,
-                    scrollT = elem.scrollTop,
-                    scrollL = elem.scrollLeft,
-                    height = elem.offsetHeight,
-                    width = elem.offsetWidth,
-                    startY = e.touches[0].pageY,
-                    startX = e.touches[0].pageX,
-                    scrollHeight = elem.scrollHeight,
-                    scrollWidth = elem.scrollWidth,
-
-                // Touchmove handler
-                    move = function (e) {
-
-                        var ty = scrollT + startY - e.touches[0].pageY,
-                            tx = scrollL + startX - e.touches[0].pageX,
-                            down = ty >= ( lastTops.length ? lastTops[0] : 0 ),
-                            right = tx >= ( lastLefts.length ? lastLefts[0] : 0 );
-
-                        // If there's room to scroll the current container, prevent the default window scroll
-                        if (( ty > 0 && ty < scrollHeight - height ) || ( tx > 0 && tx < scrollWidth - width )) {
-                            e.preventDefault();
-                        }
-                        // This bubbling is dumb. Needs a rethink.
-                        else {
-                            changeScrollTarget(touchStartE);
-                        }
-
-                        // If down and lastDown are inequal, the y scroll has changed direction. Reset tracking.
-                        if (lastDown && down !== lastDown) {
-                            resetVertTracking();
-                        }
-
-                        // If right and lastRight are inequal, the x scroll has changed direction. Reset tracking.
-                        if (lastRight && right !== lastRight) {
-                            resetHorTracking();
-                        }
-
-                        // remember the last direction in which we were headed
-                        lastDown = down;
-                        lastRight = right;
-
-                        // set the container's scroll
-                        elem.scrollTop = ty;
-                        elem.scrollLeft = tx;
-
-                        lastTops.unshift(ty);
-                        lastLefts.unshift(tx);
-
-                        if (lastTops.length > 3) {
-                            lastTops.pop();
-                        }
-                        if (lastLefts.length > 3) {
-                            lastLefts.pop();
-                        }
-                    },
-
-                // Touchend handler
-                    end = function (e) {
-
-                        // Bring the pointers back
-                        setPointers("auto");
-                        setTimeout(function () {
-                            setPointers("none");
-                        }, 450);
-                        elem.removeEventListener("touchmove", move, false);
-                        elem.removeEventListener("touchend", end, false);
-                    };
-
-                elem.addEventListener("touchmove", move, false);
-                elem.addEventListener("touchend", end, false);
-            };
-
-        // Bind to touch, handle move and end within
-        doc.addEventListener("touchstart", start, false);
-    };
-
-})(this, this.overthrow);
-
-/**
- * This module will provide directives to create modals and overlays components.
- *
- * @module mobile-angular-ui.components.modals
- */
-(function () {
-    'use strict';
-    angular.module('mobile-angular-ui.components.modals', [])
-
-        /**
-         * A directive to create modals and overlays components.
-         *
-         * Modals are basically the same of Bootstrap 3 but you have to use uiState
-         * with `ngIf/uiIf` or `ngHide/uiHide` to `activate/dismiss` it.
-         *
-         * By default both modals and overlay are made always showing up by
-         * css rule `.modal {display:block}`, so you can use it with
-         * `ngAnimate` and other angular directives in a simpler way.
-         *
-         * Overlay are a style of modal that looks more native in mobile devices providing a blurred
-         * overlay as background.
-         *
-         * You can create an overlay adding `.modal-overlay` class to a modal.
-         *
-         * ### Note
-         *
-         * For modals and overlays to cover the entire page you have to attach them
-         * as child of `body` element. To achieve this from a view is a common use for
-         * `contentFor/yieldTo` directives contained from
-         * [capture module](/docs/module:mobile-angular-ui/module:core/module:capture):
-         *
-         * ``` html
-         * <body ng-app="myApp">
-         *
-         *   <!-- ... -->
-         *   <!-- Modals and Overlays -->
-         *   <div ui-yield-to="modals"></div>
-         *
-         * </body>
-         * ```
-         *
-         * Then you can wrap your modals and overlays in `contentFor`:
-         *
-         * ``` html
-         * <div ui-content-for="modals">
-         * * <div class="modal"><!-- ... --></div>
-         * </div>
-         * ```
-         *
-         * **Example.** Create a Modal.
-         *
-         * ``` html
-         * <div ui-content-for="modals">
-         *   <div class="modal" ui-if="modal1" ui-state='modal1'>
-         *     <div class="modal-backdrop in"></div>
-         *     <div class="modal-dialog">
-         *       <div class="modal-content">
-         *         <div class="modal-header">
-         *           <button class="close"
-         *                   ui-turn-off="modal1">&times;</button>
-         *           <h4 class="modal-title">Modal title</h4>
-         *         </div>
-         *         <div class="modal-body">
-         *           <p>Lorem ipsum ...</p>
-         *         </div>
-         *         <div class="modal-footer">
-         *           <button ui-turn-off="modal1" class="btn btn-default">Close</button>
-         *           <button ui-turn-off="modal1" class="btn btn-primary">Save changes</button>
-         *         </div>
-         *       </div>
-         *     </div>
-         *   </div>
-         * </div>
-         * ```
-         *
-         * **Example.** Create an Overlay.
-         *
-         * ``` html
-         * <div ui-content-for="modals">
-         *   <div class="modal modal-overlay" ui-if='modal2' ui-state='modal2'>
-         *     <div class="modal-dialog">
-         *       <div class="modal-content">
-         *         <div class="modal-header">
-         *           <button class="close"
-         *                   ui-turn-off="modal2">&times;</button>
-         *           <h4 class="modal-title">Modal title</h4>
-         *         </div>
-         *         <div class="modal-body">
-         *           <p>Lorem ipsum ...</p>
-         *         </div>
-         *         <div class="modal-footer">
-         *           <button ui-turn-off="modal2" class="btn btn-default">Close</button>
-         *           <button ui-turn-off="modal2" class="btn btn-primary">Save changes</button>
-         *         </div>
-         *       </div>
-         *     </div>
-         *   </div>
-         * </div>
-         * ```
-         *
-         * @directive modal
-         * @restrict C
-         */
-        .directive('modal', [
-            '$rootElement',
-            function ($rootElement) {
-                return {
-                    restrict: 'C',
-                    link: function (scope, elem) {
-                        $rootElement.addClass('has-modal');
-                        elem.on('$destroy', function () {
-                            $rootElement.removeClass('has-modal');
-                        });
-                        scope.$on('$destroy', function () {
-                            $rootElement.removeClass('has-modal');
-                        });
-
-                        if (elem.hasClass('modal-overlay')) {
-                            $rootElement.addClass('has-modal-overlay');
-                            elem.on('$destroy', function () {
-                                $rootElement.removeClass('has-modal-overlay');
-                            });
-                            scope.$on('$destroy', function () {
-                                $rootElement.removeClass('has-modal-overlay');
-                            });
-                        }
-                    }
-                };
-            }]);
-}());
-/**
- * @module mobile-angular-ui.components.navbars
- * @description
- *
- * Bootstrap default navbars are awesome for responsive websites, but are not the
- * best with a small screen. Also fixed positioning is yet not an option to create
- * navbars standing in top or bottom of the screen.
- *
- * Mobile Angular Ui offers an alternative to bootstrap navbars that is more
- * suitable for mobile.
- *
- * It uses scrollable areas to avoid scroll issues. In the following figure you can
- * see the difference between fixed navbars and navbars with absolute positioning.
- *
- * <figure class="full-width-figure">
- *   <img src="/assets/img/figs/fixed-overflow.png" alt=""/>
- * </figure>
- *
- * Here is the basic markup to achieve this.
- *
- * ``` html
- * <div class="app">
- *   <div class="navbar navbar-app navbar-absolute-top">
- *     <!-- ... -->
- *   </div>
- *
- *   <div class="navbar navbar-app navbar-absolute-bottom">
- *     <!-- ... -->
- *   </div>
- *
- *   <div class="app-body">
- *     <ng-view></ng-view>
- *   </div>
- * </div>
- * ```
- *
- * As you can notice the base class is `.navbar-app` while the positioning is
- * obtained adding either `.navbar-absolute-top` or `.navbar-absolute-bottom`
- * class.
- *
- * ### Mobile Navbar Layout
- *
- * Top navbar in mobile design most of the times follows a clear pattern: a
- * centered title surrounded by one or two action buttons, the _back_ or the
- * _menu_ buttons are two common examples.
- *
- * Twitter Bootstrap ships with a different arrangement of components for navbars
- * since they are supposed to host an horizontal navigation menu.
- *
- * `.navbar-app` is specifically designed to support this different type of
- * `.interaction and arrangement.
- *
- * Consider the following example:
- *
- * ``` html
- * <div class="navbar navbar-app navbar-absolute-top">
- *
- *   <div class="navbar-brand navbar-brand-center">
- *     Navbar Brand
- *   </div>
- *
- *   <div class="btn-group pull-left">
- *     <div class="btn btn-navbar">
- *       Left Action
- *     </div>
- *   </div>
- *
- *   <div class="btn-group pull-right">
- *     <div class="btn btn-navbar">
- *       Right Action
- *     </div>
- *   </div>
- * </div>
- *
- * ```
- *
- * `.navbar-brand-center` is a specialization of BS3's `.navbar-brand`.  It will
- * render the title centered and below the two button groups. Note that `.navbar-
- * brand-center` will position the title with absolute positioning ensuring that
- * it will never cover the buttons, which would cause interaction problems.
- *
- */
-
-(function () {
-    'use strict';
-
-    var module = angular.module('mobile-angular-ui.components.navbars', []);
-
-    /**
-     * @directive navbarAbsoluteTop
-     * @restrict C
-     * @description
-     *
-     * Setup absolute positioned top navbar.
-     *
-     * ``` html
-     *  <div class="navbar navbar-app navbar-absolute-top">
-     *    <!-- ... -->
-     *  </div>
-     * ```
-     */
-
-    /**
-     * @directive navbarAbsoluteBottom
-     * @restrict C
-     * @description
-     *
-     * Setup absolute positioned bottom navbar.
-     *
-     * ``` html
-     *  <div class="navbar navbar-app navbar-absolute-bottom">
-     *    <!-- ... -->
-     *  </div>
-     * ```
-     */
-    angular.forEach(['top', 'bottom'], function (side) {
-        var directiveName = 'navbarAbsolute' + side.charAt(0).toUpperCase() + side.slice(1);
-        module.directive(directiveName, [
-            '$rootElement',
-            function ($rootElement) {
-                return {
-                    restrict: 'C',
-                    link: function (scope) {
-                        $rootElement.addClass('has-navbar-' + side);
-                        scope.$on('$destroy', function () {
-                            $rootElement.removeClass('has-navbar-' + side);
-                        });
-                    }
-                };
-            }
-        ]);
-    });
-
-})();
-/**
- * @module mobile-angular-ui.components.scrollable
- * @description
- *
- * One thing you'll always have to deal with approaching mobile web app development is scroll and `position:fixed` bugs.
- *
- * Due to the lack of support in some devices fixed positioned elements may bounce or disappear during scroll. Also mobile interaction often leverages horizontal scroll eg. in carousels or sliders.
- *
- * We use `overflow:auto` to create scrollable areas and solve any problems related to scroll.
- *
- * Since `overflow:auto` is not always available in touch devices we use [Overthrow](http://filamentgroup.github.io/Overthrow/) to polyfill that.
- *
- * Markup for any scrollable areas is as simple as:
- *
- * ``` html
- * <div class="scrollable">
- *   <div class="scrollable-content">...</div>
- * </div>
- * ```
- *
- * This piece of code will trigger a directive that properly setup a new `Overthrow` instance for the `.scrollable` node.
- *
- * #### Headers and footers
- *
- * `.scrollable-header/.scrollable-footer` can be used to add fixed header/footer to a scrollable area without having to deal with css height and positioning to avoid breaking scroll.
- *
- * ``` html
- * <div class="scrollable">
- *   <div class="scrollable-header"><!-- ... --></div>
- *   <div class="scrollable-content"><!-- ... --></div>
- *   <div class="scrollable-footer"><!-- ... --></div>
- * </div>
- * ```
- *
- * #### scrollTo
- *
- * `.scrollable-content` controller exposes a `scrollTo` function: `scrollTo(offsetOrElement, margin)`
- *
- * You have to require it in your directives to use it or obtain through `element().controller`:
- *
- * ``` js
- * var elem = element(document.getElementById('myScrollableContent'));
- * var scrollableContentController = elem.controller('scrollableContent');
- *
- * // - Scroll to top of containedElement
- * scrollableContentController.scrollTo(containedElement);
- *
- * // - Scroll to top of containedElement with a margin of 10px;
- * scrollableContentController.scrollTo(containedElement, 10);
- *
- * // - Scroll top by 200px;
- * scrollableContentController.scrollTo(200);
- * ```
- *
- * #### `ui-scroll-bottom/ui-scroll-top`
- *
- * You can use `ui-scroll-bottom/ui-scroll-top` directives handle that events and implement features like _infinite scroll_.
- *
- * ``` html
- * <div class="scrollable">
- *   <div class="scrollable-content section" ui-scroll-bottom="loadMore()">
- *     <ul>
- *       <li ng-repeat="item in items">
- *         {{item.name}}
- *       </li>
- *     </ul>
- *   </div>
- * </div>
- * ```
- */
-(function () {
-    'use strict';
-    var module = angular.module('mobile-angular-ui.components.scrollable',
-        ['mobile-angular-ui.core.touchmoveDefaults']);
-
-
-    var getTouchY = function (event) {
-        var touches = event.touches && event.touches.length ? event.touches : [event];
-        var e = (event.changedTouches && event.changedTouches[0]) ||
-            (event.originalEvent && event.originalEvent.changedTouches &&
-            event.originalEvent.changedTouches[0]) ||
-            touches[0].originalEvent || touches[0];
-
-        return e.clientY;
-    };
-
-    module.directive('scrollableContent', function () {
-        return {
-            restrict: 'C',
-            controller: ['$element', 'allowTouchmoveDefault', function ($element, allowTouchmoveDefault) {
-                var scrollableContent = $element[0],
-                    scrollable = $element.parent()[0];
-
-                // Handle nobounce behaviour
-                if ('ontouchmove' in document) {
-                    var allowUp, allowDown, prevTop, prevBot, lastY;
-                    var setupTouchstart = function (event) {
-                        allowUp = (scrollableContent.scrollTop > 0);
-
-                        allowDown = (scrollableContent.scrollTop < scrollableContent.scrollHeight - scrollableContent.clientHeight);
-                        prevTop = null;
-                        prevBot = null;
-                        lastY = getTouchY(event);
-                    };
-
-                    $element.on('touchstart', setupTouchstart);
-                    $element.on('$destroy', function () {
-                        $element.off('touchstart');
-                    });
-
-                    allowTouchmoveDefault($element, function (event) {
-                        var currY = getTouchY(event);
-                        var up = (currY > lastY), down = !up;
-                        lastY = currY;
-                        return (up && allowUp) || (down && allowDown);
-                    });
-                }
-
-                this.scrollableContent = scrollableContent;
-
-                this.scrollTo = function (elementOrNumber, marginTop) {
-                    marginTop = marginTop || 0;
-
-                    if (angular.isNumber(elementOrNumber)) {
-                        scrollableContent.scrollTop = elementOrNumber - marginTop;
-                    } else {
-                        var target = angular.element(elementOrNumber)[0];
-                        if ((!target.offsetParent) || target.offsetParent === scrollable) {
-                            scrollableContent.scrollTop = target.offsetTop - marginTop;
-                        } else {
-                            // recursively subtract offsetTop from marginTop until it reaches scrollable element.
-                            this.scrollTo(target.offsetParent, marginTop - target.offsetTop);
-                        }
-                    }
-                };
-            }],
-            link: function (scope, element) {
-                if (overthrow.support !== 'native') {
-                    element.addClass('overthrow');
-                    overthrow.forget();
-                    overthrow.set();
-                }
-            }
-        };
-    });
-
-    angular.forEach(['input', 'textarea'], function (directiveName) {
-        module.directive(directiveName, ['$rootScope', '$timeout', function ($rootScope, $timeout) {
-            return {
-                require: '?^^scrollableContent',
-                link: function (scope, elem, attrs, scrollable) {
-                    // Workaround to avoid soft keyboard hiding inputs
-                    elem.on('focus', function () {
-                        if (scrollable && scrollable.scrollableContent) {
-                            var h1 = scrollable.scrollableContent.offsetHeight;
-                            $timeout(function () {
-                                var h2 = scrollable.scrollableContent.offsetHeight;
-                                //
-                                // if scrollableContent height is reduced in half second
-                                // since an input got focus we assume soft keyboard is showing.
-                                //
-                                if (h1 > h2) {
-                                    scrollable.scrollTo(elem, 10);
-                                }
-                            }, 500);
-                        }
-                    });
-                }
-            };
-        }]);
-    });
-
-    /**
-     * @directive uiScrollTop
-     * @restrict A
-     *
-     * @param {expression} uiScrollTop The expression to be evaluated when scroll
-     * reaches top of element.
-     */
-
-    /**
-     * @directive uiScrollBottom
-     * @restrict A
-     *
-     * @param {expression} uiScrollBottom The expression to be evaluated when scroll
-     * reaches bottom of element.
-     */
-    angular.forEach(
-        {
-            uiScrollTop: function (elem) {
-                return elem.scrollTop === 0;
-            },
-            uiScrollBottom: function (elem) {
-                return elem.scrollHeight === elem.scrollTop + elem.clientHeight;
-            }
-        },
-        function (reached, directiveName) {
-            module.directive(directiveName, [function () {
-                return {
-                    restrict: 'A',
-                    link: function (scope, elem, attrs) {
-                        elem.on('scroll', function () {
-                            /* If reached bottom */
-                            if (reached(elem[0])) {
-                                /* Do what is specified by onScrollBottom */
-                                scope.$apply(function () {
-                                    scope.$eval(attrs[directiveName]);
-                                });
-                            }
-                        });
-                    }
-                };
-            }]);
-        });
-
-    /**
-     * @directive uiScrollableHeader
-     * @restrict C
-     */
-
-    /**
-     * @directive uiScrollableFooter
-     * @restrict C
-     */
-    angular.forEach({Top: 'scrollableHeader', Bottom: 'scrollableFooter'},
-        function (directiveName, side) {
-            module.directive(directiveName, [
-                '$window',
-                function ($window) {
-                    return {
-                        restrict: 'C',
-                        link: function (scope, element) {
-                            var el = element[0],
-                                parentStyle = element.parent()[0].style;
-
-                            var adjustParentPadding = function () {
-                                var styles = $window.getComputedStyle(el),
-                                    margin = parseInt(styles.marginTop, 10) + parseInt(styles.marginBottom, 10);
-                                parentStyle['padding' + side] = el.offsetHeight + margin + 'px';
-                            };
-
-                            var interval = setInterval(adjustParentPadding, 30);
-
-                            element.on('$destroy', function () {
-                                parentStyle['padding' + side] = null;
-                                clearInterval(interval);
-                                interval = adjustParentPadding = element = null;
-                            });
-                        }
-                    };
-                }
-            ]);
-        });
-}());
-/**
- @module mobile-angular-ui.components.sidebars
-
- @description
-
- Sidebars can be placed either in left side or right side adding respectively `.sidebar-left` and `.sidebar-right` classes.
-
- ``` html
- <div class="sidebar sidebar-left">
- <div class="scrollable">
- <h1 class="scrollable-header app-name">My App</h1>
- <div class="scrollable-content">
- <div class="list-group" ui-turn-off='uiSidebarLeft'>
- <a class="list-group-item" href="#/link1">Link 1
- <i class="fa fa-chevron-right pull-right"></i></a>
- <a class="list-group-item" href="#/link2">Link 2
- <i class="fa fa-chevron-right pull-right"></i></a>
- </div>
- </div>
- </div>
- </div>
-
- <div class="sidebar sidebar-rigth">
- <!-- -->
- </div>
- ```
-
- #### Interacting with sidebars
-
- Under the hood sidebar uses `SharedState` exposing respective statuses: `uiSidebarLeft` and `uiSidebarRight` unless you define different state name through `id` attribute on sidebar elements.
-
- ``` html
- <a href ui-toggle='uiSidebarLeft'>Toggle sidebar left</a>
-
- <a href ui-toggle='uiSidebarRight'>Toggle sidebar right</a>
- ```
-
- You can put `ui-turn-off='uiSidebarLeft'` or `ui-turn-off='uiSidebarLeft'` inside the sidebar to make it close after clicking links inside them.
-
- By default sidebar are closed by clicking/tapping outside them.
-
- */
-(function () {
-    'use strict';
-
-    var module = angular.module(
-        'mobile-angular-ui.components.sidebars', [
-            'mobile-angular-ui.core.sharedState',
-            'mobile-angular-ui.core.outerClick'
-        ]
-    );
-
-    angular.forEach(['left', 'right'], function (side) {
-        var directiveName = 'sidebar' + side.charAt(0).toUpperCase() + side.slice(1);
-        var stateName = 'ui' + directiveName.charAt(0).toUpperCase() + directiveName.slice(1);
-
-        module.directive(directiveName, [
-            '$rootElement',
-            'SharedState',
-            'bindOuterClick',
-            '$location',
-            function ($rootElement,
-                      SharedState,
-                      bindOuterClick,
-                      $location) {
-                return {
-                    restrict: 'C',
-                    link: function (scope, elem, attrs) {
-                        var parentClass = 'has-sidebar-' + side;
-                        var visibleClass = 'sidebar-' + side + '-visible';
-                        var activeClass = 'sidebar-' + side + '-in';
-
-                        if (attrs.id) {
-                            stateName = attrs.id;
-                        }
-
-                        var outerClickCb = function () {
-                            SharedState.turnOff(stateName);
-                        };
-
-                        var outerClickIf = function () {
-                            return SharedState.isActive(stateName);
-                        };
-
-                        $rootElement.addClass(parentClass);
-                        scope.$on('$destroy', function () {
-                            $rootElement
-                                .removeClass(parentClass);
-                            $rootElement
-                                .removeClass(visibleClass);
-                            $rootElement
-                                .removeClass(activeClass);
-                        });
-
-                        var defaultActive = attrs.active !== undefined && attrs.active !== 'false';
-                        SharedState.initialize(scope, stateName, {defaultValue: defaultActive});
-
-                        scope.$on('mobile-angular-ui.state.changed.' + stateName, function (e, active) {
-                            if (attrs.uiTrackAsSearchParam === '' || attrs.uiTrackAsSearchParam) {
-                                $location.search(stateName, active || null);
-                            }
-
-                            if (active) {
-                                $rootElement
-                                    .addClass(visibleClass);
-                                $rootElement
-                                    .addClass(activeClass);
-                            } else {
-                                $rootElement
-                                    .removeClass(activeClass);
-                                // Note: .removeClass(visibleClass) is called on 'mobile-angular-ui.app.transitionend'
-                            }
-                        });
-
-                        scope.$on('$routeChangeSuccess', function () {
-                            SharedState.turnOff(stateName);
-                        });
-
-                        scope.$on('$routeUpdate', function () {
-                            if (attrs.uiTrackAsSearchParam) {
-                                if (($location.search())[stateName]) {
-                                    SharedState.turnOn(stateName);
-                                } else {
-                                    SharedState.turnOff(stateName);
-                                }
-                            }
-                        });
-
-                        scope.$on('mobile-angular-ui.app.transitionend', function () {
-                            if (!SharedState.isActive(stateName)) {
-                                $rootElement.removeClass(visibleClass);
-                            }
-                        });
-
-                        if (attrs.closeOnOuterClicks !== 'false') {
-                            bindOuterClick(scope, elem, outerClickCb, outerClickIf);
-                        }
-                    }
-                };
-            }
-        ]);
-    });
-
-    module.directive('app', ['$rootScope', function ($rootScope) {
-        return {
-            restrict: 'C',
-            link: function (scope, element) {
-
-                element.on('transitionend webkitTransitionEnd oTransitionEnd otransitionend', function () {
-                    $rootScope.$broadcast('mobile-angular-ui.app.transitionend');
-                });
-
-            }
-        };
-    }]);
-}());
-/**
- * A module with just a directive to create a switch input component.
- *
- * @module mobile-angular-ui.components.switch
- */
-(function () {
-    'use strict';
-    angular.module('mobile-angular-ui.components.switch', [])
-
-        /**
-         * @directive uiSwitch
-         * @restrict EA
-         * @requires ngModel
-         * @description
-         *
-         * The `ui-switch` directive (not to be confused with `ng-switch`) lets
-         * you create a toggle switch control bound to a boolean `ngModel` value.
-         *
-         * <figure class="full-width-figure">
-         *   <img src="/assets/img/figs/switch.png" alt=""/>
-         * </figure>
-         *
-         * It requires `ngModel`. It supports `ngChange` and `ngDisabled`.
-         *
-         * ``` html
-         * <ui-switch  ng-model="invoice.paid"></ui-switch>
-         * ```
-         *
-         * ``` html
-         * <ui-switch  ng-model="invoice.paid" disabled></ui-switch>
-         * ```
-         *
-         * ``` html
-         * <ui-switch  ng-model="invoice.paid" ng-disabled='{{...}}'></ui-switch>
-         * ```
-         *
-         * Note that if `$drag` service from `mobile-angular-ui.gestures` is available
-         * `ui-switch` will support drag too.
-         *
-         * @param {expression} ngModel The model bound to this component.
-         * @param {boolean} [disabled] Whether this component should be disabled.
-         * @param {expression} [ngChange] An expression to be evaluated when model changes.
-         */
-        .directive('uiSwitch', ['$injector', function ($injector) {
-            var $drag = $injector.has('$drag') && $injector.get('$drag');
-
-            return {
-                restrict: 'EA',
-                scope: {
-                    model: '=ngModel',
-                    changeExpr: '@ngChange'
-                },
-                link: function (scope, elem, attrs) {
-                    elem.addClass('switch');
-
-                    var disabled = attrs.disabled || elem.attr('disabled');
-
-                    var unwatchDisabled = scope.$watch(
-                        function () {
-                            return attrs.disabled || elem.attr('disabled');
-                        },
-                        function (value) {
-                            if (!value || value === 'false' || value === '0') {
-                                disabled = false;
-                            } else {
-                                disabled = true;
-                            }
-                        }
-                    );
-
-                    var handle = angular.element('<div class="switch-handle"></div>');
-                    elem.append(handle);
-
-                    if (scope.model) {
-                        elem.addClass('active');
-                    }
-                    elem.addClass('switch-transition-enabled');
-
-                    var unwatch = scope.$watch('model', function (value) {
-                        if (value) {
-                            elem.addClass('active');
-                        } else {
-                            elem.removeClass('active');
-                        }
-                    });
-
-                    var isEnabled = function () {
-                        return !disabled;
-                    };
-
-                    var setModel = function (value) {
-                        if (isEnabled() && value !== scope.model) {
-                            scope.model = value;
-                            scope.$apply();
-                            if (scope.changeExpr !== null && scope.changeExpr !== undefined) {
-                                scope.$parent.$eval(scope.changeExpr);
-                            }
-                        }
-                    };
-
-                    var clickCb = function () {
-                        setModel(!scope.model);
-                    };
-
-                    elem.on('click tap', clickCb);
-
-                    var unbind = angular.noop;
-
-                    if ($drag) {
-                        unbind = $drag.bind(handle, {
-                            transform: $drag.TRANSLATE_INSIDE(elem),
-                            start: function () {
-                                elem.off('click tap', clickCb);
-                            },
-                            cancel: function () {
-                                handle.removeAttr('style');
-                                elem.off('click tap', clickCb);
-                                elem.on('click tap', clickCb);
-                            },
-                            end: function () {
-                                var rh = handle[0].getBoundingClientRect();
-                                var re = elem[0].getBoundingClientRect();
-                                if (rh.left - re.left < rh.width / 3) {
-                                    setModel(false);
-                                    handle.removeAttr('style');
-                                } else if (re.right - rh.right < rh.width / 3) {
-                                    setModel(true);
-                                    handle.removeAttr('style');
-                                } else {
-                                    handle.removeAttr('style');
-                                }
-                                elem.on('click tap', clickCb);
-                            }
-                        });
-                    }
-
-                    elem.on('$destroy', function () {
-                        unbind();
-                        unwatchDisabled();
-                        unwatch();
-                        isEnabled = setModel = unbind = unwatch = unwatchDisabled = clickCb = null;
-                    });
-                }
-            };
-        }]);
-}());
-/**
- @module mobile-angular-ui.components
-
- @description
-
- It has directives and services providing mobile friendly
- components like navbars and sidebars.
- It requires `mobile-angular-ui.base.css`
- in order to work properly.
-
- ## Standalone Usage
-
- Although `.components` module is required by `mobile-angular-ui` by default
- you can use it alone. Some submodules requires `mobile-angular-ui.core` to work,
- so be sure its sources are available.
-
- ``` js
- angular.module('myApp', ['mobile-angular-ui.components']);
- ```
-
- */
-(function () {
-    'use strict';
-
-    angular.module('mobile-angular-ui.components', [
-        'mobile-angular-ui.components.modals',
-        'mobile-angular-ui.components.navbars',
-        'mobile-angular-ui.components.sidebars',
-        'mobile-angular-ui.components.scrollable',
-        'mobile-angular-ui.components.switch'
-    ]);
-}());
-/**
- @module mobile-angular-ui
- @position 0
- @description
-
- This is the main angular module of `mobile-angular-ui` framework.
-
- By requiring this module you will have all `mobile-angular-ui.core`
- and `mobile-angular-ui.components` features required as well.
-
- ## Usage
-
- Declare it as a dependency for your application:
-
- ``` js
- angular.module('myApp', ['mobile-angular-ui']);
- ```
-
- */
-(function () {
-    'use strict';
-
-    angular.module('mobile-angular-ui', [
-        'mobile-angular-ui.core',
-        'mobile-angular-ui.components'
-    ]);
-
-}());
 /**
  1.启动angular
 
@@ -4147,15 +456,16 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      * 此处是hackpost 到 node 转 对象格式问题, 如果是 请求node ,post的 需要传入 queryType = true; todo 默认不hackpost格式
      * 16/2/1 */
     //angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block'], hackPost).config(uiRouter);
-    angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block']).config(uiRouter);
+    angular.module('dipan', ['pasvaz.bindonce', 'ui.router', 'block', 'from']).config(uiRouter);
 
     /**
      * config 定义 全局变量 ,并且保留到window全局变量
      * window.config
      * 16/3/8 */
-    angular.module('dipan').factory('config', function () {
+    angular.module('dipan').factory('config', reConfig);
+    function reConfig() {
         return config();
-    });
+    }
 
     /**
      * 手动注入
@@ -4181,22 +491,59 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 templateUrl: window.tplPath + 'route/home.html'
             })
 
-            //标记
-            .state('star', {
-                url: '/star',
-                templateUrl: window.tplPath + 'route/home.html'
+            //发布技能
+            .state('subkill', {
+                url: '/subkill',
+                templateUrl: window.tplPath + 'route/from/subkill.html'
             })
 
-            //block 地区选择页面
-            .state('area', {
-                url: '/area',
-                templateUrl: window.tplPath + 'route/block/area.html'
+            //发布需求
+            .state('subneed', {
+                url: '/subneed',
+                templateUrl: window.tplPath + 'route/from/subneed.html'
             })
 
-            //search 页面
-            .state('search', {
-                url: '/search',
-                templateUrl: window.tplPath + 'route/block/search.html'
+            //技能详情
+            .state('killContent', {
+                url: '/killContent/:jiNengId',
+                templateUrl: window.tplPath + 'route/member/killContent.html'
+            })
+
+            //需求详情
+            .state('needContent', {
+                url: '/needContent/:needId',
+                templateUrl: window.tplPath + 'route/member/needContent.html'
+            })
+
+            //我的消息
+            .state('myNews', {
+                url: '/myNews',
+                templateUrl: window.tplPath + 'route/member/myNews.html'
+            })
+
+            //订单列表
+            .state('orderFrom', {
+                url: '/orderFrom',
+                templateUrl: window.tplPath + 'route/member/orderFrom.html'
+            })
+
+            //我的技能
+            .state('myKill', {
+                url: '/myKill',
+                templateUrl: window.tplPath + 'route/member/myKill.html'
+            })
+
+            //我的需求
+            .state('myNeed', {
+                url: '/myNeed',
+                templateUrl: window.tplPath + 'route/member/myNeed.html'
+            })
+
+
+            //订单详细页面 type 技能方进入,可接单(show) 自己方进入,可选单(select)
+            .state('orderFromContent', {
+                url: '/orderFromContent/:type/:orderId',
+                templateUrl: window.tplPath + 'route/member/orderFromContent.html'
             })
 
             //memberIndex 我的 member
@@ -4205,15 +552,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 templateUrl: window.tplPath + 'route/member/memberIndex.html'
             })
 
-            //member 设置
-            .state('setting', {
-                url: '/setting',
-                templateUrl: window.tplPath + 'route/member/setting.html'
-            })
-
             //member 资料编辑
-            .state('member/memberInfo', {
-                url: 'member/memberInfo',
+            .state('editMemberInfo', {
+                url: '/editMemberInfo',
                 templateUrl: window.tplPath + 'route/member/memberInfo.html'
             })
 
@@ -4223,23 +564,12 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 templateUrl: window.tplPath + 'route/member/loginOut.html'
             })
 
-            //member 测试snsArt 添加
-            .state('member_addArticle', {
-                url: '/member_addArticle',
-                templateUrl: window.tplPath + 'route/member/addArticle.html'
-            })
-
             //member 登录
             .state('login', {
                 url: '/login',
                 templateUrl: window.tplPath + 'route/login.html'
-            })
-
-            //地盘
-            .state('master', {
-                url: '/master',
-                templateUrl: window.tplPath + 'route/master.html'
             });
+
     }
 
     /**
@@ -4310,7 +640,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     function config() {
         return {
             //是否开启模拟调试Api
-            debugApi: true,
+            debugApi: false,
 
             //版本号默认设置
             version: {
@@ -4319,17 +649,14 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
             //host 配置
             host: {
+                nodeHost: returnIp() + ':3082',//nodejsApi hostUrl
+                nodeHostTest: returnIp() + ':8878',//nodejsApi 模拟Api
 
-                // nodeHost: 'http://dipan.so:3082',//nodejsApi hostUrl
-                nodeHost: 'http://192.168.0.7:3082',//nodejsApi hostUrl
-                nodeHostTest: 'http://192.168.0.7:8878',//nodejsApi 模拟Api
+                phpHost: returnIp() + ':8080',//php host
+                phpHostTest: returnIp() + ':8889',//php host模拟Api
 
-                // phpHost: 'http://dipan.so:8080',//php host
-                phpHost: 'http://dipan.so:8080',//php host
-                phpHostTest: 'http://192.168.0.7:8889',//php host模拟Api
+                appPath: returnIp() + ':8080/Public/App/',//app 静态路径
 
-                //appPath: 'http://dipan.so:8080/Public/App/'//app 静态路径
-                appPath: 'http://192.168.0.7:8080/Public/App/'//app 静态路径
             },
 
             //localStroe 存储标示 name
@@ -4350,11 +677,27 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                     roundCodeId: 'roundCodeId',//随机id,启动后生成
                     isLogin: 'isLogin',//判断登录
                     userData: 'userData',//用户数据
+                    clickShaiXuan: 'clickShaiXuan',//筛选点击id数组
+                    area: 'area',//gps 坐标信息,城市名称,邮编
+                    areaGps: 'areaGps',//gps 坐标信息,城市名称,邮编,此处是 第一次运行,手机定位成功的时候 记录的精确位置信息
+                    searchKey: 'searchKey',//搜索时候存储的关键词,返回homeList数据时候就清空此字段
+                    searchCity: 'searchCity',//搜索时候选择的城市字段,如果有城市就有城市的搜索条件,如果没有 或者 附近,就是全国,按照gpsObj传来的数据 去按照定位距离搜索,
                 },
                 version: {
                     //版本
                     key: 'version',//localStroe key
                 },
+                form: {
+                    //表单单相关
+                    killRoundId: 'killRoundId',//随机技能表单id
+                    needRoundId: 'needRoundId',//随机技能表单id
+                    killContentRoundId: 'killContentRoundId',//生成随机技能详情表单id,如果点击下单,就用这个id作为 needRoundId(需求订单随机id),去生成需求订单,
+                    radio1: 'radio1',//技能价格单位 default:1次
+                    radio2: 'radio2',//技能服务方式 default:不限
+                    radio3: 'radio3',//会员补充资料,男,女 default:女
+                    radio4: 'radio4',//会员补充资料,年龄 default:16~24
+                }
+
             },
 
             //系统配置
@@ -4362,6 +705,42 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 timeoutUpData: 10000,//启动app之后 检查升级的 超时时间 单位:毫秒
             }
         };
+
+        //根据web,手机 配置不同ip地址 //
+        function returnIp() {
+
+            var reUrl;
+
+            /*************************
+             * function trueWeb(web,app) 判断手机,还是 wap,回调函数
+             * 16/8/19 上午7:32 ByRockBlus
+             *************************/
+            function trueWeb(web, app) {
+                if (window.trueWeb()) {
+                    web();
+                } else {
+                    app();
+                }
+            }
+
+            trueWeb(function () {//web
+                // reUrl = 'http://169.254.210.14';//dev
+                // reUrl = 'http://127.0.0.1';//degetOrderFromListv
+                reUrl = 'http://dipan.so';//degetOrderFromListv
+            }, function () {//app
+                if (mui.os.android) {
+                    reUrl = 'http://dipan.so';//dev
+                    // reUrl = 'http://192.168.18.9';//dev
+                } else {
+                    // reUrl = 'http://192.168.18.9';//dev ipad
+                    reUrl = 'http://dipan.so';//dev ios模拟器
+                }
+            });
+
+            return reUrl;
+        }
+
+
     }
 
 
@@ -4380,6 +759,19 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
 })();
 
+/**
+ * block 模块, 注入主模块 dipan ,碎片模块
+ * */
+(function () {
+    'use strict';
+
+    /**
+     * 声明module
+     * 16/2/1 */
+    angular.module('from', []);
+
+})();
+
 (function () {
     'use strict';
 
@@ -4387,27 +779,84 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      * body 控制器
      * 16/2/1 */
     angular.module('dipan').controller('body', body);
+    angular.module('dipan').run(run);//angualr 第一次 启动后,加载一次run,去socket请求最新消息
+
+    run.$inject = ['$rootScope', 'tools', 'config', '$interval'];
+    function run($rootScope, tools, config, $interval) {
+        getNewsData();
+        var timer = $interval(function () {
+            getNewsData();
+        }, 60000);
+
+        /**
+         * 去socket请求最新消息
+         */
+        function getNewsData() {
+            var url = config.host.nodeHost + "/member/getUserNews";
+            var postData = {};
+            try {
+                postData.uid = tools.getLocalStorageObj('userData').uid;
+            } catch (e) {
+                postData.uid = '';
+            }
+            tools.postJsp(url, postData, true).then(_s);
+            function _s(re) {
+                if (re && re.data && re.data.code == 'S') {
+                    $rootScope.$broadcast('showNews');//广播显示 有新消息
+                }
+
+                else {
+                    $rootScope.$broadcast('hideNews');//广播显示 没有有新消息
+                }
+            }
+        }
+
+    }
 
     /**
      * 手动注入
      * 16/2/1 */
-    body.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tap', '$state', 'tools', 'getList'];
+    body.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tap', '$state', 'tools', 'getList', 'getCity', 'config', 'header'];
 
     /**
      * controllerFun
      * 16/2/1 */
-    function body($scope, $rootScope, $timeout, localData, tap, $state, tools, getList) {
+    function body($scope, $rootScope, $timeout, localData, tap, $state, tools, getList, getCity, config, header) {
 
+        var clickType = 'tap';
+        tools.trueWeb(function () {
+            clickType = 'click';
+        }, function () {
+            clickType = 'tap';
+        });
+
+        $scope.showNews = false;//底部会员有新消息图标显示
+        $scope.xiaDan = false;//用户是否点击下单按钮,点击了,就隐藏下单,显示电话和在线联系
+        $scope.$on('showNews', showNews);//监听有新消息图标显示事件
+        $scope.$on('hideNews', hideNews);//监听关闭新消息图标事件
+        $scope.$on('trueXiaDan', trueXiaDan);//监听判断当前用户是否对当前技能id下过单
+        $scope.$on('callTelAlertCount0', callTelAlertCount0);//监听使打电话alertCount归0
+        $scope.$on('callTel', callTel);//监听打电话 ,传obj{code=S,jiNengId,uid}
+        $scope.$on('hideXiaDan', hideXiaDan);//监听隐藏下单按钮
+        $scope.$on('showXianDan', showXiaDan);//监听显示下单按钮
+
+        $scope.$on('openIm', openImInit);//监听跳转到聊天页面
+
+        $scope.push = 'fa-plus-circle';//发布需求按钮的 图标样式
         $scope.$on('changeBody', function () {
             trueIsLogin();//判断登录
-            $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
+            trueShowHeader();//判断是否显示header
+            // $rootScope.$broadcast('openLoading');//载入时候 默认打开loading
+            $rootScope.$broadcast('closeAddFrom');//默认 关闭 技能发布按钮面板
+            changeSubBtnIcon(true);//默认变换发布按钮为 加号
+            showBottomNav();//显示底部导航
             var _url = '/' + $state.current.name;
             $timeout(function () {
                 $scope.title = localData.getTitle(_url);//getTitle
                 $scope.showTab = localData.showTab(_url);//是否显示 tab
                 $scope.tabList = localData.tab(_url);//tablist body 控制器
                 $scope.url = _url;//url变量,判断 top 模板 显示图标用
-
+                bindH1SearchBtn();//首页搜索按钮显示隐藏
                 /**
                  * 变换list 到 滚动记录的位置,判断 不同状态来 确定 是否 请求新的list数据
                  */
@@ -4418,19 +867,25 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                     }
 
                     _init();
-
                     //变换到记录的 滚动位置
                     function changeScroll() {
-                        var scrollTopNum = $state.current.name + '_scrollTop';
-                        var num = parseInt(localStorage.getItem(scrollTopNum));
                         try {
-                            document.body.scrollTop = num;
-                        } catch (e) {
-                            try {
-                                window.pageYOffset = num;
-                            } catch (e) {
-                                document.documentElement.scrollTop = num;
+                            if ($scope.current.name == 'killContent') {
+                                return false;
                             }
+                            var scrollTopNum = $state.current.name + '_scrollTop';
+                            var num = parseInt(localStorage.getItem(scrollTopNum));
+                            try {
+                                document.body.scrollTop = num;
+                            } catch (e) {
+                                try {
+                                    window.pageYOffset = num;
+                                } catch (e) {
+                                    document.documentElement.scrollTop = num;
+                                }
+                            }
+                        } catch (e) {
+                            console.error('无当前页面name');
                         }
                     }
 
@@ -4460,9 +915,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
                             var num = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
                             if (num === 0) {//当滚动到0的时候
-                                tools.alert({
-                                    title: '请求最新数据'
-                                });
+                                $rootScope.$broadcast('showHeader');//显示header
+                                $rootScope.$broadcast('showShaiXuan');//显示筛选
+                                console.log('请求最新数据');
                             }
                         }
                     }
@@ -4475,12 +930,372 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                         switch ($state.current.name) {
                             case 'home':
                                 return true;
+                            case 'need':
+                                return true;
                         }
                     }
+
+
                 });
                 tap.init();//判断手机网页 手机 绑定 tap 事件, 网页绑定 click事件,(点击跳转url)
+                trueXiaDan();//检测当前技能页面是否已经被下单过
+                $scope.xiaDan = false;//changebody 的时候先默认关闭
             }, 0);
+            init();
         });
+
+        //显示H1SearchBtn 监听事件
+        $scope.$on('showHiSearchBtn', showH1SearchBtn);
+
+        function init() {
+            $timeout(function () {
+                bindXiaDanClick();//bind 下单按钮点击
+                bindCallTel();//bind 打电话点击事件
+                bindCallIm();//bind 聊一聊点击事件
+            }, 0);
+        }
+
+
+        /**
+         * 解析监听传来的数据,再跳转到聊天
+         * @param e
+         * @param v
+         */
+        function openImInit(e, v) {
+            openIm(v.gHeader, v.gUId, v.gName, v.userHeader, v.userId);
+        }
+
+
+        /**
+         * bind 聊一聊点击事件
+         */
+        function bindCallIm() {
+            if ($state.current.name == 'killContent') {
+                var ele = document.getElementById('callIm');
+                tools.loginEvent(ele, clickType, _bind);
+            }
+
+            function _bind() {
+                getGuest();
+                function getGuest() {//获取技能用户资料
+                    var url = config.host.nodeHost + '/member/getKillContent';
+                    tools.postJsp(url, {jiNengId: $state.params.jiNengId}, true).then(function (re) {
+                        if (re.data && re.data.code == 'S' && re.data.doc) {
+                            var gHeader = header.defaultHeader;
+                            if (re.data.doc.userData.headerImg) {
+                                gHeader = re.data.doc.userData.headerImg;
+                            }
+                            var userHeader = header.defaultHeader;
+                            var thisHeader = tools.getLocalStorageObj('userData').headerImg;
+                            if (thisHeader) {
+                                userHeader = thisHeader;
+                            }
+                            var uid = tools.getLocalStorageObj('userData').uid;
+                            var gName = re.data.doc.userData.name;
+                            if (!gName) {
+                                gName = re.data.doc.userData.mt;
+                            }
+
+                            //入库联系人表
+                            var inUidToUserIdUrl = config.host.nodeHost + '/member/inUidToUserId';
+                            console.log('uidGuid', uid, re.data.doc.userData._id);
+                            tools.postJsp(inUidToUserIdUrl, {uid: uid, gUserId: re.data.doc.userData._id}, true)
+                                .then(function () {
+                                    openIm(gHeader, re.data.doc.userData._id, gName, userHeader, uid);
+                                }, _err);
+
+                        } else {
+                            _err(re.msg);
+                        }
+                    }, _err);
+
+                    function _err(msg) {
+                        var reMsg = '获取该用户的信息失败';
+                        if (msg) {
+                            reMsg = msg;
+                        }
+                        tools.alert({title: reMsg});
+                    }
+                }
+
+
+            }
+        }
+
+        /**
+         * 跳转
+         * @param gHeader 来宾联系人的头像
+         * @param gUId 来宾联系人的id
+         * @param gName 来宾联系人的name
+         * @param userHeader 用户头像
+         * @param userId 用户id
+         */
+        function openIm(gHeader, gUId, gName, userHeader, userId) {
+
+            console.log('v', gUId, userId);
+            if (gUId && userId) {
+                mui.openWindow({
+                    url: 'callIm.html',
+                    extras: {
+                        gusetHeader: gHeader,
+                        gusetId: gUId,
+                        userHeader: userHeader,
+                        userId: userId,
+                        gName: gName,
+                    }
+                });
+            }
+        }
+
+        /**
+         * 打电话点击事件
+         */
+        var alertCount = 0;
+
+        /**
+         * 监听使打电话alertCount归0
+         */
+        function callTelAlertCount0() {
+            alertCount = 0;
+        }
+
+        /**
+         * bind 打电话点击事件
+         */
+        function bindCallTel() {
+            if ($state.current.name == 'killContent') {
+                var ele = document.getElementById('callTel');
+                tools.loginEvent(ele, clickType, _bind);
+            }
+
+            function _bind() {
+                //去请求接口查询是否有打电话权限
+                var jinengId = $state.params.jiNengId;
+                var uid = tools.getLocalStorageObj('userData').uid;
+                if (uid) {
+                    var postData = {
+                        uid: uid,
+                        jiNengId: jinengId
+                    };
+                    var url = config.host.nodeHost + "/member/trueTelCall";
+                    tools.postJsp(url, postData).then(callTel, callTelerr);
+                }
+            }
+        }
+
+        /**
+         * 大电话
+         */
+        function callTel(re, re2) {
+            if (re2) {
+                re = re2;
+            }
+
+            if (re.data && re.data.code == 'S') {
+                alertCount++;
+                tools.trueWeb(function () {
+                    if (alertCount == 1) {
+                        alert('请下载手机app使用此功能');
+                    }
+                }, function () {
+                    var postData2 = {
+                        // uid: re.data.uid,
+                        jiNengId: $state.params.jiNengId
+                    };
+                    var url2 = config.host.nodeHost + "/member/getUserTel";//todo 加密解密
+                    tools.postJsp(url2, postData2, true).then(__s, __err);
+
+                    function __s(re2) {
+                        if (re2.data && re2.data.code == 'S' && re2.data.doc && re2.data.doc.mt) {
+                            if (alertCount > 1) {
+                                plus.device.dial(re2.data.doc.mt, false);
+                            }
+                        } else {
+                            __err();
+                        }
+                    }
+
+                    function __err() {
+                        tools.alert({title: '拨打电话失败,用户设置不允许电话咨询'});
+                    }
+                });
+            } else {
+                callTelerr();
+            }
+        }
+
+        function callTelerr() {
+            tools.alert({title: '此用户禁止了电话服务!'});
+        }
+
+
+        /**
+         *bind 下单按钮点击
+         */
+        function bindXiaDanClick() {
+            try {
+                if ($state.current.name == 'killContent') {//对技能下单
+                    document.getElementById('xiaDan').addEventListener(clickType, _bindXiaDan);
+                }
+                if ($state.current.name == 'orderFromContent') {//对需求接单
+                    document.getElementById('xiaDan').addEventListener(clickType, _bindJieDan);
+                }
+            } catch (e) {
+                console.error('无下单按钮');
+            }
+
+            /**
+             * 对技能下单
+             * @private
+             */
+            function _bindXiaDan() {
+
+                //去请求接口标记技能id
+                var jinengId = $state.params.jiNengId;
+                var uid = tools.getLocalStorageObj('userData').uid;
+                var needRoundId = tools.getLocalStorageObj('killContentRoundId');
+                var gpsObj = tools.getLocalStorageObj('areaGps');
+                if (uid) {
+                    var postData = {
+                        uid: uid,//下单用户id
+                        jiNengId: jinengId,
+                        needRoundId: needRoundId,
+                        areaGps: gpsObj
+                    };
+                    var url = config.host.nodeHost + "/member/xiaDan";
+                    tools.postJsp(url, postData, true).then(_s, _err);
+                }
+            }
+
+            /**
+             * 对需求接单
+             * @private
+             */
+            function _bindJieDan() {
+                // 需求id
+                var orderId = $state.params.orderId;
+                var uid = tools.getLocalStorageObj('userData').uid;
+                var isUser = tools.getLocalStorageObj('userData').isUser;
+                if (!isUser) {//先补充会员资料
+                    plus.nativeUI.confirm("请补充用户资料", function (e) {
+                        $state.go('editMemberInfo');
+                    }, "请补充用户资料", ["确定", "取消"]);
+                } else {
+                    if (uid) {
+                        var postData = {
+                            uid: uid,//下单用户id
+                            orderId: orderId //订单id
+                        };
+                        var url = config.host.nodeHost + "/member/jieDan";
+                        tools.postJsp(url, postData, true).then(_s, _err);
+                    }
+                }
+
+
+            }
+
+            function _s(re) {
+                if (re.data && re.data.code == 'S') {
+                    $timeout(function () {
+                        $rootScope.$broadcast('getOrderContent');
+                        $scope.xiaDan = true;
+                    }, 0);
+                } else {
+                    _err();
+                }
+            }
+
+            function _err(err) {
+                tools.alert({
+                    title: err
+                });
+            }
+
+        }
+
+        /**
+         * 检测当前技能页面是否已经被下单过,来控制显示和隐藏电话
+         */
+        function trueXiaDan() {
+            if ($state.current.name == 'killContent') {
+                var uid = tools.getLocalStorageObj('userData').uid;
+                var jinengId = $state.params.jiNengId;
+                if (uid) {
+                    var postData = {
+                        uid: uid,
+                        jiNengId: jinengId
+                    };
+                    var url = config.host.nodeHost + "/member/trueXianDan";
+                    tools.postJsp(url, postData, true).then(_s, _err);
+                }
+            }
+
+            //判断当前订单是否被 当前uid 接单,或者被下单
+            if ($state.current.name == 'orderFromContent') {
+                var uidN = tools.getLocalStorageObj('userData').uid;
+                var orderId = $state.params.orderId;
+                if (uidN) {
+                    var postDataN = {
+                        uid: uidN,
+                        orderId: orderId
+                    };
+                    var urlN = config.host.nodeHost + "/member/trueJieDan";
+                    tools.postJsp(urlN, postDataN, true).then(_s, _err);
+                }
+            }
+
+            function _s(re) {
+                if (re.data && re.data.code == 'S') {
+                    $timeout(function () {
+                        $scope.xiaDan = true;
+                    }, 0);
+                } else {
+                    _err();
+                }
+            }
+
+            function _err() {
+                $timeout(function () {
+                    $scope.xiaDan = false;
+                }, 0);
+            }
+        }
+
+        /**
+         * 隐藏下单
+         */
+        function hideXiaDan() {
+            $timeout(function () {
+                $scope.xiaDan = true;
+            }, 0);
+        }
+
+        /**
+         * 显示下单
+         */
+        function showXiaDan() {
+            $timeout(function () {
+                $scope.xiaDan = false;
+            }, 0);
+        }
+
+        /**
+         * 监听关闭新消息图标事件
+         */
+        function showNews() {
+            $timeout(function () {
+                $scope.showNews = true;
+            }, 0);
+        }
+
+        /**
+         * 监听关闭新消息图标事件
+         */
+        function hideNews() {
+            $timeout(function () {
+                $scope.showNews = false;
+            }, 0);
+        }
 
         /**
          * 判断登录
@@ -4503,10 +1318,117 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
 
         }
+
+        /**
+         * 修改发布按钮图标
+         */
+        function changeSubBtnIcon(def) {
+            if (def) {
+                $timeout(function () {
+                    $scope.push = 'fa-plus-circle';
+                }, 0);
+            } else {
+                if ($scope.push == 'fa-plus-circle') {
+                    $timeout(function () {
+                        $scope.push = 'fa-minus-circle';
+                    }, 0);
+                } else {
+                    $timeout(function () {
+                        $scope.push = 'fa-plus-circle';
+                    }, 0);
+                }
+            }
+        }
+
+        /**
+         * 底部导航 显示 添加需求技能面板 按钮
+         * @type {Element}
+         */
+        var addFromBtn = document.getElementById('addFromBtn');
+        clickBin(addFromBtn);
+
+        /**
+         * bin 添加按钮点击事件
+         */
+        function clickBin(doc) {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+            });
+            try {
+                doc.addEventListener(type, function () {
+                    changeSubBtnIcon();
+                    $rootScope.$broadcast('showAddFrom');
+                });
+            } catch (e) {
+                console.error('无底部');
+            }
+        }
+
+        /**
+         * bindH1SearchBtn 绑定 h1 搜索按钮点击事件
+         */
+        function bindH1SearchBtn() {
+            $timeout(function () {
+                try {
+                    var searchBtnDom = document.getElementById('searchIconH1');
+                    var angularSearchBtnDom = angular.element(searchBtnDom);
+                    searchBtnDom.addEventListener('tap', function () {
+                        $rootScope.$broadcast('focusSearch');//搜索焦点事件
+                        angularSearchBtnDom.css({
+                            'display': 'none'
+                        });
+                    });
+                } catch (e) {
+                    console.log('无searchBtn');
+                }
+            }, 0);
+        }
+
+        /**
+         * 显示 h1SearchBtn
+         */
+        function showH1SearchBtn() {
+            $timeout(function () {
+                try {
+                    var searchBtnDom = document.getElementById('searchIconH1');
+                    var angularSearchBtnDom = angular.element(searchBtnDom);
+                    angularSearchBtnDom.css({
+                        'display': 'block'
+                    });
+                } catch (e) {
+                    console.log('无searchBtn');
+                }
+            }, 0);
+        }
+
+        /**
+         * 判断是否显示 hedaer trueShowHeader
+         */
+        function trueShowHeader() {
+            if (localData.trueShowHedaer($state.current.name)) {
+                $rootScope.$broadcast('showHeader', true);//广播当前页面需要显示 header
+            } else {
+                $rootScope.$broadcast('hideHeader', true);//广播当前页面需要隐藏 header
+            }
+        }
+
+        /**
+         * 显示底部导航
+         */
+
+        function showBottomNav() {
+            var dom = document.getElementById('bottomNav');
+            try {
+                dom.style.display = "block";
+            } catch (e) {
+                console.error('无底部');
+            }
+        }
     }
-
-
-})();
+})
+();
 
 /**
  * angularEnd.dipan.angularEnd.directive.js
@@ -4537,7 +1459,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
  * 命名注释：directive简称_alert. 父模块_block. 功能_alert 公共ui 类型_directive .js
  * 使用 ：<div alert></div>
  */
-(function() {
+(function () {
     'use strict';
     angular.module('block').directive('alert', top);
 
@@ -4548,14 +1470,14 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/block/alert.block.alertUi.html',
-            link: function(scope, element, attrs) {}
+            link: function (scope, element, attrs) {
+            }
         };
     }
 
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tools'];
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
-
-    function thisController($scope, $rootScope, $timeout, localData) {
+    function thisController($scope, $rootScope, $timeout, localData, tools) {
         $scope.alertUiClass = 'showThis';
         $scope.showAlertUi = false;
         $scope.title = '错误';
@@ -4567,20 +1489,22 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * 16/8/19 上午9:45 ByRockBlus
          *************************/
         function show(e, obj) {
-            $scope.showAlertUi = true;
-            $scope.title = obj.title;
-            $scope.content = obj.content;
-            $timeout(function() {
-                $scope.alertUiClass = 'hideThis';
-                $timeout(function() {
+            // tools.trueWeb(function () {
+            $timeout(function () {
+                $scope.title = obj.title;
+                $scope.content = obj.content;
+                $scope.alertUiClass = 'showThis';
+                $scope.showAlertUi = true;
+                $timeout(function () {
                     $scope.showAlertUi = false;
                     $scope.alertUiClass = 'showThis';
                 }, 800);
-            }, 1000);
+            }, 0);
+            // }, function () {
+            //     plus.nativeUI.toast(obj.title);
+            // });
         }
-
     }
-
 })();
 /**
  * 命名注释：directive简称_area. 父模块_dipan. 功能_选择地区页面 类型_directive .js
@@ -4594,7 +1518,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         return {
             restrict: 'A',
             replace: true,
-            //scope: {},
+            scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/block/area.dipan.areaSelect.directive.html',
             link: function (scope, element, attrs) {
@@ -4602,14 +1526,409 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'getCity', '$state'];
 
-    function thisController($scope, $rootScope, $timeout, tools) {
-        $scope.$watch('$viewContentLoading', function () {
-            $rootScope.$broadcast('changeBody');
+    function thisController($scope, $rootScope, $timeout, tools, getCity, $state) {
+
+        $scope.thisCity = {'name': '', 'cityCode': '', 'location': ''};
+        $scope.showArea = false;//显示地区选择div
+        $scope.showAreaFujin = true;//显示附近div
+        $scope.shengRep = [
+            {id: 1, name: '广东', type: 'sheng', 'searchStr': '广东省'},
+            {id: 2, name: '江苏', type: 'sheng', 'searchStr': '江苏省'},
+            {id: 3, name: '浙江', type: 'sheng', 'searchStr': '浙江省'},
+            {id: 4, name: '四川', type: 'sheng', 'searchStr': '四川省'},
+            {id: 5, name: '河南', type: 'sheng', 'searchStr': '河南省'},
+            {id: 6, name: '河北', type: 'sheng', 'searchStr': '河北省'},
+            {id: 7, name: '山东', type: 'sheng', 'searchStr': '山东省'},
+            {id: 8, name: '湖南', type: 'sheng', 'searchStr': '湖南省'},
+            {id: 9, name: '湖北', type: 'sheng', 'searchStr': '湖北省'},
+            {id: 10, name: '安徽', type: 'sheng', 'searchStr': '安徽省'},
+            {id: 11, name: '辽宁', type: 'sheng', 'searchStr': '辽宁省'},
+            {id: 12, name: '吉林', type: 'sheng', 'searchStr': '吉林省'},
+            {id: 14, name: '陕西', type: 'sheng', 'searchStr': '陕西省'},
+            {id: 15, name: '山西', type: 'sheng', 'searchStr': '山西省'},
+            {id: 22, name: '江西', type: 'ziZhi', 'searchStr': '江西省'},
+            {id: 16, name: '福建', type: 'sheng', 'searchStr': '福建省'},
+            {id: 17, name: '甘肃', type: 'sheng', 'searchStr': '甘肃省'},
+            {id: 18, name: '贵州', type: 'sheng', 'searchStr': '贵州省'},
+            {id: 19, name: '云南', type: 'sheng', 'searchStr': '云南省'},
+            {id: 20, name: '海南', type: 'sheng', 'searchStr': '海南省'},
+            {id: 21, name: '青海', type: 'sheng', 'searchStr': '青海省'},
+            {id: 23, name: '宁夏', type: 'ziZhi', 'searchStr': '宁夏回族自治区'},
+            {id: 24, name: '新疆', type: 'ziZhi', 'searchStr': '新疆维吾尔自治区'},
+            {id: 25, name: '内蒙', type: 'ziZhi', 'searchStr': '内蒙古自治区'},
+            {id: 26, name: '西藏', type: 'ziZhi', 'searchStr': '西藏自治区'},
+            {id: 27, name: '广西', type: 'ziZhi', 'searchStr': '广西壮族自治区'},
+            {id: 13, name: '黑龙江', type: 'sheng', 'searchStr': '黑龙江省'},
+        ];
+        $scope.thisSheng = [];
+        $scope.thisShengShow = false;//省下面城市alertDiv
+        $scope.$on('showArea', showArea);//监听打开areaDiv事件
+        $scope.$on('hideArea', hideArea);//监听关闭areaDiv事件
+
+        // bindSelectAreaBtn();//绑定选择area点击事件
+        function init() {
+            getDefault();//获取默认本地存储的地址信息
+            $timeout(function () {
+                bindShengDomClick();//绑定省名
+                bindHotCity();//绑定热门城市点击事件
+                bindCloseShengSub();//绑定省下面的子城市面板的 close 按钮
+            }, 0);
+        }
+
+        /**
+         * getDefault 获取默认城市
+         */
+        function getDefault() {
+            var re = {};
+            var area = tools.getLocalStorageObj('area');
+            if (area) {
+                re.name = area.city.city;
+                re.cityCode = area.city.cityCode;
+                re.location = area.gpsObj.lng + ',' + area.gpsObj.lat;
+            } else {
+                re.name = '全国';
+                re.cityCode = '000';
+                re.location = '116.405285,39.904989';
+            }
+            $timeout(function () {
+                $scope.thisCity = re;
+            }, 0);
+        }
+
+        /**
+         * 监听打开areaDiv事件
+         */
+        function showArea(k, v) {
+            // getCity.inTable();//接口请求 城市数据,写入数据库
+            $timeout(function () {
+                $scope.showArea = true;
+                if (v) {
+                    $scope.showAreaFujin = false;
+                }
+                init();//执行绑定
+            }, 0);
+        }
+
+        /**
+         * 监听关闭areaDiv事件
+         */
+        function hideArea() {
+            $timeout(function () {
+                $scope.showArea = false;
+            }, 0);
+        }
+
+        /**
+         * 绑定选择area点击事件
+         */
+        function bindSelectAreaBtn() {
+            // var bindBtn = document.getElementById('topSearchLeft');
+            // var type = 'tap';
+            // tools.trueWeb(function () {
+            //     type = 'click';
+            // }, function () {
+            //     type = 'tap';
+            // });
+            //
+            // bindBtn.addEventListener(type, _bind);
+            //
+            // function _bind() {
+            //     $rootScope.$broadcast('showArea');
+            //     $rootScope.$broadcast('blurSearch');
+            // }
+        }
+
+        /**
+         * 绑定省份选择点击事件
+         */
+        function bindShengDomClick() {
+            var index = 0;
+            angular.forEach($scope.shengRep, function (vo) {
+                if (index < 27) {
+                    index++;
+                    var tempId = 'shengRep_' + index;
+                    var dom = document.getElementById(tempId);
+                    _bind(dom);
+                }
+            });
+            function _bind(dom) {
+                var type = 'tap';
+                tools.trueWeb(function () {
+                    type = 'click';
+                }, function () {
+                    type = 'tap';
+                });
+                dom.addEventListener(type, function () {
+                    _showSubContent(dom);//显示SubCounte
+                });
+            }
+        }
+
+        /**
+         * 显示SubCounte
+         */
+        function _showSubContent(dom) {
+            var aDom = angular.element(dom);
+            $rootScope.$broadcast('openLoading');
+            getCity.selectByCityCode(aDom.attr('nameid')).then(_show);
+            function _show(row) {
+                $rootScope.$broadcast('closeLoading');
+                $timeout(function () {
+                    $scope.thisShengShow = true;
+                    angular.forEach(row, function (vo) {
+                        vo = _editText(vo);
+                        $scope.thisSheng.push(vo);
+                    });
+
+                    $timeout(function () {
+                        try {
+                            _bindThisShengClick();//绑定点击
+                        } catch (e) {
+                            console.log('无法绑定子城市点击事件');
+                        }
+                    }, 0);
+
+                }, 0);
+            }
+
+            function _bindThisShengClick() {
+                angular.forEach($scope.thisSheng, function (vo2) {
+                    var dom = document.getElementById('shengSubRep_' + vo2._id);
+                    var type = 'tap';
+                    tools.trueWeb(function () {
+                        type = 'click';
+                    }, function () {
+                        type = 'tap';
+                    });
+                    dom.addEventListener(type, function () {
+                        _bindCityClick(dom);
+                    });
+                });
+            }
+
+            function _editText(v) {
+                try {
+                    v.city = v.city.replace('市', '');
+                    v.city = v.city.replace('自治州', '');
+                    v.city = v.city.replace('地区', '');
+                } catch (e) {
+                    console.log('noV.city');
+                }
+                return v;
+            }
+        }
+
+        /**
+         * 绑定热门城市click
+         */
+        function bindHotCity() {
+            var hostList = document.getElementsByClassName('hotCity');
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+                type = 'tap';
+            });
+            angular.forEach(hostList, function (vo) {
+                vo.addEventListener(type, function () {
+                    _bindCityClick(vo);
+                });
+            });
+        }
+
+        /**
+         * bind城市click (hot & shengSub)
+         * @param vo
+         * @private
+         */
+        function _bindCityClick(vo) {
+            $timeout(function () {
+                $scope.thisCity.name = vo.innerText;
+                $scope.thisCity.cityCode = vo.getAttribute('code');
+                $scope.thisCity.location = vo.getAttribute('location');
+                saveLocalArea();
+                closeThisShengShow();
+                $rootScope.$broadcast('getSelectDown');
+            }, 0);
+        }
+
+        /**
+         * 绑定子城市显示div关闭按钮点击事件
+         */
+        function bindCloseShengSub() {
+            var dom = document.getElementById('closeAlertSub');
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+                type = 'tap';
+            });
+            dom.addEventListener(type, function () {
+                closeThisShengShow(true);
+            });
+        }
+
+        /**
+         * 写入本地缓存gps信息
+         */
+        function saveLocalArea() {
+            var location = $scope.thisCity.location;
+            var gpsObj = {};
+            var tempGpsObj = location.split(',');
+            gpsObj.lat = tempGpsObj[1];
+            gpsObj.lng = tempGpsObj[0];
+
+            var obj = {
+                gpsObj: gpsObj,
+                city: {
+                    "city": $scope.thisCity.name,
+                    "cityCode": $scope.thisCity.cityCode
+                }
+            };
+            tools.saveLocalStorageObj('area', obj);//存储
+            $timeout(function () {
+                $rootScope.$broadcast('changeArea');//广播变换地址事件
+            }, 400);
+        }
+
+        /**
+         * 关闭省下面城市显示alertDiv
+         */
+        function closeThisShengShow(sub) {
+            $timeout(function () {
+                $scope.thisSheng = [];
+                $scope.thisShengShow = false;//省下面城市alertDiv
+                if (!sub) {//如果 不是 点击关闭按钮的调用
+                    $rootScope.$broadcast('hideArea');//关闭地区alert
+                    if ($state.current.name == 'home') {
+                        console.log('focusSearch');
+                        // $rootScope.$broadcast('focusSearch');//焦点搜索框
+                    }
+                }
+            }, 0);
+        }
+    }
+
+})();
+/**
+ * 命名注释：directive简称_lianXiang. 父模块_block. 功能_search联想下拉div,类型_directive .js
+ * 使用 ：<div lian-xiang></div>
+ */
+(function () {
+    'use strict';
+    angular.module('block').directive('lianXiang', lianXiang);
+
+    function lianXiang() {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/block/lianXiang.block.searchLianXiang.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', '$state', 'tools', 'config'];
+
+    function thisController($scope, $rootScope, $timeout, localData, $state, tools, config) {
+        var isShowLianXian = false;//判断是否需要显示联想
+        $scope.lianXianShow = false;// 显示联想
+        $scope.$on('showLianXianShow', showLianXianShow);//监听显示联想
+        $scope.$on('hideLianXianShow', hideLianXianShow);//监听隐藏联想
+
+        $scope.list = [];//联想的 关键词list
+        $scope.$on('getKeyList', getKeyList);//监听发送来的搜索事件,传入key去取联想数据
+
+
+        $scope.$on('changeBody', function () {
+            init();
         });
 
+        function init() {
+            trueIsShowLianXian();//判断是否需要显示联想
+        }
+
+        //判断是否需要显示联想
+        function trueIsShowLianXian() {
+            $timeout(function () {
+                var name = $state.current.name;
+                if (name == 'home') {
+                    isShowLianXian = true;
+                }
+            }, 0);
+        }
+
+        function getKeyList(v, k) {
+            var key;
+            if (!k) {
+                key = '';
+            } else {
+                key = k;
+            }
+            var url = config.host.nodeHost + '/key/lianXiangKey';
+
+            tools.saveLocalStorageObj('searchKey', key);//存入searchKey 去组合查询条件 如果返回 homeList的 数据,再清空此字段
+            tools.postJsp(url, {key: key}, true).then(_call);
+            function _call(re) {
+                $timeout(function () {
+                    if (re.data && re.data.doc && re.data.code == "S") {
+                        $scope.list = re.data.doc;
+                        $timeout(function () {
+                            _bindKeyClick();
+                        }, 0);
+                    }
+                }, 0);
+            }
+        }
+
+        /**
+         * bind 关键词的click事件
+         */
+        function _bindKeyClick() {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+                type = 'tap';
+            });
+
+            angular.forEach($scope.list, function (vo) {
+                document.getElementById('key_' + vo._id).addEventListener(type, _bindKeyClick);
+            });
+
+            function _bindKeyClick(dom) {
+                var text = dom.target.innerHTML;
+                $rootScope.$broadcast('giveSearch', text);
+            }
+        }
+
+
+        /**
+         * 显示联想
+         */
+        function showLianXianShow() {
+            $timeout(function () {
+                if (isShowLianXian) {
+                    $scope.lianXianShow = true;// 显示联想
+                }
+            }, 0);
+        }
+
+        /**
+         * 隐藏联想
+         */
+        function hideLianXianShow() {
+            $timeout(function () {
+                $scope.lianXianShow = false;// 显示联想
+            }, 0);
+        }
     }
+
 })();
 /**
  * 命名注释：directive简称_loading. 父模块_block. 功能_顶部导航 类型_directive .js
@@ -4631,10 +1950,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools'];
 
-    function thisController($scope, $rootScope, $timeout) {
-        $scope.loading = true;//默认打开loading
+    function thisController($scope, $rootScope, $timeout, tools) {
+        $scope.loading = false;//默认打开loading
 
         /*************************
          * 监听closeLoading事件,关闭loading动画
@@ -4642,7 +1961,17 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          *************************/
         $scope.$on('closeLoading', function () {
             $timeout(function () {
-                $scope.loading = false;
+                tools.trueWeb(function () {
+                    $timeout(function () {
+                        $scope.loading = false;
+                    }, 0);
+                }, function () {
+                    $scope.loading = false;
+                    plus.nativeUI.closeWaiting();
+                    $timeout(function () {
+                        plus.nativeUI.closeWaiting();
+                    }, 500);
+                });
             }, 0);
         });
 
@@ -4652,7 +1981,14 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          *************************/
         $scope.$on('openLoading', function () {
             $timeout(function () {
-                $scope.loading = true;
+                tools.trueWeb(function () {
+                    $timeout(function () {
+                        $scope.loading = true;
+                    }, 0);
+                }, function () {
+                    $scope.loading = false;
+                    plus.nativeUI.showWaiting();
+                });
             }, 0);
         });
     }
@@ -4660,33 +1996,439 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 })();
 
 /**
- * 命名注释：directive简称_search. 父模块_dipan. 功能_搜索 类型_directive .js
- * 使用 ：<div area></div>
+ * 命名注释：directive简称_searchArea. 父模块_block. 功能_搜索焦点事件的时候,显示的 左侧 地区搜索 类型_directive .js
+ * 使用 ：<div ssearch-area></div>
  */
 (function () {
     'use strict';
-    angular.module('block').directive('search', search);
+    angular.module('block').directive('searchArea', searchArea);
 
-    function search() {
+    function searchArea() {
         return {
             restrict: 'A',
             replace: true,
-            //scope: {},
+            scope: {},
             controller: thisController,
-            templateUrl: window.tplPath + 'directive/block/search.dipan.search.directive.html',
+            templateUrl: window.tplPath + 'directive/block/searchArea.block.topLeftSearchArea.directive.html',
             link: function (scope, element, attrs) {
             }
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', '$state', 'tools'];
 
-    function thisController($scope, $rootScope, $timeout, tools) {
-        $scope.$watch('$viewContentLoading', function () {
-            $rootScope.$broadcast('changeBody');
-        });
+    function thisController($scope, $rootScope, $timeout, localData, $state, tools) {
+        $scope.searchArea = false;
+        $scope.thisCity = '';
+        $scope.$on('showSearchArea', showSearchArea);//监听显示 block事件 来显示area block
+        $scope.$on('hideSearchArea', hideSearchArea);//监听隐藏 block事件 来隐藏area block
+        $scope.$on('changeArea', giveThisCity);//监听地址变换事件
+
+        init();
+        function init() {
+            giveThisCity();
+        }
+
+        /**
+         * 给搜索默认城市
+         */
+        function giveThisCity() {
+            var area = tools.getLocalStorageObj('area');
+            $timeout(function () {
+                try {
+                    $scope.thisCity = area.city.city;
+                } catch (e) {
+                    $scope.thisCity = '全国';
+                }
+            }, 0);
+        }
+
+        /**
+         * 显示地区areaBlock
+         */
+        function showSearchArea() {
+            $timeout(function () {
+                $scope.searchArea = true;
+                changeTopSearchWidth();
+            }, 0);
+        }
+
+        /**
+         * 隐藏地区areaBlock
+         */
+        function hideSearchArea() {
+            $timeout(function () {
+                $scope.searchArea = false;
+                changeTopSearchWidth();
+            }, 0);
+        }
+
+        /**
+         * 变换topSearchLeft,topSearchCenter 宽度
+         */
+        function changeTopSearchWidth() {
+            var searchLeftDom = document.getElementById('topSearchLeft');
+            searchLeftDom = angular.element(searchLeftDom);//left
+            var searchCenterDom = document.getElementById('topSearchCenter');
+            searchCenterDom = angular.element(searchCenterDom);//center
+
+            if ($scope.searchArea) {
+                searchLeftDom.css({
+                    width: '25%'
+                });
+
+                searchCenterDom.css({
+                    width: '44%'
+                });
+            } else {
+                searchLeftDom.css({
+                    width: '10%'
+                });
+
+                searchCenterDom.css({
+                    width: '79%'
+                });
+
+            }
+
+
+        }
 
     }
+
+
+})();
+
+/**
+ * 命名注释：directive简称_shaiXuan. 父模块_block. 功能_筛选block,类型_directive .js
+ * 使用 ：<div sub-from></div>
+ */
+(function () {
+    'use strict';
+    angular.module('block').directive('shaiXuan', shaiXuan);
+
+    function shaiXuan() {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/block/shaiXuan.block.shaiXuan.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', '$state', 'tools'];
+
+    function thisController($scope, $rootScope, $timeout, localData, $state, tools) {
+        $scope.shaiXuanList = '';//筛选list data
+        $scope.clickThis = clickThis;//筛选点击事件
+        $scope.needShaiXuan = false;//是否需要筛选面板
+        var tempDownCount = 0;// 判断下滑的时候,连续获取到 2 次,下滑事件,再去显示 下拉
+        var clcikSaiXuanArr = [];//点击筛选数组
+        $scope.thisCity = '';//获取城市缓存数据
+        $scope.$on('showShaiXuan', showShaiXuan);//监听显示筛选
+
+        $scope.$on('changeArea', giveThisCity);//监听地址变换事件
+
+        $scope.$on('changeBody', function () {
+            init();
+        });
+
+        // init();
+        function init() {
+            //判断是否需要筛选,需要的话,回调
+            if (trueNeedShaiXuan()) {
+                $scope.needShaiXuan = true;
+                _getClickSaiXuanDb();//获取筛选数组
+                getList();
+            } else {
+                $scope.needShaiXuan = false;
+            }
+
+            $timeout(function () {
+                watchSwipe();//监听上滑动,下滑动
+            }, 0);
+
+            giveThisCity();
+
+        }
+
+        /**
+         * 监听显示筛选
+         */
+        function showShaiXuan() {
+            $timeout(function () {
+                $scope.needShaiXuan = true;
+            }, 0);
+        }
+
+        /**
+         * 监听list 上滑动,下滑动
+         */
+        function watchSwipe() {
+            mui.plusReady(function () {
+                try {
+                    var listDom = document.getElementById('viewContent');
+                    listDom.addEventListener('drag', _swipeDown);
+                    listDom.addEventListener('dragstart', _swipeStart);
+                } catch (e) {
+                    console.log('无viewContent');
+                }
+
+                function _swipeDown(e) {
+                    var top = listDom.getBoundingClientRect().top;
+                    var state = e.detail.direction;
+                    if (state == 'up') {//向下滑动的时候
+                        tempDownCount = 0;
+                        if ($scope.needShaiXuan && (top < 93)) {//如果是 显示状态.,并且 小于 94就证明移动了,
+                            $timeout(function () {
+                                $scope.needShaiXuan = false;//就关闭
+                                $rootScope.$broadcast('hideHeader');
+                            }, 0);
+                        }
+                    } else if (state == 'down') {//向上滑动的时候
+                        if (!$scope.needShaiXuan || (top >= -57)) {//如果是 关闭状态,就打开
+                            if (top >= -57) {
+                                $timeout(function () {
+                                    $scope.needShaiXuan = true;//就打开
+                                    $rootScope.$broadcast('showHeader');
+                                }, 0);
+                            } else if (tempDownCount >= 3) {
+                                $timeout(function () {
+                                    $scope.needShaiXuan = true;//就打开
+                                    $rootScope.$broadcast('showHeader');
+                                    tempDownCount = 0;
+                                }, 0);
+                            }
+
+                        }
+                    }
+                }
+
+                function _swipeStart(e) {
+                    var state = e.detail.direction;
+                    if (state == 'up') {//向下滑动的时候
+                        tempDownCount = 0;
+                    }
+                    else if (state == 'down') {//向上滑动的时候
+                        tempDownCount++;
+                    }
+                }
+
+                function _swipeEnd(e) {
+                    $timeout(function () {
+                        var top = listDom.getBoundingClientRect().top;
+                        var state = e.detail.direction;
+                        if (state == 'down') {//向上滑动的时候
+                            if (top >= -57) {
+                                $timeout(function () {
+                                    $scope.needShaiXuan = true;//就打开
+                                    $rootScope.$broadcast('showHeader');
+                                    tempDownCount = 0;
+                                });
+                            }
+
+                        }
+                    }, 200);
+                }
+
+            });
+        }
+
+        /**
+         * 判断是否需要筛选,需要的话,回调
+         */
+        function trueNeedShaiXuan() {
+            switch ($state.current.name) {
+                case 'home':
+                    return true;
+                case 'need':
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /**
+         * 给筛选赋值
+         */
+        function getList() {
+            $timeout(function () {
+                var url = $state.current.url;
+                var list = localData.shaiXuan(url);
+                angular.forEach(list, function (vo, index) {
+                    vo.thisName = vo[0].name;
+                    vo.thisId = vo[0].id;
+                    vo.type = vo[0].type;
+                    if (clcikSaiXuanArr.indexOf(vo[0].id) == -1) {
+                        vo.shaiXuanGaoLiang = '';//不在记录数组,就不给高亮
+                    } else {
+                        vo.shaiXuanGaoLiang = 'shaiXuanGaoLiang';//在记录数组里面,给高亮
+                    }
+
+                    if (vo.type == 'six') {
+                        vo.shaiXuanGaoLiang = 'shaiXuanGaoLiang';//在记录数组里面,给高亮
+                    }
+
+                    bindClickId(index, vo.thisId);
+                });
+                $scope.shaiXuanList = list;
+            }, 0);
+        }
+
+        /**
+         * 获取筛选数组
+         * @private
+         */
+        function _getClickSaiXuanDb() {
+            var clcikSaiXuanArrTemp = tools.getLocalStorageObj('clickShaiXuan');
+            if (clcikSaiXuanArrTemp) {
+                clcikSaiXuanArr = clcikSaiXuanArrTemp;
+            }
+        }
+
+        /**
+         * bind 筛选点击 dom
+         */
+        function bindClickId(index) {
+            $timeout(function () {
+                var idStr = "shaiXuanClick_" + index;
+                try {
+                    // var idClickDom = document.getElementById(idStr);
+
+                    tools.bindClick(idStr, function (dom) {
+                        var thisId = dom.getAttribute('thisid');
+                        clickThis(index, thisId);
+                    });
+
+                    // idClickDom.addEventListener('tap', function () {
+                    //     var thisId = idClickDom.getAttribute('thisid');
+                    //     clickThis(index, thisId);
+                    // });
+
+
+                } catch (e) {
+                    console.log('id不存在');
+                }
+            }, 0);
+        }
+
+
+        /**
+         * 筛选点击事件,传入 index
+         * @param index
+         */
+        function clickThis(index, thisId) {
+            angular.forEach($scope.shaiXuanList[index], function (vo, index2) {
+                var long = $scope.shaiXuanList[index].length;
+                var getIndex;
+                if (vo.id == thisId) {
+                    if ((index2 + 1) == long) {
+                        getIndex = 0;
+                    } else {
+                        getIndex = index2 + 1;
+                    }
+
+                    $timeout(function () {
+                        $scope.shaiXuanList[index].thisName = $scope.shaiXuanList[index][getIndex].name;
+                        $scope.shaiXuanList[index].thisId = $scope.shaiXuanList[index][getIndex].id;
+                        if ($scope.shaiXuanList[index].shaiXuanGaoLiang == 'shaiXuanGaoLiang') {
+                            $scope.shaiXuanList[index].shaiXuanGaoLiang = '';
+
+                            var tempIndex = clcikSaiXuanArr.indexOf($scope.shaiXuanList[index].thisId);
+                            if (tempIndex != -1) {
+                                clcikSaiXuanArr.splice(tempIndex, 1);
+                                tools.saveLocalStorageObj('clickShaiXuan', clcikSaiXuanArr);//存储本地数据库
+                            }
+                        } else {
+                            var type = $scope.shaiXuanList[index][0].type;
+                            angular.forEach($scope.shaiXuanList, function (vo, index2) {
+                                if (vo[0].type == type) {
+                                    $scope.shaiXuanList[index2].shaiXuanGaoLiang = '';
+                                    var tempIndex = clcikSaiXuanArr.indexOf(vo[0].id);
+                                    if (tempIndex != -1) {
+                                        clcikSaiXuanArr.splice(tempIndex, 1);
+                                    }
+                                }
+                            });
+                            $scope.shaiXuanList[index].shaiXuanGaoLiang = 'shaiXuanGaoLiang';
+                            clcikSaiXuanArr.push($scope.shaiXuanList[index].thisId);
+                            tools.saveLocalStorageObj('clickShaiXuan', clcikSaiXuanArr);//存储本地数据库
+                        }
+
+                        if ($scope.shaiXuanList[index].type == 'six') {//如果是 全国筛选点击事件
+                            $scope.shaiXuanList[index].shaiXuanGaoLiang = 'shaiXuanGaoLiang';
+                            $rootScope.$broadcast('showArea');//激活地址选择directive
+                        }
+
+                        $rootScope.$broadcast('getSelectDown');//去筛选 请求数据
+
+                    }, 0);
+                }
+            });
+        }
+
+        /**
+         * 获取城市
+         */
+
+        function giveThisCity() {
+            var area = tools.getLocalStorageObj('area');
+            $timeout(function () {
+                try {
+                    $scope.thisCity = area.city.city;
+                } catch (e) {
+                    $scope.thisCity = '全国';
+                }
+            }, 0);
+        }
+    }
+
+})();
+/**
+ * 命名注释：directive简称_subFrom. 父模块_block. 功能_发布需求,技能按钮面板 类型_directive .js
+ * 使用 ：<div sub-from></div>
+ */
+(function () {
+    'use strict';
+    angular.module('block').directive('subFrom', subFrom);
+
+    function subFrom() {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/block/subFrom.block.addFrom.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
+
+    function thisController($scope, $rootScope, $timeout, localData) {
+        $scope.show = false;//显示按钮面板
+        $scope.$on('showAddFrom', function () {
+            $timeout(function () {
+                if ($scope.show) {//关闭
+                    $scope.show = false;
+                } else {//显示
+                    $scope.show = true;
+                }
+            }, 0);
+        });
+        $scope.$on('closeAddFrom', function () {
+            $timeout(function () {
+                $scope.show = false;
+            }, 0);
+        });
+    }
+
 })();
 /**
  * 命名注释：directive简称_tab. 父模块_block. 功能_顶部tan导航 类型_directive .js
@@ -4711,6 +2453,62 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
 
     function thisController($scope, $rootScope, $timeout, localData) {
+        var isShowHeader = false;//判断当前页面是否需要 变换tab样式
+        $scope.tabStyle = {};
+
+        $scope.$on('isShowHeader', function (e, val) {
+            isShowHeader = val;
+            var border = '#f4f4f4';
+            $timeout(function () {
+                var tempTop;
+                if (isShowHeader) {
+                    tempTop = '50px';
+                    changeViewContent('44px');
+                } else {
+                    tempTop = '0px';
+                    border = '#bababa';
+                    changeViewContent('0px');
+                }
+                $scope.tabStyle = {
+                    'top': tempTop,
+                    'border-bottom-color': border
+                };
+            }, 0);
+        });
+
+        $scope.$on('showHeader', function () {
+            if (isShowHeader) {
+                $timeout(function () {
+                    $scope.tabStyle = {
+                        'top': '50px',
+                        'border-bottom-color': '#f4f4f4'
+                    };
+                }, 0);
+            }
+        });
+
+        $scope.$on('hideHeader', function () {
+            if (isShowHeader) {
+                $timeout(function () {
+                    $scope.tabStyle = {
+                        'top': '0px',
+                        'border-bottom-color': '#bababa'
+                    };
+                }, 0);
+            }
+        });
+
+        /**
+         * 变换ViewContent的 位置
+         */
+        function changeViewContent(px) {
+            var viewContent = document.getElementById('viewContent');
+            viewContent = angular.element(viewContent);
+            viewContent.css({
+                'margin-top': px
+            });
+        }
+
     }
 
 })();
@@ -4735,11 +2533,1663 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', '$state'];
 
-    function thisController($scope, $rootScope, $timeout, localData) {
+    function thisController($scope, $rootScope, $timeout, localData, $state) {
+
+        var isShowHeader = false;//声明当前页面是否需要显示header
+        $scope.titleText = '';
+        $scope.headerShow = false;//显示 header
+        $scope.delSearch = false;//删除搜索按钮 显示
+        $scope.searchPlace = '';//搜索的 place
+        $scope.search = '';//搜索模型
+        $scope.searchIcon = false;//search图标显示
+        $scope.topSearch = false;//search input Div
+        $scope.searchLeftArea = false;//search 左侧 地区搜索 directive
+        $scope.showCancel = false;//取消搜索按钮显示
+        $scope.cancelClick = cancelClick;//取消按钮点击事件
+        $scope.focusSearch = focusSearch;//search焦点事件
+        $scope.blurSearch = blurSearch;//search失去焦点事件
+        $scope.$on('blurSearch', blurSearch);//监听让搜素事情焦点
+        $scope.$on('hideHeader', function (e, gold) {
+            if (gold) {//如果是全局穿过来的 隐藏header事件,
+                isShowHeader = false;
+            }
+            if (!isShowHeader) {
+                $rootScope.$broadcast('isShowHeader', false);//广播 tab 设置是否需要 变换tab样式
+            }
+            $timeout(function () {
+                $scope.headerShow = false;  //关闭header
+            }, 0);
+            hideHeader();
+        });
+        $scope.$on('showHeader', function (e, gold) {
+            cancelClick();//取消按钮点击事件,先还原顶部 搜索按钮
+            if (gold) {//如果是全局穿过来的 显示header事件,
+                isShowHeader = true;
+                $rootScope.$broadcast('isShowHeader', true);//广播 tab 设置是否需要 变换tab样式
+            }
+            if (isShowHeader) {
+                $rootScope.$broadcast('isShowHeader', true);//广播 tab 设置是否需要 变换tab样式
+            }
+            if (isShowHeader) {//如果当前页面需要显示header,再去显示header
+                $timeout(function () {
+                    $scope.headerShow = true;  //关闭header
+                    showHeader();
+                }, 0);
+            }
+        });
+        $scope.$on('changeBody', changeTitleText);
+        $scope.$on('focusSearch', focusSearch);
+        $scope.$on('cancelClick', cancelClick);//监听取消点击事件
+
+        //topSearch 显示隐藏监听事件
+        $scope.$on('showTopSearch', showTopSearch);
+        $scope.$on('hideTopSearch', hideTopSearch);
+
+        //watch search
+        $scope.$watch('search', changeSearch);
+
+        //监听外部传来的关键词赋值
+        $scope.$on('giveSearch', giveSearch);
+
+        init();
+        function init() {
+            bindDelSearchBtn();//绑定删除按钮点击事件
+            bindCancelBtn();//绑定取消按钮点击事件
+        }
+
+
+        /**
+         * getTitle 获取主标题   "分类"
+         * @param {网址}url
+         * @returns {*}
+         * @private
+         */
+        function changeTitleText() {
+            $timeout(function () {
+                var url = $state;
+                _getTitle(url.current.url);
+            }, 0);
+
+            function _getTitle(url) {
+                switch (url) {
+                    case '/home':
+                        $timeout(function () {
+                            $scope.titleText = '';
+                        }, 0);
+                        break;
+                    case '/need':
+                        $timeout(function () {
+                            $scope.titleText = '';
+                        }, 0);
+                        break;
+                    case '/star':
+                        $timeout(function () {
+                            $scope.titleText = '';
+                        }, 0);
+                        break;
+                    case '/login':
+                        $timeout(function () {
+                            $scope.titleText = '';
+                        }, 0);
+                        break;
+                    case '/area':
+                        $timeout(function () {
+                            $scope.titleText = '';
+                        }, 0);
+                        break;
+                    case '/search':
+                        $timeout(function () {
+                            $scope.titleText = '';
+                        }, 0);
+                        break;
+                    case '/setting':
+                        $timeout(function () {
+                            $scope.titleText = '';
+                        }, 0);
+                        break;
+                    default:
+                        $timeout(function () {
+                            $scope.titleText = '';
+                        }, 0);
+                        return false;
+                }
+            }
+
+        }
+
+        /**
+         * changeSearch search模型变化的响应事件
+         */
+        function changeSearch(e) {
+            if (e) {
+                showDelSearch();//显示删除按钮
+            } else {
+                hideDelSearch();//隐藏删除按钮
+            }
+
+            //获取联想搜索
+            $rootScope.$broadcast('getKeyList', e);
+            //给titleInfo 数据
+            $rootScope.$broadcast('changeTitleInfo', e);
+            //去搜索数据
+            $rootScope.$broadcast('getSelectDown', e);
+
+        }
+
+        /**
+         *search 焦点事件
+         */
+        function focusSearch() {
+            showHeader();
+            $timeout(function () {
+                $scope.topSearch = true;//显示inputDiv
+                $scope.searchPlace = '技能';
+                $scope.showCancel = true;//显示取消按钮
+                // $scope.search = '';
+                $timeout(function () {
+                    document.getElementById('searchTop').focus();
+                }, 400);
+            }, 0);
+            $rootScope.$broadcast('showSearchArea');//显示地区选择面板
+            $rootScope.$broadcast('showLianXianShow');//显示联想选择面板
+            $rootScope.$broadcast('getKeyList', '');//默认去取热门关键词,不传key,就是热门
+            hideSearchIcon();//隐藏搜索icon
+        }
+
+        /**
+         * search 失去焦点事件
+         */
+        function blurSearch() {
+            $timeout(function () {
+                $scope.searchPlace = '技能';
+            }, 0);
+
+            if (!$scope.showCancel) {
+                $rootScope.$broadcast('hideSearchArea');//隐藏地区选择面板
+                showSearchIcon();//显示搜索icon
+            }
+            $rootScope.$broadcast('hideLianXianShow');//显示联想选择面板
+        }
+
+        /**
+         * show delSearch
+         */
+        function showDelSearch() {
+            $timeout(function () {
+                $scope.delSearch = true;
+            }, 0);
+        }
+
+        /**
+         * hide delSearch
+         */
+        function hideDelSearch() {
+            $timeout(function () {
+                $scope.delSearch = false;
+            }, 0);
+        }
+
+        /**
+         *bindDelSearchBtn();//绑定删除按钮点击事件
+         */
+        function bindDelSearchBtn() {
+            var delDom = document.getElementById('topSearchRight');
+            if (!delDom) {
+                return false;
+            }
+            delDom.addEventListener('tap', function () {
+                $timeout(function () {
+                    $scope.search = '';
+                    $timeout(function () {
+                        document.getElementById('searchTop').focus();
+                    }, 0);
+                }, 0);
+            });
+        }
+
+        /**
+         *$scope.searchIcon = true;//search图标显示
+         */
+        function showSearchIcon() {
+            $timeout(function () {
+                $scope.searchIcon = true;//search图标显示
+            }, 0);
+        }
+
+        /**
+         *$scope.searchIcon = false;//search图标隐藏
+         */
+        function hideSearchIcon() {
+            $timeout(function () {
+                $scope.searchIcon = false;//search图标显示
+            }, 0);
+        }
+
+        /**
+         * cancelClick 取消按钮点击事件
+         */
+        function cancelClick() {
+            hideHeader();
+            $timeout(function () {
+                // $scope.search = '';
+                $scope.showCancel = false;
+                $scope.topSearch = false;//隐藏inputDiv
+                $rootScope.$broadcast('hideSearchArea');//隐藏地区选择面板
+                $rootScope.$broadcast('showHiSearchBtn');//显示h1搜索btn
+                showSearchIcon();//显示搜索icon
+            }, 0);
+        }
+
+        /**
+         * bindCancelBtn 绑定取消按钮点击事件
+         */
+        function bindCancelBtn() {
+            try {
+                document.getElementById('cancel').addEventListener('tap', function () {
+                    cancelClick();
+                });
+            } catch (e) {
+                console.log('no cancel dom');
+            }
+        }
+
+        /**
+         * 显示topSearch
+         */
+        function showTopSearch() {
+            $timeout(function () {
+                $scope.topSearch = true;
+            }, 0);
+            showHeader();
+        }
+
+        /**
+         * 隐藏topSearch
+         */
+        function hideTopSearch() {
+            $timeout(function () {
+                $scope.topSearch = false;
+            }, 0);
+            hideHeader();
+        }
+
+        /**
+         * 给 search 赋值 giveSearch
+         */
+        function giveSearch(v, key) {
+            $timeout(function () {
+                $scope.search = key;
+            }, 0);
+        }
+
+        /**显示header
+         */
+        function showHeader() {
+            var allHeaderDom = document.getElementById('allHeader');
+            allHeaderDom.style.display = 'block';
+            $timeout(function () {
+                $scope.headerShow = true;  //打开header
+            }, 0);
+            try {
+                var tabDom = document.getElementById('tab');
+                var viewContent = document.getElementById('viewContent');
+                tabDom.style.top = '50px';
+                viewContent.style.marginTop = '50px';
+            } catch (e) {
+                return false;
+            }
+        }
+
+        /**隐藏header
+         */
+        function hideHeader() {
+            if ($state.current.name == 'home') {
+                try {
+                    var allHeaderDom = document.getElementById('allHeader');
+                    var tabDom = document.getElementById('tab');
+                    var viewContent = document.getElementById('viewContent');
+                    $timeout(function () {
+                        $scope.headerShow = false;  //关闭header
+                        allHeaderDom.style.display = 'none';
+                        tabDom.style.top = '0px';
+                        viewContent.style.marginTop = '0px';
+                    }, 0);
+
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
     }
 
+
+})();
+
+/**
+ * 命名注释：directive简称_commend. 父模块_from. 功能_推荐技能联想 类型_directive .js
+ * 使用 ：<div commend></div>
+ */
+(function () {
+    'use strict';
+    angular.module('from').directive('commend', commend);
+    function commend() {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/from/commend.from.commend.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'config', '$state'];
+
+    function thisController($scope, $rootScope, $timeout, tools, config, $state) {
+        $scope.commendShow = false;//推荐技能div显示
+        $scope.$on('showCommendShow', showCommendShow);//监听显示推荐技能
+        $scope.$on('hideCommendShow', hideCommendShow);//监听隐藏推荐技能
+
+        $scope.list = '';
+
+        init();
+        function init() {
+            bindChangeOneChange();//绑定换一换点击事件,打看推荐面板,title焦点
+        }
+
+        /**
+         * 显示推荐技能
+         */
+        function showCommendShow() {
+            $timeout(function () {
+                $scope.commendShow = true;
+            }, 0);
+            getList();
+        }
+
+        /**
+         * 隐藏推荐技能
+         */
+        function hideCommendShow() {
+            $timeout(function () {
+                $scope.commendShow = false;
+            }, 0);
+        }
+
+        /**
+         * api取随机推荐技能关键词
+         */
+        function getList() {
+            var url = config.host.nodeHost + '/key/commendKey';
+            tools.postJsp(url, {}, true).then(_res);
+            function _res(re) {
+                $timeout(function () {
+                    if (re.data && re.data.doc && re.data.code == "S") {
+                        $scope.list = re.data.doc;
+                        $timeout(function () {
+                            bindCommendClick();
+                        }, 0);
+                    }
+                }, 0);
+            }
+        }
+
+        /**
+         * 换一换 点击事件
+         */
+        function bindChangeOneChange() {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+                type = 'tap';
+            });
+            document.getElementById('changOneChange').addEventListener(type, _click);
+            function _click() {
+                showCommendShow();
+                $rootScope.$broadcast('fromTitleFoucs');
+            }
+        }
+
+
+        /**
+         * bind 推荐技能列表点击事件
+         */
+        function bindCommendClick() {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+                type = 'tap';
+            });
+            angular.forEach($scope.list, function (vo) {
+                document.getElementById('comList_' + vo._id).addEventListener(type, function () {
+                    clickCommendKey(vo);
+                });
+            });
+        }
+
+        /**
+         * 技能列表点击事件
+         */
+        function clickCommendKey(vo) {//广播frome.title
+            $rootScope.$broadcast('giveFromTitle', vo.title);
+        }
+
+    }
+})();
+
+/**
+ * 命名注释：directive简称_editUserHeaderUp. 父模块_from. 功能_头像图片上传 类型_directive .js
+ * 使用 ：<div edit-user-header-up></div>
+ */
+(function () {
+    'use strict';
+    angular.module('from').directive('editUserHeaderUp', editUserHeaderUp);
+    function editUserHeaderUp() {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/from/editUserHeaderUp.from.editUserHeaderUp.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'config', '$state', 'header'];
+
+    function thisController($scope, $rootScope, $timeout, tools, config, $state, header) {
+
+
+        $scope.upImg1 = false;
+        $scope.img1 = '';
+        var clickArr = ['editUpImgClick1'];
+        init();
+
+        function init() {
+            forBind();
+            giveDefaultImg();//给默认头像
+        }
+
+        /**
+         * 给默认头像
+         */
+        function giveDefaultImg() {
+            var userData = tools.getLocalStorageObj('userData');
+            if (userData.headerImg) {
+                $timeout(function () {
+                    $scope.img1 = userData.headerImg;
+                }, 0);
+            } else {
+                $timeout(function () {
+                    $scope.img1 = header.defaultHeader;
+                }, 0);
+            }
+        }
+
+        function forBind() {
+            angular.forEach(clickArr, function (vo) {
+                bindImgClick(vo);
+            });
+        }
+
+        function bindImgClick(voId) {
+            document.getElementById(voId).addEventListener('tap', function () {
+                var thisImgId = voId.replace('editUpImgClick', '');
+                if (mui.os.plus) {
+                    var a = [
+                        {
+                            title: "拍照"
+                        }, {
+                            title: "从手机相册选择"
+                        }
+                    ];
+
+                    if ($scope['img' + thisImgId]) {
+                        a = [
+                            {
+                                title: "拍照"
+                            }, {
+                                title: "从手机相册选择"
+                            },
+                        ];
+                    }
+
+
+                    plus.nativeUI.actionSheet({
+                        title: "修改头像",
+                        cancel: "取消",
+                        buttons: a
+                    }, function (b) { /*actionSheet 按钮点击事件*/
+                        switch (b.index) {
+                            case 0:
+                                break;
+                            case 1:
+                                getImage(voId);
+                                /*拍照*/
+                                break;
+                            case 2:
+                                galleryImg(voId);
+                                /*打开相册*/
+                                break;
+                            default:
+                                break;
+                        }
+                    });
+                } else {
+                    tools.trueWeb(function () {
+                        alert('请下载手机app修改头像');
+                    }, function () {
+                        tools.alert({title: '您的设备不支持修改头像功能'});
+                    });
+                }
+            }, false);
+        }
+
+        //拍照
+        function getImage(voId) {
+            var c = plus.camera.getCamera();
+            c.captureImage(function (e) {
+                plus.io.resolveLocalFileSystemURL(e, function (entry) {
+                    var s = entry.toLocalURL() + "?version=" + new Date().getTime();
+                    uploadHead(s, voId);
+                    /*上传图片*/
+                }, function (e) {
+                    console.log("读取拍照文件错误：" + e.message);
+                });
+            }, function (s) {
+                console.log("error" + s);
+            }, {
+                filename: "_doc/edithead_" + voId + ".png"
+            });
+        }
+
+        //本地相册选择
+        function galleryImg(voId) {
+            plus.gallery.pick(function (a) {
+                plus.io.resolveLocalFileSystemURL(a, function (entry) {
+                    plus.io.resolveLocalFileSystemURL("_doc/", function (root) {
+                        root.getFile("edithead_" + voId + ".png", {}, function (file) {
+                            //文件已存在
+                            file.remove(function () {
+                                console.log("file remove success");
+                                entry.copyTo(root, 'edithead_' + voId + '.png', function (e) {
+                                        var ee = e.fullPath + "?version=" + new Date().getTime();
+                                        uploadHead(ee, voId);
+                                        /*上传图片*/
+                                        //变更大图预览的src
+                                        //目前仅有一张图片，暂时如此处理，后续需要通过标准组件实现
+                                    },
+                                    function (e) {
+                                        console.log('copy image fail:' + e.message);
+                                    });
+                            }, function (e) {
+                                console.log("delete image fail:" + e.message);
+                            });
+                        }, function () {
+                            //文件不存在
+                            var fielName = 'edithead_' + voId + '.png';
+                            entry.copyTo(root, fielName, function (eee) {
+                                    var path = eee.fullPath + "?version=" + new Date().getTime();
+                                    uploadHead(path, voId);
+                                    /*上传图片*/
+                                },
+                                function (e) {
+                                    console.log('copy image fail:' + e.message);
+                                });
+                        });
+                    }, function (e) {
+                        console.log("get _www folder fail");
+                    });
+                }, function (e) {
+                    console.log("读取拍照文件错误：" + e.message);
+                });
+            }, function (a) {
+            }, {
+                filter: "image"
+            });
+        }
+
+        //上传头像图片
+        function uploadHead(imgPath, voId) {
+            console.log('voId', voId);
+            $timeout(function () {
+                switch (voId) {
+                    case 'editUpImgClick1':
+                        $scope.img1 = imgPath;
+                        break;
+                }
+            }, 0);
+
+            var image = new Image();
+            image.src = imgPath;
+            image.onload = function () {
+                var imgData = getBase64Image(image);
+                apiUpImg(imgData, voId);
+            };
+        }
+
+        //将图片压缩转成base64
+        function getBase64Image(img) {
+            var canvas = document.createElement("canvas");
+            var width = img.width;
+            var height = img.height;
+            // calculate the width and height, constraining the proportions
+            if (width > height) {
+                if (width > 200) {
+                    height = Math.round(height *= 200 / width);
+                    width = 200;
+                }
+            } else {
+                if (height > 200) {
+                    width = Math.round(width *= 200 / height);
+                    height = 200;
+                }
+            }
+            canvas.width = width;
+            /*设置新的图片的宽度*/
+            canvas.height = height;
+            /*设置新的图片的长度*/
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+            /*绘图*/
+            var dataURL = canvas.toDataURL("image/jpeg", 0.8);
+            return dataURL.replace("data:image/png;base64,", "");
+        }
+
+        /**
+         *图片上传到api接口,传 图片,uid,技能表单随机id,头像id
+         */
+        function apiUpImg(imgData, voId) {
+            var postData = {
+                imgData: imgData,
+                uid: tools.getLocalStorageObj('userData').uid,
+            };
+            var url = config.host.nodeHost + '/member/editHeaderImg';
+            tools.postJsp(url, postData, true).then(function (re) {
+                if (re.data.code == 'S') {
+                    console.log('提交服务器成功', re);
+                } else {
+                    console.error('提交服务器失败');
+                }
+            }, function (e) {
+                console.error('提交服务器失败');
+            });
+        }
+    }
+
+})();
+
+/**
+ * 命名注释：directive简称_imgUp. 父模块_from. 功能_技能发布图片上传 类型_directive .js
+ * 使用 ：<div img-up></div>
+ */
+(function () {
+    'use strict';
+    angular.module('from').directive('imgUp', imgUp);
+    function imgUp() {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/from/imgUp.from.imgUp.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'config', '$state'];
+
+    function thisController($scope, $rootScope, $timeout, tools, config, $state) {
+
+        $scope.upImg1 = false;
+        $scope.upImg2 = false;
+        $scope.upImg3 = false;
+        $scope.img1 = '';
+        $scope.img2 = '';
+        $scope.img3 = '';
+        var clickArr = ['upImgClick1', 'upImgClick2', 'upImgClick3'];
+
+        init();
+
+        function init() {
+            forBind();
+        }
+
+        function forBind() {
+            angular.forEach(clickArr, function (vo) {
+                bindImgClick(vo);
+            });
+        }
+
+        function bindImgClick(voId) {
+            document.getElementById(voId).addEventListener('tap', function () {
+                var thisImgId = voId.replace('upImgClick', '');
+
+                if (mui.os.plus) {
+                    var a = [
+                        {
+                            title: "拍照"
+                        }, {
+                            title: "从手机相册选择"
+                        }
+                    ];
+
+                    if ($scope['img' + thisImgId]) {
+                        a = [
+                            {
+                                title: "拍照"
+                            }, {
+                                title: "从手机相册选择"
+                            },
+                            {
+                                title: "删除"
+                            }
+                        ];
+                    }
+
+
+                    plus.nativeUI.actionSheet({
+                        title: "作品图片/靓照",
+                        cancel: "取消",
+                        buttons: a
+                    }, function (b) { /*actionSheet 按钮点击事件*/
+                        switch (b.index) {
+                            case 0:
+                                break;
+                            case 1:
+                                getImage(voId);
+                                /*拍照*/
+                                break;
+                            case 2:
+                                galleryImg(voId);
+                                /*打开相册*/
+                                break;
+                            case 3:
+                                delImg(voId);
+                                /*删除delImg*/
+                                break;
+                            default:
+                                break;
+                        }
+                    });
+                }
+            }, false);
+        }
+
+        //删除
+        function delImg(voId) {
+            console.log('voId', voId);
+            $timeout(function () {
+                switch (voId) {
+                    case 'upImgClick1':
+                        $scope.img1 = false;
+                        break;
+                    case 'upImgClick2':
+                        $scope.img2 = false;
+                        break;
+                    case 'upImgClick3':
+                        $scope.img3 = false;
+                        break;
+                }
+            }, 0);
+            var url = config.host.nodeHost + '/sns/delKillImg';//删除服务器上的图片
+            console.log('url', url);
+            var postData = {
+                killRoundId: tools.getLocalStorageObj('killRoundId'),
+                uid: tools.getLocalStorageObj('userData').uid,
+                voId: voId
+            };
+            tools.postJsp(url, postData, true).then(function (re) {
+                if (re.data.code == 'S') {
+                    console.log('删除服务器图片成功', re.data.msg);
+                } else {
+                    console.log('删除服务器图片失败', re.data.msg);
+                }
+            }, function (e) {
+                console.log('删除服务器图片失败2');
+            });
+        }
+
+        //拍照
+        function getImage(voId) {
+            var c = plus.camera.getCamera();
+            c.captureImage(function (e) {
+                plus.io.resolveLocalFileSystemURL(e, function (entry) {
+                    var s = entry.toLocalURL() + "?version=" + new Date().getTime();
+                    uploadHead(s, voId);
+                    /*上传图片*/
+                }, function (e) {
+                    console.log("读取拍照文件错误：" + e.message);
+                });
+            }, function (s) {
+                console.log("error" + s);
+            }, {
+                filename: "_doc/head_" + voId + ".png"
+            });
+        }
+
+//本地相册选择
+        function galleryImg(voId) {
+            plus.gallery.pick(function (a) {
+                plus.io.resolveLocalFileSystemURL(a, function (entry) {
+                    plus.io.resolveLocalFileSystemURL("_doc/", function (root) {
+                        root.getFile("head_" + voId + ".png", {}, function (file) {
+                            //文件已存在
+                            file.remove(function () {
+                                console.log("file remove success");
+                                entry.copyTo(root, 'head_' + voId + '.png', function (e) {
+                                        var ee = e.fullPath + "?version=" + new Date().getTime();
+                                        uploadHead(ee, voId);
+                                        /*上传图片*/
+                                        //变更大图预览的src
+                                        //目前仅有一张图片，暂时如此处理，后续需要通过标准组件实现
+                                    },
+                                    function (e) {
+                                        console.log('copy image fail:' + e.message);
+                                    });
+                            }, function (e) {
+                                console.log("delete image fail:" + e.message);
+                            });
+                        }, function () {
+                            //文件不存在
+                            var fielName = 'head_' + voId + '.png';
+                            entry.copyTo(root, fielName, function (eee) {
+                                    var path = eee.fullPath + "?version=" + new Date().getTime();
+                                    uploadHead(path, voId);
+                                    /*上传图片*/
+                                },
+                                function (e) {
+                                    console.log('copy image fail:' + e.message);
+                                });
+                        });
+                    }, function (e) {
+                        console.log("get _www folder fail");
+                    });
+                }, function (e) {
+                    console.log("读取拍照文件错误：" + e.message);
+                });
+            }, function (a) {
+            }, {
+                filter: "image"
+            });
+        }
+
+//上传头像图片
+        function uploadHead(imgPath, voId) {
+            console.log('voId', voId);
+            $timeout(function () {
+                switch (voId) {
+                    case 'upImgClick1':
+                        $scope.img1 = imgPath;
+                        break;
+                    case 'upImgClick2':
+                        $scope.img2 = imgPath;
+                        break;
+                    case 'upImgClick3':
+                        $scope.img3 = imgPath;
+                        break;
+                }
+            }, 0);
+            // mainImage.src = imgPath;
+            // mainImage.style.width = "60px";
+            // mainImage.style.height = "60px";
+
+            var image = new Image();
+            image.src = imgPath;
+            image.onload = function () {
+                var imgData = getBase64Image(image);
+                apiUpImg(imgData, voId);
+                // console.log('imgData', imgData);
+                /*在这里调用上传接口*/
+//              mui.ajax("图片上传接口", {
+//                  data: {
+//
+//                  },
+//                  dataType: 'json',
+//                  type: 'post',
+//                  timeout: 10000,
+//                  success: function(data) {
+//                      console.log('上传成功');
+//                  },
+//                  error: function(xhr, type, errorThrown) {
+//                      mui.toast('网络异常，请稍后再试！');
+//                  }
+//              });
+            };
+        }
+
+        //将图片压缩转成base64
+        function getBase64Image(img) {
+            var canvas = document.createElement("canvas");
+            var width = img.width;
+            var height = img.height;
+            // calculate the width and height, constraining the proportions
+            if (width > height) {
+                if (width > 350) {
+                    height = Math.round(height *= 350 / width);
+                    width = 350;
+                }
+            } else {
+                if (height > 350) {
+                    width = Math.round(width *= 350 / height);
+                    height = 350;
+                }
+            }
+            canvas.width = width;
+            /*设置新的图片的宽度*/
+            canvas.height = height;
+            /*设置新的图片的长度*/
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+            /*绘图*/
+            var dataURL = canvas.toDataURL("image/jpeg", 0.9);
+            return dataURL.replace("data:image/png;base64,", "");
+        }
+
+
+        /**
+         *图片上传到api接口,传 图片,uid,技能表单随机id,头像id
+         */
+        function apiUpImg(imgData, voId) {
+            var postData = {
+                imgData: imgData,
+                uid: tools.getLocalStorageObj('userData').uid,
+                killRoundId: tools.getLocalStorageObj('killRoundId'),
+                voId: voId
+            };
+            var url = config.host.nodeHost + '/sns/addKillImg';
+            tools.postJsp(url, postData, true).then(function (re) {
+                if (re.data.code == 'S') {
+                    console.log('提交服务器成功', re);
+                } else {
+                    tools.alert({
+                        title: '图片提交服务器失败'
+                    });
+                }
+            }, function (e) {
+                tools.alert({
+                    title: '图片提交服务器失败'
+                });
+            });
+        }
+    }
+
+})();
+
+/**
+ * 命名注释：directive简称_need. 父模块_from. 功能_需求发布 类型_directive .js
+ * 使用 ：<div need></div>
+ */
+(function () {
+    'use strict';
+    angular.module('from').directive('need', need);
+    function need() {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/from/need.from.needFrom.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'config', '$state'];
+
+    function thisController($scope, $rootScope, $timeout, tools, config, $state) {
+
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');
+            $rootScope.$broadcast('closeAddFrom');//关闭底部发布需求技能面板
+            $rootScope.$broadcast('closeLoading');//关闭loading
+            init();
+        });
+        $scope.city = '不限';
+        $scope.$on('changeArea', giveThisCity);//监听地址变换事件
+
+        $scope.from = {
+            title: '',//技能标题
+            price: '',//价格
+            service: '',//服务方式
+            cityBuXian: false,//城市选择不限变量
+        };
+        $scope.titleFocus = titleFocus;//当title焦点的事件
+        $scope.titleBlur = titleBlur;//当title失去焦点的事件
+        var watchTitleCount = 0;//默认第一次不弹出联想
+        $scope.$watch('from.title', watchTitle);//watch title, title为空的时候显示推荐技能div
+        $scope.$on('fromTitleFoucs', focusTitle);//监听广播 使title焦点
+        $scope.$on('giveFromTitle', giveFromTitle);//监听改变title值
+        $scope.priceDisabled = false;//价格禁止输入,如果选择面议,就禁止
+
+        var radioArr = {//radio 数组
+            needRadio1: ['1小时', '1次', '1单', '面议'],
+            needRadio2: ['3天', '1周', '1个月'],//有效期
+            needRadio3: ['不限', '线上', '线下'],//服务方式
+        };
+
+        function init() {
+            hideBottomNav();//隐藏底部导航
+            giveThisCity();//给默认城市
+            bindCityClick();//bind 城市按钮click事件
+            bindRadio();//bind radio
+            bindSub();//bind 发布按钮点击事件
+            creatNeedRoundId();//生成随机需求表单id
+            bindCityBuXian();//bind city 不限点击事件
+        }
+
+        /**
+         * bind city 不限点击事件
+         */
+        function bindCityBuXian() {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+            });
+            var dom = document.getElementById('needBuXian');
+            dom.addEventListener(type, _click);
+            function _click() {
+                $scope.from.cityBuXian = true;
+                dom.style.borderColor = '#ccc';
+                document.getElementById('fromCityClickNeed').style.borderColor = '#fff';
+            }
+        }
+
+        /**
+         * 改变title值
+         */
+        function giveFromTitle(e, v) {
+            $timeout(function () {
+                $scope.from.title = v;
+            }, 0);
+        }
+
+        /**
+         * 生成随机需求表单id
+         */
+        function creatNeedRoundId() {
+            var roundCode = tools.getRoundCode(8);
+            tools.saveLocalStorageObj('needRoundId', 'needRoundId_' + roundCode);
+        }
+
+        /**
+         * 隐藏底部导航
+         */
+        function hideBottomNav() {
+            $timeout(function () {
+                var dom = document.getElementById('bottomNav');
+                dom.style.display = "none";
+            }, 0);
+        }
+
+        /**
+         * 给默认城市
+         */
+        function giveThisCity() {
+            var area = tools.getLocalStorageObj('area');
+            $timeout(function () {
+                try {
+                    $scope.city = area.city.city;
+                } catch (e) {
+                    $scope.city = '全国';
+                }
+            }, 0);
+        }
+
+        /**
+         * bind 城市按钮click事件
+         */
+        function bindCityClick() {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+            });
+            document.getElementById('fromCityClickNeed').addEventListener(type, _bind);
+            function _bind(dom) {
+                $scope.from.cityBuXian = false;
+                document.getElementById('needBuXian').style.borderColor = '#fff';
+                dom.target.style.borderColor = '#ccc';
+                $rootScope.$broadcast('showArea', 'noFujin');
+            }
+        }
+
+        /**
+         * title 焦点事件
+         */
+        function titleFocus() {
+            watchTitle();
+        }
+
+        /**
+         * title blur 失去焦点事件
+         */
+        function titleBlur() {
+            $rootScope.$broadcast('hideCommendShow');
+        }
+
+        /**
+         * watch title
+         */
+        function watchTitle() {
+            watchTitleCount++;
+            if (watchTitleCount > 1) {
+                if ($scope.from.title === '') {
+                    $rootScope.$broadcast('showCommendShow');
+                } else {
+                    $rootScope.$broadcast('hideCommendShow');
+                }
+            }
+        }
+
+        /**
+         * 使title焦点
+         * document.getElementById("inputId").focus();
+         */
+        function focusTitle() {
+            $timeout(function () {
+                document.getElementById("fromTitleNeed").focus();
+            }, 0);
+        }
+
+        /**
+         * bind radio 点击
+         */
+        function bindRadio() {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+                type = 'tap';
+            });
+            angular.forEach(radioArr, function (vo, index1) {
+                angular.forEach(vo, function (vo1, index2) {
+                    var domId = index1 + '_' + index2;
+                    document.getElementById(domId).addEventListener(type, clickRadio);
+                });
+            });
+            function clickRadio(dom) {
+                var idS = dom.target.id;
+                if (idS == 'needRadio1_3') {//面议
+                    $timeout(function () {
+                        $scope.from.price = '';
+                        $scope.priceDisabled = true;
+                    }, 0);
+                } else if ((idS == 'needRadio1_0') || (idS == 'needRadio1_1') || (idS == 'needRadio1_2')) {
+                    $timeout(function () {
+                        $scope.priceDisabled = false;
+                    }, 0);
+                }
+                idS = idS.split('_');
+                tools.saveLocalStorageObj(idS[0], idS[1]);//记录到本地缓存 radio1 : 0
+                idS = idS[0];
+                angular.forEach(radioArr[idS], function (vo, index) {
+                    document.getElementById(idS + '_' + index).style.borderColor = '#fff';
+                });
+                dom.target.style.borderColor = '#ccc';
+            }
+        }
+
+        /**
+         * bindSub ,技能发布提交按钮点击事件
+         */
+        function bindSub() {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+            });
+            document.getElementById('subNeed').addEventListener(type, _sub);
+            function _sub() {
+                var cityCode = _getCityCode();
+                var postData = {};
+                postData.uid = tools.getLocalStorageObj('userData').uid;//uid
+                postData.needRoundId = tools.getLocalStorageObj('needRoundId');//需求随机提交的生成的id
+                postData.title = $scope.from.title;//需求标题
+                postData.content = $scope.from.content;//需求介绍
+                postData.price = $scope.from.price;//价格
+                postData.cityBuXian = $scope.from.cityBuXian;//city 不限
+                postData.priceUnit = getDefault('priceUnit');//价格单位
+                postData.endTime = getDefault('endTime');//信息有效期
+                postData.service = getDefault('service');//服务方式
+                postData.city = $scope.city;//city
+                postData.cityCode = cityCode;//cityCode
+                postData.areaGps = tools.getLocalStorageObj('areaGps');//地理位置
+                if (!tools.isEmpty(postData.title)) {
+                    tools.trueWeb(function () {
+                        alert('需求必须填');
+                    }, function () {
+                        plus.nativeUI.toast('需求必须填');
+                    });
+                } else {
+                    var url = config.host.nodeHost + '/sns/postNeedFrom';
+                    tools.postJsp(url, postData).then(_s, _f);
+                }
+                function _s(re) {
+                    if (re.data.code == 'S') {
+                        //清空 radio
+                        tools.saveLocalStorageObj('radio1', '');
+                        tools.saveLocalStorageObj('needRadio1', '');
+                        tools.saveLocalStorageObj('needRadio2', '');
+                        tools.saveLocalStorageObj('needRadio3', '');
+
+                        tools.trueWeb(function () {
+                            var con = confirm("发布成功! 跳转到我的发布");
+                            if (con) {
+                                $state.go('myNeed');//跳转到我的需求
+                            } else {
+                                window.location.reload();
+                            }
+                        }, function () {
+                            plus.nativeUI.actionSheet({
+                                title: "发布成功!",
+                                buttons: [{title: "我的发布"}]
+                            }, function (e) {
+                                if (e.index == 1) {
+                                    $state.go('myNeed');//跳转到我的需求
+                                }
+                                if (e.index == -1) {
+                                    window.location.reload();
+                                }
+                            });
+                        });
+
+                    } else {
+                        _f(re.data.msg);
+                    }
+                }
+
+                function _f(e) {
+                    if (!e) {
+                        e = '发布失败';
+                    }
+                    tools.trueWeb(function () {
+                        alert(e);
+                    }, function () {
+                        plus.nativeUI.toast(e);
+                    });
+                }
+
+                function _getCityCode() {
+                    var code = tools.getLocalStorageObj('area');
+                    if (code && code.city && code.city.cityCode) {
+                        return code.city.cityCode;
+                    } else {
+                        return '777';
+                    }
+                }
+
+            }
+        }
+
+        /**
+         * 获取radio的 值,取不到就是默认值
+         */
+        function getDefault(type) {
+            switch (type) {
+                case 'priceUnit'://单位
+                    return find('needRadio1');
+                case 'endTime'://单位
+                    return find('needRadio2');
+                case 'service'://服务方式
+                    return find('needRadio3');
+            }
+            function find(thisType) {
+                var val = tools.getLocalStorageObj(thisType);
+                if (val) {
+                    return val;
+                } else {
+                    return 'default';
+                }
+            }
+        }
+    }
+
+})();
+
+/**
+ * 命名注释：directive简称_subkill. 父模块_from. 功能_技能发布 类型_directive .js
+ * 使用 ：<div subkill></div>
+ */
+(function () {
+    'use strict';
+    angular.module('from').directive('subkill', subkill);
+    function subkill() {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/from/subkill.from.subkill.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'config', '$state'];
+
+    function thisController($scope, $rootScope, $timeout, tools, config, $state) {
+
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');
+            $rootScope.$broadcast('closeAddFrom');//关闭底部发布需求技能面板
+            $rootScope.$broadcast('closeLoading');//关闭loading
+            init();
+        });
+        $scope.city = '未知';
+        $scope.$on('changeArea', giveThisCity);//监听地址变换事件
+
+        $scope.from = {
+            title: '',//技能标题
+            content: '',//技能介绍
+            price: '',//价格
+        };
+        $scope.titleFocus = titleFocus;//当title焦点的事件
+        $scope.titleBlur = titleBlur;//当title失去焦点的事件
+        var watchTitleCount = 0;//默认第一次不弹出联想
+        $scope.$watch('from.title', watchTitle);//watch title, title为空的时候显示推荐技能div
+        $scope.$on('fromTitleFoucs', focusTitle);//监听广播 使title焦点
+        $scope.$on('giveFromTitle', giveFromTitle);//监听改变title值
+        $scope.showImgUp = false;
+        $scope.isUser = false;//是否有会员资料
+        $scope.priceDisabled = false;//价格禁止输入,如果选择面议,就禁止
+
+        var radioArr = {//radio 数组
+            radio1: ['1小时', '1次', '1单', '面议'],
+            radio2: ['不限', '线上', '线下'],
+            radio3: ['女', '男'],
+            radio4: ['16', '25', '35']
+        };
+
+        function init() {
+            hideBottomNav();//隐藏底部导航
+            giveThisCity();//给默认城市
+            bindCityClick();//bind 城市按钮click事件
+            bindRadio();//bind radio
+            bindSub();//bind 发布按钮点击事件
+            trueWebUpImg();//判断web是否显示图片上传
+            creatKillRoundId();//生成随机技能表单id
+            trueUser();//判断是否有初始用户信息,来显示不同表单
+        }
+
+        /**
+         * 判断是否有初始用户信息,来显示不同表单
+         */
+        function trueUser() {
+            $rootScope.$broadcast('getUserData');
+            $timeout(function () {
+                var isUser = tools.getLocalStorageObj('userData').isUser;
+                if (isUser) {
+                    $scope.isUser = true;
+                }
+            }, 1000);
+        }
+
+        /**
+         * 改变title值
+         */
+        function giveFromTitle(e, v) {
+            $timeout(function () {
+                $scope.from.title = v;
+            }, 0);
+        }
+
+        /**
+         * 生成随机技能表单id
+         */
+        function creatKillRoundId() {
+            var roundCode = tools.getRoundCode(8);
+            tools.saveLocalStorageObj('killRoundId', 'killRoundId_' + roundCode);
+        }
+
+        /**
+         * 判断是否web来加载图片上传
+         */
+        function trueWebUpImg() {
+            tools.trueWeb(function () {
+                $timeout(function () {
+                    $scope.showImgUp = false;
+                }, 0);
+
+            }, function () {
+                $timeout(function () {
+                    $scope.showImgUp = true;
+                }, 0);
+            });
+        }
+
+        /**
+         * 隐藏底部导航
+         */
+        function hideBottomNav() {
+            $timeout(function () {
+                var dom = document.getElementById('bottomNav');
+                dom.style.display = "none";
+            }, 0);
+        }
+
+        /**
+         * 给默认城市
+         */
+        function giveThisCity() {
+            var area = tools.getLocalStorageObj('area');
+            $timeout(function () {
+                try {
+                    $scope.city = area.city.city;
+                } catch (e) {
+                    $scope.city = '全国';
+                }
+            }, 0);
+        }
+
+        /**
+         * bind 城市按钮click事件
+         */
+        function bindCityClick() {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+            });
+            document.getElementById('fromCityClick').addEventListener(type, _bind);
+            function _bind() {
+                $rootScope.$broadcast('showArea', 'noFujin');
+            }
+        }
+
+        /**
+         * title 焦点事件
+         */
+        function titleFocus() {
+            watchTitle();
+        }
+
+        /**
+         * title blur 失去焦点事件
+         */
+        function titleBlur() {
+            $rootScope.$broadcast('hideCommendShow');
+        }
+
+        /**
+         * watch title
+         */
+        function watchTitle() {
+            watchTitleCount++;
+            if (watchTitleCount > 1) {
+                if ($scope.from.title === '') {
+                    $rootScope.$broadcast('showCommendShow');
+                } else {
+                    $rootScope.$broadcast('hideCommendShow');
+                }
+            }
+        }
+
+        /**
+         * 使title焦点
+         * document.getElementById("inputId").focus();
+         */
+        function focusTitle() {
+            $timeout(function () {
+                document.getElementById("fromTitle").focus();
+            }, 0);
+        }
+
+        /**
+         * bind radio 点击
+         */
+        function bindRadio() {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+                type = 'tap';
+            });
+            angular.forEach(radioArr, function (vo, index1) {
+                angular.forEach(vo, function (vo1, index2) {
+                    var domId = index1 + '_' + index2;
+                    document.getElementById(domId).addEventListener(type, clickRadio);
+                });
+            });
+            function clickRadio(dom) {
+                var idS = dom.target.id;
+                if (idS == 'radio1_3') {//面议
+                    $timeout(function () {
+                        $scope.from.price = '';
+                        $scope.priceDisabled = true;
+                    }, 0);
+                } else if ((idS == 'radio1_0') || (idS == 'radio1_1') || (idS == 'radio1_2')) {
+                    $timeout(function () {
+                        $scope.priceDisabled = false;
+                    }, 0);
+                }
+                idS = idS.split('_');
+                tools.saveLocalStorageObj(idS[0], idS[1]);//记录到本地缓存 radio1 : 0
+                idS = idS[0];
+                angular.forEach(radioArr[idS], function (vo, index) {
+                    document.getElementById(idS + '_' + index).style.borderColor = '#fff';
+                });
+                dom.target.style.borderColor = '#ccc';
+            }
+        }
+
+        /**
+         * bindSub ,技能发布提交按钮点击事件
+         */
+        function bindSub() {
+
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+            });
+            document.getElementById('subJiNeng').addEventListener(type, _sub);
+            function _sub() {
+                var postData = {};
+                postData.uid = tools.getLocalStorageObj('userData').uid;//uid
+                postData.killRoundId = tools.getLocalStorageObj('killRoundId');//技能随机提交的生成的id
+                postData.title = $scope.from.title;//技能标题
+                postData.content = $scope.from.content;//技能介绍
+                postData.price = $scope.from.price;//价格
+                postData.priceUnit = getDefault('priceUnit');//价格单位
+                postData.service = getDefault('service');//服务方式
+                postData.isUser = $scope.isUser;//是否 有会员资料 ,布尔 ,用了判断是否 还取其他 会员默认值(sex,age,city)
+                postData.sex = getDefault('sex');//会员补充 男女
+                postData.age = getDefault('age');//会员补充 年龄
+                postData.city = $scope.city;//会员补充 男女
+                postData.areaGps = tools.getLocalStorageObj('areaGps');//地理位置
+                if (!tools.isEmpty(postData.title)) {
+                    tools.trueWeb(function () {
+                        alert('技能必须填');
+                    }, function () {
+                        plus.nativeUI.toast('技能必须填');
+                    });
+                } else {
+                    var url = config.host.nodeHost + '/sns/postKillFrom';
+                    tools.postJsp(url, postData).then(_s, _f);
+                }
+                function _s(re) {
+                    if (re.data.code == 'S') {
+                        //清空 radio
+                        tools.saveLocalStorageObj('radio1', '');
+                        tools.saveLocalStorageObj('radio2', '');
+                        tools.saveLocalStorageObj('radio3', '');
+                        tools.saveLocalStorageObj('radio4', '');
+                        tools.trueWeb(function () {
+                            var con = confirm("发布成功! 按确定继续发布");
+                            if (con) {
+                                window.location.reload();
+                            } else {
+                                $state.go('myNeed');//跳转到需求列表
+                            }
+                        }, function () {
+                            plus.nativeUI.actionSheet({
+                                title: "发布成功!",
+                                buttons: [{title: "继续发布"}, {title: "我的技能"}]
+                            }, function (e) {
+                                console.log("User pressed: " + e.index);
+                                if (e.index == 1 || e.index == -1) {
+                                    window.location.reload();
+                                }
+                                if (e.index == 2) {
+                                    $state.go('myKill');//跳转到需求列表
+                                }
+
+                            });
+                        });
+
+                    } else {
+                        _f(re.data.msg);
+                    }
+                }
+
+                function _f(e) {
+                    if (!e) {
+                        e = '发布失败';
+                    }
+                    tools.trueWeb(function () {
+                        alert(e);
+                    }, function () {
+                        plus.nativeUI.toast(e);
+                    });
+                }
+            }
+        }
+
+        /**
+         * 获取radio的 值,取不到就是默认值
+         */
+        function getDefault(type) {
+            switch (type) {
+                case 'priceUnit'://单位
+                    return find('radio1');
+                case 'service'://服务方式
+                    return find('radio2');
+                case 'sex'://服务方式
+                    return find('radio3');
+                case 'age'://服务方式
+                    return find('radio4');
+            }
+
+            function find(thisType) {
+                var val = tools.getLocalStorageObj(thisType);
+                if (val) {
+                    return val;
+                } else {
+                    return 'default';
+                }
+            }
+        }
+
+    }
 
 })();
 
@@ -4763,32 +4213,52 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config', 'compile', '$state', 'getList'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'update', 'config', 'compile', '$state', 'getList', 'header', '$q'];
 
-    function thisController($scope, $rootScope, $timeout, tools, update, config, compile, $state, getList) {
+    function thisController($scope, $rootScope, $timeout, tools, update, config, compile, $state, getList, header, $q) {
 
+        var clickType = 'tap';
+        tools.trueWeb(function () {
+            clickType = 'click';
+        }, function () {
+            clickType = 'tap';
+        });
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
+            $timeout(function () {
+                init();
+            }, 0);
         });
+
+        $scope.moreInfo = '加载更多...';
+        $scope.$on('changeMoreInfo', changeMoreInfo);//变换moreInfo内容 监听
+
+        $scope.titleInfo = '';
+        $scope.$on('changeTitleInfo', changeTitleInfo);//变换titleInfo
 
         $scope.urlName = $state.current.name;//当前url Name
         $scope.list = []; //默认首页 列表 数据,每次刷新请求后 push list变量名称
-        var endId;//下拉后 得到 的 最后一条id
+        $scope.listTop = {'margin-top': '45px'};//homeList 的 style
+        $scope.defaultHeader = header.defaultHeader;//默认头像
+        // var endId;//下拉后 得到 的 最后一条id ,改为存入本地数据库
         var firstId;//第一条id,上拉时候用
         var type = 'up';//当前请求方式 up down
-        var star = [];//标记数组 ,
 
+        $scope.$on('getSelectDown', getSelectDown);//获取筛选条件去请求接口
 
         /*************************
          * 默认读取上次的缓存 数据, 然后 再异步更新 到 最新数据,
          * bind 点击事件
          * 16/8/19 上午7:45 ByRockBlus
          *************************/
-        init();
         function init() {
             _init();//判断缓存,去执行响应逻辑(变换滚动位置,获取最新数据)
             plusInit();//bind plus 滚动到底部事件
             bindLoadMoreClick();//bind 加载 更多点击事件
+            giveListTop();//根据url 给内容部分marginTop
+            bindTitleInfo();//bind titleInfo clcik
+            getLocalKey();//判断有搜索关键词缓存,去geititleINfo数据
+            getNewsData();//获取用户消息
         }
 
         /**
@@ -4797,27 +4267,12 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         function _init() {
 
             /**
-             *
              * @return 当前url 的 缓存 list 数据
              * @private
              */
             function _getThisCatceList() {
                 var thisLogName = 'catchList_' + $state.current.name + '-' + tools.getToday();
                 return tools.getLocalStorageObj(thisLogName);
-            }
-
-            /**
-             * 返回 标记star 的 id 数组
-             * @returns {array|*}
-             * @private
-             */
-            function _getThisCatchStarArr() {
-                return tools.getLocalStorageObj('starArr');
-            }
-
-            var strArr = _getThisCatchStarArr();
-            if (strArr && strArr[0]) {//赋值 标记数组
-                getList.globalCatchList.starArr = strArr;
             }
 
             var thisCatchList = _getThisCatceList();
@@ -4828,45 +4283,112 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                  * 读缓存 作为list[0] push到 缓存数组 ,绑定点击事件,
                  */
                 getList.giveFirstCatchList(_getThisCatceList(), function (reList) {
-                    reList = getList.editShowStar(reList);//赋值星标
                     $timeout(function () {
-                        $scope.list.push(reList);
-                        _bind(reList, 'list[0]');//回调去绑定点击事件
+                        $scope.list = reList;
+                        _bind(reList, 'list');//回调去绑定点击事件
                         $rootScope.$broadcast('closeLoading');//关闭 loading
                     }, 0);
-                }, 'list[0]', $scope, true);
+                }, 'list', $scope, true);
 
                 /**
                  * 判断如果 是 0 就去取上拉数据
                  */
                 var scrollTopName = $state.current.name + '_scrollTop';
                 if (localStorage.getItem(scrollTopName) === '0') {
-                    //getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
-                    ////如果记录的 缓存有位置信息,并且 位置 是0 ,去addNewList 请求 最新 数据, 放到缓存 之前
-                    tools.alert({
-                        title: '请求NewData'
-                    });
+                    return false;
+                    // console.log('请求NewData');
                 }
 
             } else {
-                getList.getList($state.current.name, false, false, $scope, 'list[0]', _bind);
+                var endId = localStorage.getItem($state.current.name + 'EndId');
+                getList.getList($state.current.name, false, endId, $scope, 'list', _bind);
             }
 
+        }
+
+
+        /**
+         * 去socket请求最新消息
+         */
+        function getNewsData() {
+            var url = config.host.nodeHost + "/member/getUserNews";
+            var userData = tools.getLocalStorageObj('userData');
+            if (userData && userData.uid) {
+                tools.postJsp(url, {uid: userData.uid}, true).then(_s);
+            } else {
+                $timeout(function () {
+                    try {
+                        var userData2 = tools.getLocalStorageObj('userData');
+                        tools.postJsp(url, {uid: userData2.uid}, true).then(_s);
+                    } catch (e) {
+                        console.log(e);
+                    }
+                }, 1000);
+            }
+
+            function _s(re) {
+                if (re && re.data && re.data.code == 'S') {
+                    $rootScope.$broadcast('showNews');//广播显示 有新消息
+                }
+
+                else {
+                    $rootScope.$broadcast('hideNews');//广播显示 没有有新消息
+                }
+            }
+        }
+
+
+        /**
+         * 判断有搜索关键词缓存,去geititleINfo数据
+         */
+        function getLocalKey() {
+            var key = localStorage.getItem('searchKey');
+            if (key && key !== '""') {
+                $timeout(function () {
+                    key = key.replace(/\"/g, "");
+                    $scope.titleInfo = key;
+                }, 0);
+            }
+        }
+
+        /**
+         * 清空搜索key 焦点搜索 显示搜索面板
+         * bind titleInfo clcik
+         */
+        function bindTitleInfo() {
+            tools.bindClick('titleInfo', function () {
+                $rootScope.$broadcast('focusSearch');
+                $rootScope.$broadcast('giveSearch', '');
+            });
+        }
+
+        /**
+         * 变换moreInfo内容 监听
+         */
+        function changeMoreInfo(d, val) {
+            $timeout(function () {
+                $scope.moreInfo = val;
+            }, 0);
+        }
+
+        /**
+         * 变换titleInfo
+         */
+        function changeTitleInfo(d, v) {
+            $timeout(function () {
+                $scope.titleInfo = v;
+            }, 0);
         }
 
         /**
          * bind 加载 更多点击事件
          */
         function bindLoadMoreClick() {
-            var bindBtn = document.getElementById('isWeb');
             try {
-                console.log('binBtn', bindBtn);
-                bindBtn.addEventListener('tap', function () {
-                    downGetList(true);//请求下拉更多数据,
+                tools.bindClick('isWeb', function () {
+                    downGetList();//请求下拉更多数据,
                 });
-
             } catch (e) {
-                console.log('binBtn', bindBtn);
                 console.log('没找到isWebId');
             }
         }
@@ -4884,11 +4406,16 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             });
         }
 
-        //bind 星标 点击事件
+        /**
+         * bind listItem 点击事件
+         * @param doc
+         * @param listName
+         * @private
+         */
         function _bind(doc, listName) {
 
             if (type == 'down') {
-                console.log('down', type);
+                var down = 1;
             }
 
             if (!firstId) {//如果没有 firstId,就给 firstId
@@ -4899,107 +4426,49 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 }
             }
             try {
-                endId = _getLastId(doc);//给最后一条id
+                var endId = _getLastId(doc);//给最后一条id
+                localStorage.setItem($state.current.name + 'EndId', endId);
             } catch (e) {
                 console.log('error');
             }
 
-            _bindTapIcon();
-
-            ///**
-            // * 遍历list 取最后一条的 id
-            // * @return {String} _id
-            // */
-            function _getLastId(re) {
-                var endNum = re.length - 1;
-                return re[endNum]._id;
-            }
-
-            //bind 星标 点击事件
-            function _bindTapIcon() {
-                angular.forEach(eval("$scope." + listName), function (vo) {
-                    var idStr = '#' + vo._id;
-                    $timeout(function () {
-                        mui(idStr).on('tap', '.iconStar', function () {
-                            if (vo.iconStar == 'fa-star-o') {
-                                $timeout(function () {
-                                    vo.iconStar = 'fa-star';
-                                    _saveStarArr(vo._id);
-                                }, 0);
-                            } else if (vo.iconStar == 'fa-star') {
-                                $timeout(function () {
-                                    vo.iconStar = 'fa-star-o';
-                                    _delStarArr(vo._id);
-                                }, 0);
-                            }
-                            //reForList(liId, thisScope);
+            $timeout(function () {
+                angular.forEach(doc, function (vo) {
+                    var str = 'homeList_' + vo._id;
+                    var dom = document.getElementById(str);
+                    try {
+                        dom.addEventListener(clickType, function () {
+                            __bindClick(dom);
                         });
-                    }, 400);
-
-                    /**************************
-                     * 从缓存 读取 star 数组
-                     *
-                     * star 缓存命名 state.name + '_star'
-                     * @param callBack
-                     *
-                     * 16/9/14 下午9:21 ByRockBlus
-                     **************************/
-                    function _getStartFromCatch(callBack) {
-                        var stateName = 'star';
-                        star = tools.getLocalStorageObj(stateName);
-                        if (!star) {
-                            star = [];
-                        }
-                        $timeout(function () {
-                            callBack();
-                        }, 200);
-                    }
-
-                    /**************************
-                     * 存储标记对象 到 缓存的 标记数组
-                     * 16/9/14 下午7:37 ByRockBlus
-                     **************************/
-                    function _saveStarArr(_id) {
-                        getList.globalCatchList.starArr.push(_id);//push 到 全局数组
-                        var idDom = document.getElementById(_id);
-                        idDom = angular.element(idDom);
-                        var listName = idDom.attr('listName');
-                        var thisScope = eval('$scope.' + listName);
-                        angular.forEach(thisScope, function (vo) {
-                            if (vo._id == _id) {
-                                delete(vo.$$hashKey);
-                                _getStartFromCatch(function () {
-                                    star.push(vo);
-                                    //var stateName = $state.current.name + '_star';
-                                    var stateName = 'star';
-                                    tools.saveLocalStorageObj(stateName, star);
-                                });
-                            }
-                        });
-                    }
-
-                    /**************************
-                     * 删除存储标记对象 到 缓存的 标记数组
-                     * 16/9/14 下午7:37 ByRockBlus
-                     **************************/
-                    function _delStarArr(_id) {
-                        getList.delStarIdFromStarArr(_id);
-                        _getStartFromCatch(function () {
-                            var tempStar = [];
-                            angular.forEach(star, function (vo) {
-                                if (vo._id !== _id) {
-                                    tempStar.push(vo);
-                                }
-                            });
-
-                            var stateName = 'star';
-                            tools.saveLocalStorageObj(stateName, tempStar);
-                        });
+                    } catch (e) {
+                        return false;
                     }
                 });
+            }, 400);
+
+            function __bindClick(dom) {
+                var goUrl = dom.getAttribute('url');
+                var type = dom.getAttribute('type');
+                var _id = dom.getAttribute('subid');
+                if (type == 'kill') {
+                    getList.saveCatecNewList();
+                    $state.go(goUrl, {'jiNengId': _id});
+                }
+                if (type == 'orderFrom') {
+                    getList.saveCatecNewList();
+                    $state.go(goUrl, {'orderId': _id, 'type': 'show'});
+                }
             }
 
-
+            function _getLastId(re) {
+                var endIdArr = [];
+                angular.forEach(re, function (vo) {
+                    endIdArr.push(vo._id);
+                });
+                endIdArr.sort();
+                var end = endIdArr[re.length - 1];
+                return end;
+            }
         }
 
         /**
@@ -5007,60 +4476,78 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * @param {布尔 判断是点击来的} isClickBtn
          */
         function downGetList() {
-            if ($state.current.name == 'star') {//如果 是标记分类 底部下拉事件 没有任何 操作
-                return false;
-            }
             type = 'down';
-            getList.getList($state.current.name, false, endId, $scope, 'list[' + $scope.list.length + ']', _bind);
+            var endId = localStorage.getItem($state.current.name + 'EndId');
+            if (!endId) {
+                endId = 0;
+            }
+            getList.getList($state.current.name, false, endId, $scope, 'list', _bind);
         }
 
         /**
-         * 请求成功后重新给list 赋值
-         * 记录list模型名称
-         * @param re
+         * giveListTop
          */
-        function call(re) {
-            $timeout(function () {
-                console.log('re', re);
-                //$scope.list[listCount] = re.list;
-                //listCount++;
-                //var name = $state.current.name;
-                //var obj = $scope.list;
-                //tools.saveLocalStorageObj(name, obj);//存储obj
-                plusInit();//绑定点击事件
-            }, 0);
-        }
-
-        function err() {
-            tools.alert({
-                title: '网络请求失败',
-                content: '请检查网络'
-            });
+        function giveListTop() {
+            switch ($state.current.name) {
+                case 'star':
+                    $timeout(function () {
+                        $scope.listTop = {
+                            'margin-top': '10px'
+                        };
+                    }, 0);
+                    break;
+                default:
+                    return;
+            }
         }
 
         /**
-         * 重新给 list
-         * @param id
+         * 监听筛选获取homeList 事件
+         * @param t
+         * @param urlName
          */
-        function reForList(id, thisScope) {
-            angular.forEach(thisScope, function (vo) {
-                if (vo._id == id) {
-                    if (vo.iconStar == 'fa-star-o') {
-                        $timeout(function () {
-                            vo.iconStar = 'fa-star';
-                        }, 0);
-                    } else if (vo.iconStar == 'fa-star') {
-                        $timeout(function () {
-                            vo.iconStar = 'fa-star-o';
-                        }, 0);
+        function getSelectDown() {
+            clearEndIdAndList().then(
+                function (re) {
+                    if (re && re.code == 'S') {
+                        downGetList();
                     }
-
-                    //var name = $state.current.name;
-                    //tools.saveLocalStorageObj(name, $scope.list);//存储obj
-                }
-            });
+                },
+                function () {
+                    tools.alert({
+                        title: '请求失败'
+                    });
+                });
         }
 
+        /**
+         *  清空缓存的 对应url的endId, 清空 对应List 的缓存数据
+         *  验证清空数据之后,再deferPromise(去加入search数据,去请求api)
+         *  @param urlName (home need)
+         */
+        function clearEndIdAndList() {
+            var defer = $q.defer();
+            localStorage.removeItem($state.current.name + 'EndId');
+            var thisLogName = 'catchList_' + $state.current.name + '-' + tools.getToday();
+            localStorage.removeItem(thisLogName);
+            var endId = localStorage.getItem($state.current.name + 'EndId');
+            var thisLogNameThis = localStorage.getItem(thisLogName);
+            $timeout(function () {
+                getList.delGoldCatcth();
+                $scope.list = [];
+            }, 0);
+
+            if (!endId && !thisLogNameThis) {
+                defer.resolve({
+                    code: 'S'
+                });
+            } else {
+                defer.reject({
+                    code: 'F'
+                });
+            }
+            return defer.promise;
+        }
     }
 })();
 /**
@@ -5103,6 +4590,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         $scope.tel = false;
         $scope.code = false;
         $scope.codeClass = 'btn-danger';//获取验证码 变换背景颜色
+        $scope.loginImg = localData.loginImg;//登录图标
 
         //function hideLeftTop() {
         //    var leftTop = document.getElementById('topLeftBut');
@@ -5111,6 +4599,23 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         //}
         //
         //hideLeftTop();
+
+        init();
+        function init() {
+            _giveRoundCode();//登录页面给随机码
+        }
+
+        /**
+         * 第一次后给localStorage一个随机码,验证用户发送短信用
+         * @private
+         */
+        function _giveRoundCode() {
+            localStorage.removeItem(config.localSaveName.user.roundCodeId);
+            setTimeout(function () {
+                var roundCode = tools.getRoundCode(8);
+                localStorage.setItem(config.localSaveName.user.roundCodeId, roundCode);
+            }, 200);
+        }
 
 
         /*************************
@@ -5156,11 +4661,18 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 return;
             } else {
                 var roundCodeId = localStorage.getItem(config.localSaveName.user.roundCodeId);
-
                 //'Api/Sem/getCode/roundCodeId/' + roundCodeId + '/mtNum/' + telNum;
-                tools.postJsp(config.host.phpHost + '/Api/Sem/getCode/roundCodeId/' + roundCodeId + '/mtNum/' + $scope.tel, {}, true).then(function (re) {
+                tools.getJsp(config.host.phpHost + '/Api/Sem/getCode/roundCodeId/' + roundCodeId + '/mtNum/' + $scope.tel, true).then(function (re) {
+
+                    console.log('smRe', re);
+                    var msg = '';
+                    if (re && re.stausCode == 200) {
+                        msg = '验证码已发送';
+                    } else {
+                        msg = '验证码发送失败';
+                    }
                     tools.alert({
-                        title: re
+                        title: msg
                     });
                 });
                 $timeout(function () {
@@ -5189,67 +4701,36 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                     title: '手机号格式不正确'
                 });
             } else {
-                var url = config.host.phpHost + '/Api/loginIn';
-                tools.postJsp(url, {code: $scope.code, mtNum: $scope.tel})
+                var url = config.host.nodeHost + '/member/loginIn';
+                var roundCodeId = localStorage.getItem(config.localSaveName.user.roundCodeId);
+                tools.postJsp(url, {code: $scope.code, mtNum: $scope.tel, roundCodeId: roundCodeId})
                     .then(_success, _faile);
             }
 
 
             function _success(re) {
-                if (re.data.code == 'S') {
+                if (re.data && re.data.code == 'S') {
                     localStorage.setItem('isLogin', 'true');//缓存登录状态
                     tools.saveLocalStorageObj('userData', re.data.userData);//缓存用户数据
                     $state.go('home');
                 } else {
-                    _faile('登录失败');
+                    _faile(re.data.msg);
                 }
             }
 
-            function _faile() {
+            function _faile(e) {
+                var eEcho = '登录失败';
+                if (e) {
+                    eEcho = e;
+                }
                 tools.alert({
-                    title: '登录失败'
+                    title: JSON.stringify(eEcho)
                 });
+
             }
 
         }
 
-
-    }
-
-
-})();
-
-/**
- * 命名注释：directive简称_master. 父模块_dipan . 功能_地盘地主首页 类型_directive .js
- * 使用 ：<div my></div>
- */
-(function () {
-    'use strict';
-    angular.module('dipan').directive('master', master);
-    function master() {
-        return {
-            restrict: 'A',
-            replace: false,
-            scope: {},
-            controller: thisController,
-            templateUrl: window.tplPath + 'directive/master.dipan.masterIndex.directive.html',
-            link: function (scope, element, attrs) {
-            }
-        };
-    }
-
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'tools', 'config', '$state'];
-
-    function thisController($scope, $rootScope, $timeout, localData, tools, config, $state) {
-        $scope.$watch('$viewContentLoading', function () {
-            $rootScope.$broadcast('changeBody');
-        });
-
-        /*************************
-         * 判断数据赋值成功 关闭 loading
-         * 16/8/15 下午2:57 ByRockBlus
-         *************************/
-        // $rootScope.$broadcast('closeLoading');
 
     }
 
@@ -5275,9 +4756,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'config'];
 
-    function thisController($scope, $rootScope, $timeout, tools) {
+    function thisController($scope, $rootScope, $timeout, tools, config) {
         $scope.$watch('$viewContentLoading', function () {
             $rootScope.$broadcast('changeBody');
             setTimeout(function () {
@@ -5291,7 +4772,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         $scope.formSub = function () {
             $scope.form.title += '&|';
             //var url = 'http://dipan.so:3082/sns/addOneArticle';
-            var url = 'http://192.168.0.56:3082/sns/addOneArticle';
+            var url = config.host.nodeHostTest + '/sns/addOneArticle';
             tools.postJsp(url, $scope.form).then(function () {
                 tools.alert({
                     title: '添加成功'
@@ -5303,6 +4784,451 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 });
             });
         };
+    }
+})();
+
+/**
+ * 命名注释：directive简称_editMemberInfo. 父模块_dipan . 功能_资料编辑 类型_directive .js
+ * 使用 ：<div edit-member-info></div>
+ */
+(function () {
+    'use strict';
+    angular.module('dipan').directive('editMemberInfo', editMemberInfo);
+    function editMemberInfo() {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/member/editMemberInfo.dipan.editMemberInfo.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config', 'tools', '$state'];
+
+    function thisController($scope, $rootScope, $timeout, localData, config, tools, $state) {
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');
+            $rootScope.$broadcast('closeAddFrom');//关闭底部发布需求技能面板
+            $rootScope.$broadcast('closeLoading');//关闭loading
+            init();
+        });
+        $scope.city = '不限';
+        $scope.$on('changeArea', giveThisCity);//监听地址变换事件
+        $scope.from = {
+            name: '',//昵称
+        };
+
+        var radioArr = {//radio 数组
+            editRadio3: ['女', '男'],
+            editRadio4: ['16', '25', '35']
+        };
+
+        function init() {
+            hideBottomNav();//隐藏底部导航
+            giveOldVal();//给性别,年龄,昵称
+            bindCityClick();//bind 城市按钮click事件
+            bindRadio();//bind radio
+            bindSub();//bind 发布按钮点击事件
+            giveUserCity();//给用户定义的默认城市
+        }
+
+        /**
+         * 给性别,年龄,昵称
+         */
+        function giveOldVal() {
+            var nvDom = document.getElementById('editRadio3_0');//女dom
+            var nanDom = document.getElementById('editRadio3_1');//男dom
+            var age1Dom = document.getElementById('editRadio4_0');//16
+            var age2Dom = document.getElementById('editRadio4_1');//25
+            var age3Dom = document.getElementById('editRadio4_2');//35+
+
+            var userData = tools.getLocalStorageObj('userData');
+            if (userData) {
+                if (userData.sex) {
+                    _changeSex(userData.sex);
+                }
+                if (userData.age) {
+                    _changeAge(userData.age);
+                }
+                if (userData.name) {
+                    _changeName(userData.name);
+                }
+            } else {
+                $timeout(function () {
+                    try {
+                        if (userData.sex) {
+                            _changeSex(userData.sex);
+                        }
+                        if (userData.age) {
+                            _changeAge(userData.age);
+                        }
+                        if (userData.name) {
+                            _changeName(userData.name);
+                        }
+                    } catch (e) {
+                        console.error('未获取到用户数据');
+                    }
+                }, 300);
+            }
+
+            function _changeSex(sex) {
+                if (sex == '男') {
+                    nanDom.style.borderColor = '#ccc';
+                    nvDom.style.borderColor = '#fff';
+                }
+            }
+
+            function _changeAge(age) {
+                if (age == '25~35') {
+                    age1Dom.style.borderColor = '#fff';
+                    age2Dom.style.borderColor = '#ccc';
+                    age3Dom.style.borderColor = '#fff';
+                }
+                if (age == '35+') {
+                    age1Dom.style.borderColor = '#fff';
+                    age2Dom.style.borderColor = '#fff';
+                    age3Dom.style.borderColor = '#ccc';
+                }
+
+            }
+
+            function _changeName(name) {
+                $timeout(function () {
+                    $scope.from.name = name;
+                }, 0);
+            }
+
+        }
+
+        /**
+         * 隐藏底部导航
+         */
+        function hideBottomNav() {
+            $timeout(function () {
+                var dom = document.getElementById('bottomNav');
+                dom.style.display = "none";
+            }, 0);
+        }
+
+        /**
+         * 给默认城市
+         */
+        function giveThisCity() {
+            var area = tools.getLocalStorageObj('area');
+            $timeout(function () {
+                try {
+                    $scope.city = area.city.city;
+                } catch (e) {
+                    $scope.city = '全国';
+                }
+            }, 0);
+        }
+
+        /**
+         * 给用户定义的city,没有定义再去根据gps定位
+         */
+        function giveUserCity() {
+            var user = tools.getLocalStorageObj('userData');
+            if (user && user.city) {
+                $timeout(function () {
+                    $scope.city = user.city;
+                }, 1000);
+            } else {
+                giveThisCity();
+            }
+        }
+
+        /**
+         * bind 城市按钮click事件
+         */
+        function bindCityClick() {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+            });
+            document.getElementById('editFromCityClick').addEventListener(type, _bind);
+            function _bind(dom) {
+                $scope.from.cityBuXian = false;
+                dom.target.style.borderColor = '#ccc';
+                $rootScope.$broadcast('showArea', 'noFujin');
+            }
+        }
+
+        /**
+         * bind radio 点击
+         */
+        function bindRadio() {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+                type = 'tap';
+            });
+            angular.forEach(radioArr, function (vo, index1) {
+                angular.forEach(vo, function (vo1, index2) {
+                    var domId = index1 + '_' + index2;
+                    document.getElementById(domId).addEventListener(type, clickRadio);
+                });
+            });
+            function clickRadio(dom) {
+                var idS = dom.target.id;
+                idS = idS.split('_');
+                tools.saveLocalStorageObj(idS[0], idS[1]);//记录到本地缓存 radio1 : 0
+                idS = idS[0];
+                angular.forEach(radioArr[idS], function (vo, index) {
+                    document.getElementById(idS + '_' + index).style.borderColor = '#fff';
+                });
+                dom.target.style.borderColor = '#ccc';
+            }
+        }
+
+        /**
+         * bindSub ,技能发布提交按钮点击事件
+         */
+        function bindSub() {
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+            });
+            document.getElementById('editMemberSub').addEventListener(type, _sub);
+            function _sub() {
+                var postData = {};
+                postData.uid = tools.getLocalStorageObj('userData').uid;//uid
+                postData.name = $scope.from.name;//用户name
+                postData.city = $scope.city;//city
+                postData.sex = getDefault('sex');
+                postData.age = getDefault('age');
+                var url = config.host.nodeHost + '/member/userDataEdit';
+                tools.postJsp(url, postData).then(_s, _f);
+                function _s(re) {
+                    if (re.data.code == 'S') {
+                        //清空 radio
+                        tools.saveLocalStorageObj('radio1', '');
+
+                        tools.trueWeb(function () {
+                            var con = confirm("修改成功! 跳转到个人中心");
+                            if (con) {
+                                $state.go('memberIndex');//跳转到我会员中心
+                            }
+                        }, function () {
+                            plus.nativeUI.actionSheet({
+                                title: "修改成功!",
+                                buttons: [{title: "跳转到个人中心"}]
+                            }, function (e) {
+                                if (e.index == 1) {
+                                    $state.go('memberIndex');//跳转到我会员中心
+                                }
+                            });
+                        });
+
+                    } else {
+                        _f(re.data.msg);
+                    }
+                }
+
+                function _f(e) {
+                    if (!e) {
+                        e = '发布失败';
+                    }
+                    tools.trueWeb(function () {
+                        alert(e);
+                    }, function () {
+                        plus.nativeUI.toast(e);
+                    });
+                }
+            }
+        }
+
+        /**
+         * 获取radio的 值,取不到就是默认值
+         */
+        function getDefault(type) {
+            switch (type) {
+                case 'sex'://性别
+                    return find('editRadio3');
+                case 'age'://年龄
+                    return find('editRadio4');
+            }
+            function find(thisType) {
+                var val = tools.getLocalStorageObj(thisType);
+                if (val) {
+                    return val;
+                } else {
+                    return 'default';
+                }
+            }
+        }
+    }
+})();
+
+/**
+ * 命名注释：directive简称_killContent. 父模块_dipan . 功能_技能详情展示页面 类型_directive .js
+ * 使用 ：<div kill-content></div>
+ */
+(function () {
+    'use strict';
+    angular.module('dipan').directive('killContent', killContent);
+    function killContent() {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/member/killContent.dipan.killContent.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', '$state', 'config', 'tools', 'header'];
+
+    function thisController($scope, $rootScope, $timeout, $state, config, tools, header) {
+
+        var clickType = 'tap';
+        tools.trueWeb(function () {
+            clickType = 'click';
+        }, function () {
+            clickType = 'tap';
+        });
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
+            $rootScope.$broadcast('callTelAlertCount0');
+            $timeout(function () {
+                sollTop();
+            }, 0);
+        });
+
+        init();
+
+        $scope.data = '';//技能详情数据
+
+        function init() {
+            creatKillcontentRoundId();//建立随机id
+            $timeout(function () {
+                getData();
+            }, 0);
+        }
+
+        /**
+         * 获取数据
+         */
+        function getData() {
+            var url = config.host.nodeHost + "/member/getKillContent";
+            var trueAreaGps = tools.getLocalStorageObj('areaGps');
+            var areaGps = {};
+            if (trueAreaGps) {
+                areaGps = trueAreaGps.gpsObj;
+            }
+            tools.postJsp(url, {
+                jiNengId: $state.params.jiNengId,
+                areaGps: areaGps
+            }).then(_s, _e);
+            function _s(re) {
+                $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
+                if (re.data && re.data.code == 'S' && re.data.doc) {
+                    try {
+                        if (!re.data.doc.userData.headerImg) {
+                            re.data.doc.userData.headerImg = header.defaultHeader;
+                        }
+                    } catch (e) {
+                        console.error('无headerImg');
+                    }
+                    try {
+                        if (re.data.doc.thisJiNeng.priceUnit == '面议') {
+                            re.data.doc.thisJiNeng.priceStr = '价格面议';
+                        } else {
+                            re.data.doc.thisJiNeng.priceStr = re.data.doc.thisJiNeng.price + ' ' + re.data.doc.thisJiNeng.priceUnit;
+                        }
+                    } catch (e) {
+
+                    }
+
+                    switch (re.data.doc.thisJiNeng.service) {
+                        case '线上':
+                            re.data.doc.thisJiNeng.serviceStr = '线上服务';
+                            break;
+                        case '线下':
+                            re.data.doc.thisJiNeng.serviceStr = '线下服务';
+                            break;
+                    }
+
+
+                    angular.forEach(re.data.doc.jiNengList, function (vo) {
+                        if (vo.priceUnit == '面议') {
+                            vo.priceStr = '';
+                        } else {
+                            vo.priceStr = "<span style='color: red;'>" + vo.price + "</span>" + ' ' + vo.priceUnit;
+                        }
+                    });
+
+                    $timeout(function () {
+                        $scope.data = re.data;
+                        $timeout(function () {
+                            bindJiNengListClick();
+                        }, 0);
+                    }, 0);
+
+
+                    $timeout(function () {
+                        if ((re.data.doc.userData._id == tools.getLocalStorageObj('userData').uid)) {
+                            document.getElementById('bottomNavCall').style.display = 'none';
+                        }
+                    }, 0);
+
+
+                } else {
+                    _e(re.data.msg);
+                }
+            }
+
+            function _e(msg) {
+                $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
+                var errMsg = '读取数据失败';
+                if (msg) {
+                    errMsg = msg;
+                }
+                tools.alert({title: errMsg});
+            }
+        }
+
+        /**
+         * bind 技能列表点击
+         */
+        function bindJiNengListClick() {
+            angular.forEach($scope.data.doc.jiNengList, function (vo) {
+                var dom = document.getElementById('jiNengList_' + vo._id);
+                dom.addEventListener(clickType, function () {
+                    _bind(dom);
+                });
+            });
+            function _bind(dom) {
+                var _id = dom.getAttribute('subid');
+                $state.go('killContent', {'jiNengId': _id});
+            }
+        }
+
+        /**
+         * contentDiv 滚动到页面顶部
+         */
+        function sollTop() {
+            $timeout(function () {
+                document.getElementById('killContentSoller').scrollTop = 0;
+            }, 0);
+        }
+
+        /**
+         * 生成随机技能详情表单id,如果点击下单,就用这个id作为 needRoundId(需求订单随机id),去生成需求订单,
+         */
+        function creatKillcontentRoundId() {
+            var roundCode = tools.getRoundCode(8);
+            tools.saveLocalStorageObj('killContentRoundId', 'needRoundId_' + roundCode);
+        }
+
     }
 })();
 
@@ -5324,12 +5250,33 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         };
     }
 
-    thisController.$inject = ['$state', '$timeout'];
+    thisController.$inject = ['$state', '$timeout', 'tools'];
 
-    function thisController($state, $timeout) {
+    function thisController($state, $timeout, tools) {
+        var catchListHomeStr = 'catchList_home-' + tools.getToday();
+        var catchListNeedStr = 'catchList_need-' + tools.getToday();
         var delCatch = [
             'isLogin',
-            'userData'
+            'userData',
+            'clickShaiXuan',
+            'starArr',
+            'home_scrollTop',
+            'need_scrollTop',
+            'radio1',
+            'radio2',
+            'radio3',
+            'radio4',
+            'needRadio1',
+            'needRadio2',
+            'roundCodeId',
+            'searchKey',
+            catchListHomeStr,
+            catchListNeedStr,
+            'killContent_scrollTop',
+            'killEndId',
+            'searchKey',
+            'homeEndId',
+            'needEndId'
         ];
         angular.forEach(delCatch, function (vo) {
             localStorage.removeItem(vo);
@@ -5352,7 +5299,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     function my() {
         return {
             restrict: 'A',
-            replace: false,
+            replace: true,
             scope: {},
             controller: thisController,
             templateUrl: window.tplPath + 'directive/member/my.dipan.myIndexNav.html',
@@ -5361,32 +5308,179 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config', 'tools'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config', 'tools', 'header'];
 
-    function thisController($scope, $rootScope, $timeout, localData, config, tools) {
+    function thisController($scope, $rootScope, $timeout, localData, config, tools, header) {
 
-        mui.plusReady(function () {
-            mui.previewImage();
-        });
-
+        var yunXu, jinZhi;//声明允许禁止的dom全局变量
 
         $scope.$watch('$viewContentLoading', function () {
+            yunXu = document.getElementById('myRadio1_0');//允许
+            jinZhi = document.getElementById('myRadio1_1');//禁止
+
             $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
             $timeout(function () {
-                getUserData();// 延时异步去取用户数据
+                getUserData();// 延时异步去取用户数据,并获取 电话咨询状态
+                getCount();// 延时异步去取 技能统计,需求统计
             }, 400);
+            bindTelCall();//bind电话咨询选择事件
+            init();
         });
 
-        //我的 导航list > 本地数据
-        $scope.listNav = localData.memberIndexNav;
+        $scope.version = config.version.default;//版本
+        $scope.jiNengCount = undefined;//技能count
+        $scope.needCount = undefined;//需求count
+        // $scope.showNews = false;//显示有新消息 ,读member数据
+        $scope.showNewsHistory = undefined;//显示有新的联系消息
+        $scope.getNoReadNewsEnd = undefined;//联系的未读消息显示的消息内容
+        $scope.noReadNewsCount = undefined;//未读消息的统计
 
-        /*************************
-         * 判断数据赋值成功 关闭 loading
-         * 16/8/15 下午2:57 ByRockBlus
-         *************************/
-        if ($scope.listNav) {
+        $scope.showNoReadFromCount = false;//显示未读的订单消息
+        $scope.noReadFromCount = undefined;//未读的订单统计
+        $scope.noReadFrom = undefined;//未读的订单list
+
+
+        $scope.$on('showNews', showNews);//监听有新消息图标显示事件
+        $scope.$on('hideNews', hideNews);//监听关闭新消息图标事件
+
+        $scope.$on('getUserData', function () {
+            getUserData();
+        });
+
+        function init() {
+            getNewsData();//获取有没有新消息,给图片状态
+            getNoReadFrom();//获取未读订单
+            getNoReadNews();//获取有未读的联系人消息
+        }
+
+        /**
+         * 获取有未读的联系人消息
+         */
+        function getNoReadNews() {
+            var url = config.host.nodeHost + "/imApi/noReadNewsCount";
+            var userData = tools.getLocalStorageObj('userData');
+            var uid;
+            if (userData && userData.uid) {
+                uid = userData.uid;
+            }
+
+            if (uid) {
+                tools.postJsp(url, {uid: uid}, true).then(_s, function () {
+                });
+            } else {
+                $timeout(function () {
+                    tools.postJsp(url, {uid: uid}, true).then(_s, function () {
+                    });
+                }, 200);
+            }
+
+            function _s(re) {
+                if (re && re.data && re.data.code == 'S' && re.data.results !== 0) {
+                    $timeout(function () {
+                        $scope.showNewsHistory = true;
+                        $scope.getNoReadNewsEnd = re.data.getNoReadNewsEnd;//联系的未读消息显示的消息内容
+                        $scope.noReadNewsCount = re.data.results;//未读消息的统计
+                    }, 0);
+                }
+            }
+        }
+
+        /**
+         * 获取未读订单
+         */
+        function getNoReadFrom() {
+            var url = config.host.nodeHost + "/member/noReadOrderFromCount";
+
+            var userData = tools.getLocalStorageObj('userData');
+            var uid;
+            if (userData && userData.uid) {
+                uid = userData.uid;
+            }
+
+            if (uid) {
+                tools.postJsp(url, {uid: uid}, true).then(_s, function () {
+                });
+            } else {
+                $timeout(function () {
+                    tools.postJsp(url, {uid: uid}, true).then(_s, function () {
+                    });
+                }, 200);
+            }
+
+            function _s(re) {
+                if (re.data && re.data.doc && re.data.doc.code == 'S') {
+                    $timeout(function () {
+                        $scope.showNoReadFromCount = true;
+                    }, 0);
+                }
+            }
+
+        }
+
+        /**
+         * 获取是否允许电话咨询,如果没有,就是默认允许状态,去改变dom
+         */
+        function getTelType() {
+            var userData = tools.getLocalStorageObj('userData');
+            if (userData) {
+                if (userData.telType == 'yunXu') {
+                    _yunXun();
+                } else if (userData.telType == 'jinZhi') {
+                    _jinZhi();
+                } else {//给默认 允许
+                    _yunXun();
+                }
+            }
+        }
+
+        /**
+         * 获取有没有新消息,给图片状态
+         */
+        function getNewsData() {
+            var url = config.host.nodeHost + "/member/getUserNews";
+
+            var userData = tools.getLocalStorageObj('userData');
+            var uid;
+            if (userData && userData.uid) {
+                uid = userData.uid;
+            }
+
+            if (uid) {
+                tools.postJsp(url, {uid: uid}, true).then(_s, function () {
+                });
+            } else {
+                $timeout(function () {
+                    tools.postJsp(url, {uid: uid}, true).then(_s, function () {
+                    });
+                }, 200);
+            }
+
+
+            function _s(re) {
+                if (re && re.data && re.data.code == 'S') {
+                    $rootScope.$broadcast('showNews');//广播显示 有新消息
+                }
+                else {
+                    $rootScope.$broadcast('hideNews');//广播显示 没有有新消息
+                }
+            }
+        }
+
+        /**
+         * 监听关闭新消息图标事件
+         */
+        function showNews() {
             $timeout(function () {
-                $rootScope.$broadcast('closeLoading');
+                $scope.showNews = true;
+            }, 0);
+        }
+
+        /**
+         * 监听关闭新消息图标事件
+         */
+        function hideNews() {
+            $timeout(function () {
+                $scope.showNews = false;
             }, 0);
         }
 
@@ -5395,74 +5489,1492 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          */
         function getUserData() {
             var url = config.host.nodeHost + '/member/getUserData';
-            var uid = tools.getLocalStorageObj('userData');
-            $timeout(function () {
-                uid = uid.uid;
+
+            var userData = tools.getLocalStorageObj('userData');
+            var uid;
+            if (userData && userData.uid) {
+                uid = userData.uid;
+            }
+
+            if (uid) {
                 tools.postJsp(url, {uid: uid}, true).then(_scuess, function () {
                 });
-            }, 0);
+            } else {
+                $timeout(function () {
+                    tools.postJsp(url, {uid: uid}, true).then(_scuess, function () {
+                    });
+                }, 200);
+            }
 
             function _scuess(re) {
                 if (re.data.code == 'S') {
-                    tools.saveLocalStorageObj('userData', re.data.userData);
+                    tools.saveLocalStorageObj('userData', re.data.doc[0]);
                     $timeout(function () {
                         $rootScope.$broadcast('changeBody');
                         $rootScope.$broadcast('closeLoading');
                     }, 200);
+                    giveTellCallStatus(re.data.doc[0].telType);
                 }
             }
         }
+
+        /**
+         * 延时异步去取统计
+         */
+        function getCount() {
+            var url = config.host.nodeHost + '/member/getUserCount';
+            var uid = tools.getLocalStorageObj('userData');
+            $timeout(function () {
+                if (uid && uid.uid) {
+                    uid = uid.uid;
+                    tools.postJsp(url, {uid: uid}, true).then(_scuess, function () {
+                    });
+                }
+            }, 0);
+
+            function _scuess(re) {
+                if (re.data && re.data.code == 'S') {
+                    $timeout(function () {
+                        $scope.jiNengCount = re.data.jiNengCount;//技能count
+                        $scope.needCount = re.data.needCount;//需求count
+                    }, 0);
+                }
+            }
+        }
+
+        /**
+         * bind电话咨询选择事件
+         */
+        function bindTelCall() {
+            var yunXu = document.getElementById('myRadio1_0');//允许
+            var jinZhi = document.getElementById('myRadio1_1');//禁止
+
+            var type = 'tap';
+            tools.trueWeb(function () {
+                type = 'click';
+            }, function () {
+            });
+
+            yunXu.addEventListener(type, _yunXun);
+            jinZhi.addEventListener(type, _jinZhi);
+
+            function _yunXun() {
+                yunXu.style.borderColor = '#ccc';
+                jinZhi.style.borderColor = '#fff';
+                postApi('yunXun');
+            }
+
+            function _jinZhi() {
+                yunXu.style.borderColor = '#fff';
+                jinZhi.style.borderColor = '#ccc';
+                postApi('jinZhi');
+            }
+
+            function postApi(telType) {
+                var url = config.host.nodeHost + "/member/telType";
+                tools.postJsp(url, {
+                    'telType': telType,
+                    'uid': tools.getLocalStorageObj('userData').uid
+                }, true).then(_s);
+                function _s(re) {
+                    if (re.data.code == 'S') {
+                        var userData = tools.getLocalStorageObj('userData');
+                        userData.telType = telType;
+                        tools.saveLocalStorageObj('userData', userData);
+                    }
+                }
+            }
+        }
+
+        /**
+         * 给电话咨询状态
+         */
+        function giveTellCallStatus(telType) {
+            if (telType == 'yunXu') {
+                _yunXun();
+            }
+            else if (telType == 'jinZhi') {
+                _jinZhi();
+            } else {
+                _yunXun();
+            }
+        }
+
+        /**
+         * 允许的dom样式
+         * @private
+         */
+        function _yunXun() {
+            yunXu.style.borderColor = '#ccc';
+            jinZhi.style.borderColor = '#fff';
+        }
+
+        /**
+         * 禁止的dom样式
+         * @private
+         */
+        function _jinZhi() {
+            yunXu.style.borderColor = '#fff';
+            jinZhi.style.borderColor = '#ccc';
+        }
+
     }
-
-
 })();
 
 /**
- * 命名注释：directive简称_setting. 父模块_dipan . 功能_设置 类型_directive .js
- * 使用 ：<div add></div>
+ * 命名注释：directive简称_myKill. 父模块_dipan . 功能_我的技能 类型_directive .js
+ * 使用 ：<div my-kill></div>
  */
 (function () {
     'use strict';
-    angular.module('dipan').directive('setting', setting);
-    function setting() {
+    angular.module('dipan').directive('myKill', myKill);
+    function myKill() {
         return {
             restrict: 'A',
-            replace: false,
+            replace: true,
             scope: {},
             controller: thisController,
-            templateUrl: window.tplPath + 'directive/member/setting.dipan.setting.directive.html',
+            templateUrl: window.tplPath + 'directive/member/myKill.dipan.myKill.directive.html',
             link: function (scope, element, attrs) {
             }
         };
     }
 
-    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'tools', 'localData', 'config'];
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config', 'tools', 'header', '$q', '$state'];
 
-    function thisController($scope, $rootScope, $timeout, tools, localData, config) {
+    function thisController($scope, $rootScope, $timeout, localData, config, tools, header, $q, $state) {
+
         $scope.$watch('$viewContentLoading', function () {
-            $rootScope.$broadcast('changeBody');
-            setTimeout(function () {
-                $rootScope.$broadcast('closeLoading');
-            }, 0);
+            $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
         });
+        $scope.list = '';//联系人列表
+        $scope.errMsg = '';//错误信息
 
-        //setting 导航list > 本地数据
-        $scope.listNav = localData.setting;
-        //版本
-        $scope.version = config.version.default;
-
-        /*************************
-         * 判断数据赋值成功 关闭 loading
-         * 16/8/15 下午2:57 ByRockBlus
-         *************************/
-        if ($scope.listNav) {
+        init();
+        function init() {
             $timeout(function () {
-                $rootScope.$broadcast('closeLoading');
+                $scope.errMsg = '';
             }, 0);
+            getList()//获取list
+                .then(bindClick);//bind点击
+        }
+
+        function getList() {
+            var defer = $q.defer();
+            var url = config.host.nodeHost + '/sns/myKill';
+            var userData = tools.getLocalStorageObj('userData');
+            var uid;
+            if (userData && userData.uid) {
+                uid = userData.uid;
+            }
+
+            if (uid) {
+                tools.postJsp(url, {uid: uid})
+                    .then(_call, _err);
+            } else {
+                $timeout(function () {
+                    tools.postJsp(url, {uid: uid})
+                        .then(_call, _err);
+                }, 200);
+            }
+
+            function _call(re) {
+                if (re.data && re.data.code == 'S' && re.data.doc && re.data.doc[0]) {
+                    $timeout(function () {
+                        $scope.list = re.data.doc;
+                        defer.resolve(re.data.doc);
+                    }, 0);
+                } else {
+                    _err('没有数据');
+                    $timeout(function () {
+                        $scope.list = '';
+                    }, 0);
+                }
+            }
+
+            function _err(err) {
+                err = err || '数据获取失败';
+                $timeout(function () {
+                    $scope.errMsg = err;
+                    defer.reject();
+                }, 0);
+            }
+
+            return defer.promise;
+        }
+
+        function bindClick(list) {
+            $timeout(function () {
+                angular.forEach(list, function (vo) {
+                    var domId = 'myKillList_' + vo._id;
+                    var domIdEdit = 'myKillListEdit_' + vo._id;
+                    var domIdDel = 'myKillListDel_' + vo._id;
+                    var domSetMaster = 'setMaster_' + vo._id;
+                    tools.bindClick(domId, _bindClick);
+                    tools.bindClick(domIdEdit, _bindEdit);
+                    tools.bindClick(domIdDel, _bindDel);
+                    tools.bindClick(domSetMaster, _bindSetMaster);
+                });
+                function _bindClick(dom) {//点击
+                    var killId = dom.getAttribute('killid');
+                    goKillUrl(killId);
+                }
+
+                function _bindEdit(dom) {//编辑
+                    var killId = dom.getAttribute('killid');
+
+                }
+
+                function _bindDel(dom) {//删除
+                    var killId = dom.getAttribute('killid');
+                    delOneKill(killId);
+                }
+
+                function _bindSetMaster(dom) {
+                    var killId = dom.getAttribute('killid');
+                    setMaster(killId);
+                }
+            }, 0);
+        }
+
+        /**
+         * 删除1条技能
+         */
+        function delOneKill(killId) {
+
+            tools.trueWeb(function () {
+                var con = confirm("确定删除此技能吗?");
+                if (con) {
+                    _del()
+                        .then(function () {
+                            $timeout(function () {
+                                init();
+                            }, 0);
+                        }, function (err) {
+                            $timeout(function () {
+                                $scope.errMsg = err;
+                            }, 0);
+                        });
+                }
+            }, function () {
+                plus.nativeUI.actionSheet({
+                    title: "确定删除此技能吗?",
+                    buttons: [{title: "确定"}, {title: "取消"}]
+                }, function (e) {
+                    if (e.index == 1) {
+                        _del()
+                            .then(function () {
+                                $timeout(function () {
+                                    init();
+                                }, 0);
+                            }, function (err) {
+                                $timeout(function () {
+                                    $scope.errMsg = err;
+                                }, 0);
+                            });
+                    }
+                });
+            });
+
+
+            function _del() {
+                var defer = $q.defer();
+                var url = config.host.nodeHost + '/sns/delKill';
+                tools.postJsp(url, {killId: killId})
+                    .then(_call, _err);
+
+                function _call(re) {
+                    if (re && re.data && re.data.code == 'S') {
+                        defer.resolve();
+                    } else {
+                        _err('删除技能失败');
+                    }
+                }
+
+                function _err(err) {
+                    err = err || '删除技能失败';
+                    defer.reject(err);
+                }
+
+                return defer.promise;
+            }
+        }
+
+        /**
+         * 设置主技能
+         */
+        function setMaster(killId) {
+            var url = config.host.nodeHost + '/sns/setMaster';
+            tools.postJsp(url, {killId: killId})
+                .then(_call, _err);
+            function _call(re) {
+                if (re && re.data && re.data.code == 'S') {
+                    $timeout(function () {
+                        init();
+                    }, 0);
+                } else {
+                    _err('设置主技能失败');
+                }
+            }
+
+            function _err(err) {
+                err = err || '设置主技能失败';
+                $timeout(function () {
+                    $scope.errMsg = err;
+                }, 0);
+            }
+
+        }
+
+        /**
+         * goKillUrl
+         */
+        function goKillUrl(killId) {
+            $state.go('killContent', {'jiNengId': killId});
+        }
+
+
+    }
+})();
+
+/**
+ * 命名注释：directive简称_myNeed. 父模块_dipan . 功能_我的需求 类型_directive .js
+ * 使用 ：<div my-need></div>
+ */
+(function () {
+    'use strict';
+    angular.module('dipan').directive('myNeed', myNeed);
+    function myNeed() {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/member/myNeed.dipan.myNeed.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config', 'tools', 'header', '$q', '$state'];
+
+    function thisController($scope, $rootScope, $timeout, localData, config, tools, header, $q, $state) {
+
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
+        });
+        $scope.listTypeOne = '';//需求list state正常
+        $scope.listTypeTwo = '';//需求list state失效
+        $scope.errMsg = '';//错误提示
+
+        init();
+
+        function init() {
+            $timeout(function () {
+                $scope.listTypeOne = '';
+                $scope.listTypeTwo = '';
+                $scope.errMsg = '';
+            }, 0);
+            getList()//获取需求列表
+                .then(bindClick);
+        }
+
+        function getList() {//获取需求列表
+            var defer = $q.defer();
+            var url = config.host.nodeHost + '/sns/myNeed';
+
+
+            var userData = tools.getLocalStorageObj('userData');
+            var uid;
+            if (userData && userData.uid) {
+                uid = userData.uid;
+            }
+
+            if (uid) {
+                tools.postJsp(url, {uid: uid})
+                    .then(function (re) {
+                        if (re && re.data && re.data.code == 'S' && re.data.doc) {
+
+                            var typeOne = [];
+                            var typeTwo = [];
+                            angular.forEach(re.data.doc, function (vo) {
+                                if (vo.state !== 4) {
+                                    if (vo.state == 3) {
+                                        typeTwo.push(vo);
+                                    } else {
+                                        typeOne.push(vo);
+                                    }
+                                } else {
+                                    typeTwo.push(vo);
+                                }
+                            });
+
+                            $timeout(function () {
+                                $scope.listTypeOne = typeOne;
+                                $scope.listTypeTwo = typeTwo;
+                                defer.resolve(re.data.doc);//成功
+                            }, 0);
+                        } else {
+                            defer.reject('获取需求列表失败');
+                        }
+                    }, function (err) {
+                        defer.reject('获取需求列表失败');
+                    });
+            } else {
+                $timeout(function () {
+
+                    tools.postJsp(url, {uid: uid})
+                        .then(function (re) {
+                            if (re && re.data && re.data.code == 'S' && re.data.doc) {
+
+                                var typeOne = [];
+                                var typeTwo = [];
+                                angular.forEach(re.data.doc, function (vo) {
+                                    if (vo.state !== 4) {
+                                        if (vo.state == 3) {
+                                            typeTwo.push(vo);
+                                        } else {
+                                            typeOne.push(vo);
+                                        }
+                                    } else {
+                                        typeTwo.push(vo);
+                                    }
+                                });
+
+                                $timeout(function () {
+                                    $scope.listTypeOne = typeOne;
+                                    $scope.listTypeTwo = typeTwo;
+                                    defer.resolve(re.data.doc);//成功
+                                }, 0);
+                            } else {
+                                defer.reject('获取需求列表失败');
+                            }
+                        }, function (err) {
+                            defer.reject('获取需求列表失败');
+                        });
+                }, 200);
+            }
+
+            return defer.promise;
+        }
+
+        function bindClick(list) {
+            $timeout(function () {
+                angular.forEach(list, function (vo) {
+                    var domId = 'myNeedListClick_' + vo._id;
+                    var domIdDel = 'myNeedListDel_' + vo._id;
+                    var goPingJiaDom = 'myNeedListGo_' + vo._id;
+                    tools.bindClick(domId, _bindClick);
+                    tools.bindClick(goPingJiaDom, _bindClick);
+                    tools.bindClick(domIdDel, _bindDel);
+                });
+                function _bindClick(dom) {//点击
+                    var needId = dom.getAttribute('needid');
+                    // upDateIsReadMark(needId, function () {//更新当前订单为已读
+                    goNeedUrl(needId);//跳转到需求详情
+                    // });
+                }
+
+                function _bindDel(dom) {//删除
+                    var needId = dom.getAttribute('needid');
+                    delOneNeed(needId);
+                }
+
+            }, 0);
+
+        }
+
+        /**
+         * 删除1条需求
+         */
+        function delOneNeed(needId) {
+            tools.trueWeb(function () {
+                var con = confirm("确定删除此需求吗?");
+                if (con) {
+                    _del()
+                        .then(function () {
+                            $timeout(function () {
+                                init();
+                            }, 0);
+                        }, function (err) {
+                            $timeout(function () {
+                                $scope.errMsg = err;
+                            }, 0);
+                        });
+                }
+            }, function () {
+                plus.nativeUI.actionSheet({
+                    title: "确定删除此需求吗?",
+                    buttons: [{title: "确定"}, {title: "取消"}]
+                }, function (e) {
+                    if (e.index == 1) {
+                        _del()
+                            .then(function () {
+                                $timeout(function () {
+                                    init();
+                                }, 0);
+                            }, function (err) {
+                                $timeout(function () {
+                                    $scope.errMsg = err;
+                                }, 0);
+                            });
+                    }
+                });
+            });
+
+
+            function _del() {
+                var defer = $q.defer();
+                var url = config.host.nodeHost + '/sns/delNeed';
+                tools.postJsp(url, {needId: needId})
+                    .then(_call, _err);
+
+                function _call(re) {
+                    if (re && re.data && re.data.code == 'S') {
+                        defer.resolve();
+                    } else {
+                        _err('删除需求失败');
+                    }
+                }
+
+                function _err(err) {
+                    err = err || '删除需求失败';
+                    defer.reject(err);
+                }
+
+                return defer.promise;
+            }
+        }
+
+        /**
+         * goNeedUrl
+         */
+        function goNeedUrl(needId) {
+            $state.go('orderFromContent', {'orderId': needId, 'type': 'show'});
         }
 
     }
 })();
+
+/**
+ * 命名注释：directive简称_myNews. 父模块_dipan . 功能_我的消息 类型_directive .js
+ * 使用 ：<div my-news></div>
+ */
+(function () {
+    'use strict';
+    angular.module('dipan').directive('myNews', myNews);
+    function myNews() {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/member/myNews.dipan.myNews.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', 'localData', 'config', 'tools', 'header'];
+
+    function thisController($scope, $rootScope, $timeout, localData, config, tools, header) {
+
+        $scope.defaultHeader = header.defaultHeader;
+
+        var clickType = 'tap';
+        tools.trueWeb(function () {
+            clickType = 'click';
+        }, function () {
+            clickType = 'tap';
+        });
+
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
+        });
+        $scope.list = undefined;//联系人列表
+
+        init();
+        function init() {
+            getList();//获取联系人列表,判断是否联系人有列表新消息,
+        }
+
+        /**
+         *获取联系人列表,判断是否联系人有列表新消息,
+         */
+        function getList() {
+            var uid = '';
+            var url = config.host.nodeHost + "/member/getCallList";
+            try {
+                uid = tools.getLocalStorageObj('userData').uid;
+            } catch (e) {
+                uid = '';
+            }
+            tools.postJsp(url, {uid: uid}, true).then(_s);
+            function _s(re) {
+                if (re.data && re.data.code == 'S') {
+                    $timeout(function () {
+                        $scope.list = re.data.doc;
+                        $timeout(function () {
+                            bindListClick();//绑定list点击
+                        }, 0);
+                    }, 0);
+                }
+            }
+        }
+
+        /**
+         * 绑定list点击
+         */
+        function bindListClick() {
+            angular.forEach($scope.list, function (vo) {
+                tools.bindClick(vo._id, function () {
+                    _click(vo);
+                });
+            });
+
+            function _click(vo) {
+                aleryRead(vo._id);//请求接口修改 当前用户的当前会话状态
+
+                // * @param gHeader 来宾联系人的头像
+                //     * @param gUId 来宾联系人的id
+                //     * @param gName 来宾联系人的name
+                //     * @param userHeader 用户头像
+                //     * @param userId 用户id
+                if (vo && vo.gUserId && vo.cid) {
+                    var goObj = {
+                        gHeader: vo.gUserId.headerImg || $scope.defaultHeader,
+                        gUId: vo.gUserId._id,
+                        gName: vo.gUserId.name || vo.gUserId.mt,
+                        userHeader: vo.cid.headerImg || $scope.defaultHeader,
+                        userId: vo.cid._id
+                    };
+                    $rootScope.$broadcast('openIm', goObj);
+                }
+
+            }
+
+        }
+
+        /**
+         * 已经读过的新消息了,请求api 改状态
+         */
+        function aleryRead(newsId) {
+            if (!newsId) {
+                return false;
+            }
+            var uid = '';
+            var url = config.host.nodeHost + "/member/myNewsIsRead";
+            tools.postJsp(url, {newsId: newsId}, true).then(_s);
+            function _s(re) {
+                if (re.data.code == 'S') {
+                    console.log(newsId + 'uid' + uid + '会话消息已读');
+                    // $rootScope.$broadcast('hideNews');//关闭新消息提示图标
+                }
+            }
+        }
+    }
+})();
+
+/**
+ * 命名注释：directive简称_orderFrom. 父模块_dipan . 订单列表页面 类型_directive .js
+ * 使用 ：<div order-from></div>
+ */
+(function () {
+    'use strict';
+    angular.module('dipan').directive('orderFrom', orderFrom);
+    function orderFrom() {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/member/orderFrom.dipan.orderFromList.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', '$state', 'config', 'tools', 'header'];
+
+    function thisController($scope, $rootScope, $timeout, $state, config, tools, header) {
+
+        var clickType = 'tap';
+        tools.trueWeb(function () {
+            clickType = 'click';
+        }, function () {
+            clickType = 'tap';
+        });
+
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
+            init();
+        });
+
+        $scope.isHaveNeedOrderFrom = false;//有需求订单显示
+        $scope.isHaveJinengOrderFrom = false;//有技能订单显示
+        $scope.isHaveSelectOrderFrom = false;//有选单订单显示
+        $scope.isHaveLoseOrderFrom = false;//有失效订单显示
+        $scope.list = undefined;//订单列表数据
+        $scope.defaultHeader = header.defaultHeader; //默认头像
+
+        function init() {
+            getList();//获取技能,需求订单
+        }
+
+        function getList() {
+            var url = config.host.nodeHost + '/member/getOrderFromList';
+
+            var userData = tools.getLocalStorageObj('userData');
+            var uid;
+            if (userData && userData.uid) {
+                uid = userData.uid;
+            }
+
+            if (uid) {
+                tools.postJsp(url, {uid: uid}, true).then(_s, _err);
+            } else {
+                $timeout(function () {
+                    tools.postJsp(url, {uid: uid}, true).then(_s, _err);
+                }, 200);
+            }
+
+            function _s(re) {
+                if (re.data.code == 'S') {
+                    re.data = re.data.doc;
+                    console.log('re', re.data);
+                    $timeout(function () {
+                        if (re.data.jiNengOrderList[0]) {
+                            $scope.isHaveJinengOrderFrom = true;
+                        }
+                        if (re.data.needOrderList[0]) {
+                            $scope.isHaveNeedOrderFrom = true;
+                        }
+                        if (re.data.selectOrderList[0] || re.data.selectBindUidOrderList[0]) {
+                            $scope.isHaveSelectOrderFrom = true;
+                        }
+                        if (re.data.loseOrderList[0] || re.data.loseOrderNeedList[0]) {
+                            $scope.isHaveLoseOrderFrom = true;
+                        }
+                        $scope.list = re.data;
+                        $timeout(function () {
+                            bindClick();
+                        }, 0);
+                    }, 0);
+                }
+            }
+
+            function _err(err) {
+                console.log('err', err);
+            }
+        }
+
+        /**
+         * bind 订单列表点击事件
+         */
+        function bindClick() {
+            //技能绑定
+            angular.forEach($scope.list.jiNengOrderList, function (vo) {
+                var dom = document.getElementById('jinengOreder_' + vo.orderId._id);
+                dom.addEventListener(clickType, function () {
+                    upDateIsReadMark(vo.orderId._id, function () {
+                        _bindJiNeng(dom, vo.orderId._id, 'show');
+                    });
+                });
+            });
+
+            //成交订单 跳转绑定
+            angular.forEach($scope.list.selectOrderList, function (vo) {
+                tools.bindClick('selectListGo_' + vo.orderId, function (dom) {
+                    upDateSelectOrderUidOrderIsReadMark(vo.orderId,
+                        function () {
+                            _bindJiNengByDom(dom);
+                        }
+                    );
+                });
+            });
+            //成交订单 跳转绑定
+            angular.forEach($scope.list.selectBindUidOrderList, function (vo) {
+                tools.bindClick('selectListGo_' + vo.orderId._id, function (dom) {
+                    upDateSelectBindUidOrderIsReadMark(vo.orderId._id, function () {
+                        _bindJiNengByDom(dom);
+                    });
+                });
+            });
+
+            //需求绑定
+            angular.forEach($scope.list.needOrderList, function (vo) {
+                var dom = document.getElementById('needOrder_' + vo.orderId);
+                dom.addEventListener(clickType, function () {
+                    upDateNeedOrderIsReadMark(vo.orderId, function () {//标记需求为已读
+                        _bindJiNeng(dom, vo.orderId, 'select');
+                    });
+                });
+            });
+
+            //选别人和 作为bindUid过期 跳转绑定
+            angular.forEach($scope.list.loseOrderList, function (vo) {
+                tools.bindClick('loseOrderGo_' + vo.orderId._id, _bindJiNengByDom);
+            });
+
+            // 作为orderUid 过期 跳转绑定
+            angular.forEach($scope.list.loseOrderNeedList, function (vo) {
+                tools.bindClick('loseNeedOrderGo_' + vo._id, _bindJiNengByDom);
+            });
+
+            //删除成交订单 绑定 ,如果没评价就跳转
+            angular.forEach($scope.list.selectOrderList, function (vo) {
+                tools.bindClick('delSelect_' + vo.orderId, delSelectOrderId);
+                tools.bindClick('pingJiaGo_' + vo.orderId, _bindJiNengByDom);
+            });
+
+            //删除bindUid 过期订单 绑定
+            angular.forEach($scope.list.loseOrderList, function (vo) {
+                tools.bindClick('delLose_' + vo.orderId._id, delLoseOrderId);
+            });
+
+            //删除 bindUid 成交订单 绑定 如果没评价就跳转
+            angular.forEach($scope.list.selectBindUidOrderList, function (vo) {
+                tools.bindClick('delLose_' + vo.orderId._id, delLoseOrderId);
+                tools.bindClick('pingJiaGo_' + vo.orderId._id, _bindJiNengByDom);
+            });
+
+            //删除orderUid 过期订单 绑定
+            angular.forEach($scope.list.loseOrderNeedList, function (vo) {
+                tools.bindClick('delLoseNeed_' + vo._id, delLoseNeedOrderId);
+            });
+
+            //跳转订单详情
+            function _bindJiNeng(dom, orderId, type) {
+                $state.go('orderFromContent', {'orderId': orderId, 'type': type});
+            }
+
+            //跳转订单详情 by domOrder
+            function _bindJiNengByDom(dom) {
+                var orderId = dom.getAttribute('orderid');
+                $state.go('orderFromContent', {'orderId': orderId, 'type': 'select'});
+            }
+
+            //删除成交订单
+            function delSelectOrderId(dom) {
+                var thisOrderId = dom.getAttribute('orderid');
+                var url = config.host.nodeHost + '/sns/delNeed';
+                tools.postJsp(url, {needId: thisOrderId})
+                    .then(function (re) {
+                        if (re.data && re.data.code == 'S') {
+                            $timeout(function () {
+                                $scope.isHaveSelectOrderFrom = false;//有选单订单显示
+                                getList();
+                            }, 0);
+                        } else {
+                            tools.alert({title: '删除失败'});
+                        }
+                    });
+            }
+
+            //删除过期订单 作为 bindUid
+            function delLoseOrderId(dom) {
+                var thisOrderId = dom.getAttribute('orderid');
+                var url = config.host.nodeHost + '/member/delBindUser';
+                tools.postJsp(url, {orderId: thisOrderId})
+                    .then(function (re) {
+                        if (re.data && re.data.code == 'S') {
+                            $timeout(function () {
+                                $scope.isHaveLoseOrderFrom = false;//有选单订单显示
+                                getList();
+                            }, 0);
+                        } else {
+                            tools.alert({title: '删除失败'});
+                        }
+                    });
+            }
+
+            //删除过期订单 作为 orderUid
+            function delLoseNeedOrderId(dom) {
+                var thisOrderId = dom.getAttribute('orderid');
+                var url = config.host.nodeHost + '/sns/delNeed';
+                tools.postJsp(url, {needId: thisOrderId})
+                    .then(function (re) {
+                        if (re.data && re.data.code == 'S') {
+                            $timeout(function () {
+                                $scope.isHaveLoseOrderFrom = false;//有选单订单显示
+                                getList();
+                            }, 0);
+                        } else {
+                            tools.alert({title: '删除失败'});
+                        }
+                    });
+            }
+
+        }
+
+
+        /**
+         * 更新当前技能订单为已读
+         * @param callBack
+         */
+
+        function upDateIsReadMark(needId, callBack) {
+            var url = config.host.nodeHost + '/member/editIsReatMark';
+            tools.postJsp(url, {orderId: needId}, true)
+                .then(function () {
+                    callBack();
+                });
+        }
+
+        /**
+         * 更新当前需求订单为已读
+         * @param callBack
+         */
+        function upDateNeedOrderIsReadMark(needId, callBack) {
+            var url = config.host.nodeHost + '/member/editNeedOrderIsReadMark';
+            tools.postJsp(url, {orderId: needId}, true)
+                .then(function (re) {
+                    callBack();
+                });
+        }
+
+        /**
+         * 更新当前bindUid成交订单为已读
+         * @param callBack
+         */
+        function upDateSelectBindUidOrderIsReadMark(needId, callBack) {
+            var url = config.host.nodeHost + '/member/upDateSelectBindUidOrderIsReadMark';
+            tools.postJsp(url, {orderId: needId}, true)
+                .then(function (re) {
+                    callBack();
+                });
+        }
+
+        /**
+         * 更新当前orderUid成交订单为已读
+         * @param callBack
+         */
+        function upDateSelectOrderUidOrderIsReadMark(needId, callBack) {
+            var url = config.host.nodeHost + '/member/upDateSelectOrderUidOrderIsReadMark';
+            tools.postJsp(url, {orderId: needId}, true)
+                .then(function (re) {
+                    callBack();
+                });
+        }
+
+    }
+})();
+
+/**
+ * 命名注释：directive简称_orderFromContent. 父模块_dipan . 需求(订单)详情页面 类型_directive .js
+ * 使用 ：<div order-from-content></div>
+ */
+(function () {
+    'use strict';
+    angular.module('dipan').directive('orderFromContent', orderFromContent);
+    function orderFromContent() {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {},
+            controller: thisController,
+            templateUrl: window.tplPath + 'directive/member/orderFromContent.dipan.orderFromContent.directive.html',
+            link: function (scope, element, attrs) {
+            }
+        };
+    }
+
+    thisController.$inject = ['$scope', '$rootScope', '$timeout', '$state', 'config', 'tools', 'header'];
+
+    function thisController($scope, $rootScope, $timeout, $state, config, tools, header) {
+
+        var clickType = 'tap';
+        tools.trueWeb(function () {
+            clickType = 'click';
+        }, function () {
+            clickType = 'tap';
+        });
+        $scope.$watch('$viewContentLoading', function () {
+            $rootScope.$broadcast('changeBody');//默认读取缓存用户数据
+            init();
+        });
+        $scope.data = '';//订单详情数据
+        // $scope.userShow = false;//技能方进入   判断是不是此用户发的,是此用户发的,就不显示个人资料
+        // $scope.userSelect = false;//需求方(自己进入)  判断是不是此用户发的,是此用户发的,就不显示个人资料
+        $scope.bindUserShow = false;//技能方进入并且 是 下单,(等待技能方接单)
+        $scope.userType = false;//判断进入的用户角色显示不同ui 1公共 2 技能方进入  3需求方进入
+        $scope.showUserData = false;//显示用户资料面板
+
+        $scope.bindUserShowName = '';//bindUserShowName 等您接单
+        $scope.seeOtherKillInfo = '暂时无人接单,去看看其他人的技能吧!';
+        $scope.bindUserShowAlreadyJieDan = false;//技能方 已经成交 给评价
+        $scope.$on('getOrderContent', getOrderContent);//监听获取订单详情
+
+
+        function init() {
+            getOrderContent();//获取订单详情
+        }
+
+        function getOrderContent() {
+            $timeout(function () {
+                $scope.jieDanShiBai = false;//接单失败提示信息 显示
+            }, 0);
+            var url = config.host.nodeHost + '/member/getOrderFromContent';
+            var gpsObj, uid;
+            var userData = tools.getLocalStorageObj('userData');
+            if (userData && userData.uid) {
+                uid = userData.uid;
+            }
+            var areaGps = tools.getLocalStorageObj('areaGps');
+            if (areaGps && areaGps.gpsObj) {
+                gpsObj = areaGps.gpsObj;
+            }
+            tools.postJsp(url,
+                {
+                    uid: uid,
+                    orderId: $state.params.orderId,
+                    areaGps: gpsObj
+                }, true).then(_s);
+            function _s(re) {
+                if (re.data && re.data.code == 'S' && re.data.doc) {
+
+                    //头像
+                    if (re.data.doc.userData && !re.data.doc.userData.headerImg) {
+                        re.data.doc.userData.headerImg = header.defaultHeader;
+                    }
+
+                    //价格
+                    if (re.data.doc.thisNeed && re.data.doc.thisNeed.priceUnit == '面议') {
+                        re.data.doc.thisNeed.priceStr = '价格面议';
+                    } else if (re.data.doc.thisNeed) {
+                        re.data.doc.thisNeed.priceStr = re.data.doc.thisNeed.price + ' ' + re.data.doc.thisNeed.priceUnit;
+                    }
+
+                    //组合单位str
+                    angular.forEach(re.data.doc.needList, function (vo) {
+                        if (vo.priceUnit == '面议') {
+                            vo.priceStr = '';
+                        } else {
+                            vo.priceStr = "<span style='color: red;'>" + vo.price + "</span>" + ' ' + vo.priceUnit;
+                        }
+                    });
+
+                    if (re.data.doc.thisNeed && re.data.doc.thisNeed.bidUserArr) {
+                        var trueXiaDan = {
+                            isHaveXiaDan: false, //是否有下单
+                            bindUid: '',//被下单的uid
+                            orderUid: '',//orderUid
+                        };//判断是下单,等待技能方接单的情况
+                        angular.forEach(re.data.doc.thisNeed.bidUserArr, function (vo2) {
+                                if (!vo2.headerImg) {
+                                    vo2.headerImg = header.defaultHeader;
+                                }
+
+                                if (vo2.bindUidType == 2) {//被动接单(点击下单)
+                                    trueXiaDan.isHaveXiaDan = true;
+                                    trueXiaDan.bindUid = vo2.uid;
+                                    trueXiaDan.orderUid = re.data.doc.thisNeed.uid._id;
+                                    trueXiaDan.orderId = re.data.doc.orderId;
+                                    trueXiaDan.showName = re.data.doc.thisNeed.uid.name;
+                                    if (!trueXiaDan.showName) {
+                                        trueXiaDan.showName = re.data.doc.thisNeed.uid.mt;
+                                    }
+                                    if (vo2.bindUid && vo2.bindUid.name) {
+                                        $timeout(function () {
+                                            $scope.seeOtherKillInfo = '等待\"' + vo2.bindUid.name + '\"接单,点击在线联系';
+                                            tools.bindClick('noOrderGoHome', function () {
+                                                $rootScope.$broadcast('openIm', {
+                                                    gHeader: vo2.bindUid.headerImg || header.defaultHeader,
+                                                    gUId: vo2.bindUid._id,
+                                                    gName: vo2.bindUid.name,
+                                                    userHeader: tools.getLocalStorageObj('userData').headerImg || header.defaultHeader,
+                                                    userId: tools.getLocalStorageObj('userData').uid
+                                                });
+                                            });
+                                        }, 0);
+                                    }
+                                    else {
+                                        $timeout(function () {
+                                            $scope.seeOtherKillInfo = '等待\"' + vo2.bindUid.mt + '\"接单,点击在线联系';
+
+                                            tools.bindClick('noOrderGoHome', function () {
+                                                $rootScope.$broadcast('openIm', {
+                                                    gHeader: vo2.bindUid.headerImg || header.defaultHeader,
+                                                    gUId: vo2.bindUid._id,
+                                                    gName: vo2.bindUid.mt,
+                                                    userHeader: tools.getLocalStorageObj('userData').headerImg || header.defaultHeader,
+                                                    userId: tools.getLocalStorageObj('userData').uid
+                                                });
+                                            });
+                                        }, 0);
+                                    }
+                                }
+                            }
+                        );
+
+                        if (trueXiaDan.isHaveXiaDan) {//如果是下单,等待技能方接单的情况
+                            //判断当前uid, 是否接单id(bindUid),是就显示接单按钮,(接单后直接 成交)
+                            var thisUidLocal = tools.getLocalStorageObj('userData');
+                            if (thisUidLocal && thisUidLocal.uid) {
+                                if ((thisUidLocal.uid == trueXiaDan.bindUid) && (re.data.doc.thisNeed.state != 3 && re.data.doc.thisNeed.state != 4 && re.data.doc.thisNeed.state != 5 )) {
+                                    $timeout(function () {
+                                        $scope.bindUserShow = true;
+                                        $scope.bindUserShowName = trueXiaDan.showName;
+                                        $scope.bindUserShowData = trueXiaDan;
+                                        $timeout(function () {
+                                            tools.bindClick('bindJieDan', bindJieDan);//bind接单点击
+                                        }, 0);
+                                    }, 0);
+                                }
+                            } else {
+                                $state.go('loginout');
+                            }
+                        }
+                    }
+
+                    //判断有接单的bindUser 给头像
+                    if (re.data.doc.thisNeed && re.data.doc.thisNeed.bindUser && !re.data.doc.thisNeed.binUser.headerImg) {
+                        re.data.doc.thisNeed.binUser.headerImg = header.defaultHeader;
+                    }
+
+                    $timeout(function () {
+                        if ((re.data.doc.userData._id == tools.getLocalStorageObj('userData').uid)) {
+                            $timeout(function () {
+                                $scope.userType = 3;//需求方
+                                showUi('select');
+                            }, 0);
+                        }
+                        else if (re.data.doc.userType == 2) {//技能方
+
+
+                            if (re.data.doc.userData.isJion) {//如果当前用户已经接了这单,隐藏接单按钮
+                                $rootScope.$broadcast('hideXiaDan');
+                            } else if ((re.data.doc.thisNeed.state !== 1) && (re.data.doc.thisNeed.state !== 2)) {//如果隐藏打电话
+                                document.getElementById('bottomNavCall').style.display = 'none';
+                            }
+
+                            $timeout(function () {
+                                //如果当前已选单,并且被选技能方不是 当前 技能方的 uid , 那摸当前技能方就转换为公共方角色
+                                if (trueKillType(re)) {
+                                    $scope.userType = 1;//转换为公共方
+                                } else {
+                                    $scope.userType = 2;//技能方
+                                }
+                                showUi('show');
+                            }, 0);
+                        }
+                        else {//公共方
+                            $timeout(function () {
+                                $scope.userType = 1;//公共方
+                            }, 0);
+                        }
+                        $scope.data = re.data.doc;
+                        $timeout(function () {
+                            bindClick();//bind用户列表 打电话,发消息,评价,没有订单 点击事件
+                            bindJiNengListClick();//绑定更多需求点击事件
+                            bindUserDataClick();//绑定用户数据弹窗事件
+                        }, 0);
+                    }, 0);
+                }
+            }
+        }
+
+        /**
+         * 如果当前已选单,并且被选技能方不是 当前 技能方的 uid , 那摸当前技能方就转换为公共方角色
+         */
+        function trueKillType(re) {
+            console.log('re', re);
+            if (tools.getLocalStorageObj('userData')) {
+                var uid = tools.getLocalStorageObj('userData').uid;
+                if (re.data && re.data.doc && re.data.doc.thisNeed && re.data.doc.thisNeed.state == 3) {//如果已选单
+                    //判断当前uid 是不选单的 技能uid
+                    if (re.data && re.data.doc && re.data.doc.thisNeed && re.data.doc.thisNeed.bidUser && re.data.doc.thisNeed.bidUser.uid != uid) {
+                        return true;
+                    }
+                    return false;
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        /**
+         * 绑定用户数据弹窗事件
+         */
+        function bindUserDataClick() {
+
+            tools.bindClick('showUserDataFromBtn', _bindShow);
+            tools.bindClick('closeUserDataFromePage', _bindClose);
+
+            function _bindShow() {
+                $timeout(function () {
+                    $scope.showUserData = true;//显示用户资料面板
+                }, 0);
+            }
+
+            function _bindClose() {
+                $timeout(function () {
+                    $scope.showUserData = false;//显示用户资料面板
+                }, 0);
+            }
+        }
+
+        /**bindJieDan
+         * bind接单点击事件,(等您接单)
+         */
+        function bindJieDan(dom) {
+            var url = config.host.nodeHost + '/member/selectOrderFrom';
+            var postObj = {
+                bindUid: dom.getAttribute('binduid'),
+                orderUid: dom.getAttribute('orderuid'),
+                orderId: dom.getAttribute('orderid')
+            };
+
+
+            plus.nativeUI.confirm("网络交易注意防骗!建议走淘宝交易流程!", function (e) {
+                if (e.index === 0) {
+                    tools.postJsp(url, postObj).then(_call, _err);
+                }
+            }, "确定接单吗?", ["确定", "取消"]);
+
+
+            function _call(re) {
+                if (re && re.data && re.data.code == 'S') {
+                    $timeout(function () {
+                        $scope.bindUserShow = false;
+                    }, 0);
+                    getOrderContent();//接单成功,获取订单详情,
+                } else {
+                    _err('接单失败');
+                }
+            }
+
+            function _err(err) {
+                err = err || '接单失败';
+                tools.alert({title: err});
+            }
+        }
+
+        /**
+         * 根据不同的角色进入,显示不同ui
+         */
+        function showUi(type) {
+            if (type == 'select') {//需求方
+                $timeout(function () {
+                    $scope.userShow = false;
+                    $scope.userSelect = true;
+                    document.getElementById('bottomNavCall').style.display = 'none';
+                }, 0);
+            }
+            if (type == 'show') {//技能方
+                $timeout(function () {
+                    $scope.userShow = true;
+                    $scope.userSelect = false;
+                    trueKillUserAleadeySelect();//判断技订单已经成交,显示技能方评价
+                }, 0);
+
+            }
+        }
+
+        /**
+         * 判断技订单已经成交,显示技能方评价
+         */
+        function trueKillUserAleadeySelect() {
+            if ($scope.data && $scope.data.thisNeed && $scope.data.thisNeed.state == 3) {//如果已经成交
+                $timeout(function () {
+                    $scope.bindUserShowAlreadyJieDan = true;
+                }, 0);
+            }
+        }
+
+        /**
+         * bind点击
+         */
+        function bindClick() {
+            if ($scope.data && $scope.data.thisNeed && (($scope.data.thisNeed.bidUserArr && $scope.data.thisNeed.bidUserArr[0]) || ($scope.data.thisNeed.bidUser && $scope.data.thisNeed.bidUser.uid))) {
+                if ($scope.data.thisNeed.bidUserArr && $scope.data.thisNeed.bidUserArr[0]) {
+                    angular.forEach($scope.data.thisNeed.bidUserArr, function (vo) {
+                        tools.bindClick('telCall_' + vo.uid, telCall);
+                        tools.bindClick('imCall_' + vo.uid, imCall);
+                        tools.bindClick('selectUser_' + vo.uid, selectUser);
+                    });
+                }
+                var binId;
+                if ($scope.data.thisNeed.bidUser && $scope.data.thisNeed.bidUser.uid) {
+                    binId = $scope.data.thisNeed.bidUser.uid;
+                }
+                if (binId) {
+                    tools.bindClick('telCallSelect_' + binId, telCall);
+                    tools.bindClick('imCallSelect_' + binId, imCall);
+                    tools.bindClick('givePingJiaBtnNeed', pingJiaSubNeed);
+                    tools.bindClick('givePingJiaBtnKill', pingJiaSubKill);
+                }
+            } else {
+                tools.bindClick('noOrderGoHome', goHome);
+            }
+
+        }
+
+        /**
+         * goHome
+         */
+        function goHome() {
+            $state.go('home');
+        }
+
+        /**
+         * 打电话
+         */
+        function telCall(dom) {
+            var uid = dom.getAttribute('uid');
+            $rootScope.$broadcast('callTel', {
+                data: {
+                    code: 'S',
+                    uid: tools.getLocalStorageObj('userData').uid,
+                    jiNengId: uid
+                }
+            });
+        }
+
+        /**
+         * imCall
+         */
+        function imCall(dom) {
+            var gHeader = dom.getAttribute('headerimg');
+            var gUid = dom.getAttribute('uid');
+            var gName = dom.getAttribute('gname');
+            var userHeader = header.defaultHeader;
+            var tempHeader = tools.getLocalStorageObj('userData').headerImg;
+            if (tempHeader) {
+                userHeader = tempHeader;
+            }
+            var uid = tools.getLocalStorageObj('userData').uid;
+
+            var pushData = {
+                gHeader: gHeader,
+                gUId: gUid,
+                gName: gName,
+                userHeader: userHeader,
+                userId: uid
+            };
+
+            $rootScope.$broadcast('openIm', pushData);
+
+        }
+
+        /**
+         * 选单点击事件
+         */
+        function selectUser(dom) {
+            var uid = dom.getAttribute('uid');
+            var gName = dom.getAttribute('gname');
+            plus.nativeUI.confirm("网络交易注意防骗!建议走淘宝交易流程!", function (e) {
+                if (e.index === 0) {
+                    selectOrderFrom(uid, $state.params.orderId);
+                }
+            }, "确定选择\"" + gName + '\"?', ["确定", "取消"]);
+        }
+
+        /**
+         * 选单
+         */
+        function selectOrderFrom(uid, orderId) {
+            var url = config.host.nodeHost + '/member/selectOrderFrom';
+            tools.postJsp(url, {bindUid: uid, orderId: orderId}).then(_s, _e);
+
+            function _s(re) {
+                if (re.data && re.data.code == 'S') {
+                    getOrderContent();//从新获取数据
+                } else {
+                    _e('.' + re.data.msg);
+                }
+            }
+
+            function _e(e) {
+                var enE = e;
+                if (!e) {
+                    enE = '选单失败';
+                }
+                tools.alert({title: enE});
+            }
+        }
+
+        /**
+         * pingJiaSub need
+         */
+        function pingJiaSubNeed() {
+            var val = document.getElementById('pingJiaNeed').value;
+            if (!val) {
+                tools.alert({title: '评价不能为空'});
+            } else {
+                var url = config.host.nodeHost + '/member/pingJia';
+                tools.postJsp(url, {'orderId': $state.params.orderId, 'content': val}).then(_s, _e);
+            }
+
+            function _s(re) {
+                if (re.data && re.data.code == 'S') {
+                    getOrderContent();//从新获取数据
+                } else {
+                    _e(re.data.msg);
+                }
+            }
+
+            function _e(e) {
+                var enE = e;
+                if (!e) {
+                    enE = '评价失败';
+                }
+                tools.alert({title: enE});
+            }
+        }
+
+        /**
+         * pingJiaSub kill
+         */
+        function pingJiaSubKill() {
+            var val = document.getElementById('pingJiaKill').value;
+            if (!val) {
+                tools.alert({title: '评价不能为空'});
+            } else {
+                var url = config.host.nodeHost + '/member/pingJia';
+                tools.postJsp(url, {'orderId': $state.params.orderId, 'content': val}).then(_s, _e);
+            }
+
+            function _s(re) {
+                if (re.data && re.data.code == 'S') {
+                    getOrderContent();//从新获取数据
+                } else {
+                    _e(re.data.msg);
+                }
+            }
+
+            function _e(e) {
+                var enE = e;
+                if (!e) {
+                    enE = '评价失败';
+                }
+                tools.alert({title: enE});
+            }
+        }
+
+        /**
+         * bind 更多需求点击
+         */
+        function bindJiNengListClick() {
+            angular.forEach($scope.data.needList, function (vo) {
+                // var dom = document.getElementById('needlist_' + vo._id);
+                // dom.addEventListener(clickType, function () {
+                //     _bind(dom);
+                // });
+
+                tools.bindClick('needlist_' + vo._id, _bind);
+
+
+            });
+            function _bind(dom) {
+                var _id = dom.getAttribute('subid');
+                $state.go('orderFromContent', {'orderId': _id});
+            }
+        }
+
+    }
+})
+();
 
 /**
  * urlParse.dipan.firstNginx.directive.js
@@ -5614,6 +7126,2289 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
 
 /**
+ * 命名注释：server简称_getCity. 父模块 dipan. 功能_获取城市相关. 类型_factory.js
+ */
+
+(function () {
+    'use strict';
+    angular.module('dipan').factory('getCity', getCity);
+
+    getCity.$inject = [ '$q', 'tools', 'config', '$timeout'];
+
+
+    function getCity( $q, tools, config, $timeout) {
+        var re = {};
+        re.selectByCityCode = selectByCityCode;//根据省查询城市
+        var allCtiy = [{
+            "_id": "58292b6a07546368233f7688",
+            "city": "鞍山市",
+            "sheng": "辽宁省",
+            "location": "122.994329,41.108647",
+            "citycode": "0412",
+            "__v": 0
+        }, {
+            "_id": "58292b6b07546368233f7689",
+            "city": "安阳市",
+            "sheng": "河南省",
+            "location": "114.392393,36.097577",
+            "citycode": "0372",
+            "__v": 0
+        }, {
+            "_id": "58292b6c07546368233f768a",
+            "city": "安庆市",
+            "sheng": "安徽省",
+            "location": "117.063755,30.543494",
+            "citycode": "0556",
+            "__v": 0
+        }, {
+            "_id": "58292b6d07546368233f768b",
+            "city": "安康市",
+            "sheng": "陕西省",
+            "location": "109.029022,32.684715",
+            "citycode": "0915",
+            "__v": 0
+        }, {
+            "_id": "58292b6e07546368233f768c",
+            "city": "阿克苏地区",
+            "sheng": "新疆维吾尔自治区",
+            "location": "80.260605,41.168779",
+            "citycode": "0997",
+            "__v": 0
+        }, {
+            "_id": "58292b6f07546368233f768d",
+            "city": "安顺市",
+            "sheng": "贵州省",
+            "location": "105.947594,26.253072",
+            "citycode": "0853",
+            "__v": 0
+        }, {
+            "_id": "58292b7007546368233f768e",
+            "city": "阿勒泰地区",
+            "sheng": "新疆维吾尔自治区",
+            "location": "88.141253,47.844924",
+            "citycode": "0906",
+            "__v": 0
+        }, {
+            "_id": "58292b7207546368233f768f",
+            "city": "阿里地区",
+            "sheng": "西藏自治区",
+            "location": "80.105804,32.501111",
+            "citycode": "0897",
+            "__v": 0
+        }, {
+            "_id": "58292b7307546368233f7690",
+            "city": "阿坝藏族羌族自治州",
+            "sheng": "四川省",
+            "location": "102.224653,31.899413",
+            "citycode": "0837",
+            "__v": 0
+        }, {
+            "_id": "58292b7607546368233f7691",
+            "city": "保定市",
+            "sheng": "河北省",
+            "location": "115.464806,38.873891",
+            "citycode": "0312",
+            "__v": 0
+        }, {
+            "_id": "58292b7807546368233f7692",
+            "city": "包头市",
+            "sheng": "内蒙古自治区",
+            "location": "109.840347,40.657449",
+            "citycode": "0472",
+            "__v": 0
+        }, {
+            "_id": "58292b7907546368233f7693",
+            "city": "滨州市",
+            "sheng": "山东省",
+            "location": "117.970703,37.381990",
+            "citycode": "0543",
+            "__v": 0
+        }, {
+            "_id": "58292b7a07546368233f7694",
+            "city": "本溪市",
+            "sheng": "辽宁省",
+            "location": "123.766485,41.294176",
+            "citycode": "0414",
+            "__v": 0
+        }, {
+            "_id": "58292b7b07546368233f7695",
+            "city": "宝鸡市",
+            "sheng": "陕西省",
+            "location": "107.237974,34.361980",
+            "citycode": "0917",
+            "__v": 0
+        }, {
+            "_id": "58292b7c07546368233f7696",
+            "city": "北海市",
+            "sheng": "广西壮族自治区",
+            "location": "109.119927,21.481254",
+            "citycode": "0779",
+            "__v": 0
+        }, {
+            "_id": "58292b7d07546368233f7697",
+            "city": "蚌埠市",
+            "sheng": "安徽省",
+            "location": "117.389719,32.916287",
+            "citycode": "0552",
+            "__v": 0
+        }, {
+            "_id": "58292b7e07546368233f7698",
+            "city": "白城市",
+            "sheng": "吉林省",
+            "location": "122.839024,45.619641",
+            "citycode": "0436",
+            "__v": 0
+        }, {
+            "_id": "58292b7f07546368233f7699",
+            "city": "巴彦淖尔市",
+            "sheng": "内蒙古自治区",
+            "location": "107.387657,40.743213",
+            "citycode": "0478",
+            "__v": 0
+        }, {
+            "_id": "58292b8007546368233f769a",
+            "city": "白山市",
+            "sheng": "吉林省",
+            "location": "126.423587,41.939994",
+            "citycode": "0439",
+            "__v": 0
+        }, {
+            "_id": "58292b8107546368233f769b",
+            "city": "亳州市",
+            "sheng": "安徽省",
+            "location": "115.778676,33.844582",
+            "citycode": "0558",
+            "__v": 0
+        }, {
+            "_id": "58292b8207546368233f769c",
+            "city": "巴中市",
+            "sheng": "四川省",
+            "location": "106.747478,31.867903",
+            "citycode": "0827",
+            "__v": 0
+        }, {
+            "_id": "58292b8307546368233f769d",
+            "city": "白银市",
+            "sheng": "甘肃省",
+            "location": "104.138560,36.544756",
+            "citycode": "0943",
+            "__v": 0
+        }, {
+            "_id": "58292b8407546368233f769e",
+            "city": "毕节市",
+            "sheng": "贵州省",
+            "location": "105.283992,27.302589",
+            "citycode": "0857",
+            "__v": 0
+        }, {
+            "_id": "58292b8507546368233f769f",
+            "city": "百色市",
+            "sheng": "广西壮族自治区",
+            "location": "106.618201,23.902333",
+            "citycode": "0776",
+            "__v": 0
+        }, {
+            "_id": "58292b8607546368233f76a0",
+            "city": "保山市",
+            "sheng": "云南省",
+            "location": "99.161761,25.112046",
+            "citycode": "0875",
+            "__v": 0
+        }, {
+            "_id": "58292b8707546368233f76a1",
+            "city": "巴音郭楞蒙古自治州",
+            "sheng": "新疆维吾尔自治区",
+            "location": "86.145298,41.764115",
+            "citycode": "0996",
+            "__v": 0
+        }, {
+            "_id": "58292b8807546368233f76a2",
+            "city": "成都市",
+            "sheng": "四川省",
+            "location": "104.066541,30.572269",
+            "citycode": "028",
+            "__v": 0
+        }, {
+            "_id": "58292b8907546368233f76a3",
+            "city": "博尔塔拉蒙古自治州",
+            "sheng": "新疆维吾尔自治区",
+            "location": "82.066159,44.905588",
+            "citycode": "0909",
+            "__v": 0
+        }, {
+            "_id": "58292b8b07546368233f76a4",
+            "city": "长沙市",
+            "sheng": "湖南省",
+            "location": "112.938814,28.228209",
+            "citycode": "0731",
+            "__v": 0
+        }, {
+            "_id": "58292b8c07546368233f76a5",
+            "city": "长春市",
+            "sheng": "吉林省",
+            "location": "125.323544,43.817072",
+            "citycode": "0431",
+            "__v": 0
+        }, {
+            "_id": "58292b8d07546368233f76a6",
+            "city": "常州市",
+            "sheng": "江苏省",
+            "location": "119.973987,31.810689",
+            "citycode": "0519",
+            "__v": 0
+        }, {
+            "_id": "58292b8e07546368233f76a7",
+            "city": "沧州市",
+            "sheng": "河北省",
+            "location": "116.838835,38.304477",
+            "citycode": "0317",
+            "__v": 0
+        }, {
+            "_id": "58292b8f07546368233f76a8",
+            "city": "赤峰市",
+            "sheng": "内蒙古自治区",
+            "location": "118.886856,42.257817",
+            "citycode": "0476",
+            "__v": 0
+        }, {
+            "_id": "58292b9007546368233f76a9",
+            "city": "承德市",
+            "sheng": "河北省",
+            "location": "117.962411,40.954071",
+            "citycode": "0314",
+            "__v": 0
+        }, {
+            "_id": "58292b9107546368233f76aa",
+            "city": "常德市",
+            "sheng": "湖南省",
+            "location": "111.698497,29.031673",
+            "citycode": "0736",
+            "__v": 0
+        }, {
+            "_id": "58292b9207546368233f76ab",
+            "city": "郴州市",
+            "sheng": "湖南省",
+            "location": "113.014718,25.770510",
+            "citycode": "0735",
+            "__v": 0
+        }, {
+            "_id": "58292b9307546368233f76ac",
+            "city": "长治市",
+            "sheng": "山西省",
+            "location": "113.116255,36.195386",
+            "citycode": "0355",
+            "__v": 0
+        }, {
+            "_id": "58292b9507546368233f76ad",
+            "city": "滁州市",
+            "sheng": "安徽省",
+            "location": "118.317107,32.301556",
+            "citycode": "0550",
+            "__v": 0
+        }, {
+            "_id": "58292b9707546368233f76ae",
+            "city": "潮州市",
+            "sheng": "广东省",
+            "location": "116.622604,23.656950",
+            "citycode": "0768",
+            "__v": 0
+        }, {
+            "_id": "58292b9807546368233f76af",
+            "city": "池州市",
+            "sheng": "安徽省",
+            "location": "117.491568,30.664800",
+            "citycode": "0566",
+            "__v": 0
+        }, {
+            "_id": "58292b9907546368233f76b0",
+            "city": "楚雄彝族自治州",
+            "sheng": "云南省",
+            "location": "101.528069,25.045532",
+            "citycode": "0878",
+            "__v": 0
+        }, {
+            "_id": "58292b9a07546368233f76b1",
+            "city": "崇左市",
+            "sheng": "广西壮族自治区",
+            "location": "107.364711,22.376533",
+            "citycode": "1771",
+            "__v": 0
+        }, {
+            "_id": "58292b9b07546368233f76b2",
+            "city": "昌都市",
+            "sheng": "西藏自治区",
+            "location": "97.172020,31.140969",
+            "citycode": "0895",
+            "__v": 0
+        }, {
+            "_id": "58292b9c07546368233f76b3",
+            "city": "大连市",
+            "sheng": "辽宁省",
+            "location": "121.614682,38.914003",
+            "citycode": "0411",
+            "__v": 0
+        }, {
+            "_id": "58292b9d07546368233f76b4",
+            "city": "朝阳市",
+            "sheng": "辽宁省",
+            "location": "120.450372,41.573734",
+            "citycode": "0421",
+            "__v": 0
+        }, {
+            "_id": "58292b9e07546368233f76b5",
+            "city": "东莞市",
+            "sheng": "广东省",
+            "location": "113.751765,23.020536",
+            "citycode": "0769",
+            "__v": 0
+        }, {
+            "_id": "58292b9f07546368233f76b6",
+            "city": "德州市",
+            "sheng": "山东省",
+            "location": "116.357465,37.434093",
+            "citycode": "0534",
+            "__v": 0
+        }, {
+            "_id": "58292ba007546368233f76b7",
+            "city": "东营市",
+            "sheng": "山东省",
+            "location": "118.674767,37.434751",
+            "citycode": "0546",
+            "__v": 0
+        }, {
+            "_id": "58292ba107546368233f76b8",
+            "city": "大同市",
+            "sheng": "山西省",
+            "location": "113.300129,40.076763",
+            "citycode": "0352",
+            "__v": 0
+        }, {
+            "_id": "58292ba207546368233f76b9",
+            "city": "大庆市",
+            "sheng": "黑龙江省",
+            "location": "125.103784,46.589310",
+            "citycode": "0459",
+            "__v": 0
+        }, {
+            "_id": "58292ba407546368233f76ba",
+            "city": "丹东市",
+            "sheng": "辽宁省",
+            "location": "124.354707,40.000500",
+            "citycode": "0415",
+            "__v": 0
+        }, {
+            "_id": "58292ba507546368233f76bb",
+            "city": "达州市",
+            "sheng": "四川省",
+            "location": "107.468023,31.209572",
+            "citycode": "0818",
+            "__v": 0
+        }, {
+            "_id": "58292ba607546368233f76bc",
+            "city": "德阳市",
+            "sheng": "四川省",
+            "location": "104.397894,31.126856",
+            "citycode": "0838",
+            "__v": 0
+        }, {
+            "_id": "58292ba707546368233f76bd",
+            "city": "大理白族自治州",
+            "sheng": "云南省",
+            "location": "100.267638,25.606486",
+            "citycode": "0872",
+            "__v": 0
+        }, {
+            "_id": "58292ba807546368233f76be",
+            "city": "大兴安岭地区",
+            "sheng": "黑龙江省",
+            "location": "124.711081,52.335206",
+            "citycode": "0457",
+            "__v": 0
+        }, {
+            "_id": "58292ba907546368233f76bf",
+            "city": "定西市",
+            "sheng": "甘肃省",
+            "location": "104.626282,35.580663",
+            "citycode": "0932",
+            "__v": 0
+        }, {
+            "_id": "58292baa07546368233f76c0",
+            "city": "德宏傣族景颇族自治州",
+            "sheng": "云南省",
+            "location": "98.584895,24.433353",
+            "citycode": "0692",
+            "__v": 0
+        }, {
+            "_id": "58292bab07546368233f76c1",
+            "city": "迪庆藏族自治州",
+            "sheng": "云南省",
+            "location": "99.702234,27.818882",
+            "citycode": "0887",
+            "__v": 0
+        }, {
+            "_id": "58292bac07546368233f76c2",
+            "city": "恩施土家族苗族自治州",
+            "sheng": "湖北省",
+            "location": "109.488172,30.272156",
+            "citycode": "0718",
+            "__v": 0
+        }, {
+            "_id": "58292bad07546368233f76c3",
+            "city": "鄂尔多斯市",
+            "sheng": "内蒙古自治区",
+            "location": "109.781327,39.608266",
+            "citycode": "0477",
+            "__v": 0
+        }, {
+            "_id": "58292bae07546368233f76c4",
+            "city": "福州市",
+            "sheng": "福建省",
+            "location": "119.296494,26.074508",
+            "citycode": "0591",
+            "__v": 0
+        }, {
+            "_id": "58292baf07546368233f76c5",
+            "city": "鄂州市",
+            "sheng": "湖北省",
+            "location": "114.894843,30.391940",
+            "citycode": "0711",
+            "__v": 0
+        }, {
+            "_id": "58292bb007546368233f76c6",
+            "city": "佛山市",
+            "sheng": "广东省",
+            "location": "113.121416,23.021548",
+            "citycode": "0757",
+            "__v": 0
+        }, {
+            "_id": "58292bb107546368233f76c7",
+            "city": "抚顺市",
+            "sheng": "辽宁省",
+            "location": "123.957208,41.880872",
+            "citycode": "0413",
+            "__v": 0
+        }, {
+            "_id": "58292bb207546368233f76c8",
+            "city": "阜阳市",
+            "sheng": "安徽省",
+            "location": "115.814205,32.890124",
+            "citycode": "1558",
+            "__v": 0
+        }, {
+            "_id": "58292bb307546368233f76c9",
+            "city": "阜新市",
+            "sheng": "辽宁省",
+            "location": "121.670324,42.021619",
+            "citycode": "0418",
+            "__v": 0
+        }, {
+            "_id": "58292bb407546368233f76ca",
+            "city": "防城港市",
+            "sheng": "广西壮族自治区",
+            "location": "108.353847,21.686860",
+            "citycode": "0770",
+            "__v": 0
+        }, {
+            "_id": "58292bb507546368233f76cb",
+            "city": "抚州市",
+            "sheng": "江西省",
+            "location": "116.358182,27.949217",
+            "citycode": "0794",
+            "__v": 0
+        }, {
+            "_id": "58292bb607546368233f76cc",
+            "city": "贵阳市",
+            "sheng": "贵州省",
+            "location": "106.630154,26.647661",
+            "citycode": "0851",
+            "__v": 0
+        }, {
+            "_id": "58292bb707546368233f76cd",
+            "city": "广州市",
+            "sheng": "广东省",
+            "location": "113.264435,23.129163",
+            "citycode": "020",
+            "__v": 0
+        }, {
+            "_id": "58292bb807546368233f76ce",
+            "city": "赣州市",
+            "sheng": "江西省",
+            "location": "114.935030,25.831829",
+            "citycode": "0797",
+            "__v": 0
+        }, {
+            "_id": "58292bb907546368233f76cf",
+            "city": "桂林市",
+            "sheng": "广西壮族自治区",
+            "location": "110.290195,25.273566",
+            "citycode": "0773",
+            "__v": 0
+        }, {
+            "_id": "58292bba07546368233f76d0",
+            "city": "广元市",
+            "sheng": "四川省",
+            "location": "105.843357,32.435435",
+            "citycode": "0839",
+            "__v": 0
+        }, {
+            "_id": "58292bbb07546368233f76d1",
+            "city": "广安市",
+            "sheng": "四川省",
+            "location": "106.633212,30.455962",
+            "citycode": "0826",
+            "__v": 0
+        }, {
+            "_id": "58292bbc07546368233f76d2",
+            "city": "贵港市",
+            "sheng": "广西壮族自治区",
+            "location": "109.598927,23.111531",
+            "citycode": "1755",
+            "__v": 0
+        }, {
+            "_id": "58292bbd07546368233f76d3",
+            "city": "甘南藏族自治州",
+            "sheng": "甘肃省",
+            "location": "102.911027,34.983386",
+            "citycode": "0941",
+            "__v": 0
+        }, {
+            "_id": "58292bbe07546368233f76d4",
+            "city": "固原市",
+            "sheng": "宁夏回族自治区",
+            "location": "106.242610,36.015855",
+            "citycode": "0954",
+            "__v": 0
+        }, {
+            "_id": "58292bc007546368233f76d5",
+            "city": "杭州市",
+            "sheng": "浙江省",
+            "location": "120.155070,30.274085",
+            "citycode": "0571",
+            "__v": 0
+        }, {
+            "_id": "58292bc107546368233f76d6",
+            "city": "惠州市",
+            "sheng": "广东省",
+            "location": "114.416196,23.111847",
+            "citycode": "0752",
+            "__v": 0
+        }, {
+            "_id": "58292bc207546368233f76d7",
+            "city": "果洛藏族自治州",
+            "sheng": "青海省",
+            "location": "100.244809,34.471431",
+            "citycode": "0975",
+            "__v": 0
+        }, {
+            "_id": "58292bc307546368233f76d8",
+            "city": "合肥市",
+            "sheng": "安徽省",
+            "location": "117.227239,31.820587",
+            "citycode": "0551",
+            "__v": 0
+        }, {
+            "_id": "58292bc407546368233f76d9",
+            "city": "哈尔滨市",
+            "sheng": "黑龙江省",
+            "location": "126.534967,45.803775",
+            "citycode": "0451",
+            "__v": 0
+        }, {
+            "_id": "58292bc507546368233f76da",
+            "city": "海口市",
+            "sheng": "海南省",
+            "location": "110.198293,20.044002",
+            "citycode": "0898",
+            "__v": 0
+        }, {
+            "_id": "58292bc607546368233f76db",
+            "city": "呼和浩特市",
+            "sheng": "内蒙古自治区",
+            "location": "111.749181,40.842585",
+            "citycode": "0471",
+            "__v": 0
+        }, {
+            "_id": "58292bc707546368233f76dc",
+            "city": "菏泽市",
+            "sheng": "山东省",
+            "location": "115.480656,35.233750",
+            "citycode": "0530",
+            "__v": 0
+        }, {
+            "_id": "58292bc807546368233f76dd",
+            "city": "邯郸市",
+            "sheng": "河北省",
+            "location": "114.538962,36.625657",
+            "citycode": "0310",
+            "__v": 0
+        }, {
+            "_id": "58292bc907546368233f76de",
+            "city": "衡水市",
+            "sheng": "河北省",
+            "location": "115.670177,37.738920",
+            "citycode": "0318",
+            "__v": 0
+        }, {
+            "_id": "58292bca07546368233f76df",
+            "city": "淮安市",
+            "sheng": "江苏省",
+            "location": "119.015286,33.610354",
+            "citycode": "0517",
+            "__v": 0
+        }, {
+            "_id": "58292bcb07546368233f76e0",
+            "city": "衡阳市",
+            "sheng": "湖南省",
+            "location": "112.571997,26.893231",
+            "citycode": "0734",
+            "__v": 0
+        }, {
+            "_id": "58292bcc07546368233f76e1",
+            "city": "葫芦岛市",
+            "sheng": "辽宁省",
+            "location": "120.836932,40.711052",
+            "citycode": "0429",
+            "__v": 0
+        }, {
+            "_id": "58292bcd07546368233f76e2",
+            "city": "汉中市",
+            "sheng": "陕西省",
+            "location": "107.023323,33.067480",
+            "citycode": "0916",
+            "__v": 0
+        }, {
+            "_id": "58292bce07546368233f76e3",
+            "city": "淮南市",
+            "sheng": "安徽省",
+            "location": "116.999932,32.625478",
+            "citycode": "0554",
+            "__v": 0
+        }, {
+            "_id": "58292bcf07546368233f76e4",
+            "city": "怀化市",
+            "sheng": "湖南省",
+            "location": "109.998488,27.554978",
+            "citycode": "0745",
+            "__v": 0
+        }, {
+            "_id": "58292bd007546368233f76e5",
+            "city": "淮北市",
+            "sheng": "安徽省",
+            "location": "116.798265,33.955845",
+            "citycode": "0561",
+            "__v": 0
+        }, {
+            "_id": "58292bd107546368233f76e6",
+            "city": "黄冈市",
+            "sheng": "湖北省",
+            "location": "114.872316,30.453906",
+            "citycode": "0713",
+            "__v": 0
+        }, {
+            "_id": "58292bd207546368233f76e7",
+            "city": "黄石市",
+            "sheng": "湖北省",
+            "location": "115.038520,30.199652",
+            "citycode": "0714",
+            "__v": 0
+        }, {
+            "_id": "58292bd307546368233f76e8",
+            "city": "湖州市",
+            "sheng": "浙江省",
+            "location": "120.086823,30.894348",
+            "citycode": "0572",
+            "__v": 0
+        }, {
+            "_id": "58292bd407546368233f76e9",
+            "city": "河源市",
+            "sheng": "广东省",
+            "location": "114.700447,23.743538",
+            "citycode": "0762",
+            "__v": 0
+        }, {
+            "_id": "58292bd507546368233f76ea",
+            "city": "呼伦贝尔市",
+            "sheng": "内蒙古自治区",
+            "location": "119.765745,49.211575",
+            "citycode": "0470",
+            "__v": 0
+        }, {
+            "_id": "58292bd607546368233f76eb",
+            "city": "鹤岗市",
+            "sheng": "黑龙江省",
+            "location": "130.297964,47.349916",
+            "citycode": "0468",
+            "__v": 0
+        }, {
+            "_id": "58292bd707546368233f76ec",
+            "city": "鹤壁市",
+            "sheng": "河南省",
+            "location": "114.297273,35.747225",
+            "citycode": "0392",
+            "__v": 0
+        }, {
+            "_id": "58292bd807546368233f76ed",
+            "city": "黄山市",
+            "sheng": "安徽省",
+            "location": "118.337482,29.714656",
+            "citycode": "0559",
+            "__v": 0
+        }, {
+            "_id": "58292bda07546368233f76ee",
+            "city": "河池市",
+            "sheng": "广西壮族自治区",
+            "location": "108.085261,24.692931",
+            "citycode": "0778",
+            "__v": 0
+        }, {
+            "_id": "58292bdb07546368233f76ef",
+            "city": "哈密地区",
+            "sheng": "新疆维吾尔自治区",
+            "location": "93.514917,42.818501",
+            "__v": 0
+        }, {
+            "_id": "58292bdc07546368233f76f0",
+            "city": "贺州市",
+            "sheng": "广西壮族自治区",
+            "location": "111.566694,24.403582",
+            "citycode": "1774",
+            "__v": 0
+        }, {
+            "_id": "58292bdd07546368233f76f1",
+            "city": "黑河市",
+            "sheng": "黑龙江省",
+            "location": "127.528560,50.245329",
+            "citycode": "0456",
+            "__v": 0
+        }, {
+            "_id": "58292bde07546368233f76f2",
+            "city": "和田地区",
+            "sheng": "新疆维吾尔自治区",
+            "location": "79.922211,37.114157",
+            "citycode": "0903",
+            "__v": 0
+        }, {
+            "_id": "58292bdf07546368233f76f3",
+            "city": "海西蒙古族藏族自治州",
+            "sheng": "青海省",
+            "location": "97.369752,37.377139",
+            "citycode": "0977",
+            "__v": 0
+        }, {
+            "_id": "58292be007546368233f76f4",
+            "city": "海东市",
+            "sheng": "青海省",
+            "location": "102.104287,36.502040",
+            "citycode": "0972",
+            "__v": 0
+        }, {
+            "_id": "58292be307546368233f76f5",
+            "city": "济南市",
+            "sheng": "山东省",
+            "location": "117.120000,36.651216",
+            "citycode": "0531",
+            "__v": 0
+        }, {
+            "_id": "58292be407546368233f76f6",
+            "city": "济宁市",
+            "sheng": "山东省",
+            "location": "116.587099,35.414921",
+            "citycode": "0537",
+            "__v": 0
+        }, {
+            "_id": "58292be607546368233f76f7",
+            "city": "金华市",
+            "sheng": "浙江省",
+            "location": "119.647445,29.079059",
+            "citycode": "0579",
+            "__v": 0
+        }, {
+            "_id": "58292be707546368233f76f8",
+            "city": "锦州市",
+            "sheng": "辽宁省",
+            "location": "121.127004,41.095120",
+            "citycode": "0416",
+            "__v": 0
+        }, {
+            "_id": "58292be807546368233f76f9",
+            "city": "江门市",
+            "sheng": "广东省",
+            "location": "113.081901,22.578738",
+            "citycode": "0750",
+            "__v": 0
+        }, {
+            "_id": "58292be907546368233f76fa",
+            "city": "嘉兴市",
+            "sheng": "浙江省",
+            "location": "120.755486,30.746129",
+            "citycode": "0573",
+            "__v": 0
+        }, {
+            "_id": "58292bea07546368233f76fb",
+            "city": "焦作市",
+            "sheng": "河南省",
+            "location": "113.241823,35.215893",
+            "citycode": "0391",
+            "__v": 0
+        }, {
+            "_id": "58292beb07546368233f76fc",
+            "city": "荆州市",
+            "sheng": "湖北省",
+            "location": "112.239741,30.335165",
+            "citycode": "0716",
+            "__v": 0
+        }, {
+            "_id": "58292bec07546368233f76fd",
+            "city": "晋中市",
+            "sheng": "山西省",
+            "location": "112.752695,37.687024",
+            "citycode": "0354",
+            "__v": 0
+        }, {
+            "_id": "58292bed07546368233f76fe",
+            "city": "佳木斯市",
+            "sheng": "黑龙江省",
+            "location": "130.318917,46.799923",
+            "citycode": "0454",
+            "__v": 0
+        }, {
+            "_id": "58292bee07546368233f76ff",
+            "city": "九江市",
+            "sheng": "江西省",
+            "location": "116.001930,29.705078",
+            "citycode": "0792",
+            "__v": 0
+        }, {
+            "_id": "58292bef07546368233f7700",
+            "city": "晋城市",
+            "sheng": "山西省",
+            "location": "112.851831,35.490702",
+            "citycode": "0356",
+            "__v": 0
+        }, {
+            "_id": "58292bf007546368233f7701",
+            "city": "鸡西市",
+            "sheng": "黑龙江省",
+            "location": "130.969333,45.295075",
+            "citycode": "0467",
+            "__v": 0
+        }, {
+            "_id": "58292bf107546368233f7702",
+            "city": "荆门市",
+            "sheng": "湖北省",
+            "location": "112.199265,31.035423",
+            "citycode": "0724",
+            "__v": 0
+        }, {
+            "_id": "58292bf207546368233f7703",
+            "city": "吉安市",
+            "sheng": "江西省",
+            "location": "114.992509,27.113443",
+            "citycode": "0796",
+            "__v": 0
+        }, {
+            "_id": "58292bf307546368233f7704",
+            "city": "揭阳市",
+            "sheng": "广东省",
+            "location": "116.372831,23.549993",
+            "citycode": "0663",
+            "__v": 0
+        }, {
+            "_id": "58292bf407546368233f7705",
+            "city": "景德镇市",
+            "sheng": "江西省",
+            "location": "117.178420,29.268836",
+            "citycode": "0798",
+            "__v": 0
+        }, {
+            "_id": "58292bf507546368233f7706",
+            "city": "酒泉市",
+            "sheng": "甘肃省",
+            "location": "98.494483,39.732411",
+            "citycode": "0937",
+            "__v": 0
+        }, {
+            "_id": "58292bf607546368233f7707",
+            "city": "",
+            "sheng": "河南省",
+            "location": "112.601919,35.067243",
+            "__v": 0
+        }, {
+            "_id": "58292bf807546368233f7708",
+            "city": "金昌市",
+            "sheng": "甘肃省",
+            "location": "102.188043,38.520089",
+            "citycode": "0935",
+            "__v": 0
+        }, {
+            "_id": "58292bf907546368233f7709",
+            "city": "开封市",
+            "sheng": "河南省",
+            "location": "114.307582,34.797239",
+            "citycode": "0378",
+            "__v": 0
+        }, {
+            "_id": "58292bfa07546368233f770a",
+            "city": "昆明市",
+            "sheng": "云南省",
+            "location": "102.832892,24.880095",
+            "citycode": "0871",
+            "__v": 0
+        }, {
+            "_id": "58292bfb07546368233f770b",
+            "city": "喀什地区",
+            "sheng": "新疆维吾尔自治区",
+            "location": "75.989755,39.470400",
+            "citycode": "0998",
+            "__v": 0
+        }, {
+            "_id": "58292bfc07546368233f770c",
+            "city": "克拉玛依市",
+            "sheng": "新疆维吾尔自治区",
+            "location": "84.889207,45.579889",
+            "citycode": "0990",
+            "__v": 0
+        }, {
+            "_id": "58292bfe07546368233f770d",
+            "city": "克孜勒苏柯尔克孜自治州",
+            "sheng": "新疆维吾尔自治区",
+            "location": "76.167819,39.714526",
+            "citycode": "0908",
+            "__v": 0
+        }, {
+            "_id": "58292bff07546368233f770e",
+            "city": "拉萨市",
+            "sheng": "西藏自治区",
+            "location": "91.140856,29.645554",
+            "citycode": "0891",
+            "__v": 0
+        }, {
+            "_id": "58292c0007546368233f770f",
+            "city": "兰州市",
+            "sheng": "甘肃省",
+            "location": "103.834304,36.061089",
+            "citycode": "0931",
+            "__v": 0
+        }, {
+            "_id": "58292c0107546368233f7710",
+            "city": "临沂市",
+            "sheng": "山东省",
+            "location": "118.356448,35.104672",
+            "citycode": "0539",
+            "__v": 0
+        }, {
+            "_id": "58292c0207546368233f7711",
+            "city": "廊坊市",
+            "sheng": "河北省",
+            "location": "116.683752,39.538047",
+            "citycode": "0316",
+            "__v": 0
+        }, {
+            "_id": "58292c0307546368233f7712",
+            "city": "聊城市",
+            "sheng": "山东省",
+            "location": "115.985371,36.456704",
+            "citycode": "0635",
+            "__v": 0
+        }, {
+            "_id": "58292c0407546368233f7713",
+            "city": "洛阳市",
+            "sheng": "河南省",
+            "location": "112.454040,34.619683",
+            "citycode": "0379",
+            "__v": 0
+        }, {
+            "_id": "58292c0507546368233f7714",
+            "city": "柳州市",
+            "sheng": "广西壮族自治区",
+            "location": "109.415953,24.325502",
+            "citycode": "0772",
+            "__v": 0
+        }, {
+            "_id": "58292c0607546368233f7715",
+            "city": "连云港市",
+            "sheng": "江苏省",
+            "location": "119.221611,34.596653",
+            "citycode": "0518",
+            "__v": 0
+        }, {
+            "_id": "58292c0707546368233f7716",
+            "city": "临汾市",
+            "sheng": "山西省",
+            "location": "111.518976,36.088005",
+            "citycode": "0357",
+            "__v": 0
+        }, {
+            "_id": "58292c0807546368233f7717",
+            "city": "漯河市",
+            "sheng": "河南省",
+            "location": "114.016539,33.581413",
+            "citycode": "0395",
+            "__v": 0
+        }, {
+            "_id": "58292c0907546368233f7718",
+            "city": "乐山市",
+            "sheng": "四川省",
+            "location": "103.765572,29.552107",
+            "citycode": "0833",
+            "__v": 0
+        }, {
+            "_id": "58292c0a07546368233f7719",
+            "city": "辽阳市",
+            "sheng": "辽宁省",
+            "location": "123.236944,41.267244",
+            "citycode": "0419",
+            "__v": 0
+        }, {
+            "_id": "58292c0b07546368233f771a",
+            "city": "六安市",
+            "sheng": "安徽省",
+            "location": "116.521855,31.733700",
+            "citycode": "0564",
+            "__v": 0
+        }, {
+            "_id": "58292c0c07546368233f771b",
+            "city": "泸州市",
+            "sheng": "四川省",
+            "location": "105.442261,28.871811",
+            "citycode": "0830",
+            "__v": 0
+        }, {
+            "_id": "58292c0d07546368233f771c",
+            "city": "莱芜市",
+            "sheng": "山东省",
+            "location": "117.676724,36.213814",
+            "citycode": "0634",
+            "__v": 0
+        }, {
+            "_id": "58292c0e07546368233f771d",
+            "city": "娄底市",
+            "sheng": "湖南省",
+            "location": "111.993497,27.700063",
+            "citycode": "0738",
+            "__v": 0
+        }, {
+            "_id": "58292c0f07546368233f771e",
+            "city": "龙岩市",
+            "sheng": "福建省",
+            "location": "117.017537,25.075123",
+            "citycode": "0597",
+            "__v": 0
+        }, {
+            "_id": "58292c1007546368233f771f",
+            "city": "吕梁市",
+            "sheng": "山西省",
+            "location": "111.144319,37.518314",
+            "citycode": "0358",
+            "__v": 0
+        }, {
+            "_id": "58292c1107546368233f7720",
+            "city": "丽水市",
+            "sheng": "浙江省",
+            "location": "119.922796,28.467630",
+            "citycode": "0578",
+            "__v": 0
+        }, {
+            "_id": "58292c1207546368233f7721",
+            "city": "凉山彝族自治州",
+            "sheng": "四川省",
+            "location": "102.267335,27.881611",
+            "citycode": "0834",
+            "__v": 0
+        }, {
+            "_id": "58292c1307546368233f7722",
+            "city": "六盘水市",
+            "sheng": "贵州省",
+            "location": "104.830359,26.592666",
+            "citycode": "0858",
+            "__v": 0
+        }, {
+            "_id": "58292c1407546368233f7723",
+            "city": "丽江市",
+            "sheng": "云南省",
+            "location": "100.227751,26.855047",
+            "citycode": "0888",
+            "__v": 0
+        }, {
+            "_id": "58292c1507546368233f7724",
+            "city": "来宾市",
+            "sheng": "广西壮族自治区",
+            "location": "109.221466,23.750306",
+            "citycode": "1772",
+            "__v": 0
+        }, {
+            "_id": "58292c1607546368233f7725",
+            "city": "辽源市",
+            "sheng": "吉林省",
+            "location": "125.143532,42.887918",
+            "citycode": "0437",
+            "__v": 0
+        }, {
+            "_id": "58292c1707546368233f7726",
+            "city": "陇南市",
+            "sheng": "甘肃省",
+            "location": "104.921841,33.400685",
+            "citycode": "2935",
+            "__v": 0
+        }, {
+            "_id": "58292c1807546368233f7727",
+            "city": "临沧市",
+            "sheng": "云南省",
+            "location": "100.079583,23.877573",
+            "citycode": "0883",
+            "__v": 0
+        }, {
+            "_id": "58292c1907546368233f7728",
+            "city": "临夏回族自治州",
+            "sheng": "甘肃省",
+            "location": "103.210539,35.601182",
+            "citycode": "0930",
+            "__v": 0
+        }, {
+            "_id": "58292c1a07546368233f7729",
+            "city": "林芝市",
+            "sheng": "西藏自治区",
+            "location": "94.361557,29.648943",
+            "citycode": "0894",
+            "__v": 0
+        }, {
+            "_id": "58292c1b07546368233f772a",
+            "city": "绵阳市",
+            "sheng": "四川省",
+            "location": "104.679114,31.467450",
+            "citycode": "0816",
+            "__v": 0
+        }, {
+            "_id": "58292c1c07546368233f772b",
+            "city": "牡丹江市",
+            "sheng": "黑龙江省",
+            "location": "129.618607,44.582962",
+            "citycode": "0453",
+            "__v": 0
+        }, {
+            "_id": "58292c1d07546368233f772c",
+            "city": "梅州市",
+            "sheng": "广东省",
+            "location": "116.122239,24.288615",
+            "citycode": "0753",
+            "__v": 0
+        }, {
+            "_id": "58292c1e07546368233f772d",
+            "city": "茂名市",
+            "sheng": "广东省",
+            "location": "110.925456,21.662999",
+            "citycode": "0668",
+            "__v": 0
+        }, {
+            "_id": "58292c1f07546368233f772e",
+            "city": "眉山市",
+            "sheng": "四川省",
+            "location": "103.848538,30.075440",
+            "citycode": "1833",
+            "__v": 0
+        }, {
+            "_id": "58292c2007546368233f772f",
+            "city": "马鞍山市",
+            "sheng": "安徽省",
+            "location": "118.506760,31.670452",
+            "citycode": "0555",
+            "__v": 0
+        }, {
+            "_id": "58292c2107546368233f7730",
+            "city": "宁波市",
+            "sheng": "浙江省",
+            "location": "121.550357,29.874557",
+            "citycode": "0574",
+            "__v": 0
+        }, {
+            "_id": "58292c2207546368233f7731",
+            "city": "南京市",
+            "sheng": "江苏省",
+            "location": "118.796877,32.060255",
+            "citycode": "025",
+            "__v": 0
+        }, {
+            "_id": "58292c2307546368233f7732",
+            "city": "南宁市",
+            "sheng": "广西壮族自治区",
+            "location": "108.366543,22.817002",
+            "citycode": "0771",
+            "__v": 0
+        }, {
+            "_id": "58292c2407546368233f7733",
+            "city": "南昌市",
+            "sheng": "江西省",
+            "location": "115.858198,28.682892",
+            "citycode": "0791",
+            "__v": 0
+        }, {
+            "_id": "58292c2507546368233f7734",
+            "city": "南通市",
+            "sheng": "江苏省",
+            "location": "120.894291,31.980172",
+            "citycode": "0513",
+            "__v": 0
+        }, {
+            "_id": "58292c2607546368233f7735",
+            "city": "南阳市",
+            "sheng": "河南省",
+            "location": "112.528322,32.990833",
+            "citycode": "0377",
+            "__v": 0
+        }, {
+            "_id": "58292c2707546368233f7736",
+            "city": "内江市",
+            "sheng": "四川省",
+            "location": "105.058433,29.580229",
+            "citycode": "1832",
+            "__v": 0
+        }, {
+            "_id": "58292c2807546368233f7737",
+            "city": "南充市",
+            "sheng": "四川省",
+            "location": "106.110698,30.837793",
+            "citycode": "0817",
+            "__v": 0
+        }, {
+            "_id": "58292c2907546368233f7738",
+            "city": "宁德市",
+            "sheng": "福建省",
+            "location": "119.547933,26.665617",
+            "citycode": "0593",
+            "__v": 0
+        }, {
+            "_id": "58292c2a07546368233f7739",
+            "city": "南平市",
+            "sheng": "福建省",
+            "location": "118.177708,26.641769",
+            "citycode": "0599",
+            "__v": 0
+        }, {
+            "_id": "58292c2b07546368233f773a",
+            "city": "那曲地区",
+            "sheng": "西藏自治区",
+            "location": "92.051239,31.476202",
+            "citycode": "0896",
+            "__v": 0
+        }, {
+            "_id": "58292c2c07546368233f773b",
+            "city": "怒江傈僳族自治州",
+            "sheng": "云南省",
+            "location": "98.853097,25.852548",
+            "citycode": "0886",
+            "__v": 0
+        }, {
+            "_id": "58292c2d07546368233f773c",
+            "city": "平顶山市",
+            "sheng": "河南省",
+            "location": "113.192661,33.766170",
+            "citycode": "0375",
+            "__v": 0
+        }, {
+            "_id": "58292c2e07546368233f773d",
+            "city": "濮阳市",
+            "sheng": "河南省",
+            "location": "115.029216,35.761829",
+            "citycode": "0393",
+            "__v": 0
+        }, {
+            "_id": "58292c2f07546368233f773e",
+            "city": "盘锦市",
+            "sheng": "辽宁省",
+            "location": "122.070714,41.119997",
+            "citycode": "0427",
+            "__v": 0
+        }, {
+            "_id": "58292c3007546368233f773f",
+            "city": "莆田市",
+            "sheng": "福建省",
+            "location": "119.007777,25.454085",
+            "citycode": "0594",
+            "__v": 0
+        }, {
+            "_id": "58292c3107546368233f7740",
+            "city": "萍乡市",
+            "sheng": "江西省",
+            "location": "113.854556,27.622768",
+            "citycode": "0799",
+            "__v": 0
+        }, {
+            "_id": "58292c3207546368233f7741",
+            "city": "攀枝花市",
+            "sheng": "四川省",
+            "location": "101.718637,26.582347",
+            "citycode": "0812",
+            "__v": 0
+        }, {
+            "_id": "58292c3307546368233f7742",
+            "city": "普洱市",
+            "sheng": "云南省",
+            "location": "100.966512,22.825066",
+            "citycode": "0879",
+            "__v": 0
+        }, {
+            "_id": "58292c3407546368233f7743",
+            "city": "平凉市",
+            "sheng": "甘肃省",
+            "location": "106.665240,35.543051",
+            "citycode": "0933",
+            "__v": 0
+        }, {
+            "_id": "58292c3507546368233f7744",
+            "city": "",
+            "sheng": "海南省",
+            "location": "110.474648,19.258342",
+            "__v": 0
+        }, {
+            "_id": "58292c3607546368233f7745",
+            "city": "青岛市",
+            "sheng": "山东省",
+            "location": "120.382640,36.067082",
+            "citycode": "0532",
+            "__v": 0
+        }, {
+            "_id": "58292c3707546368233f7746",
+            "city": "秦皇岛市",
+            "sheng": "河北省",
+            "location": "119.600493,39.935385",
+            "citycode": "0335",
+            "__v": 0
+        }, {
+            "_id": "58292c3807546368233f7747",
+            "city": "泉州市",
+            "sheng": "福建省",
+            "location": "118.675676,24.874132",
+            "citycode": "0595",
+            "__v": 0
+        }, {
+            "_id": "58292c3907546368233f7748",
+            "city": "齐齐哈尔市",
+            "sheng": "黑龙江省",
+            "location": "123.918186,47.354348",
+            "citycode": "0452",
+            "__v": 0
+        }, {
+            "_id": "58292c3a07546368233f7749",
+            "city": "清远市",
+            "sheng": "广东省",
+            "location": "113.056031,23.681764",
+            "citycode": "0763",
+            "__v": 0
+        }, {
+            "_id": "58292c3b07546368233f774a",
+            "city": "衢州市",
+            "sheng": "浙江省",
+            "location": "118.859457,28.970080",
+            "citycode": "0570",
+            "__v": 0
+        }, {
+            "_id": "58292c3c07546368233f774b",
+            "city": "曲靖市",
+            "sheng": "云南省",
+            "location": "103.796167,25.490000",
+            "citycode": "0874",
+            "__v": 0
+        }, {
+            "_id": "58292c3d07546368233f774c",
+            "city": "七台河市",
+            "sheng": "黑龙江省",
+            "location": "131.003138,45.771727",
+            "citycode": "0464",
+            "__v": 0
+        }, {
+            "_id": "58292c3e07546368233f774d",
+            "city": "庆阳市",
+            "sheng": "甘肃省",
+            "location": "107.643631,35.709077",
+            "citycode": "0934",
+            "__v": 0
+        }, {
+            "_id": "58292c3f07546368233f774e",
+            "city": "",
+            "sheng": "湖北省",
+            "location": "112.900079,30.402110",
+            "__v": 0
+        }, {
+            "_id": "58292c4007546368233f774f",
+            "city": "钦州市",
+            "sheng": "广西壮族自治区",
+            "location": "108.654147,21.979934",
+            "citycode": "0777",
+            "__v": 0
+        }, {
+            "_id": "58292c4407546368233f7750",
+            "city": "日照市",
+            "sheng": "山东省",
+            "location": "119.526888,35.416377",
+            "citycode": "0633",
+            "__v": 0
+        }, {
+            "_id": "58292c4607546368233f7751",
+            "city": "日喀则市",
+            "sheng": "西藏自治区",
+            "location": "88.880583,29.266870",
+            "citycode": "0892",
+            "__v": 0
+        }, {
+            "_id": "58292c4707546368233f7752",
+            "city": "深圳市",
+            "sheng": "广东省",
+            "location": "114.057868,22.543099",
+            "citycode": "0755",
+            "__v": 0
+        }, {
+            "_id": "58292c4807546368233f7753",
+            "city": "沈阳市",
+            "sheng": "辽宁省",
+            "location": "123.431475,41.805698",
+            "citycode": "024",
+            "__v": 0
+        }, {
+            "_id": "58292c4907546368233f7754",
+            "city": "石家庄市",
+            "sheng": "河北省",
+            "location": "114.514862,38.042309",
+            "citycode": "0311",
+            "__v": 0
+        }, {
+            "_id": "58292c4a07546368233f7755",
+            "city": "汕头市",
+            "sheng": "广东省",
+            "location": "116.681972,23.354091",
+            "citycode": "0754",
+            "__v": 0
+        }, {
+            "_id": "58292c4b07546368233f7756",
+            "city": "苏州市",
+            "sheng": "江苏省",
+            "location": "120.585316,31.298886",
+            "citycode": "0512",
+            "__v": 0
+        }, {
+            "_id": "58292c4c07546368233f7757",
+            "city": "三亚市",
+            "sheng": "海南省",
+            "location": "109.511909,18.252847",
+            "citycode": "0899",
+            "__v": 0
+        }, {
+            "_id": "58292c4d07546368233f7758",
+            "city": "商丘市",
+            "sheng": "河南省",
+            "location": "115.656370,34.414172",
+            "citycode": "0370",
+            "__v": 0
+        }, {
+            "_id": "58292c4e07546368233f7759",
+            "city": "绍兴市",
+            "sheng": "浙江省",
+            "location": "120.580232,30.029753",
+            "citycode": "0575",
+            "__v": 0
+        }, {
+            "_id": "58292c4f07546368233f775a",
+            "city": "宿迁市",
+            "sheng": "江苏省",
+            "location": "118.275198,33.963232",
+            "citycode": "0527",
+            "__v": 0
+        }, {
+            "_id": "58292c5007546368233f775b",
+            "city": "十堰市",
+            "sheng": "湖北省",
+            "location": "110.797991,32.629397",
+            "citycode": "0719",
+            "__v": 0
+        }, {
+            "_id": "58292c5107546368233f775c",
+            "city": "四平市",
+            "sheng": "吉林省",
+            "location": "124.350398,43.166420",
+            "citycode": "0434",
+            "__v": 0
+        }, {
+            "_id": "58292c5207546368233f775d",
+            "city": "三门峡市",
+            "sheng": "河南省",
+            "location": "111.200135,34.772494",
+            "citycode": "0398",
+            "__v": 0
+        }, {
+            "_id": "58292c5307546368233f775e",
+            "city": "邵阳市",
+            "sheng": "湖南省",
+            "location": "111.467791,27.238893",
+            "citycode": "0739",
+            "__v": 0
+        }, {
+            "_id": "58292c5407546368233f775f",
+            "city": "遂宁市",
+            "sheng": "四川省",
+            "location": "105.592898,30.532847",
+            "citycode": "0825",
+            "__v": 0
+        }, {
+            "_id": "58292c5507546368233f7760",
+            "city": "上饶市",
+            "sheng": "江西省",
+            "location": "117.943436,28.454863",
+            "citycode": "0793",
+            "__v": 0
+        }, {
+            "_id": "58292c5607546368233f7761",
+            "city": "绥化市",
+            "sheng": "黑龙江省",
+            "location": "126.968887,46.653845",
+            "citycode": "0455",
+            "__v": 0
+        }, {
+            "_id": "58292c5707546368233f7762",
+            "city": "三明市",
+            "sheng": "福建省",
+            "location": "117.638678,26.263407",
+            "citycode": "0598",
+            "__v": 0
+        }, {
+            "_id": "58292c5807546368233f7763",
+            "city": "宿州市",
+            "sheng": "安徽省",
+            "location": "116.964356,33.646373",
+            "citycode": "0557",
+            "__v": 0
+        }, {
+            "_id": "58292c5a07546368233f7764",
+            "city": "韶关市",
+            "sheng": "广东省",
+            "location": "113.597522,24.810403",
+            "citycode": "0751",
+            "__v": 0
+        }, {
+            "_id": "58292c5b07546368233f7765",
+            "city": "松原市",
+            "sheng": "吉林省",
+            "location": "124.825118,45.141789",
+            "citycode": "0438",
+            "__v": 0
+        }, {
+            "_id": "58292c5c07546368233f7766",
+            "city": "随州市",
+            "sheng": "湖北省",
+            "location": "113.382458,31.690216",
+            "citycode": "0722",
+            "__v": 0
+        }, {
+            "_id": "58292c5d07546368233f7767",
+            "city": "汕尾市",
+            "sheng": "广东省",
+            "location": "115.375279,22.786211",
+            "citycode": "0660",
+            "__v": 0
+        }, {
+            "_id": "58292c5e07546368233f7768",
+            "city": "朔州市",
+            "sheng": "山西省",
+            "location": "112.432825,39.331595",
+            "citycode": "0349",
+            "__v": 0
+        }, {
+            "_id": "58292c5f07546368233f7769",
+            "city": "双鸭山市",
+            "sheng": "黑龙江省",
+            "location": "131.159133,46.646509",
+            "citycode": "0469",
+            "__v": 0
+        }, {
+            "_id": "58292c6007546368233f776a",
+            "city": "商洛市",
+            "sheng": "陕西省",
+            "location": "109.940477,33.870422",
+            "citycode": "0914",
+            "__v": 0
+        }, {
+            "_id": "58292c6107546368233f776b",
+            "city": "石嘴山市",
+            "sheng": "宁夏回族自治区",
+            "location": "106.383304,38.983236",
+            "citycode": "0952",
+            "__v": 0
+        }, {
+            "_id": "58292c6207546368233f776c",
+            "city": "山南地区",
+            "sheng": "西藏自治区",
+            "location": "91.773134,29.237137",
+            "__v": 0
+        }, {
+            "_id": "58292c6507546368233f776d",
+            "city": "太原市",
+            "sheng": "山西省",
+            "location": "112.548879,37.870590",
+            "citycode": "0351",
+            "__v": 0
+        }, {
+            "_id": "58292c6607546368233f776e",
+            "city": "唐山市",
+            "sheng": "河北省",
+            "location": "118.180194,39.630867",
+            "citycode": "0315",
+            "__v": 0
+        }, {
+            "_id": "58292c6707546368233f776f",
+            "city": "泰安市",
+            "sheng": "山东省",
+            "location": "117.087614,36.200252",
+            "citycode": "0538",
+            "__v": 0
+        }, {
+            "_id": "58292c6807546368233f7770",
+            "city": "泰州市",
+            "sheng": "江苏省",
+            "location": "119.923116,32.455778",
+            "citycode": "0523",
+            "__v": 0
+        }, {
+            "_id": "58292c6907546368233f7771",
+            "city": "台州市",
+            "sheng": "浙江省",
+            "location": "121.420757,28.656386",
+            "citycode": "0576",
+            "__v": 0
+        }, {
+            "_id": "58292c6a07546368233f7772",
+            "city": "通辽市",
+            "sheng": "内蒙古自治区",
+            "location": "122.243444,43.652890",
+            "citycode": "0475",
+            "__v": 0
+        }, {
+            "_id": "58292c6b07546368233f7773",
+            "city": "铁岭市",
+            "sheng": "辽宁省",
+            "location": "123.726166,42.223769",
+            "citycode": "0410",
+            "__v": 0
+        }, {
+            "_id": "58292c6c07546368233f7774",
+            "city": "天水市",
+            "sheng": "甘肃省",
+            "location": "105.724947,34.580864",
+            "citycode": "0938",
+            "__v": 0
+        }, {
+            "_id": "58292c6d07546368233f7775",
+            "city": "通化市",
+            "sheng": "吉林省",
+            "location": "125.939697,41.728401",
+            "citycode": "0435",
+            "__v": 0
+        }, {
+            "_id": "58292c6e07546368233f7776",
+            "city": "铜陵市",
+            "sheng": "安徽省",
+            "location": "117.812079,30.945430",
+            "citycode": "0562",
+            "__v": 0
+        }, {
+            "_id": "58292c6f07546368233f7777",
+            "city": "铜川市",
+            "sheng": "陕西省",
+            "location": "108.945233,34.896756",
+            "citycode": "0919",
+            "__v": 0
+        }, {
+            "_id": "58292c7007546368233f7778",
+            "city": "铜仁市",
+            "sheng": "贵州省",
+            "location": "109.189598,27.731515",
+            "citycode": "0856",
+            "__v": 0
+        }, {
+            "_id": "58292c7207546368233f7779",
+            "city": "吐鲁番市",
+            "sheng": "新疆维吾尔自治区",
+            "location": "89.184074,42.947613",
+            "citycode": "0995",
+            "__v": 0
+        }, {
+            "_id": "58292c7307546368233f777a",
+            "city": "塔城地区",
+            "sheng": "新疆维吾尔自治区",
+            "location": "82.980317,46.745364",
+            "citycode": "0901",
+            "__v": 0
+        }, {
+            "_id": "58292c7407546368233f777b",
+            "city": "武汉市",
+            "sheng": "湖北省",
+            "location": "114.305393,30.593099",
+            "citycode": "027",
+            "__v": 0
+        }, {
+            "_id": "58292c7507546368233f777c",
+            "city": "",
+            "sheng": "新疆维吾尔自治区",
+            "location": "79.069332,39.864867",
+            "__v": 0
+        }, {
+            "_id": "58292c7607546368233f777d",
+            "city": "乌鲁木齐市",
+            "sheng": "新疆维吾尔自治区",
+            "location": "87.616848,43.825592",
+            "citycode": "0991",
+            "__v": 0
+        }, {
+            "_id": "58292c7707546368233f777e",
+            "city": "无锡市",
+            "sheng": "江苏省",
+            "location": "120.311910,31.491170",
+            "citycode": "0510",
+            "__v": 0
+        }, {
+            "_id": "58292c7807546368233f777f",
+            "city": "威海市",
+            "sheng": "山东省",
+            "location": "122.120420,37.513068",
+            "citycode": "0631",
+            "__v": 0
+        }, {
+            "_id": "58292c7907546368233f7780",
+            "city": "潍坊市",
+            "sheng": "山东省",
+            "location": "119.161756,36.706774",
+            "citycode": "0536",
+            "__v": 0
+        }, {
+            "_id": "58292c7a07546368233f7781",
+            "city": "温州市",
+            "sheng": "浙江省",
+            "location": "120.699367,27.994267",
+            "citycode": "0577",
+            "__v": 0
+        }, {
+            "_id": "58292c7b07546368233f7782",
+            "city": "芜湖市",
+            "sheng": "安徽省",
+            "location": "118.432941,31.352859",
+            "citycode": "0553",
+            "__v": 0
+        }, {
+            "_id": "58292c7c07546368233f7783",
+            "city": "乌海市",
+            "sheng": "内蒙古自治区",
+            "location": "106.794249,39.655389",
+            "citycode": "0473",
+            "__v": 0
+        }, {
+            "_id": "58292c7d07546368233f7784",
+            "city": "渭南市",
+            "sheng": "陕西省",
+            "location": "109.509786,34.499995",
+            "citycode": "0913",
+            "__v": 0
+        }, {
+            "_id": "58292c7e07546368233f7785",
+            "city": "乌兰察布市",
+            "sheng": "内蒙古自治区",
+            "location": "113.132585,40.994786",
+            "citycode": "0474",
+            "__v": 0
+        }, {
+            "_id": "58292c7f07546368233f7786",
+            "city": "梧州市",
+            "sheng": "广西壮族自治区",
+            "location": "111.279115,23.476963",
+            "citycode": "0774",
+            "__v": 0
+        }, {
+            "_id": "58292c8107546368233f7787",
+            "city": "武威市",
+            "sheng": "甘肃省",
+            "location": "102.638011,37.928265",
+            "citycode": "1935",
+            "__v": 0
+        }, {
+            "_id": "58292c8207546368233f7788",
+            "city": "吴忠市",
+            "sheng": "宁夏回族自治区",
+            "location": "106.198394,37.997461",
+            "citycode": "0953",
+            "__v": 0
+        }, {
+            "_id": "58292c8507546368233f7789",
+            "city": "西安市",
+            "sheng": "陕西省",
+            "location": "108.940175,34.341568",
+            "citycode": "029",
+            "__v": 0
+        }, {
+            "_id": "58292c8607546368233f778a",
+            "city": "西宁市",
+            "sheng": "青海省",
+            "location": "101.778228,36.617144",
+            "citycode": "0971",
+            "__v": 0
+        }, {
+            "_id": "58292c8707546368233f778b",
+            "city": "厦门市",
+            "sheng": "福建省",
+            "location": "118.089425,24.479834",
+            "citycode": "0592",
+            "__v": 0
+        }, {
+            "_id": "58292c8807546368233f778c",
+            "city": "咸阳市",
+            "sheng": "陕西省",
+            "location": "108.708992,34.329605",
+            "citycode": "0910",
+            "__v": 0
+        }, {
+            "_id": "58292c8907546368233f778d",
+            "city": "徐州市",
+            "sheng": "江苏省",
+            "location": "117.284124,34.205768",
+            "citycode": "0516",
+            "__v": 0
+        }, {
+            "_id": "58292c8a07546368233f778e",
+            "city": "襄阳市",
+            "sheng": "湖北省",
+            "location": "112.122415,32.008986",
+            "citycode": "0710",
+            "__v": 0
+        }, {
+            "_id": "58292c8b07546368233f778f",
+            "city": "邢台市",
+            "sheng": "河北省",
+            "location": "114.504844,37.070589",
+            "citycode": "0319",
+            "__v": 0
+        }, {
+            "_id": "58292c8c07546368233f7790",
+            "city": "新乡市",
+            "sheng": "河南省",
+            "location": "113.926800,35.303004",
+            "citycode": "0373",
+            "__v": 0
+        }, {
+            "_id": "58292c8d07546368233f7791",
+            "city": "湘潭市",
+            "sheng": "湖南省",
+            "location": "112.944049,27.829738",
+            "citycode": "0732",
+            "__v": 0
+        }, {
+            "_id": "58292c8e07546368233f7792",
+            "city": "许昌市",
+            "sheng": "河南省",
+            "location": "113.852640,34.035506",
+            "citycode": "0374",
+            "__v": 0
+        }, {
+            "_id": "58292c8f07546368233f7793",
+            "city": "信阳市",
+            "sheng": "河南省",
+            "location": "114.091023,32.146984",
+            "citycode": "0376",
+            "__v": 0
+        }, {
+            "_id": "58292c9007546368233f7794",
+            "city": "忻州市",
+            "sheng": "山西省",
+            "location": "112.734174,38.416663",
+            "citycode": "0350",
+            "__v": 0
+        }, {
+            "_id": "58292c9107546368233f7795",
+            "city": "孝感市",
+            "sheng": "湖北省",
+            "location": "113.916903,30.924568",
+            "citycode": "0712",
+            "__v": 0
+        }, {
+            "_id": "58292c9207546368233f7796",
+            "city": "新余市",
+            "sheng": "江西省",
+            "location": "114.917347,27.817809",
+            "citycode": "0790",
+            "__v": 0
+        }, {
+            "_id": "58292c9307546368233f7797",
+            "city": "咸宁市",
+            "sheng": "湖北省",
+            "location": "114.322492,29.841443",
+            "citycode": "0715",
+            "__v": 0
+        }, {
+            "_id": "58292c9407546368233f7798",
+            "city": "宣城市",
+            "sheng": "安徽省",
+            "location": "118.758816,30.940718",
+            "citycode": "0563",
+            "__v": 0
+        }, {
+            "_id": "58292c9607546368233f7799",
+            "city": "",
+            "sheng": "湖北省",
+            "location": "113.454593,30.362641",
+            "__v": 0
+        }, {
+            "_id": "58292c9807546368233f779a",
+            "city": "湘西土家族苗族自治州",
+            "sheng": "湖南省",
+            "location": "109.739172,28.311948",
+            "citycode": "0743",
+            "__v": 0
+        }, {
+            "_id": "58292c9a07546368233f779b",
+            "city": "西双版纳傣族自治州",
+            "sheng": "云南省",
+            "location": "100.797777,22.007351",
+            "citycode": "0691",
+            "__v": 0
+        }, {
+            "_id": "58292c9b07546368233f779c",
+            "city": "银川市",
+            "sheng": "宁夏回族自治区",
+            "location": "106.230909,38.487194",
+            "citycode": "0951",
+            "__v": 0
+        }, {
+            "_id": "58292c9c07546368233f779d",
+            "city": "宜昌市",
+            "sheng": "湖北省",
+            "location": "111.286471,30.691967",
+            "citycode": "0717",
+            "__v": 0
+        }, {
+            "_id": "58292c9d07546368233f779e",
+            "city": "烟台市",
+            "sheng": "山东省",
+            "location": "121.447935,37.463822",
+            "citycode": "0535",
+            "__v": 0
+        }, {
+            "_id": "58292c9e07546368233f779f",
+            "city": "扬州市",
+            "sheng": "江苏省",
+            "location": "119.412966,32.394210",
+            "citycode": "0514",
+            "__v": 0
+        }, {
+            "_id": "58292c9f07546368233f77a0",
+            "city": "营口市",
+            "sheng": "辽宁省",
+            "location": "122.235418,40.667012",
+            "citycode": "0417",
+            "__v": 0
+        }, {
+            "_id": "58292ca007546368233f77a1",
+            "city": "盐城市",
+            "sheng": "江苏省",
+            "location": "120.163562,33.347383",
+            "citycode": "0515",
+            "__v": 0
+        }, {
+            "_id": "58292ca107546368233f77a2",
+            "city": "运城市",
+            "sheng": "山西省",
+            "location": "111.007529,35.026412",
+            "citycode": "0359",
+            "__v": 0
+        }, {
+            "_id": "58292ca207546368233f77a3",
+            "city": "岳阳市",
+            "sheng": "湖南省",
+            "location": "113.128958,29.357104",
+            "citycode": "0730",
+            "__v": 0
+        }, {
+            "_id": "58292ca307546368233f77a4",
+            "city": "宜宾市",
+            "sheng": "四川省",
+            "location": "104.643215,28.751769",
+            "citycode": "0831",
+            "__v": 0
+        }, {
+            "_id": "58292ca407546368233f77a5",
+            "city": "榆林市",
+            "sheng": "陕西省",
+            "location": "109.734589,38.285390",
+            "citycode": "0912",
+            "__v": 0
+        }, {
+            "_id": "58292ca507546368233f77a6",
+            "city": "阳泉市",
+            "sheng": "山西省",
+            "location": "113.580519,37.856972",
+            "citycode": "0353",
+            "__v": 0
+        }, {
+            "_id": "58292ca607546368233f77a7",
+            "city": "延安市",
+            "sheng": "陕西省",
+            "location": "109.489727,36.585455",
+            "citycode": "0911",
+            "__v": 0
+        }, {
+            "_id": "58292ca707546368233f77a8",
+            "city": "益阳市",
+            "sheng": "湖南省",
+            "location": "112.355180,28.553860",
+            "citycode": "0737",
+            "__v": 0
+        }, {
+            "_id": "58292ca807546368233f77a9",
+            "city": "永州市",
+            "sheng": "湖南省",
+            "location": "111.613445,26.420394",
+            "citycode": "0746",
+            "__v": 0
+        }, {
+            "_id": "58292ca907546368233f77aa",
+            "city": "宜春市",
+            "sheng": "江西省",
+            "location": "114.416778,27.815619",
+            "citycode": "0795",
+            "__v": 0
+        }, {
+            "_id": "58292caa07546368233f77ab",
+            "city": "玉林市",
+            "sheng": "广西壮族自治区",
+            "location": "110.164756,22.636379",
+            "citycode": "0775",
+            "__v": 0
+        }, {
+            "_id": "58292cab07546368233f77ac",
+            "city": "延边朝鲜族自治州",
+            "sheng": "吉林省",
+            "location": "129.508946,42.891254",
+            "citycode": "1433",
+            "__v": 0
+        }, {
+            "_id": "58292cac07546368233f77ad",
+            "city": "阳江市",
+            "sheng": "广东省",
+            "location": "111.982232,21.857958",
+            "citycode": "0662",
+            "__v": 0
+        }, {
+            "_id": "58292cae07546368233f77ae",
+            "city": "玉溪市",
+            "sheng": "云南省",
+            "location": "102.546543,24.352036",
+            "citycode": "0877",
+            "__v": 0
+        }, {
+            "_id": "58292caf07546368233f77af",
+            "city": "云浮市",
+            "sheng": "广东省",
+            "location": "112.044491,22.915094",
+            "citycode": "0766",
+            "__v": 0
+        }, {
+            "_id": "58292cb007546368233f77b0",
+            "city": "伊春市",
+            "sheng": "黑龙江省",
+            "location": "128.841148,47.727536",
+            "citycode": "0458",
+            "__v": 0
+        }, {
+            "_id": "58292cb107546368233f77b1",
+            "city": "雅安市",
+            "sheng": "四川省",
+            "location": "103.013261,29.980537",
+            "citycode": "0835",
+            "__v": 0
+        }, {
+            "_id": "58292cb207546368233f77b2",
+            "city": "鹰潭市",
+            "sheng": "江西省",
+            "location": "117.069202,28.260189",
+            "citycode": "0701",
+            "__v": 0
+        }, {
+            "_id": "58292cb307546368233f77b3",
+            "city": "郑州市",
+            "sheng": "河南省",
+            "location": "113.625368,34.746600",
+            "citycode": "0371",
+            "__v": 0
+        }, {
+            "_id": "58292cb407546368233f77b4",
+            "city": "玉树藏族自治州",
+            "sheng": "青海省",
+            "location": "97.091934,33.011674",
+            "citycode": "0976",
+            "__v": 0
+        }, {
+            "_id": "58292cb507546368233f77b5",
+            "city": "淄博市",
+            "sheng": "山东省",
+            "location": "118.054927,36.813487",
+            "citycode": "0533",
+            "__v": 0
+        }, {
+            "_id": "58292cb607546368233f77b6",
+            "city": "珠海市",
+            "sheng": "广东省",
+            "location": "113.576726,22.270715",
+            "citycode": "0756",
+            "__v": 0
+        }, {
+            "_id": "58292cb707546368233f77b7",
+            "city": "枣庄市",
+            "sheng": "山东省",
+            "location": "117.323725,34.810488",
+            "citycode": "0632",
+            "__v": 0
+        }, {
+            "_id": "58292cb807546368233f77b8",
+            "city": "中山市",
+            "sheng": "广东省",
+            "location": "113.392782,22.517646",
+            "citycode": "0760",
+            "__v": 0
+        }, {
+            "_id": "58292cb907546368233f77b9",
+            "city": "张家口市",
+            "sheng": "河北省",
+            "location": "114.887543,40.824418",
+            "citycode": "0313",
+            "__v": 0
+        }, {
+            "_id": "58292cba07546368233f77ba",
+            "city": "株洲市",
+            "sheng": "湖南省",
+            "location": "113.134003,27.827550",
+            "citycode": "0733",
+            "__v": 0
+        }, {
+            "_id": "58292cbb07546368233f77bb",
+            "city": "镇江市",
+            "sheng": "江苏省",
+            "location": "119.425836,32.187849",
+            "citycode": "0511",
+            "__v": 0
+        }, {
+            "_id": "58292cbc07546368233f77bc",
+            "city": "周口市",
+            "sheng": "河南省",
+            "location": "114.696951,33.626149",
+            "citycode": "0394",
+            "__v": 0
+        }, {
+            "_id": "58292cbd07546368233f77bd",
+            "city": "湛江市",
+            "sheng": "广东省",
+            "location": "110.359377,21.270708",
+            "citycode": "0759",
+            "__v": 0
+        }, {
+            "_id": "58292cbe07546368233f77be",
+            "city": "驻马店市",
+            "sheng": "河南省",
+            "location": "114.022298,33.011529",
+            "citycode": "0396",
+            "__v": 0
+        }, {
+            "_id": "58292cbf07546368233f77bf",
+            "city": "肇庆市",
+            "sheng": "广东省",
+            "location": "112.465091,23.047192",
+            "citycode": "0758",
+            "__v": 0
+        }, {
+            "_id": "58292cc007546368233f77c0",
+            "city": "自贡市",
+            "sheng": "四川省",
+            "location": "104.778442,29.339030",
+            "citycode": "0813",
+            "__v": 0
+        }, {
+            "_id": "58292cc107546368233f77c1",
+            "city": "漳州市",
+            "sheng": "福建省",
+            "location": "117.647481,24.512949",
+            "citycode": "0596",
+            "__v": 0
+        }, {
+            "_id": "58292cc207546368233f77c2",
+            "city": "遵义市",
+            "sheng": "贵州省",
+            "location": "106.927389,27.725654",
+            "citycode": "0852",
+            "__v": 0
+        }, {
+            "_id": "58292cc307546368233f77c3",
+            "city": "张掖市",
+            "sheng": "甘肃省",
+            "location": "100.449818,38.925875",
+            "citycode": "0936",
+            "__v": 0
+        }, {
+            "_id": "58292cc407546368233f77c4",
+            "city": "舟山市",
+            "sheng": "浙江省",
+            "location": "122.207216,29.985295",
+            "citycode": "0580",
+            "__v": 0
+        }, {
+            "_id": "58292cc507546368233f77c5",
+            "city": "张家界市",
+            "sheng": "湖南省",
+            "location": "110.479191,29.117096",
+            "citycode": "0744",
+            "__v": 0
+        }, {
+            "_id": "58292cc607546368233f77c6",
+            "city": "资阳市",
+            "sheng": "四川省",
+            "location": "104.627636,30.128901",
+            "citycode": "0832",
+            "__v": 0
+        }, {
+            "_id": "58292cc707546368233f77c7",
+            "city": "昭通市",
+            "sheng": "云南省",
+            "location": "103.717465,27.338257",
+            "citycode": "0870",
+            "__v": 0
+        }, {
+            "_id": "58292cc807546368233f77c8",
+            "city": "中卫市",
+            "sheng": "宁夏回族自治区",
+            "location": "105.196902,37.499973",
+            "citycode": "1953",
+            "__v": 0
+        }];
+
+        /**
+         * selectByCityCode 根据cityCode查询城市
+         */
+        function selectByCityCode(sheng) {
+            var re = [];
+            var defered = $q.defer();
+            var tempCount = 0;
+            angular.forEach(allCtiy, function (vo) {
+                tempCount++;
+                if (vo.sheng == sheng) {
+                    re.push(vo);
+                }
+                if (tempCount == allCtiy.length) {
+                    defered.resolve(re);
+                }
+            });
+
+            return defered.promise;
+        }
+
+        return re;
+    }
+
+
+})();
+
+
+/**
  * getList.dipan.listAndAddList.factory.js
  * 命名注释：server简称_getList. 父模块 dipan . 功能_获取不同板块的数据 , && 判断状态,来新加数据到最前面,或者 最后面 . 类型_factory.js
  */
@@ -5633,8 +9428,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     var _rootScope;
     var _filter;
 
+    var allListId = [];
 
     function getList(tools, config, $timeout, compile, $state, $rootScope, $filter) {
+
         /**
          * 全局缓存变量对象
          * @type {{home: Array, need: Array}}
@@ -5647,8 +9444,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         thisObj.pushToGoldCatcth = pushToGoldCatcth;//push 到全局变量数组 ,传入 newList
         thisObj.delGoldCatcth = delGoldCatcth;//del 全局变量数组
         thisObj.saveCatecNewList = saveCatecNewList;//存储全局变量数组 到本地localStroe 传入listObj
-        thisObj.delStarIdFromStarArr = delStarIdFromStarArr;//从标记的 全局缓存数组里删除 指定 标记 id
-        thisObj.editShowStar = editShowStar;//从全局缓存数组遍历 标记过的 star, 给list 赋值
 
         /**
          * 遍历不同url,返回 list 数据 ,
@@ -5681,33 +9476,18 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      * @param {作用域变量} scope.list
      * @param {function 成功后的回调} callBack
      */
-
     var callSucessCount = 0;
 
     function _getList(name, frontId, endId, scope, listNam, callBack) {
+        _rootScope.$broadcast('changeMoreInfo', '加载更多...');
         var url;
         var type = 1;//1上啦,2下拉
         switch (name) {
-            case 'memberIndex':
-                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
-                break;
             case 'home':
-                url = _config.host.nodeHost + '/sns/getList?' + _tools.getRoundCode(8);
+                url = _config.host.nodeHost + '/sns/homeGetList?' + _tools.getRoundCode(8);
                 break;
             case 'need':
-                url = 'http://192.168.18.15:3082/sns/getList?' + _tools.getRoundCode(8);
-                break;
-            case 'star':
-                url = true;
-                break;
-            case 'login':
-                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
-                break;
-            case 'area':
-                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
-                break;
-            case 'search':
-                url = 'http://192.168.18.13:8080/homeListOne.json?' + _tools.getRoundCode(8);
+                url = _config.host.nodeHost + '/sns/needGetList?' + _tools.getRoundCode(8);
                 break;
             default:
                 return false;
@@ -5725,26 +9505,31 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 type = 2;
             }
 
-            var postData = {
-                'frontId': _frontId,
-                'endId': _endId,
-            };
+            _timeout(function () {
+                var condit = switchSearchCondition();
+                var postData = {
+                    'frontId': _frontId,
+                    'endId': _endId,
+                    'condition': condit
+                };
+                //获取数据库的筛选条件,遍历name 给不同筛选条件
+                /**************************
+                 * @returns {Obj 缓存的list对象} catchObj
+                 * @returns {getNext 布尔} getNext true 进行下面的 http 请求
+                 * 16/9/16 上午11:27 ByRockBlus
+                 ******R*******************/
+                _getCatchList(function (catchObj, getNext) {
+                    if (getNext) {
+                        _tools.postJsp(url, postData, true).then(_editGetNext, err);
+                    } else {
+                        call(catchObj);
+                    }
+                });
+            }, 400);
+        }
 
-            /**************************
-             * @returns {Obj 缓存的list对象} catchObj
-             * @returns {getNext 布尔} getNext true 进行下面的 http 请求
-             * 16/9/16 上午11:27 ByRockBlus
-             **************************/
-
-            _getCatchList(function (catchObj, getNext) {
-                if (getNext) {
-                    //call(catchObj);
-                    _tools.postJsp(url, postData).then(call, err);
-                } else {
-                    call(catchObj);
-                }
-            });
-
+        function _editGetNext(re) {
+            call(re);
         }
 
         /**************************
@@ -5754,35 +9539,12 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          **************************/
         function _getCatchList(__call) {
             switch (_state.current.name) {
-                case 'star' :
-                    _logicStar(__call);//星标的逻辑
-                    break;
-                default:
+                case 'home' :
                     _logicHome(__call);//供`需`其他 的逻辑
                     break;
-            }
-        }
-
-        /**************************
-         * 星标的逻辑
-         * 读取缓存的 星标 list对象返回,如果 为空  提示alert
-         * 16/9/16 上午11:10 ByRockBlus
-         **************************/
-        function _logicStar(___call) {
-
-            var starCatchList = _tools.getLocalStorageObj('star');
-            if (!starCatchList || !starCatchList [0]) {
-                _tools.alert({
-                    title: '没有标记过的信息'
-                });
-                _rootScope.$broadcast('closeLoading');
-                return;
-            } else {
-                var re = {
-                    doc: starCatchList
-                };
-                _rootScope.$broadcast('closeLoading');
-                ___call(re);
+                case 'need' :
+                    _logicHome(__call);//供`需`其他 的逻辑
+                    break;
             }
         }
 
@@ -5796,29 +9558,45 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         }
 
         function call(re) {
-            //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
-            _addNewListToOldList(re.doc, function (reList) {
-                //标记star
-                reList = editShowStar(reList);
+            try {
 
-                if (!re.doc && !re.doc[0]) {
-                    callSucessCount++;
-                    setTimeout(function () {
-                        if (callSucessCount > 1) {
-                            _tools.alert({
-                                title: '没有更多数据啦! ^_^'
-                            });
-                        }
-                    }, 0);
-                    return false;
-                } else {
-                    callSucessCount = 0;
-                }
-                _timeout(function () {
-                    eval("scope." + listNam + "= reList");
-                    callBack(reList, listNam);//回调去绑定点击事件
-                }, 0);
-            }, listNam, scope);
+                var cutre = [];
+                //去重
+                angular.forEach(re.data.doc, function (vo) {
+                    if (allListId.indexOf(vo._id) == -1) {
+                        allListId.push(vo._id);
+                        cutre.push(vo);
+                    }
+                });
+
+
+                //合并新的list 和 缓存的数据,去存储到缓存, 回调 合并后的数据
+                _addNewListToOldList(cutre, function (reList) {
+                    if (!re.data.doc && !re.data.doc[0]) {
+                        // callSucessCount++;
+                        // setTimeout(function () {
+                        //     if (callSucessCount > 1) {
+                        _rootScope.$broadcast('changeMoreInfo', '没有更多数据');
+                        // _tools.alert({
+                        //     title: '没有更多数据啦! ^_^'
+                        // });
+                        //     }
+                        // }, 0);
+                        return false;
+                    } else {
+                        callSucessCount = 0;
+                        _timeout(function () {
+                            eval("scope.list=reList");
+                            callBack(reList, 'list');//回调去绑定点击事件
+                        }, 0);
+                    }
+                }, 'list', scope);
+            } catch (e) {
+                _rootScope.$broadcast('changeMoreInfo', '没有更多数据');
+                // _tools.alert({
+                //     title: '没有更多数据啦! ^_^'
+                // });
+            }
         }
 
         function err() {
@@ -5826,38 +9604,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 title: '网络请求失败',
                 content: '请检查网络'
             });
-        }
-
-        /**
-         * save到数据库之前的 编辑 ,只缓存20条数据
-         * @param {obj}obj
-         * @param {NUmber 1上滑 2下滑}type
-         * @returns {obj 过滤后的数据}
-         */
-        function saveLocalObjEdit(obj) {
-            var re = [];
-            var tempCount = 0;
-            angular.forEach(obj, function (vo) {
-                tempCount++;
-
-                if (obj.length < 20) {
-                    re.push(vo);
-                } else {
-                    if (type == 1) {// 上啦条件 小于20
-                        if (tempCount < 20) {
-                            re.push(vo);
-                        }
-                    }
-
-                    if (type == 2) {//下拉条件 大于总数量 - 20
-                        if (tempCount > (obj.length - 20)) {
-                            re.push(vo);
-                        }
-                    }
-                }
-
-            });
-            return re;
         }
 
         /**************************
@@ -5885,7 +9631,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                  * @private
                  */
                 function __delCatchListName(catchName) {
-
                     var chaName = catchName.split('_');
                     if (chaName[0] == 'catchList') {//判断 是 list对象
                         var _chaName = catchName.split('-');
@@ -5916,43 +9661,58 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     function _addNewListToOldList(newlist, _call, listNam, scope, isCatch) {
 
         //判断newList 里面的 id 是否有 标记
+        // var strVar = "";
+        // strVar += "        <li class=\" item homeListItem thinner-border\" bindonce='" + listNam + "' bo-attr bo-attr-url=\"vo.type + 'Content'\" bo-attr-type=\"vo.type\" bo-attr-subid=\"vo._id\"  bo-id='\"homeList_\" + vo._id'";
+        // strVar += "            style=\"background-color: #fff;\">";
+        // strVar += "            <div class=\"clear contentItem\">";
+        // strVar += "                <div class=\"contentItemTitle clear\" bo-text=\"vo.title\"><\/div>";
+        // strVar += "                <div class=\"contentItemTitleCounent clear\">";
+        // strVar += "                <div class=\"left \">" +
+        //     "<span class='' style='color:#db5140' bo-text='\"￥\" + vo.price'><\/span>" +
+        //     "<span class=''>\&nbsp;|&nbsp;</span>" +
+        //     "<span class='' bo-text='vo.danWei'></span>" +
+        //     "<span class='fa fa-map-marker' style='margin-left: 1rem'></span>" +
+        //     "<span class='' style='margin-left: 3px' bo-text='vo.far + \"km\"'></span>" +
+        //     "<\/div>";
+        // strVar += "                <div class='right' bo-text='\"(\"+vo.sex+\")\"'></div>";
+        // strVar += "                <div class='right' bo-text='vo.uid.name'></div>";
+        // strVar += "                <\/div>";
+        // strVar += "                <div class=\"line clear marginLine\"><\/div>";
+        // strVar += "                <div class=\"clear\">" +
+        //     "<div class='headerLeft left'>" +
+        //     "<img bo-if='vo.listHeader' bo-src='vo.listHeader' style='width: 30px;height: 30px;border-radius:30px;'/>" +
+        //     "<img bo-if='!vo.listHeader' bo-src='defaultHeader' style='width: 30px;height: 30px';border-radius:30px;/>" +
+        //     "</div>" +
+        //     "<div class='left imagesArr' >" +
+        //     "<div class='left imagesItem' bo-if='vo.imgs[0]'>" +
+        //     "<img bo-src='vo.imgs[0]'/>" +
+        //     "</div>" +
+        //     "<div class='left imagesItem' bo-if='vo.imgs[1]'>" +
+        //     "<img bo-src='vo.imgs[1]'/>" +
+        //     "</div>" +
+        //     "<div class='left imagesItem' bo-if='vo.imgs[2]'>" +
+        //     "<img bo-src='vo.imgs[2]'/>" +
+        //     "</div>" +
+        //     "<div class='clear'></div>" +
+        //     "<div class='des' bo-text='vo.des'></div>" +
+        //     "</div>" +
+        //     "<div class='clear'></div>" +
+        //     "<div class='moreKill lan' style='font-size: 0.8rem;margin-top: 10px' bo-if='vo.killListTitle' bo-text='\"更多技能: \"+ vo.killListTitle'></div>" +
+        //     "</div>" +
+        //     "<\/div>";
+        // strVar += "        <\/li>";
+        //
+        // var repListHtml = angular.element(strVar);
+        // repListHtml.attr('ng-repeat', "vo in " + listNam + " track by $index");
+        // repListHtml.attr('listName', listNam);
+        // console.log('scope', scope);
+        // _compile('list', repListHtml[0], scope, true);
 
-
-        var strVar = "";
-        strVar += "        <li id=\"repListLi\"  class=\"mui-table-view-cell item\" url=\"content#{{vo.id}}\" bindonce bo-attr ng-repeat=\"\"";
-        strVar += "            style=\"background-color: #fff;margin-top: 10px\">";
-        strVar += "            <div class=\"clear\">";
-        strVar += "                <div class=\"left listHeader\">";
-        strVar += "                    <img bo-src=\"vo.listHeader\"/>";
-        strVar += "                <\/div>";
-        strVar += "                <div class=\"left listTitle\">";
-        strVar += "                    <span bo-text=\"vo.title\"><\/span>";
-        strVar += "                <\/div>";
-        strVar += "            <\/div>";
-        strVar += "            <div class=\"mui-navigate-right\" style=\"font-size:14px;color: #777;margin-top: 5px\" bindonce";
-        strVar += "                 ng-repeat=\"(key,vo2) in vo.content\">";
-        strVar += "                <span style=\"color:#bd0000\" bo-text=\"key + ':'\"><\/span>";
-        strVar += "                <span bo-text=\"vo2\"><\/span>";
-        strVar += "            <\/div>";
-        strVar += "";
-        strVar += "            <div class=\"panle\">";
-        strVar += "                <div class=\"mui-btn fa fa-weixin fa-1x icon-btn\"><\/div>";
-        strVar += "                <div class=\"mui-btn fa  fa-1x icon-btn-noBack iconStar\" ng-class=\"vo.iconStar\" bo-attr";
-        strVar += "                     bo-attr-iconId=\"vo._id\"><\/div>";
-        strVar += "            <\/div>";
-        strVar += "        <\/li>";
-
-        var repListHtml = angular.element(strVar);
-        repListHtml.attr('ng-repeat', "vo in " + listNam);
-        repListHtml.attr('listName', listNam);
-        repListHtml.attr('bo-id', 'vo._id');
-
-        _compile('list', repListHtml[0], scope, true);
         if (!isCatch) {//如果不是 缓存请求
-            pushToGoldCatcth(newlist);//push 到全局变量数组
-            //saveCatecNewList(newlist);//合并存储到缓存
+            _call(pushToGoldCatcth(newlist));//push 到全局变量数组
+        } else {
+            _call(newlist);
         }
-        _call(newlist);
     }
 
     /**************************
@@ -5961,21 +9721,21 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      * 16/9/17 上午10:23 ByRockBlus
      **************************/
     function saveCatecNewList() {
-
         var newList;
         var thisUrl = _state.current.name;
         switch (thisUrl) {
             case 'home':
-                newList = thisObj.globalCatchList.home;
+                if (thisObj.globalCatchList.home[0]) {
+                    newList = thisObj.globalCatchList.home;
+                }
                 break;
             case 'need':
-                newList = thisObj.globalCatchList.need;
-                break;
-            case 'star':
-                //存储 star
-                _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
+                if (thisObj.globalCatchList.need[0]) {
+                    newList = thisObj.globalCatchList.need;
+                }
                 break;
         }
+
 
         if (!newList) {
             return false;
@@ -5983,38 +9743,18 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
         var oldArr = [];
         var thisLogName = 'catchList_' + _state.current.name + '-' + _tools.getToday();
-        //var oldObj = _tools.getLocalStorageObj(thisLogName);
-        //
-        ////合并新老数据
-        //if (oldObj) {
-        //    angular.forEach(oldObj, function (vo) {
-        //        oldArr.push(vo);
-        //    });
-        //}
-
         var tempCount = 0;
         angular.forEach(newList, function (voNew) {
-            angular.forEach(voNew, function (vo) {
-                tempCount++;
-                try {
-                    vo.iconStar = 'fa-star-o';
-                    delete(vo.$$hashKey);
-                } catch (e) {
-                    console.error('删除hashKey失败');
-                }
-                if (tempCount < 30) {
-                    oldArr.push(vo);
-                } else {
-                    return false;
-                }
-            });
+            tempCount++;
+            if (tempCount < 30) {
+                oldArr.push(voNew);
+            } else {
+                return false;
+            }
         });
 
         //存储 catch
         _tools.saveLocalStorageObj(thisLogName, oldArr);
-
-        //存储 star
-        _tools.saveLocalStorageObj('starArr', thisObj.globalCatchList.starArr);
 
         delGoldCatcth();//删除当前url的全局缓存数组
     }
@@ -6023,14 +9763,21 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      * push 到全局缓存变量数组
      */
     function pushToGoldCatcth(newList) {
-        var thisUrl = _state.current.name;
-        switch (thisUrl) {
-            case 'home':
-                thisObj.globalCatchList.home.push(newList);
-                break;
-            case 'need':
-                thisObj.globalCatchList.need.push(newList);
-                break;
+
+        if (newList) {
+            var thisUrl = _state.current.name;
+            switch (thisUrl) {
+                case 'home':
+                    angular.forEach(newList, function (vo) {
+                        thisObj.globalCatchList.home.push(vo);
+                    });
+                    return thisObj.globalCatchList.home;
+                case 'need':
+                    angular.forEach(newList, function (vo) {
+                        thisObj.globalCatchList.need.push(vo);
+                    });
+                    return thisObj.globalCatchList.need;
+            }
         }
     }
 
@@ -6042,68 +9789,67 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         switch (thisUrl) {
             case 'home':
                 thisObj.globalCatchList.home = [];
-                thisObj.globalCatchList.starArr = [];
+                allListId = [];
                 break;
             case 'need':
                 thisObj.globalCatchList.need = [];
-                thisObj.globalCatchList.starArr = [];
-                break;
-            case 'star':
-                thisObj.globalCatchList.starArr = [];
+                allListId = [];
                 break;
         }
     }
 
     /**
-     * saveStar 存储star 数组
+     * 获取数据库的筛选条件,遍历name 给不同筛选条件
+     * 获取地址逻辑,如果 area.city.city == 附近,(cityCode == 777) ,就取areaGps 的gps 坐标,按照距离排序
+     * 否则如果有值,就取 cityCode 去 筛选城市排序
      */
-    function saveStarArrToGoldCatch(_id) {
-        thisObj.globalCatchList.starArr.push(_id);
+    function switchSearchCondition() {
+        var searchKey = localStorage.getItem('searchKey');
+        if (!searchKey) {
+            searchKey = "";
+        } else {
+            searchKey = searchKey.replace(/\"/g, "");
+        }
+        var condi = {
+            area: {},
+            areaGps: {},
+            clickShaiXuan: {}
+        };
+        condi.area = _tools.getLocalStorageObj('area');
+        condi.areaGps = _tools.getLocalStorageObj('areaGps');
+        condi.clickShaiXuan = _tools.getLocalStorageObj('clickShaiXuan');
+
+        condi.searchKey = searchKey;
+        return condi;
     }
 
-    /**
-     * 删除star缓存数组
-     */
-    function delStarIdFromStarArr(_id) {
-        var newStarArr = [];
-        angular.forEach(thisObj.globalCatchList.starArr, function (vo) {
-            if (vo != _id) {
-                newStarArr.push(vo);
-            }
-        });
-        thisObj.globalCatchList.starArr = newStarArr;
-    }
+})();
+/**
+ * 命名注释：server简称_header. 父模块 dipan. 功能_默认头像或其他默认数据. 类型_factory.js
+ */
 
-    /**
-     * 从全局缓存数组遍历 标记过的 star, 给list 赋值
-     * @parme list
-     * @return list
-     * editShowStar
-     */
-    function editShowStar(list) {
-        var reList = [];
-        angular.forEach(list, function (vo) {
-            vo = _trueStar(vo);
-            reList.push(vo);
-        });
-        return reList;
+(function () {
+    'use strict';
+    angular.module('dipan').factory('header', header);
 
+
+    function header() {
+        var re = {};
+        re.defaultHeader = defaultHeader();//根据省查询城市
         /**
-         * 判断star
-         * return vo
-         * @private
+         * 返回头像base64
          */
-        function _trueStar(vo) {
-            var trueNum = thisObj.globalCatchList.starArr.indexOf(vo._id);
-            if (trueNum !== -1) {
-                vo.iconStar = "fa-star";
-            }
-            return vo;
+        function defaultHeader() {
+            return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAA1CAYAAADh5qNwAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA+tJREFUeNrsWctx2zAQpT0pgKnAdAWmOxArCF2BrQoknnyUdPRJUgVmKrBSgegKQldgdhClgyw0D8kOApD4MT6EO4ORLYELvP3vMkkmmmiiif5HunB94PHxMaePGf5tnp6e2pgXIv6Cd0d8u9FB0WEpfbwwQJIaWlUIOPBe0VqyrzvwPYwCCoceaeWGLSdahQ8wC9474lu58Ly03Nd3qKDzxWCarrQd4L0kvg9RQRHDtXKo0MoOq1OAPXv4z4PGnFV/2tLeLAoomMaCfVXTuhbmgHWN7yTljlJdKbw/E88CfAsIUApsFcWnoKUVi3SFYd8zk3iHS9lo6SgB0TNzQ6Q9AlQCgXah5nfPTO6uZ1/FTCajy5QWAr1nQpjrNiDw8CCxCDI/SEna8Z4OOJn24reN5sJ9JIFv+jYR75oJrAz1qVKx9yTW4RBYyp4bog2zgjwE1A3zJdvsvld8xkQzFuls6KB51guUlMirQzSzPfzGhTfMu1Ge9QKVOUozgUZlVXFlwdulvntVnnUDpdita+nTWBw+8wDVKhbkrKlUUb0L/XTYe/LYm8aq/WJriuchW7LW6qcRe7UMZVbu6UN/+Svx+3BQgn58ROc7hvllY1zUpa25HHJgmNAooBx5p0GgFAd2bfxumGBqFMIFPndKxMs9hHUK8akOjGYuCRgXFZXFXJMODqSdDZtHZB7CakNAtTj0C621g92Lin43UPJUtPfNpuTRJOw2JFC8sm7WSqLCbPsAaar6vaWwMmaqbyGgGtfmzCf3WG5dGO7l1c6/M7u/DhkwBoRyEfXeEf2EJdyGJt89RliCXuiAwqMWNF10iQ75bqBcembh/GuM5FuzEHoegvDcIv52zWMIJt8RAZu+0gkDnVJJEWHTJDBeMm2pzWBuMznSTIdOCPkN+62E4BpoZqE0mhvav46hqQTRrNHML0ql07UxuSM0c8sBsQCwwB51Zt/aAnKp/e4M+WFvAwbzCjm91SVlmb8OhpJtHr2gxYEFyhwuvT5/EPntBZX6kflGaTO4YVWN84sHn/dTchprfBuB0fMWUt4gLazg6A/QujaSsjRi3DNG6yEz+zcDIGlqB/hOzTQ7hyllyZ+Rsynpp77pwxuUxtF5XjkDUC51YuVRhfJr3Tc18mh73EGxAWVr+L2EFiqNs8/kJQFMaHKlqStD2h4vTQ3NGkxalP/z15+VLnAoQSH9l6De+jpmEfX42BkXraGZJStmO8PFmxBNuQ5ergY0VSPKnZMzm/5UWAKAeCu4gPllhk62DZk+XSSRCaXQVqkIfr+wQ7j/AoDi0lWMInlUUEpjN4M2mp5oOdFEE000URT6JcAACGmw9q7dCUwAAAAASUVORK5CYII=';
         }
+
+        return re;
     }
 
 
 })();
+
+
 /**
  * localData.dipan.localDataNav.factory.js
  * 命名注释：server简称_localData. 父模块 dipan . 功能_本地 & app 默认数据. 类型_factory.js
@@ -6113,7 +9859,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     'use strict';
     angular.module('dipan').factory('localData', localData);
 
-    localData.$inject = ['$location', 'tools', '$rootScope', 'config', '$filter'];
+    localData.$inject = ['$location', 'tools', '$rootScope', 'config', '$filter', '$q', '$timeout', 'header'];
 
     var location;
     var thisLocalData = {};
@@ -6121,25 +9867,31 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     var thisRootScope;
     var _config;
     var _filter;
+    var q;
+    var thisTimeout;
+    var thisHeader;
 
-    function localData($location, tools, $rootScope, config, $filter) {
+    function localData($location, tools, $rootScope, config, $filter, $q, $timeout, header) {
         thisRootScope = $rootScope;
         location = $location;
-        thisLocalData.memberIndexNav = _memberIndexNav(); //我的 首页导航list
-        thisLocalData.setting = _settingNav(); //设置 导航list
+        thisLocalData.trueShowHedaer = _trueShowHedaer;//判断当前页面是否需要显示 header
         thisLocalData.tab = _tab; //根据 url 遍历 给tab数据
+        thisLocalData.shaiXuan = _shaiXuan; //根据 url 遍历 筛选条件
         thisLocalData.showTab = _showTab; //遍历url 返回true false ,控制是否显示tab
         thisLocalData.getTitle = _getTitle; //getTitle
-        thisLocalData.giveRoundCode = _giveRoundCode;// 给一个8位随机码,验证短信用
+        // thisLocalData.giveRoundCode = _giveRoundCode; // 给一个8位随机码,验证短信用
         thisLocalData.gps = {
             isHaveGps: false, //判断
         };
-
+        thisLocalData.loginImg = getLoginImg(); //登录页面bset64 图标
         thisLocalData._init = function () {
             thisTools = tools;
+            thisHeader = header;
             _config = config;
             _filter = $filter;
-            thisLocalData.giveRoundCode();
+            q = $q;
+            thisTimeout = $timeout;
+            // thisLocalData.giveRoundCode();
             getGps();
         };
 
@@ -6158,24 +9910,34 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         switch (url) {
             case '/memberIndex':
                 return __getUserTitle();
-            case '/home':
-                return _filter('toHtml')('天津武清河西务唐庄村');
-            case '/need':
-                return _filter('toHtml')('天津武清河西务唐庄村');
-            case '/star':
-                return _filter('toHtml')('标记');
+            // case '/home':
+            //     return _filter('toHtml')('<i class="fa fa-search linkMouse mui-btn qiaokeli" id="searchIconH1"></i>');
+            case '/editMemberInfo':
+                return _filter('toHtml')('资料编辑');
+            // case '/star':
+            //     return _filter('toHtml')('标记');
             case '/login':
-                return _filter('toHtml')('地盘');
-            case '/area':
-                return _filter('toHtml')('地区选择');
-            case '/search':
-                return _filter('toHtml')('搜索');
-            case '/setting':
-                return _filter('toHtml')('设置');
-            default:
-                return _filter('toHtml')('地盘 dipan.so');
-        }
+                return _filter('toHtml')('兼职鼠');
+            case '/myNews':
+                return _filter('toHtml')('联系');
+            case '/myKill':
+                return _filter('toHtml')('我的技能');
+            case '/myNeed':
+                return _filter('toHtml')('我的需求');
+            case '/orderFrom':
+                return _filter('toHtml')('订单');
+            case '/orderFromContent':
+                return _filter('toHtml')('订单详情');
+            case '/killContent':
+                return _filter('toHtml')('技能详情');
+            case '/subkill':
+                return _filter('toHtml')('发布技能');
+            case '/subneed':
+                return _filter('toHtml')('发布需求');
 
+            default:
+                return '';
+        }
 
         /**
          * 获取用户手机,头像,昵称
@@ -6186,81 +9948,23 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             var userData = thisTools.getLocalStorageObj('userData');
             try {
                 var reStr = '';
+                if (!userData.headerImg) {
+                    userData.headerImg = thisHeader.defaultHeader;
+                }
                 if (userData.headerImg) {
-                    reStr += '<img class="hImg" src="' + userData.headerImg + '" /> &nbsp;';
+                    reStr += '<img class="hImg" style="margin-top: 13px" src="' + userData.headerImg + '" /> &nbsp;';
+                }
+                if (userData.name) {
+                    userData.mt = userData.name;
                 }
                 if (userData.mt) {
-                    reStr += userData.mt;
+                    reStr += '<span style="font-size: 0.8rem;color: #777">' + userData.mt + '</span>';
                 }
                 return _filter('toHtml')(reStr);
             } catch (e) {
                 return '我的';
             }
         }
-
-
-    }
-
-    /**
-     * 我的 首页 导航 list
-     * @returns {*[]}
-     * @private
-     */
-    function _memberIndexNav() {
-        return [
-            {
-                'name': '我的地盘',
-                'url': 'myArea',
-                'id': 1,
-                'hrefId': 'hrefMemberMyArea',
-                'icon': 'fa fa-map-marker fa-1x'
-            },
-            {
-                'name': '我的发布',
-                'url': 'push',
-                'id': 2,
-                'hrefId': 'hrefMemberPush',
-                'icon': 'fa fa-sign-out fa-1x'
-            },
-            {
-                'name': '设置',
-                'url': 'setting',
-                'hrefId': 'hrefMemberSetting',
-                'id': 3,
-                'icon': 'fa fa-sign-out fa-1x'
-            }
-        ];
-    }
-
-    /**
-     * 我的 > 设置 导航 list
-     * @returns {*[]}
-     * @private
-     */
-    function _settingNav() {
-        return [
-            // {
-            //     'name': '资料编辑',
-            //     'url': 'memberInfo',
-            //     'id': 1,
-            //     'hrefId': 'hrefMemberMemberInfo',
-            //     'icon': 'fa fa-pencil-square-o fa-1x'
-            // },
-            {
-                'name': '退出登录',
-                'url': 'loginOut',
-                'id': 1,
-                'hrefId': 'hrefMemberLoginOut',
-                'icon': 'fa fa-sign-out fa-1x'
-            },
-            {
-                'name': '测试snsArticle添加',
-                'url': 'member_addArticle',
-                'hrefId': 'hrefMemberAddArticle',
-                'id': 2,
-                'icon': 'fa fa-sign-out fa-1x'
-            }
-        ];
     }
 
     /**
@@ -6275,11 +9979,109 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 return true;
             case '/need':
                 return true;
-            case '/star':
-                return true;
-            case '/memberIndex':
-                return true;
+            // case '/star':
+            //     return true;
+            // case '/memberIndex':
+            //     return true;
             default:
+                return false;
+        }
+    }
+
+    /**
+     * 遍历url 给筛选数据
+     * @param url
+     * @returns {boolean}
+     * @private
+     */
+    function _shaiXuan(url) {
+        switch (url) {
+            case '/home':
+                return [
+                    [{
+                        id: 'homeShaiXuanCity',
+                        name: '全国',
+                        type: 'six',
+                    }],
+                    [{
+                        id: 'homeShaiXuanThree1',
+                        name: '男',
+                        type: 'more',
+                    },],
+                    [{
+                        id: 'homeShaiXuanThree2',
+                        name: '女',
+                        type: 'more',
+                    },
+
+                    ],
+                    [{
+                        id: 'homeShaiXuanOne3',
+                        name: '人气',
+                        type: 'two',
+                    },],
+                    // [{
+                    //     id: 'homeShaiXuanTwo4',
+                    //     name: '活跃',
+                    //     type: 'two',
+                    // },],
+                ];
+            case '/need':
+                return [
+                    [{
+                        id: 'needShaiXuanThree1',
+                        name: '全国',
+                        type: 'six',
+                    }],
+                    [{
+                        id: 'needShaiXuanTwo2',
+                        name: '最新',
+                        type: 'four',
+                    },],
+                    [{
+                        id: 'needShaiXuanOne2',
+                        name: '价格',
+                        type: 'four',
+                    },],
+                    [{
+                        id: 'needShaiXuanTwo3',
+                        name: '线上服务',
+                        type: 'five',
+                    },],
+                ];
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * trueShowHedaer 判断当前页面是否需要显示 heade
+     */
+    function _trueShowHedaer(name) {
+        switch (name) {
+            // case 'home':
+            //     return true;
+            case 'memberIndex':
+                return true;
+            case 'myNews':
+                return true;
+            case 'myKill':
+                return true;
+            case 'myNeed':
+                return true;
+            case 'orderFrom':
+                return true;
+            case 'orderFromContent':
+                return true;
+            case 'editMemberInfo':
+                return true;
+            case 'subkill':
+                return true;
+            case 'subneed':
+                return true;
+            case 'killContent':
+                return true;
+            default :
                 return false;
         }
     }
@@ -6302,127 +10104,108 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         switch (url) {
             case '/home':
                 _obj = [{
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: _objDefaulOne.thisItem, //高亮
-                    name: '供', //名称
+                    name: '技能', //名称
                     route: 'hrefTabHome', //routeUrl
                     stateName: 'home', //routeUrl
                 }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
-                    name: '需', //名称
+                    name: '需求', //名称
                     route: 'hrefTabNeed', //routeUrl
                     stateName: 'need', //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
-                    route: 'hrefTabmemberIndex', //routeUrl
-                    stateName: 'memberIndex', //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    //name: '<i class="fa fa-star-o"></i>', //名称
-                    name: '标记', //名称
-                    route: 'hrefTabStar', //routeUrl
-                    stateName: 'star', //routeUrl
-                }];
+                },
+                    //     {
+                    //     colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    //     thisItem: false, //高亮
+                    //     name: '<i class="fa fa-star-o"></i>', //名称
+                    //     route: 'hrefTabStar', //routeUrl
+                    //     stateName: 'star', //routeUrl
+                    // }
+                ];
                 return _obj;
             case '/need':
                 _obj = [{
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'twoTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: false, //高亮
-                    name: '供', //名称
+                    name: '技能', //名称
                     route: 'hrefTabHome', //routeUrl
                     stateName: 'home', //routeUrl
                 }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    colNumCss: 'twoTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
                     thisItem: 'thisItem', //高亮
-                    name: '需', //名称
+                    name: '需求', //名称
                     route: 'hrefTabNeed', //routeUrl
                     stateName: 'need', //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
-                    route: 'hrefTabMemberIndex', //routeUrl
-                    stateName: 'memberIndex', //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '<i class="fa fa-star-o"></i>', //名称
-                    route: 'hrefTabStar', //routeUrl
-                    stateName: 'star', //routeUrl
-                }];
-                return _obj;
-            case '/star':
-                _obj = [{
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '供', //名称
-                    route: 'hrefTabHome', //routeUrl
-                    stateName: 'home', //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '需', //名称
-                    route: 'hrefTabNeed', //routeUrl
-                    stateName: 'need', //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '<i class="fa fa-ellipsis-h"></i>', //名称
-                    route: 'hrefTabMemberIndex', //routeUrl
-                    stateName: 'memberIndex', //routeUrl
-                }, {
-                    colNumCss: 'fourTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: 'thisItem', //高亮
-                    name: '<i class="fa fa-star-o"></i>', //名称
-                    route: 'hrefTabStar',//routeUrl
-                    stateName: 'star', //routeUrl
-                }];
-                return _obj;
-
-            case '/memberIndex':
-                _obj = [
-                    {
-                        colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: false, //高亮
-                        name: '粉丝 ' + _getUserData('fensi'), //名称
-                        route: 'hrefTabFensi', //routeUrl
-                        stateName: 'fensi', //routeUrl
-                    },
-                    {
-                        colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: false, //高亮
-                        name: '关注 ' + _getUserData('guanzhu'), //名称
-                        route: 'hrefTabGuanZhu', //routeUrl
-                        stateName: 'guanzhu', //routeUrl
-                    },
-                    {
-                        colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                        thisItem: false, //高亮
-                        name: '联系 ' + _getUserData('lianxi'), //名称
-                        route: 'hrefTabLianXi', //routeUrl
-                        stateName: 'lianxi', //routeUrl
-                    },
+                },
+                    //     {
+                    //     colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+                    //     thisItem: false, //高亮
+                    //     name: '<i class="fa fa-star-o"></i>', //名称
+                    //     route: 'hrefTabStar', //routeUrl
+                    //     stateName: 'star', //routeUrl
+                    // }
                 ];
-
-
                 return _obj;
-            case '/login':
-                _obj = [{
-                    colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: _objDefaulOne.thisItem, //高亮
-                    name: '登录', //名称
-                    route: 'login' //routeUrl
-                }, {
-                    colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
-                    thisItem: false, //高亮
-                    name: '设置', //名称
-                    route: 'memberIndex' //routeUrl
-                },];
-                return _obj;
+            // case '/star':
+            //     _obj = [{
+            //         colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: false, //高亮
+            //         name: '技能', //名称
+            //         route: 'hrefTabHome', //routeUrl
+            //         stateName: 'home', //routeUrl
+            //     }, {
+            //         colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: false, //高亮
+            //         name: '需求', //名称
+            //         route: 'hrefTabNeed', //routeUrl
+            //         stateName: 'need', //routeUrl
+            //     }, {
+            //         colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: 'thisItem', //高亮
+            //         name: '<i class="fa fa-star-o"></i>', //名称
+            //         route: 'hrefTabStar', //routeUrl
+            //         stateName: 'star', //routeUrl
+            //     }];
+            //     return _obj;
+
+            // case '/memberIndex':
+            //     _obj = [{
+            //         colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: false, //高亮
+            //         name: '粉丝 ' + _getUserData('fensi'), //名称
+            //         route: 'hrefTabFensi', //routeUrl
+            //         stateName: 'fensi', //routeUrl
+            //     }, {
+            //         colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: false, //高亮
+            //         name: '关注 ' + _getUserData('guanzhu'), //名称
+            //         route: 'hrefTabGuanZhu', //routeUrl
+            //         stateName: 'guanzhu', //routeUrl
+            //     }, {
+            //         colNumCss: 'threeTab', //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: false, //高亮
+            //         name: '联系 ' + _getUserData('lianxi'), //名称
+            //         route: 'hrefTabLianXi', //routeUrl
+            //         stateName: 'lianxi', //routeUrl
+            //     },];
+            //
+            //
+            //     return _obj;
+            // case '/login':
+            //     _obj = [{
+            //         colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: _objDefaulOne.thisItem, //高亮
+            //         name: '登录', //名称
+            //         route: 'login' //routeUrl
+            //     }, {
+            //         colNumCss: _objDefaulOne.colNumCss, //设置tab的 个数,默认 2 个 , twoTab ,threeTab,fourTab
+            //         thisItem: false, //高亮
+            //         name: '设置', //名称
+            //         route: 'memberIndex' //routeUrl
+            //     },];
+            //     return _obj;
             default:
                 return [];
         }
@@ -6456,7 +10239,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      * 广播全局 gps 事件.
      */
     function getGps() {
-        thisTools.trueWeb(_web, _app);//判断手机 或者 app 来判断 定位 ,获取地理位置数据
+        thisTools.trueWeb(_web, _app); //判断手机 或者 app 来判断 定位 ,获取地理位置数据
 
         /*************************
          * todo
@@ -6464,20 +10247,88 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * 16/8/19 上午7:43 ByRockBlus
          *************************/
         function _web() {
-            var url = _config.host.phpHost + '/Api/Jsonp/getIP/from/web';
 
-            thisTools.getJsp(url, true).then(_s, _f);
+            //todo 由于被墙 无法正常使用
+            // if (window.navigator.geolocation) {
+            //     console.log('1111',111);
+            //     var options = {
+            //         enableHighAccuracy: true,
+            //     };
+            //     window.navigator.geolocation.getCurrentPosition(handleSuccess, handleError, options);
+            //
+            // } else {
+            //     alert("浏览器不支持html5来获取地理位置信息");
+            // }
+            //
+            // function handleSuccess(re) {
+            //     console.log('re', re);
+            // }
+            //
+            // function handleError(err) {
+            //     console.log('re2', err);
+            // }
+            //
+            // return;
 
+            var url = _config.host.phpHost + '/Api/Jsonp/getIP/from/web'; //获取浏览器ip
 
-            function _s(re) {
-                thisTools.alert({title: re.ip});
+            thisTools.getJsp(url, true).then(_s1).then(_s2).then(_s3, _err);
+
+            /**
+             * 获取浏览器ip re.ip
+             * @private
+             */
+            function _s1(re1) {
+                re1.ip = '123.150.38.2'; //todo 测试用
+
+                var defered = q.defer();
+                var url1 = _config.host.nodeHost + '/soso/sosoApi/ipToCity?ip=' + re1.ip; //获取城市
+                thisTools.getJsp(url1, true).then(function (re2) {
+                    defered.resolve(re2);
+                }, function (err) {
+                    defered.reject('_s1');
+                });
+
+                return defered.promise;
             }
 
-            function _f() {
-
+            function _s2(re2) {
+                var defered = q.defer();
+                var city = JSON.parse(JSON.parse(re2));
+                city = city.city;
+                var url2 = _config.host.nodeHost + '/soso/sosoApi/strToGps?str=' + city; //获取城市ip
+                thisTools.getJsp(url2, true).then(function (re3) {
+                    defered.resolve(re3);
+                }, function (err) {
+                    defered.reject('_s2');
+                });
+                return defered.promise;
             }
 
-            //获取 ip地址,去反查地址数据
+            function _s3(re3) {
+                var reEdn = JSON.parse(JSON.parse(re3));
+                if (reEdn.status == '1') {
+                    var gps = reEdn.geocodes[0].location;
+                    gps = gps.split(',');
+                    var gpsObj = {
+                        lat: gps[1] * 1,
+                        lng: gps[0] * 1,
+                    };
+
+                    var cityObj = {
+                        city: reEdn.geocodes[0].city,
+                        cityCode: reEdn.geocodes[0].citycode
+                    };
+
+                    writeDbGps(gpsObj, cityObj);//写入缓存
+                }
+            }
+
+            function _err(e) {
+                console.error('error', e);
+            }
+
+
         }
 
         /*************************
@@ -6486,6 +10337,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          *************************/
         function _app() {
             var gpsObj = {};
+            var city = {};
 
             // H5 plus事件处理
             function plusReady() {
@@ -6509,15 +10361,13 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             function _success(p) {
                 gpsObj.lat = p.coords.latitude;
                 gpsObj.lng = p.coords.longitude;
-                thisTools.alert({
-                    'title': 'title' + gpsObj.lat,
-                    'content': gpsObj.lng
-                });
+                city.city = p.address.city;
+                city.cityCode = p.address.cityCode;
+                writeDbGps(gpsObj, city);//写入本地数据库
             }
 
             //失败回调
             function _err(e) {
-
                 console.log(e);
                 thisTools.alert({
                     title: '获取位置失败',
@@ -6554,6 +10404,29 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             }
         }
 
+        /**
+         * 写入gps数据到 本地数据库
+         * 传gps坐标,城市名称
+         * gpsObj{
+          *  lat:'', 存monogo 时候 用 Double,建立gps 2d 索引
+          *  lng:''
+         * }
+         * city{
+         *  cityCode:'',存mongo 用 str
+         *  city:'天津市'
+         * {
+         */
+        function writeDbGps(gpsObj, city) {
+            var area = {
+                gpsObj: gpsObj,
+                city: city
+            };
+            thisTools.saveLocalStorageObj('area', area);
+            thisTools.saveLocalStorageObj('areaGps', area);
+            thisTimeout(function () {
+                thisRootScope.$broadcast('changeArea');//广播变换地理位置事件
+            }, 400);
+        }
     }
 
     /*************************
@@ -6570,16 +10443,13 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
      * 16/9/2 上午8:10 ByRockBlus
      *************************/
 
+
     /**
-     * 第一次后给localStorage一个随机码,验证用户发送短信用
-     * @private
+     * login 页面图标
      */
-    function _giveRoundCode() {
-        localStorage.removeItem(_config.localSaveName.user.roundCodeId);
-        setTimeout(function () {
-            var roundCode = thisTools.getRoundCode(8);
-            localStorage.setItem(_config.localSaveName.user.roundCodeId, roundCode);
-        }, 200);
+    function getLoginImg() {
+        var img = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADBCAYAAACZgL+iAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAEjpJREFUeNrsXTtuI0kSTRHjN/cEXQLWF4kFxlXRGFvUCUQ5a6wj8gSSTiC1s8Y4ok7QlL2Giu4CC7H9BZpzgmHfYDM0wR1OTxUzMis/kVXxgIIG0xIrmRkv4kXkTymBQCAQCAQCgUAgEAgEAoFAIBAIBAKBQCAQCAQCgUAgEAgyx0luDf7x55+G+sdIP2XNP+/0s4Hn33//106GV9AJAqDRz/RzhcZPARDhWT8rTYatDLWXcdg7HhiPM/wJjuYL/qx0X2+EAP46vNA/btH422Cpn3shQqsxmKLBmwBEWIHz0f1dCQHcPf4cO94ngAgLkUdkw39qkJpUbNDxrIQAdmH2s36KQK8A47/mPCgMxuDOs/OpsM+3QoDjHT9DrxMDSz0g12Luf4q8rxZ5lq3jgWjwKASo7/wnD1rfJURPRBL9P/K+EnV+ZxzPSY+N/5AE17lVLzI1fnaO56Tnxn8Ynid9JEEC42dFgpPEnf+gfqv2cAAMxLhPpVKs9LwlMH42JBgkTnjnjOwBjOAzJoJ9SXg/JzR+hcn2a8p+GCTqfPjiTwztYl+C7QMeVJhqj3WfowzuBwEOPA9XlCjNuuz9ZwzyrkPMsE29iADA9oK5jcz1gEw7rPs5EvwJlUF3CYBGlYthPaGxdA1PiXW/qW3dJABKn6eMDCW39lIdUMm4iSNchhENJxE731e9H9bwrNVva/6r795RYmJns2zahAW36fsWDugtA/kJGMeakzmJ1PlgmG3LXUtlsaTZ41JqqFGf5r5cwsMCt/3+ijrHs9+kdIESty3JYF/BpEsEeG0ReqGznVcSelrWm/XCOTTQr47av0LHU1lKrduWURjGfJk9AVp6f2/yQ7dj3rL6Mclhg4dH779FI6xa9vmtI/G2KIWCRt4YSbBLIrlfm+NNe+NnXeJnu+A2U+MH47txyLPGbQmPfT5G+WQLiNzBVwoMAnf+zEEP7kJ5W9wEM3EkQZnp3MDc0gOD3Ln05XlRuk4wh7PFTeilKaEjwJWj8QerAOBnu5IgqxliB+8PkucuQJ/vMIeyJcEwdBQYBOz80iHxvIxR/sJ3LFzCcqope0dQN7LvPf8ycL+7kCBoFAgZAWx15yJmkomDfR8hqqUENW9ZhvD8TeNsmRMMVcDVA0GqQFh6/GqTdIHuTCQTXEq07CtCFtU3qOuPE0gzm7LsVrfxNKcIYCMT3k9pSGgr1w75wI3ijyti30d3PJhg27y3QEJnQwAbmZD0nB6sUthKoSnnhXLoYSmyIdlhYRhBHwPZVDoCYKmQahxVjNk+wmDAQNhKGs7JMCX5rRiscQLHQyXgLEQyHCICXFgmRFxgGwU4J8MXAb5vKClk045ZDgSgZuxLTqcwYEi2iUYFx4kxovypuCTxqACobbliTQA0CHLdmaHntG3TBcPvMM2w76ntGfnOvXxHAKpBLDkeP4JtWno2Nm7yZ8OthIvtqVL0uW8CTD0znnsUGDKUQaXh3z9l3u9XLAmAG5op8qfifPiUQxRgI4OIEnTFtN8hAlByQq8yyGcEoHpCrh7INQpwigDnJuNnvrONahslRwKcE35nm8O5/JZRYBhqljKA/Hlh3vVgGxSCXrAiAJbeSuIXzAXPOcmgg3252fY/RqeVB6JHjwCjAEaViyb1OiABvX8uN2dSZJC3qDuI1Pl7+ZPb8eNUTTpicKiuSYK+5NDhaCPbWE5nEKnzc5M/+8FYKvpK0dRRwPT+KqOuX3myOVYR4FnliZVHJxASI4KkywUvbb9vNAIQDzTdZXz7SvTSnMMYdMn778lqirxDH4fp+ogAlEZkeyWphSZNeda+6d05Op9VjD73QYCC8DtrlTdIBE44H3Bm+PcvGfb52sP3jkIAivatMicANX9JFQVM791m2OdVjP6OEQF2uV88hzKIUg0640iAHI90RJsx2U2ZAwG6cvXoykNfhEiAu+j9ybbTdmHcoGXnUxi47ggBKN8jRQ5QdJgAaw/fP2gEGPpgcccS4dgzwiMPRpRtBGjrdAaBO78zBMB1NBtPfeITH005WMZ9TsldPqQkwAfCl9iq7oBCgNh5QNdzMJP9jFISwPTySnULa4YEMI3BruMESJoDqI53vos3/Ri5TUNDBM49Aqw5E8Dkfb50yfqJxhQtAqS4WJphBGhVeAhdBdp1cEA4edRhRm0NRoA2ecCgR8YSa0BKRgnwricEiC+BehJ+ucu6ouudTawiFtEJoGiTYNsOjklOXnWj+oEkBPDF3s7lABGjo2nx3beO9HnFTgIJWkfHnN7TWQgBRFZ0AecpCFB2SCvbyDrJAeIj2IK+gXR+1uilExIJJBAIAQQCIYBA0Ao/SBfEw8EJzqDdP6jja1jWqOE3OW5qFwII9kYPF2hAmc7m/uQ/JLj6M+AHFBXgyMBVB5Y494IAox73K5wWfaVoF1bb9Cc8t/qztyqPm3Y6TQCTF+rzLOVD4M8vIrxDkmADpMYs6DUB+qrpS+kFIQDVWGSxlsAHPmRJgJ4nwoIM7MiZAD2uTQup+WEdnQA9NhaRdZID9NpYPmbU1q4k7CVXAphk0FkHCVCI32SHrUQAyQE6CeL+6mQEML247OCY5ETqc+nv42i7FugXAoOLrpwO4WkSbH/r5JcjRluI1LJyoptUBKAYdqG6cz5Q4WjwsIqzsikd4yRiqdxWknZJrlGO4N9xJkCpunNMOjWphwGB1ZpL1+iHg7rCZ4HRB1aYznqWgwW9A7ktATYejaYLgwHGfq+Nd+n7xRg9Kk2Ehf45188NxcAhicx8/0DQ+w8GLQdlR2hAl6om5ZFBAMM/DWH83/e5fu70f44hwgSSbVxyrkIFPgHbRxnU1ICi7VWWzBNg8MxjNMpoAGmln2v9nxODFM3ZAVHa/o07AaiZfG7eH7z+QhvhJGWVC6URRIPHDkpQCgGq1ASgHBfehXr0+XekB8N/5NAwlEWQG1zWSNJRR/r8WN6VlACUBnQpAqzQ+NkllrpNqxpJVGS8L8NkN7u20XfgodMpIajI+UINPNkBAGXNS87ngyIxx99J01GGfU5xmq2dkK+1QJUHNnPGBRr/dQ6NRYJODgykzLTPsyEApSFXGRNgnYvxN5AgxxyMQto1FwJQGjLKtRwaurYfgQTDnPIAtBOKbMtKAgGmSpCKBDmBYic7H+XngcdOprDxRkwyDQkyu9iDIpcrHy/yuSGG0qBCztUReJI/a24EWHtkt6C/mHmW3XEIgJMwlDA768LaIEFS+bP1NRHpe09w5Znlgn7JH7CLwqOdRSfAC/H3buTYREELefzClQAr4u+B8c9lvAUH3r9U9BlrnhHgYBsfNQpILiDY45bqZH2WdEOcC0QNT0OLLy0Q7+9d/gQhAC4boDJ0JvMCAktHuGJNAIdGPklC3GvvP7Xw/kvfM9qhCGBzgVshUigs/vrP/xT6KRkaPzg+m7vOXny3IQgBcJLCJlOfH2w6Efgz/Jl+3vR/ftXPK/43N+lTEH93i5Ot/AmAeLb8/aecd40xMvqhfu708yv0qfrjupoRkIKR9JkHtKe0BMBkeGvxJxAOP0s+0Mr45+jtb1XzeToFA+MvkJw2WGZFAMS95e9Dx7wKCawNf4Ty5kGZD5KqEhv/u6NTdsc2LkMdPROUAA5RQGHIfpVJMrLx3+kfb4p2hOD1f//xtypxkx+U/Sb9T6EacxKB8TOHcLcfsMseX8ZnMvwCPanJmKD/nrXhL1O3WdsC2IFtDgKnak+yJQB+8a8ttCfIqEfX+u9eTmW2I8ooeSBKGmQEVOIWDDz+fgzA+F0qfZOQTjDWTfGLFn8LCd0bRhKX6PPaMc8/Mxj/Dg1/zMT4C2yvi/FXoRXAScSOgE4oW34M5BNQC35p6hhcWnGBoXaoMjrPh2j8Twa5Azp/62G8wGB3bQxQf8ZcHa9ImTAOfQLfSWRP8NXzx24PkuyiQWadduGKJoLx32vDv/MsW35FUt1b3m4zRcNvM68TxXGdxBxE3TF3Ku6yh6AJVETjL49IuX11ZxVgvA6TVvDEMBm1qSPDQeR1vc7p++90GiNvO4k9mLqj3lS8syovQ0yfM0p438/80ca/CTRW8O4UyycWsU7eHiT4cnVHeIfAtgPGf2zSKKjxAxzWdPmK2tGOnY9OANTjiwivelb546lBTgQ3/kT9+C7nYnZwigiwnyEOzfJl5t5/qppLh7GM33U2v4302XaeANixi4BGWuVc+UHp01TxuY5l/JGjwDLFIcSDxGO9UB5O+O2g/Gla1LZMtKQhdLTeRJLFvAhQc5GDL2Sb/GLVZ8bJSHCcQhEPIvUk1VKV1BHgkAS+qg2rzNf9PByRPim/V4ioul/wmOx7nXAaecfVgn8yFM4XWqC+L9VvcyEf1Z+rPGWdBNHGv2AwPm0WNdYZf/LLBn/gZBww9a07ea1oGzuykT+4dBkqOlfKbRLwC5OvAlHAx0z+Bh1V8ps2TxRDHGyZKx3kzyUzw79Vfg4DBq18n3Jdv6f1XFVq2cOeAAcdXqIBUYnAQv6gzHlQYU7B3qqEO7taLmWBRXV3nGxswJkAsOgKF7NNiFWIioHxT9FLzgK9ArwwHHHyGYmWQzL8fncxN+NnT4BDIijzvtBNyskvPI4EZJtpwze08RFJ/RftySEK/8XhlUC0NyybxoSNk9liVB5z0Pvsk2ADSo8DE0LyvBqkQYUaviJ+N0jmF4YcYh8NFrFyAzBkLYO2ilAN0r97yt2oBhkR4Mzw7y+JjH+Ekmd0JPzD2p3JEd1e97dr2NmlH1gcdqqaq1vvyyYiH3hFqrTlcNBZTgQoCTIphfEf259L3Zt7fszIkAhQ3Tq2lDwmCah5gBDAU+WhMITcFMZfHDF+kAhg+I+OhrKr29eLu77GqnnpSBQSoJ6nlDHPhAB+YPIk68jGf2yjygaN3ybpG9Z8Ri2QGMeWjsSKBJWHcRMCEHHOLAF+ahjcvd7fWZCpaPgcdYQEECGOlYYfIlSHKE6nFAJEiAAx9T8eRTj1YfyIOgJ8o/whJsjLhojyGniegNTn3BPhXAhQcvD+6FVvGzT/JNFqzaY9FfvSbMg8wJXgQgCLBNjkQWJOsDTt0rpMtVQZ3ztpSEpHGLEkD8g4ArBIgDGxrGvLIsEWxSYS1OE24PVIlL4/EwK0g6kDYxlf3UaVjUWpswlbH0aDJLy3jFxtQel7kUABI8Auxvof9P7DBv3d1ntvfRkNHo1YZ5RFICkkEigxAWJ5/5u6wfe4JHlXo91dKzhN5+rc+K4K4Zp+owPifNkJawJgxw1T6n+s09eR0Oce2ToiO92aiVJoWfNPtleS9kIGcY8AhYfOb4s6Q9x5Xn1ZR+SLFp+3UPVVoWmAuQHKds1SCOAGU8dtI7ThzFH7to4ADbPElCgAxv+pIQrMEuQBkgM44oNBg8aIAIWj17Mx2FWDx26zAX1pkc+0AcUJnQsB8k2AY4XvujX2M9c1PVhdqvvMwuc6IazCmSYBh0IA/znANmG7PgT4zBA1/OdIpDY5o5EQwD8BUp6VM/X9geix62QLlEQfHD9zFUmSGKMx18vP2RKAsAYoVgTYNsiIECXF+wY5MW+xxr+KIEl+aSlnhQAOg5SSAHuj9EoCjAKNUsiRBOsIBNioTMGZACWTTj+22R5I8BUM01d9HdcWLY+QwAfphpGcRIpiQqdygGPVh1jLj00nIBSYqP6qjRM2odzB6kvXGj7i2L0Jc3xPEdhgbcZim6sdcT4X6IxDyAVZoo1tRUx8S3ze6/f67w41OLT5G2r8DX521fDOnf5bWN7cdNYQvAMiD0SKe8PF2HUJbwjnsTHo/DMhgL8wHXvzyQKNzkU6lE0SQBtw4zZKAgkAkBPM8HOg5Lk6JIP+//MG6RHiDKUs5wI4E6BgkAAfRoGF8r+uHgwbjPSuKRLoH2PU/XPD58ADm+F3B9646XrVEEfIm0jFMlFmezr0jz//dGw/63OKU6CxCuObBBWe8GB6N0iwB9V+ZeU97hsQKObHo3MEGuKTz5COB+RS3j3ESHDj+H7YwTaWUfwdA+kCa2Pdn85WJXj3Dr03nBV6bykFob0TGUGJAD6jASSYNhd41OYz2qhPW7QBItK5+v3ese/1Phj+p1QXaggB+kMEuP9r6iBNSDmAQAiQU45wgR6ZkrAuPJwsIRACsCRDgUQ4U7+XKg8jhOtxigIhQPaS6Z0AYvwCgUAgEAgEAoFAIBAIBAKBQCAQCAQCgUAgEAgEAoFAIBAIWuF/AgwAoGsNs56R0skAAAAASUVORK5CYII=';
+        return img;
     }
 })();
 /**
@@ -6593,31 +10463,33 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 (function () {
     'use strict';
     angular.module('dipan').factory('tap', tap);
-    tap.$inject = ['$state', 'tools', 'getList'];
-
+    tap.$inject = ['$state', 'tools', 'getList', '$rootScope'];
 
     /**
      * angular 载入完成后。显示modle值
      * 15-12-26 */
-    function tap($state, tools, getList) {
+    function tap($state, tools, getList, $rootScope) {
         var re = {
             init: init
         };
 
         var ids = [
             'goHistory',//返回上一页
-            'hrefArea',//地区选择
-            'hrefSearch',//搜索
             'hrefHome',//主页 供
-            'hrefTabHome',//主页 供
+            'hrefTabHome',//主页2 供
             'hrefTabNeed',//需
-            'hrefTabStar',//标记
-            'hrefMaster',//地主
             'hrefMember',//我的首页
-            'hrefMemberAddArticle',//test添加文章
             'login',//登录
-            'hrefMemberLoginOut',//退出登录
-            'hrefMemberSetting',//设置
+            'hrefSubKill',//添加技能
+            'hrefSubNeed',//添加需求
+            'hrefMyNews',//消息
+            'hrefOrederFrom',//订单
+            'hrefMyJiNeng',//技能管理
+            'hrefMyNeed',//需求管理
+            'hrefMyLoginOut',//退出
+            'hrefEditMemberInfo',//用户资料编辑
+            'killContentHrefHome',//技能详情页面
+            'orderFromContentHrefHome',//需求详情页面
         ];
 
         var idsIsBind = [];//已经在服务绑定过的 id,就不去绑定了
@@ -6626,10 +10498,16 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         var noIdIsBing = [
             'hrefTabHome',
             'hrefTabNeed',
-            'hrefTabStar',
-            'hrefMemberAddArticle',
-            'hrefMemberLoginOut',
-            'hrefMemberSetting'
+            'hrefSubKill',
+            'hrefSubNeed',
+            'hrefMember',
+            'hrefMyNews',//消息
+            'hrefMyJiNeng',//技能管理
+            'hrefMyNeed',//我的需求
+            'hrefOrederFrom',//订单
+            'hrefMyLoginOut',//退出
+            'killContentHrefHome',//技能详情页面
+            'orderFromContentHrefHome',//需求详情页面
         ];
 
         function plus(callBack) {
@@ -6653,12 +10531,10 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         }
 
         function init() {
-
             tools.trueWeb(_call,
                 function () {
                     plus(_call);
                 });//判断手机网页 手机 绑定 tap 事件, 网页绑定 click事件
-
             function _call() {
                 angular.forEach(ids, function (vo) {
                     var doc = _trueIsSetId(vo);
@@ -6677,6 +10553,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * @param {String}url
          * @private
          */
+
         function _goUrl(doc, url) {
             var type = 'tap';
             tools.trueWeb(function () {
@@ -6692,18 +10569,20 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 switch ($state.current.name) {
                     case 'home' :
                         __saveCatchList();
+                        $rootScope.$broadcast('cancelClick');
                         break;
                     case 'need' :
                         __saveCatchList();
                         break;
-                    case 'star' :
-                        __saveCatchList();
-                        break;
+                    // case 'star' :
+                    //     __saveCatchList();
+                    //     break;
                 }
 
                 __saveScrollTop();
                 if (url == 'goHistory') {//判断是 返回上页的点击事件
-                    history.go(-1);
+                    // history.go(-1);
+                    console.log('historyGo');
                 } else {
                     $state.go(url);
                 }
@@ -6731,7 +10610,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
         }
 
-
         /**
          * 判断id 是否存在,存在的话,返回 true
          * @param {传入id} id
@@ -6755,7 +10633,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
         return re;
     }
 
-
 })();
 
 /**
@@ -6769,9 +10646,9 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
     'use strict';
     angular.module('dipan').factory('tools', tools);
 
-    tools.$inject = ['$http', '$rootScope', '$q', 'ui', '$filter', 'config'];
+    tools.$inject = ['$http', '$rootScope', '$q', 'ui', '$filter', 'config', '$state'];
 
-    function tools($http, $rootScope, $q, ui, $filter, config) {
+    function tools($http, $rootScope, $q, ui, $filter, config, $state) {
 
         var re;
 
@@ -6859,6 +10736,17 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
              * 解析url
              */
             parseUrl: parseUrl,
+
+            /**
+             *事件注册
+             */
+            loginEvent: loginEvent,
+
+            /**
+             * 绑定dom点击事件
+             */
+            bindClick: bindClick,
+
 
         };
 
@@ -6964,13 +10852,25 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
          * isNoLoading (可选 true:不显示loading动画)
          * 15-3-27 */
         function postJsp(getMoreUrl, data, isNoLoading) {
+
+            if (!data.roundCodeId) {
+                try {
+                    data.roundCodeId = localStorage.getItem(config.localSaveName.user.roundCodeId);
+                    if (!data.uid) {
+                        data.uid = re.getLocalStorageObj('userData').uid;
+                    }
+                    data.mt = re.getLocalStorageObj('userData').mt;
+                } catch (e) {
+                    console.error('未获取到userData');
+                }
+            }
+
             var oldGetMoreUrl = getMoreUrl;//记录原始地址
 
             //先解析url , 转换到 测试 url
             if (config.debugApi) {
                 var urlObj = parseUrl(getMoreUrl);
                 var urlHostStr = 'http://' + urlObj.host + ':' + urlObj.port;
-
                 if (urlHostStr == config.host.nodeHost) {
                     getMoreUrl = config.host.nodeHostTest + urlObj.path;
                 } else if (urlHostStr == config.host.phpHost) {
@@ -6986,6 +10886,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 endData[vo] = data[vo];
             }
 
+            var postCount = 0;
 
             function _post(url, postData, isComplete) {
                 var defer = $q.defer();
@@ -6996,7 +10897,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                     timeout: 10000
                 })
                     .success(function (doc) {
-
+                        postCount++;
                         /**
                          * 判断模拟模式如果开启,去判断 当前api是模拟还是已经 完成,
                          * 如果完成就调用完成的 接口,再从新请求真实数据,
@@ -7009,30 +10910,44 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                         function _editDoc(_success) {
                             if (config.debugApi && !isComplete) {//开启调试模式,判断是否完成api功能
                                 if (doc.complete) {//返回的complete 已经完成,就去真实地址取数据
-                                    _post(oldGetMoreUrl, postData, true);
+                                    _post(oldGetMoreUrl, postData, true).then(_success);
                                 } else {
-                                    _success();
+                                    _success(doc);
                                 }
                             } else {
-                                _success();
+                                _success(doc);
                             }
                         }
 
-                        function _success() {
+                        function _success(_doc) {
                             if (!isNoLoading) {
                                 $rootScope.$broadcast('closeLoading'); //http请求成功 关闭loading
                             }
-                            defer.resolve(doc);
+                            if (_doc && _doc.data && _doc.data.msg == 'token失效') {
+
+                                re.alert({
+                                    title: '登录超时,重新登录'
+                                });
+                                setTimeout(function () {
+                                    $state.go('loginOut');
+                                }, 1000);
+                                return false;
+
+                            } else {
+                                defer.resolve(_doc);
+                            }
                         }
                     }).error(function (err) {
                     if (!isNoLoading) {
                         $rootScope.$broadcast('closeLoading'); //http请求成功 关闭loading
                     }
                     defer.reject(err);
-                    re.alert({
-                        title: '网络请求失败',
-                        content: '请检查网络设置'
-                    });
+                    if (!isNoLoading) {
+                        re.alert({
+                            title: '网络请求失败',
+                            content: '请检查网络设置'
+                        });
+                    }
                 });
                 return defer.promise;
             }
@@ -7070,7 +10985,6 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                     app();
                 }
             }, 0);
-
         }
 
         /**
@@ -7180,6 +11094,88 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
             };
         }
 
+        /*
+         * 事件注册
+         * @param Element     ele
+         * @param String      eventType
+         * @param Function    fn
+         * @param Boolean     isRepeat
+         * @param Boolean     isCaptureCatch
+         * @return undefined
+         */
+        function loginEvent(ele, eventType, fn, isRepeat, isCaptureCatch) {
+            if (ele === undefined || eventType === undefined || fn === undefined) {
+                throw new Error('传入的参数错误！');
+            }
+
+            if (typeof ele !== 'object') {
+                throw new TypeError('不是对象！');
+            }
+
+            if (typeof eventType !== 'string') {
+                throw new TypeError('事件类型错误！');
+            }
+
+            if (typeof fn !== 'function') {
+                throw new TypeError('fn 不是函数！');
+            }
+
+            if (isCaptureCatch === undefined || typeof isCaptureCatch !== 'boolean') {
+                isCaptureCatch = false;
+            }
+
+            if (isRepeat === undefined || typeof isRepeat !== 'boolean') {
+                isRepeat = true;
+            }
+
+            if (ele.eventList === undefined) {
+                ele.eventList = {};
+            }
+
+            if (isRepeat === false) {
+                for (var key in ele.eventList) {
+                    if (key === eventType) {
+                        return '该事件已经绑定过！';
+                    }
+                }
+            }
+
+            // 添加事件监听
+            if (ele.addEventListener) {
+                ele.addEventListener(eventType, fn, isCaptureCatch);
+            } else if (ele.attachEvent) {
+                ele.attachEvent('on' + eventType, fn);
+            } else {
+                return false;
+            }
+
+            ele.eventList[eventType] = true;
+        }
+
+
+        /**
+         * 绑定dom点击事件
+         * @param domId
+         * @param callBack <Function>
+         */
+        function bindClick(domId, callBack) {
+            var clickType = 'tap';
+            re.trueWeb(function () {
+                clickType = 'click';
+            }, function () {
+                clickType = 'tap';
+            });
+
+            try {
+                var dom = document.getElementById(domId);
+                loginEvent(dom, clickType, function () {
+                    callBack(dom);
+                });
+
+            } catch (e) {
+                console.error('bindClick', domId + '没有绑定');
+            }
+        }
 
         return re;
     }
@@ -7540,23 +11536,978 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 angular.module('dipan').run(['$templateCache', function($templateCache) {
   'use strict';
 
+  $templateCache.put('callIm.html',
+    "<!DOCTYPE html>\n" +
+    "<html>\n" +
+    "\n" +
+    "<head>\n" +
+    "    <meta charset=\"utf-8\">\n" +
+    "    <meta name=\"viewport\"\n" +
+    "          content=\"width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no\"/>\n" +
+    "    <title></title>\n" +
+    "    <link href=\"../css/mui.min.css\" rel=\"stylesheet\"/>\n" +
+    "    <link rel=\"stylesheet\" type=\"text/css\" href=\"../css/app.css\"/>\n" +
+    "    <link href=\"../css/mui.imageviewer.css\" rel=\"stylesheet\"/>\n" +
+    "    <style>\n" +
+    "        html,\n" +
+    "        body {\n" +
+    "            height: 100%;\n" +
+    "            margin: 0px;\n" +
+    "            padding: 0px;\n" +
+    "            overflow: hidden;\n" +
+    "            -webkit-touch-callout: none;\n" +
+    "            -webkit-user-select: none;\n" +
+    "        }\n" +
+    "\n" +
+    "        footer {\n" +
+    "            position: fixed;\n" +
+    "            width: 100%;\n" +
+    "            height: 50px;\n" +
+    "            min-height: 50px;\n" +
+    "            border-top: solid 1px #bbb;\n" +
+    "            left: 0px;\n" +
+    "            bottom: 0px;\n" +
+    "            overflow: hidden;\n" +
+    "            padding: 0px 50px;\n" +
+    "            background-color: #fafafa;\n" +
+    "        }\n" +
+    "\n" +
+    "        .footer-left {\n" +
+    "            position: absolute;\n" +
+    "            width: 50px;\n" +
+    "            height: 50px;\n" +
+    "            left: 0px;\n" +
+    "            bottom: 0px;\n" +
+    "            text-align: center;\n" +
+    "            vertical-align: middle;\n" +
+    "            line-height: 100%;\n" +
+    "            padding: 12px 4px;\n" +
+    "        }\n" +
+    "\n" +
+    "        .footer-right {\n" +
+    "            position: absolute;\n" +
+    "            width: 50px;\n" +
+    "            height: 50px;\n" +
+    "            right: 0px;\n" +
+    "            bottom: 0px;\n" +
+    "            text-align: center;\n" +
+    "            vertical-align: middle;\n" +
+    "            line-height: 100%;\n" +
+    "            padding: 12px 5px;\n" +
+    "            display: inline-block;\n" +
+    "        }\n" +
+    "\n" +
+    "        .footer-center {\n" +
+    "            height: 100%;\n" +
+    "            padding: 5px 0px;\n" +
+    "        }\n" +
+    "\n" +
+    "        .footer-center [class*=input] {\n" +
+    "            width: 100%;\n" +
+    "            height: 100%;\n" +
+    "            border-radius: 5px;\n" +
+    "        }\n" +
+    "\n" +
+    "        .footer-center .input-text {\n" +
+    "            background: #fff;\n" +
+    "            border: solid 1px #ddd;\n" +
+    "            padding: 10px !important;\n" +
+    "            font-size: 16px !important;\n" +
+    "            line-height: 18px !important;\n" +
+    "            font-family: verdana !important;\n" +
+    "            overflow: hidden;\n" +
+    "        }\n" +
+    "\n" +
+    "        .footer-center .input-sound {\n" +
+    "            background-color: #eee;\n" +
+    "        }\n" +
+    "\n" +
+    "        .mui-content {\n" +
+    "            height: 100%;\n" +
+    "            padding: 44px 0px 50px 0px;\n" +
+    "            overflow: auto;\n" +
+    "            background-color: #eaeaea;\n" +
+    "        }\n" +
+    "\n" +
+    "        #msg-list {\n" +
+    "            height: 100%;\n" +
+    "            overflow: auto;\n" +
+    "            -webkit-overflow-scrolling: touch;\n" +
+    "        }\n" +
+    "\n" +
+    "        .msg-item {\n" +
+    "            padding: 8px;\n" +
+    "            clear: both;\n" +
+    "        }\n" +
+    "\n" +
+    "        .msg-item .mui-item-clear {\n" +
+    "            clear: both;\n" +
+    "        }\n" +
+    "\n" +
+    "        .msg-item .msg-user {\n" +
+    "            width: 38px;\n" +
+    "            height: 38px;\n" +
+    "            border: solid 1px #d3d3d3;\n" +
+    "            display: inline-block;\n" +
+    "            background: #fff;\n" +
+    "            border-radius: 3px;\n" +
+    "            vertical-align: top;\n" +
+    "            text-align: center;\n" +
+    "            float: left;\n" +
+    "            padding: 3px;\n" +
+    "            color: #ddd;\n" +
+    "        }\n" +
+    "\n" +
+    "        .msg-item .msg-user-img {\n" +
+    "            width: 38px;\n" +
+    "            height: 38px;\n" +
+    "            display: inline-block;\n" +
+    "            border-radius: 3px;\n" +
+    "            vertical-align: top;\n" +
+    "            text-align: center;\n" +
+    "            float: left;\n" +
+    "            color: #ddd;\n" +
+    "        }\n" +
+    "\n" +
+    "        .msg-item .msg-content {\n" +
+    "            display: inline-block;\n" +
+    "            border-radius: 5px;\n" +
+    "            border: solid 1px #d3d3d3;\n" +
+    "            background-color: #FFFFFF;\n" +
+    "            color: #333;\n" +
+    "            padding: 8px;\n" +
+    "            vertical-align: top;\n" +
+    "            font-size: 15px;\n" +
+    "            position: relative;\n" +
+    "            margin: 0px 8px;\n" +
+    "            max-width: 75%;\n" +
+    "            min-width: 35px;\n" +
+    "            float: left;\n" +
+    "        }\n" +
+    "\n" +
+    "        .msg-item .msg-content .msg-content-inner {\n" +
+    "            overflow-x: hidden;\n" +
+    "        }\n" +
+    "\n" +
+    "        .msg-item .msg-content .msg-content-arrow {\n" +
+    "            position: absolute;\n" +
+    "            border: solid 1px #d3d3d3;\n" +
+    "            border-right: none;\n" +
+    "            border-top: none;\n" +
+    "            background-color: #FFFFFF;\n" +
+    "            width: 10px;\n" +
+    "            height: 10px;\n" +
+    "            left: -5px;\n" +
+    "            top: 12px;\n" +
+    "            -webkit-transform: rotateZ(45deg);\n" +
+    "            transform: rotateZ(45deg);\n" +
+    "        }\n" +
+    "\n" +
+    "        .msg-item-self .msg-user,\n" +
+    "        .msg-item-self .msg-content {\n" +
+    "            float: right;\n" +
+    "        }\n" +
+    "\n" +
+    "        .msg-item-self .msg-content .msg-content-arrow {\n" +
+    "            left: auto;\n" +
+    "            right: -5px;\n" +
+    "            -webkit-transform: rotateZ(225deg);\n" +
+    "            transform: rotateZ(225deg);\n" +
+    "        }\n" +
+    "\n" +
+    "        .msg-item-self .msg-content,\n" +
+    "        .msg-item-self .msg-content .msg-content-arrow {\n" +
+    "            background-color: #4CD964;\n" +
+    "            color: #fff;\n" +
+    "            border-color: #2AC845;\n" +
+    "        }\n" +
+    "\n" +
+    "        footer .mui-icon {\n" +
+    "            color: #000;\n" +
+    "        }\n" +
+    "\n" +
+    "        footer .mui-icon:active {\n" +
+    "            color: #007AFF !important;\n" +
+    "        }\n" +
+    "\n" +
+    "        footer .mui-icon-paperplane:before {\n" +
+    "            content: \"发送\";\n" +
+    "        }\n" +
+    "\n" +
+    "        footer .mui-icon-paperplane {\n" +
+    "            /*-webkit-transform: rotateZ(45deg);\n" +
+    "            transform: rotateZ(45deg);*/\n" +
+    "\n" +
+    "            font-size: 16px;\n" +
+    "            word-break: keep-all;\n" +
+    "            line-height: 100%;\n" +
+    "            padding-top: 6px;\n" +
+    "            color: rgba(0, 135, 250, 1);\n" +
+    "        }\n" +
+    "\n" +
+    "        #msg-sound {\n" +
+    "            -webkit-user-select: none !important;\n" +
+    "            user-select: none !important;\n" +
+    "        }\n" +
+    "\n" +
+    "        .rprogress {\n" +
+    "            position: absolute;\n" +
+    "            left: 50%;\n" +
+    "            top: 50%;\n" +
+    "            width: 140px;\n" +
+    "            height: 140px;\n" +
+    "            margin-left: -70px;\n" +
+    "            margin-top: -70px;\n" +
+    "            /*background-image: url(../images/arecord.png);*/\n" +
+    "            background-repeat: no-repeat;\n" +
+    "            background-position: center center;\n" +
+    "            background-size: 30px 30px;\n" +
+    "            background-color: rgba(0, 0, 0, 0.7);\n" +
+    "            border-radius: 5px;\n" +
+    "            display: none;\n" +
+    "            -webkit-transition: .15s;\n" +
+    "        }\n" +
+    "\n" +
+    "        .rschedule {\n" +
+    "            background-color: rgba(0, 0, 0, 0);\n" +
+    "            border: 5px solid rgba(0, 183, 229, 0.9);\n" +
+    "            opacity: .9;\n" +
+    "            border-left: 5px solid rgba(0, 0, 0, 0);\n" +
+    "            border-right: 5px solid rgba(0, 0, 0, 0);\n" +
+    "            border-radius: 50px;\n" +
+    "            box-shadow: 0 0 15px #2187e7;\n" +
+    "            width: 46px;\n" +
+    "            height: 46px;\n" +
+    "            position: absolute;\n" +
+    "            left: 50%;\n" +
+    "            top: 50%;\n" +
+    "            margin-left: -23px;\n" +
+    "            margin-top: -23px;\n" +
+    "            -webkit-animation: spin 1s infinite linear;\n" +
+    "            animation: spin 1s infinite linear;\n" +
+    "        }\n" +
+    "\n" +
+    "        .r-sigh {\n" +
+    "            display: none;\n" +
+    "            border-radius: 50px;\n" +
+    "            box-shadow: 0 0 15px #2187e7;\n" +
+    "            width: 46px;\n" +
+    "            height: 46px;\n" +
+    "            position: absolute;\n" +
+    "            left: 50%;\n" +
+    "            top: 50%;\n" +
+    "            margin-left: -23px;\n" +
+    "            margin-top: -23px;\n" +
+    "            text-align: center;\n" +
+    "            line-height: 46px;\n" +
+    "            font-size: 40px;\n" +
+    "            font-weight: bold;\n" +
+    "            color: #2187e7;\n" +
+    "        }\n" +
+    "\n" +
+    "        .rprogress-sigh {\n" +
+    "            background-image: none !important;\n" +
+    "        }\n" +
+    "\n" +
+    "        .rprogress-sigh .rschedule {\n" +
+    "            display: none !important;\n" +
+    "        }\n" +
+    "\n" +
+    "        .rprogress-sigh .r-sigh {\n" +
+    "            display: block !important;\n" +
+    "        }\n" +
+    "\n" +
+    "        .rsalert {\n" +
+    "            font-size: 12px;\n" +
+    "            color: #bbb;\n" +
+    "            text-align: center;\n" +
+    "            position: absolute;\n" +
+    "            border-radius: 5px;\n" +
+    "            width: 130px;\n" +
+    "            margin: 5px 5px;\n" +
+    "            padding: 5px;\n" +
+    "            left: 0px;\n" +
+    "            bottom: 0px;\n" +
+    "        }\n" +
+    "\n" +
+    "        @-webkit-keyframes spin {\n" +
+    "            0% {\n" +
+    "                -webkit-transform: rotate(0deg);\n" +
+    "            }\n" +
+    "            100% {\n" +
+    "                -webkit-transform: rotate(360deg);\n" +
+    "            }\n" +
+    "        }\n" +
+    "\n" +
+    "        @keyframes spin {\n" +
+    "            0% {\n" +
+    "                transform: rotate(0deg);\n" +
+    "            }\n" +
+    "            100% {\n" +
+    "                transform: rotate(360deg);\n" +
+    "            }\n" +
+    "        }\n" +
+    "\n" +
+    "        #h {\n" +
+    "            background: #fff;\n" +
+    "            border: solid 1px #ddd;\n" +
+    "            padding: 10px !important;\n" +
+    "            font-size: 16px !important;\n" +
+    "            font-family: verdana !important;\n" +
+    "            line-height: 18px !important;\n" +
+    "            overflow: visible;\n" +
+    "            position: absolute;\n" +
+    "            left: -1000px;\n" +
+    "            right: 0px;\n" +
+    "            word-break: break-all;\n" +
+    "            word-wrap: break-word;\n" +
+    "        }\n" +
+    "\n" +
+    "        .cancel {\n" +
+    "            background-color: darkred;\n" +
+    "        }\n" +
+    "    </style>\n" +
+    "</head>\n" +
+    "\n" +
+    "<body contextmenu=\"return false;\">\n" +
+    "<header class=\"mui-bar mui-bar-nav\">\n" +
+    "    <a class=\"mui-action-back mui-icon mui-icon-left-nav mui-pull-left\" style=\"color:#777;\"></a>\n" +
+    "    <h1 class=\"mui-title\">聊一聊</h1>\n" +
+    "</header>\n" +
+    "<pre id='h'></pre>\n" +
+    "<script id='msg-template' type=\"text/template\">\n" +
+    "    <% for(var i in record){ var item=record[i]; %>\n" +
+    "    <div class=\"msg-item <%= (item.sender=='self'?' msg-item-self':'') %>\" msg-type='<%=(item.type)%>'\n" +
+    "         msg-content='<%=(item.content)%>'>\n" +
+    "        <% if(item.sender=='self' ) { %>\n" +
+    "        <img src=\"<%=(userHeader)%>\" class=\"msg-user \"/>\n" +
+    "        <% } else { %>\n" +
+    "        <img class=\"msg-user-img\" src=\"<%=(guestHeader)%>\" alt=\"\"/>\n" +
+    "        <% } %>\n" +
+    "        <div class=\"msg-content\">\n" +
+    "            <div class=\"msg-content-inner\">\n" +
+    "                <% if(item.type=='text' ) { %>\n" +
+    "                <%=( item.content|| '&nbsp;&nbsp;') %>\n" +
+    "                <% } else if(item.type=='image' ) { %>\n" +
+    "                <img class=\"msg-content-image\" src=\"<%=(item.content)%>\" style=\"max-width: 100px;\"/>\n" +
+    "                <% } else if(item.type=='sound' ) { %>\n" +
+    "                <span class=\"mui-icon mui-icon-mic\" style=\"font-size: 18px;font-weight: bold;\"></span>\n" +
+    "                <span class=\"play-state\">点击播放</span>\n" +
+    "                <% } %>\n" +
+    "            </div>\n" +
+    "            <div class=\"msg-content-arrow\"></div>\n" +
+    "        </div>\n" +
+    "        <div class=\"mui-item-clear\"></div>\n" +
+    "    </div>\n" +
+    "    <% } %>\n" +
+    "</script>\n" +
+    "<div class=\"mui-content\">\n" +
+    "    <div id='msg-list'>\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "<footer>\n" +
+    "    <div class=\"footer-left\">\n" +
+    "        <div style=\"color:#007AFF;font-size: 1rem;margin-top: 5px\">\n" +
+    "            <script id='footerleft' type=\"text/template\">\n" +
+    "                <% if(jionorder != true) { %>\n" +
+    "                接单\n" +
+    "                <% } %>\n" +
+    "            </script>\n" +
+    "        </div>\n" +
+    "        <!--<i id='msg-image' class=\"mui-icon mui-icon-camera\" style=\"font-size: 28px;\"></i>-->\n" +
+    "    </div>\n" +
+    "    <div class=\"footer-center\">\n" +
+    "        <textarea id='msg-text' type=\"text\" class='input-text'></textarea>\n" +
+    "        <!--<button id='msg-sound' type=\"button\" class='input-sound' style=\"display: none;\">按住说话</button>-->\n" +
+    "    </div>\n" +
+    "    <label for=\"\" class=\"footer-right\">\n" +
+    "        <i id='msg-type' class=\"mui-icon  mui-icon-paperplane\"></i>\n" +
+    "    </label>\n" +
+    "</footer>\n" +
+    "<div id='sound-alert' class=\"rprogress\">\n" +
+    "    <div class=\"rschedule\"></div>\n" +
+    "    <div class=\"r-sigh\">!</div>\n" +
+    "    <div id=\"audio_tips\" class=\"rsalert\">手指上滑，取消发送</div>\n" +
+    "</div>\n" +
+    "<script src=\"../../dist/js/res/mui.min.js\"></script>\n" +
+    "<script src=\"../../dist/js/res/mui.imageViewer.js\"></script>\n" +
+    "<script src=\"../../dist/js/res/arttmpl.js\"></script>\n" +
+    "<script src=\"../../dist/js/res/realtime.browser.js\"></script>\n" +
+    "<script type=\"text/javascript\" charset=\"utf-8\">\n" +
+    "    (function ($, doc) {\n" +
+    "        var userHeader, guestHeader;//用户头像\n" +
+    "        var jionOrder = true;//是否显示接单按钮\n" +
+    "\n" +
+    "        // 应用 ID，用来识别应用\n" +
+    "        var APP_ID = 'jFnAKF8oIWzB7INn2GpNyPAt-gzGzoHsz';\n" +
+    "\n" +
+    "\n" +
+    "        var Realtime = AV.Realtime;\n" +
+    "        var TextMessage = AV.TextMessage;\n" +
+    "\n" +
+    "        var realtime = new Realtime({\n" +
+    "            appId: APP_ID,\n" +
+    "            pushOfflineMessages: false,//配置离线接收\n" +
+    "            region: 'cn', //美国节点为 \"us\"\n" +
+    "        });\n" +
+    "\n" +
+    "\n" +
+    "        var MIN_SOUND_TIME = 800;\n" +
+    "        $.init({\n" +
+    "            gestureConfig: {\n" +
+    "                tap: true, //默认为true\n" +
+    "                doubletap: true, //默认为false\n" +
+    "                longtap: true, //默认为false\n" +
+    "                swipe: true, //默认为true\n" +
+    "                drag: true, //默认为true\n" +
+    "                hold: true, //默认为false，不监听\n" +
+    "                release: true //默认为false，不监听\n" +
+    "            }\n" +
+    "        });\n" +
+    "        template.config('escape', false);\n" +
+    "        //$.plusReady=function(fn){fn();};\n" +
+    "        $.plusReady(function () {\n" +
+    "            plus.webview.currentWebview().setStyle({\n" +
+    "                softinputMode: \"adustResize\"\n" +
+    "            });\n" +
+    "            var selfG = plus.webview.currentWebview();\n" +
+    "//            selfG.gusetId = 'c1';\n" +
+    "//            selfG.userId = 'b1';\n" +
+    "            userHeader = selfG.userHeader;\n" +
+    "            guestHeader = selfG.gusetHeader;\n" +
+    "            var showKeyboard = function () {\n" +
+    "                try {\n" +
+    "                    if ($.os.ios) {\n" +
+    "                        var webView = plus.webview.currentWebview().nativeInstanceObject();\n" +
+    "                        webView.plusCallMethod({\n" +
+    "                            \"setKeyboardDisplayRequiresUserAction\": false\n" +
+    "                        });\n" +
+    "                    } else {\n" +
+    "                        var Context = plus.android.importClass(\"android.content.Context\");\n" +
+    "                        var InputMethodManager = plus.android.importClass(\"android.view.inputmethod.InputMethodManager\");\n" +
+    "                        var main = plus.android.runtimeMainActivity();\n" +
+    "                        var imm = main.getSystemService(Context.INPUT_METHOD_SERVICE);\n" +
+    "                        imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);\n" +
+    "                        //var view = ((ViewGroup)main.findViewById(android.R.id.content)).getChildAt(0);\n" +
+    "                        imm.showSoftInput(main.getWindow().getDecorView(), InputMethodManager.SHOW_IMPLICIT);\n" +
+    "                        //alert(\"ll\");\n" +
+    "                    }\n" +
+    "                } catch (e) {\n" +
+    "                    console.log(e);\n" +
+    "                }\n" +
+    "            };\n" +
+    "            var record = [];\n" +
+    "\n" +
+    "//            var tempRecord = getLocalStorageObj('imHistory');\n" +
+    "//            if (tempRecord) {\n" +
+    "//                record = tempRecord;\n" +
+    "//            } else {\n" +
+    "            record = [];\n" +
+    "//                {\n" +
+    "//                    sender: selfG.gusetId,\n" +
+    "//                    type: 'text',\n" +
+    "//                    content: 'Hi，我是 ' + selfG.gName\n" +
+    "//                }]\n" +
+    "//            }\n" +
+    "\n" +
+    "\n" +
+    "            /**\n" +
+    "             * 根据名称 存储obj\n" +
+    "             * @param localName\n" +
+    "             * @param obj\n" +
+    "             */\n" +
+    "            function saveLocalStorageObj(localName, obj) {\n" +
+    "                localStorage.removeItem(localName);\n" +
+    "                setTimeout(function () {\n" +
+    "                    var objStr = JSON.stringify(obj);\n" +
+    "                    localStorage.setItem(localName, objStr);\n" +
+    "                }, 200);\n" +
+    "            }\n" +
+    "\n" +
+    "            /**\n" +
+    "             * 根据名称 getObj\n" +
+    "             * @param localName\n" +
+    "             * @return obj\n" +
+    "             */\n" +
+    "            function getLocalStorageObj(localName) {\n" +
+    "                var obj = localStorage.getItem(localName);\n" +
+    "                if (obj !== 'undefined') {\n" +
+    "                    var objStr = JSON.parse(obj);\n" +
+    "                    return objStr;\n" +
+    "                }\n" +
+    "            }\n" +
+    "\n" +
+    "\n" +
+    "            var ui = {\n" +
+    "                body: doc.querySelector('body'),\n" +
+    "                footer: doc.querySelector('footer'),\n" +
+    "                footerRight: doc.querySelector('.footer-right'),\n" +
+    "                footerLeft: doc.querySelector('.footer-left'),\n" +
+    "                footerLeftText: doc.querySelector('#footerleft'),\n" +
+    "                btnMsgType: doc.querySelector('#msg-type'),\n" +
+    "                boxMsgText: doc.querySelector('#msg-text'),\n" +
+    "//                boxMsgSound: doc.querySelector('#msg-sound'),\n" +
+    "//                btnMsgImage: doc.querySelector('#msg-image'),\n" +
+    "                areaMsgList: doc.querySelector('#msg-list'),\n" +
+    "                boxSoundAlert: doc.querySelector('#sound-alert'),\n" +
+    "                h: doc.querySelector('#h'),\n" +
+    "                content: doc.querySelector('.mui-content')\n" +
+    "            };\n" +
+    "            ui.h.style.width = ui.boxMsgText.offsetWidth + 'px';\n" +
+    "            //alert(ui.boxMsgText.offsetWidth );\n" +
+    "            var footerPadding = ui.footer.offsetHeight - ui.boxMsgText.offsetHeight;\n" +
+    "            var msgItemTap = function (msgItem, event) {\n" +
+    "                var msgType = msgItem.getAttribute('msg-type');\n" +
+    "                var msgContent = msgItem.getAttribute('msg-content');\n" +
+    "                if (msgType == 'sound') {\n" +
+    "                    player = plus.audio.createPlayer(msgContent);\n" +
+    "                    var playState = msgItem.querySelector('.play-state');\n" +
+    "                    playState.innerText = '正在播放...';\n" +
+    "                    player.play(function () {\n" +
+    "                        playState.innerText = '点击播放';\n" +
+    "                    }, function (e) {\n" +
+    "                        playState.innerText = '点击播放';\n" +
+    "                    });\n" +
+    "                }\n" +
+    "            };\n" +
+    "            var imageViewer = new $.ImageViewer('.msg-content-image', {\n" +
+    "                dbl: false\n" +
+    "            });\n" +
+    "            var bindMsgList = function () {\n" +
+    "                //绑定数据:\n" +
+    "                /*tp.bind({\n" +
+    "                 template: 'msg-template',\n" +
+    "                 element: 'msg-list',\n" +
+    "                 model: record\n" +
+    "                 });*/\n" +
+    "                ui.areaMsgList.innerHTML = template('msg-template', {\n" +
+    "                    \"record\": record,\n" +
+    "                    \"userHeader\": userHeader,\n" +
+    "                    \"guestHeader\": guestHeader,\n" +
+    "                });\n" +
+    "\n" +
+    "                ui.footerLeftText.innerHTML = template('footerleft', {\n" +
+    "                    \"jionorder\": jionOrder\n" +
+    "                });\n" +
+    "\n" +
+    "\n" +
+    "                var msgItems = ui.areaMsgList.querySelectorAll('.msg-item');\n" +
+    "                [].forEach.call(msgItems, function (item, index) {\n" +
+    "                    item.addEventListener('tap', function (event) {\n" +
+    "                        msgItemTap(item, event);\n" +
+    "                    }, false);\n" +
+    "                });\n" +
+    "                imageViewer.findAllImage();\n" +
+    "                ui.areaMsgList.scrollTop = ui.areaMsgList.scrollHeight + ui.areaMsgList.offsetHeight;\n" +
+    "            };\n" +
+    "            bindMsgList();\n" +
+    "            window.addEventListener('resize', function () {\n" +
+    "                ui.areaMsgList.scrollTop = ui.areaMsgList.scrollHeight + ui.areaMsgList.offsetHeight;\n" +
+    "            }, false);\n" +
+    "            var send = function (msg) {\n" +
+    "\n" +
+    "                if (msg.content) {\n" +
+    "                    record.push(msg);\n" +
+    "                    var tempRecord = [];\n" +
+    "                    var tempCount = 0;\n" +
+    "                    for (var i = 0; i <= record.length; i++) {\n" +
+    "                        var tempThisCount = record.length - tempCount;\n" +
+    "                        tempCount++;\n" +
+    "                        if (tempCount < 20) {\n" +
+    "                            if (record[tempThisCount]) {\n" +
+    "                                tempRecord.push(record[tempThisCount]);\n" +
+    "                            }\n" +
+    "                        }\n" +
+    "                    }\n" +
+    "                    tempRecord.reverse();\n" +
+    "//                    saveLocalStorageObj('imHistory', tempRecord);\n" +
+    "\n" +
+    "                    bindMsgList();\n" +
+    "                    toRobot(msg.content);\n" +
+    "                } else {\n" +
+    "                    plus.nativeUI.toast('消息必须填写');\n" +
+    "                }\n" +
+    "            };\n" +
+    "            var toRobot = function (info) {\n" +
+    "\n" +
+    "                // Tom 用自己的名字作为 clientId，获取 IMClient 对象实例\n" +
+    "                realtime.createIMClient(selfG.userId).then(function (tom) {\n" +
+    "\n" +
+    "                    // 创建与Jerry之间的对话\n" +
+    "                    var con = tom.createConversation({\n" +
+    "                        members: [selfG.gusetId, selfG.userId],\n" +
+    "                        unique: true,\n" +
+    "                    });\n" +
+    "                    return con;\n" +
+    "\n" +
+    "                }).then(function (conversation) {\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "                    // 发送消息\n" +
+    "                    if (info) {\n" +
+    "                        return conversation.send(new TextMessage(info));\n" +
+    "                    }\n" +
+    "                }).then(function (message) {\n" +
+    "                    console.log(selfG.gName, '发送成功！');\n" +
+    "                }).catch(console.error);\n" +
+    "\n" +
+    "            };\n" +
+    "\n" +
+    "            realtime.createIMClient(selfG.userId).then(function (tom) {\n" +
+    "\n" +
+    "                // 创建与Jerry之间的对话\n" +
+    "                tom.createConversation({\n" +
+    "                    members: [selfG.gusetId, selfG.userId],\n" +
+    "                    unique: true,\n" +
+    "                }).then(function (conversation) {\n" +
+    "                    conversation.queryMessages({\n" +
+    "                        limit: 20, // limit 取值范围 1~1000，默认 20\n" +
+    "                    }).then(function (messages) {\n" +
+    "\n" +
+    "                        for (var i in messages) {\n" +
+    "                            if (messages[i].from == selfG.userId) {\n" +
+    "                                messages[i].from = 'self';\n" +
+    "                            }\n" +
+    "                            record.push({\n" +
+    "                                sender: messages[i].from,\n" +
+    "                                type: 'text',\n" +
+    "                                content: messages[i].text\n" +
+    "                            });\n" +
+    "                        }\n" +
+    "\n" +
+    "                        if (!record[0]) {\n" +
+    "                            record.push({\n" +
+    "                                sender: selfG.gusetId,\n" +
+    "                                type: 'text',\n" +
+    "                                content: 'Hi，我是 ' + selfG.gName\n" +
+    "\n" +
+    "                            });\n" +
+    "                        }\n" +
+    "                        bindMsgList();\n" +
+    "                        // 最新的十条消息，按时间增序排列\n" +
+    "                    }).catch(console.error.bind(console));\n" +
+    "\n" +
+    "                });\n" +
+    "\n" +
+    "                tom.on('message', function (message, conversation) {\n" +
+    "                    record.push({\n" +
+    "                        sender: selfG.gusetId,\n" +
+    "                        type: 'text',\n" +
+    "                        content: message.text\n" +
+    "                    });\n" +
+    "                    bindMsgList();\n" +
+    "                });\n" +
+    "            });\n" +
+    "\n" +
+    "            function msgTextFocus() {\n" +
+    "                ui.boxMsgText.focus();\n" +
+    "                setTimeout(function () {\n" +
+    "                    ui.boxMsgText.focus();\n" +
+    "                }, 150);\n" +
+    "            }\n" +
+    "\n" +
+    "            //解决长按“发送”按钮，导致键盘关闭的问题；\n" +
+    "            ui.footerRight.addEventListener('touchstart', function (event) {\n" +
+    "                if (ui.btnMsgType.classList.contains('mui-icon-paperplane')) {\n" +
+    "                    msgTextFocus();\n" +
+    "                    event.preventDefault();\n" +
+    "                }\n" +
+    "            });\n" +
+    "            //解决长按“发送”按钮，导致键盘关闭的问题；\n" +
+    "            ui.footerRight.addEventListener('touchmove', function (event) {\n" +
+    "                if (ui.btnMsgType.classList.contains('mui-icon-paperplane')) {\n" +
+    "                    msgTextFocus();\n" +
+    "                    event.preventDefault();\n" +
+    "                }\n" +
+    "            });\n" +
+    "            //					ui.footerRight.addEventListener('touchcancel', function(event) {\n" +
+    "            //						if (ui.btnMsgType.classList.contains('mui-icon-paperplane')) {\n" +
+    "            //							msgTextFocus();\n" +
+    "            //							event.preventDefault();\n" +
+    "            //						}\n" +
+    "            //					});\n" +
+    "            //					ui.footerRight.addEventListener('touchend', function(event) {\n" +
+    "            //						if (ui.btnMsgType.classList.contains('mui-icon-paperplane')) {\n" +
+    "            //							msgTextFocus();\n" +
+    "            //							event.preventDefault();\n" +
+    "            //						}\n" +
+    "            //					});\n" +
+    "            ui.footerRight.addEventListener('release', function (event) {\n" +
+    "                if (ui.btnMsgType.classList.contains('mui-icon-paperplane')) {\n" +
+    "                    ui.boxMsgText.focus();\n" +
+    "                    setTimeout(function () {\n" +
+    "                        ui.boxMsgText.focus();\n" +
+    "                    }, 150);\n" +
+    "//                    event.detail.gesture.preventDefault();\n" +
+    "                    send({\n" +
+    "                        sender: 'self',\n" +
+    "                        type: 'text',\n" +
+    "                        content: ui.boxMsgText.value.replace(new RegExp('\\n', 'gm'), '<br/>')\n" +
+    "                    });\n" +
+    "                    ui.boxMsgText.value = '';\n" +
+    "                    $.trigger(ui.boxMsgText, 'input', null);\n" +
+    "                }\n" +
+    "//                else if (ui.btnMsgType.classList.contains('mui-icon-mic')) {\n" +
+    "//                    ui.btnMsgType.classList.add('mui-icon-compose');\n" +
+    "//                    ui.btnMsgType.classList.remove('mui-icon-mic');\n" +
+    "//                    ui.boxMsgText.style.display = 'none';\n" +
+    "////                    ui.boxMsgSound.style.display = 'block';\n" +
+    "//                    ui.boxMsgText.blur();\n" +
+    "//                    document.body.focus();\n" +
+    "//                } else if (ui.btnMsgType.classList.contains('mui-icon-compose')) {\n" +
+    "//                    ui.btnMsgType.classList.add('mui-icon-mic');\n" +
+    "//                    ui.btnMsgType.classList.remove('mui-icon-compose');\n" +
+    "////                    ui.boxMsgSound.style.display = 'none';\n" +
+    "//                    ui.boxMsgText.style.display = 'block';\n" +
+    "//                    //--\n" +
+    "//                    //showKeyboard();\n" +
+    "//                    ui.boxMsgText.focus();\n" +
+    "//                    setTimeout(function () {\n" +
+    "//                        ui.boxMsgText.focus();\n" +
+    "//                    }, 150);\n" +
+    "//                }\n" +
+    "            }, false);\n" +
+    "\n" +
+    "            ui.footerLeft.addEventListener('tap', function (event) {\n" +
+    "                //接单 todo\n" +
+    "\n" +
+    "//                var btnArray = [{\n" +
+    "//                    title: \"拍照\"\n" +
+    "//                }, {\n" +
+    "//                    title: \"从相册选择\"\n" +
+    "//                }];\n" +
+    "//                plus.nativeUI.actionSheet({\n" +
+    "//                    title: \"选择照片\",\n" +
+    "//                    cancel: \"取消\",\n" +
+    "//                    buttons: btnArray\n" +
+    "//                }, function (e) {\n" +
+    "//                    var index = e.index;\n" +
+    "//                    switch (index) {\n" +
+    "//                        case 0:\n" +
+    "//                            break;\n" +
+    "//                        case 1:\n" +
+    "//                            var cmr = plus.camera.getCamera();\n" +
+    "//                            cmr.captureImage(function (path) {\n" +
+    "//                                send({\n" +
+    "//                                    sender: 'self',\n" +
+    "//                                    type: 'image',\n" +
+    "//                                    content: \"file://\" + plus.io.convertLocalFileSystemURL(path)\n" +
+    "//                                });\n" +
+    "//                            }, function (err) {\n" +
+    "//                            });\n" +
+    "//                            break;\n" +
+    "//                        case 2:\n" +
+    "//                            plus.gallery.pick(function (path) {\n" +
+    "//                                send({\n" +
+    "//                                    sender: 'self',\n" +
+    "//                                    type: 'image',\n" +
+    "//                                    content: path\n" +
+    "//                                });\n" +
+    "//                            }, function (err) {\n" +
+    "//                            }, null);\n" +
+    "//                            break;\n" +
+    "//                    }\n" +
+    "//                });\n" +
+    "            }, false);\n" +
+    "            var setSoundAlertVisable = function (show) {\n" +
+    "                if (show) {\n" +
+    "                    ui.boxSoundAlert.style.display = 'block';\n" +
+    "                    ui.boxSoundAlert.style.opacity = 1;\n" +
+    "                } else {\n" +
+    "                    ui.boxSoundAlert.style.opacity = 0;\n" +
+    "                    //fadeOut 完成再真正隐藏\n" +
+    "                    setTimeout(function () {\n" +
+    "                        ui.boxSoundAlert.style.display = 'none';\n" +
+    "                    }, 200);\n" +
+    "                }\n" +
+    "            };\n" +
+    "            var recordCancel = false;\n" +
+    "            var recorder = null;\n" +
+    "            var audio_tips = document.getElementById(\"audio_tips\");\n" +
+    "            var startTimestamp = null;\n" +
+    "            var stopTimestamp = null;\n" +
+    "            var stopTimer = null;\n" +
+    "//            ui.boxMsgSound.addEventListener('hold', function (event) {\n" +
+    "//                recordCancel = false;\n" +
+    "//                if (stopTimer)clearTimeout(stopTimer);\n" +
+    "//                audio_tips.innerHTML = \"手指上划，取消发送\";\n" +
+    "//                ui.boxSoundAlert.classList.remove('rprogress-sigh');\n" +
+    "//                setSoundAlertVisable(true);\n" +
+    "//                recorder = plus.audio.getRecorder();\n" +
+    "//                if (recorder == null) {\n" +
+    "//                    plus.nativeUI.toast(\"不能获取录音对象\");\n" +
+    "//                    return;\n" +
+    "//                }\n" +
+    "//                startTimestamp = (new Date()).getTime();\n" +
+    "//                recorder.record({\n" +
+    "//                    filename: \"_doc/audio/\"\n" +
+    "//                }, function (path) {\n" +
+    "//                    if (recordCancel) return;\n" +
+    "//                    send({\n" +
+    "//                        sender: 'self',\n" +
+    "//                        type: 'sound',\n" +
+    "//                        content: path\n" +
+    "//                    });\n" +
+    "//                }, function (e) {\n" +
+    "//                    plus.nativeUI.toast(\"录音时出现异常: \" + e.message);\n" +
+    "//                });\n" +
+    "//            }, false);\n" +
+    "//\n" +
+    "            ui.body.addEventListener('drag', function (event) {\n" +
+    "                //console.log('drag');\n" +
+    "                if (Math.abs(event.detail.deltaY) > 50) {\n" +
+    "                    if (!recordCancel) {\n" +
+    "                        recordCancel = true;\n" +
+    "                        if (!audio_tips.classList.contains(\"cancel\")) {\n" +
+    "                            audio_tips.classList.add(\"cancel\");\n" +
+    "                        }\n" +
+    "                        audio_tips.innerHTML = \"松开手指，取消发送\";\n" +
+    "                    }\n" +
+    "                } else {\n" +
+    "                    if (recordCancel) {\n" +
+    "                        recordCancel = false;\n" +
+    "                        if (audio_tips.classList.contains(\"cancel\")) {\n" +
+    "                            audio_tips.classList.remove(\"cancel\");\n" +
+    "                        }\n" +
+    "                        audio_tips.innerHTML = \"手指上划，取消发送\";\n" +
+    "                    }\n" +
+    "                }\n" +
+    "            }, false);\n" +
+    "//            ui.boxMsgSound.addEventListener('release', function (event) {\n" +
+    "//                //console.log('release');\n" +
+    "//                if (audio_tips.classList.contains(\"cancel\")) {\n" +
+    "//                    audio_tips.classList.remove(\"cancel\");\n" +
+    "//                    audio_tips.innerHTML = \"手指上划，取消发送\";\n" +
+    "//                }\n" +
+    "//                //\n" +
+    "//                stopTimestamp = (new Date()).getTime();\n" +
+    "//                if (stopTimestamp - startTimestamp < MIN_SOUND_TIME) {\n" +
+    "//                    audio_tips.innerHTML = \"录音时间太短\";\n" +
+    "//                    ui.boxSoundAlert.classList.add('rprogress-sigh');\n" +
+    "//                    recordCancel = true;\n" +
+    "//                    stopTimer = setTimeout(function () {\n" +
+    "//                        setSoundAlertVisable(false);\n" +
+    "//                    }, 800);\n" +
+    "//                } else {\n" +
+    "//                    setSoundAlertVisable(false);\n" +
+    "//                }\n" +
+    "//                recorder.stop();\n" +
+    "//            }, false);\n" +
+    "//            ui.boxMsgSound.addEventListener(\"touchstart\", function (e) {\n" +
+    "//                //console.log(\"start....\");\n" +
+    "//                e.preventDefault();\n" +
+    "//            });\n" +
+    "            ui.boxMsgText.addEventListener('input', function (event) {\n" +
+    "                ui.btnMsgType.classList[ui.boxMsgText.value == '' ? 'add' : 'add']('mui-icon-paperplane');\n" +
+    "                ui.btnMsgType.setAttribute(\"for\", ui.boxMsgText.value == '' ? '' : 'msg-text');\n" +
+    "                ui.h.innerText = ui.boxMsgText.value.replace(new RegExp('\\n', 'gm'), '\\n-') || '-';\n" +
+    "                ui.footer.style.height = (ui.h.offsetHeight + footerPadding) + 'px';\n" +
+    "                ui.content.style.paddingBottom = ui.footer.style.height;\n" +
+    "            });\n" +
+    "            var focus = false;\n" +
+    "            ui.boxMsgText.addEventListener('tap', function (event) {\n" +
+    "                showKeyboard();\n" +
+    "                ui.boxMsgText.focus();\n" +
+    "                setTimeout(function () {\n" +
+    "                    ui.boxMsgText.focus();\n" +
+    "                }, 0);\n" +
+    "                focus = true;\n" +
+    "                setTimeout(function () {\n" +
+    "                    focus = false;\n" +
+    "                }, 1000);\n" +
+    "                event.detail.gesture.preventDefault();\n" +
+    "            }, false);\n" +
+    "            //点击消息列表，关闭键盘\n" +
+    "            ui.areaMsgList.addEventListener('click', function (event) {\n" +
+    "                if (!focus) {\n" +
+    "                    ui.boxMsgText.blur();\n" +
+    "                }\n" +
+    "            })\n" +
+    "\n" +
+    "        });\n" +
+    "    }(mui, document));\n" +
+    "</script>\n" +
+    "</body>\n" +
+    "\n" +
+    "</html>"
+  );
+
+
   $templateCache.put('directive/block/alert.block.alertUi.html',
     "<div id=\"alertUi\" ng-if=\"showAlertUi\">\n" +
     "    <div style=\"width: 100%;height: 100%;\" ng-class=\"alertUiClass\">\n" +
     "        <div class=\"left\" style=\"margin-left: 30px;width:50px;overflow: hidden\">\n" +
-    "            <i class=\"fa fa-ban fa-3x\" style=\"color: #f4f4f4;margin-top: 7px\"></i>\n" +
+    "            <i class=\"fa fa-ban fa-2x\" style=\"color: #f4f4f4;margin-top: 10px\"></i>\n" +
     "        </div>\n" +
     "        <div class=\"left\" style=\"width:60%;overflow: hidden\">\n" +
-    "            <div class=\"clear\" style=\"margin-left: 20px;font-size: 1.2em;margin-top: 10px \">{{title}}</div>\n" +
-    "            <div class=\"clear\" style=\"margin-left: 20px;font-size: 0.9em;margin-top: 3px;color: #777;height: 20px;overflow: hidden \">{{content}}</div> </div>\n" +
+    "            <div class=\"clear\" style=\"margin-left: 0px;font-size: 1rem;margin-top: 14px;color: #fff\">{{title}}</div>\n" +
+    "            <!--<div class=\"clear\"-->\n" +
+    "                 <!--style=\"margin-left: 20px;font-size: 14px;margin-top: 3px;color: #777;height: 20px;overflow: hidden \">-->\n" +
+    "                <!--{{content}}-->\n" +
+    "            <!--</div>-->\n" +
+    "        </div>\n" +
     "    </div>\n" +
     "</div>"
   );
 
 
   $templateCache.put('directive/block/area.dipan.areaSelect.directive.html',
-    "<div class=\"clear viewContent\">\n" +
-    "    <div class=\"title\">area</div>\n" +
+    "<div class=\"clear\" ng-if=\"showArea\" id=\"area\">\n" +
+    "    <div class=\"itemCity clear\">\n" +
+    "        <div class=\"title left\"><i class=\"fa fa-map-marker\" style=\"color: #30a080\"></i></div>\n" +
+    "        <div class=\"left thisCityItem\" ng-show=\"showAreaFujin\" style=\"margin-left: 10px;color: #30a080\">\n" +
+    "            {{thisCity.name}}\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <div class=\"itemCity clear\" style=\"margin-top: 1rem\" ng-show=\"showAreaFujin\">\n" +
+    "        <div class=\"contentList\" id=\"fujin\">\n" +
+    "            <div class=\"left hotItem mui-btn hotCity\" code=\"777\"\n" +
+    "                 location=\"116.407526,39.904030\" id=\"777\">附近\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <div class=\"itemCity clear\" style=\"margin-top: 1rem\">\n" +
+    "        <div class=\"contentList\">\n" +
+    "            <div class=\"left hotItem mui-btn hotCity\" code=\"010\" location=\"116.407526,39.904030\" id=\"010\">北京</div>\n" +
+    "            <div class=\"left hotItem mui-btn hotCity\" code=\"022\" location=\"117.200983,39.084158\" id=\"022\">天津</div>\n" +
+    "            <div class=\"left hotItem mui-btn hotCity\" code=\"021\" location=\"121.473701,31.230416\" id=\"021\">上海</div>\n" +
+    "            <div class=\"left hotItem mui-btn hotCity\" code=\"020\" location=\"113.264435,23.129163\" id=\"020\">广州</div>\n" +
+    "            <div class=\"left hotItem mui-btn hotCity\" code=\"0755\" location=\"114.057868,22.543099\" id=\"0075\">深圳</div>\n" +
+    "            <div class=\"left hotItem mui-btn hotCity\" code=\"027\" location=\"114.305393,30.593099\" id=\"027\">武汉</div>\n" +
+    "            <div class=\"left hotItem mui-btn hotCity\" code=\"028\" location=\"104.066541,30.572269\" id=\"028\">成都</div>\n" +
+    "            <div class=\"left hotItem mui-btn hotCity\" code=\"025\" location=\"118.796877,32.060255\" id=\"025\">南京</div>\n" +
+    "            <div class=\"left hotItem mui-btn hotCity\" code=\"023\" location=\"106.551557,29.563010\" id=\"023\">重庆</div>\n" +
+    "            <div class=\"left hotItem mui-btn hotCity\" code=\"029\" location=\"108.940175,34.341568\" id=\"029\">西安</div>\n" +
+    "            <div class=\"left hotItem mui-btn hotCity\" code=\"0571\" location=\"120.155070,30.274085\" id=\"0571\">杭州</div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <div class=\"itemCity clear\" style=\"margin-top: 1rem\">\n" +
+    "        <div class=\"title hotLine\"></div>\n" +
+    "        <div class=\"contentList\">\n" +
+    "            <div class=\"left\" bindonce ng-repeat=\"vo in shengRep\">\n" +
+    "                <div class=\"titleOne mui-btn\" bo-text=\"vo.name\" bo-attr bo-attr-nameId=\"vo.searchStr\"\n" +
+    "                     bo-id=\"'shengRep_'+vo.id\"></div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"clear\" id=\"subContent\" ng-show=\"thisShengShow\">\n" +
+    "        <div class=\"alertSub\">\n" +
+    "            <div class=\"close mui-btn\" style=\"border: none\" id=\"closeAlertSub\">\n" +
+    "                <i class=\"fa fa-times\"></i>\n" +
+    "            </div>\n" +
+    "            <div class=\"clear\"></div>\n" +
+    "            <div class=\"left hotItem mui-btn\" bindonce ng-repeat=\"vo2 in thisSheng\"\n" +
+    "                 bo-attr\n" +
+    "                 bo-attr-code=\"vo2.citycode\"\n" +
+    "                 bo-attr-location=\"vo2.location\"\n" +
+    "                 bo-id=\"'shengSubRep_'+vo2._id\" bo-text=\"vo2.city\" style=\"border: none;\">\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "        <div class=\"beijing\"></div>\n" +
+    "    </div>\n" +
     "</div>\n" +
     "\n" +
     "\n" +
@@ -7574,6 +12525,13 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "\n" +
     "\n" +
     "\n"
+  );
+
+
+  $templateCache.put('directive/block/lianXiang.block.searchLianXiang.directive.html',
+    "<div class=\"clear\" id=\"lianXiang\" ng-show=\"lianXianShow\">\n" +
+    "    <div class=\"left item mui-btn\" id=\"key_{{vo._id}}\" ng-repeat=\"vo in list\">{{vo.title}}</div>\n" +
+    "</div>\n"
   );
 
 
@@ -7582,43 +12540,465 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   );
 
 
-  $templateCache.put('directive/block/search.dipan.search.directive.html',
-    "<div class=\"clear viewContent\">\n" +
-    "    <div class=\"title\">search</div>\n" +
-    "</div>\n" +
-    "\n"
-  );
-
-
-  $templateCache.put('directive/block/tab.block.tabNav.directive.html',
-    "<div id=\"tab\" class=\"clear\" style=\"\">\n" +
-    "    <div id=\"{{vo.route}}\" url=\"{{vo.stateName}}\" ng-class=\"vo.colNumCss\" class=\"linkMouse\" ng-repeat=\"vo in tabList\">\n" +
-    "        <span ng-class=\"vo.thisItem\" class=\"btn\" ng-bind-html=\"vo.name|toHtml\"></span>\n" +
+  $templateCache.put('directive/block/searchArea.block.topLeftSearchArea.directive.html',
+    "<div ng-show=\"searchArea\" id=\"searchArea\">\n" +
+    "    <div class=\"stop\">\n" +
+    "        <div class=\"left\" style=\"font-size: 0.8rem;color:#777\">{{thisCity}}</div>\n" +
+    "        <div class=\"left\" style=\"width: 0;\n" +
+    "    height: 0;\n" +
+    "    border-bottom: 8px solid #bababa;\n" +
+    "    border-left: 8px solid transparent;\n" +
+    "    margin-left: 3px;\n" +
+    "    margin-top: 12px;\n" +
+    "\"></div>\n" +
     "    </div>\n" +
     "</div>"
   );
 
 
+  $templateCache.put('directive/block/shaiXuan.block.shaiXuan.directive.html',
+    "<div class=\"clear\" id=\"shaiXuanTab\" ng-show=\"needShaiXuan\">\n" +
+    "    <div class=\"shaiXuan mui-btn shaiXuanIndex{{$index}} {{vo.shaiXuanGaoLiang}}\" ng-repeat=\"vo in shaiXuanList\"\n" +
+    "         id=\"shaiXuanClick_{{$index}}\" thisid=\"{{vo.thisId}}\">\n" +
+    "        <div>\n" +
+    "            <span ng-if=\"vo.type != 'six'\">{{vo.thisName}}</span>\n" +
+    "            <span ng-if=\"vo.type == 'six'\">{{thisCity}}</span>\n" +
+    "            <span class=\"fa fa-long-arrow-down\" ng-if=\"vo.type != 'six'\"></span>\n" +
+    "            <span class=\"fa fa-exchange\" ng-if=\"vo.type == 'six'\"></span>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('directive/block/subFrom.block.addFrom.directive.html',
+    "<div id=\"subForm\" class=\"clear\" ng-show=\"show\">\n" +
+    "    <div class=\"left mui-btn\" id=\"hrefSubNeed\" url=\"subneed\">需求</div>\n" +
+    "    <div class=\"left mui-btn\" style=\"margin-left: 10px\" id=\"hrefSubKill\" url=\"subkill\">技能</div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('directive/block/tab.block.tabNav.directive.html',
+    "<div id=\"tab\" class=\"clear\" ng-style=\"tabStyle\">\n" +
+    "    <div id=\"{{vo.route}}\" url=\"{{vo.stateName}}\" ng-class=\"vo.colNumCss\" class=\"linkMouse qiaokeli\"\n" +
+    "         ng-repeat=\"vo in tabList\">\n" +
+    "        <span ng-class=\"vo.thisItem\" class=\"btn\" ng-bind-html=\"vo.name|toHtml\"></span>\n" +
+    "    </div>\n" +
+    "    <div class=\"linkMouse qiaokeli threeTab\" id=\"searchIconH1\" ng-show=\"url == '/home'\">\n" +
+    "        <span><i class=\"fa fa-search linkMouse  qiaokeli\" style=\"display: block;margin-top: 3px;\"></i></span>\n" +
+    "    </div>\n" +
+    "    <div shai-xuan></div>\n" +
+    "</div>"
+  );
+
+
   $templateCache.put('directive/block/top.block.topNav.html',
-    "<header class=\"mui-bar mui-bar-nav\">\n" +
-    "    <i ng-show=\"url !== '/login'\" ng-if=\"url !== '/home'\" onclick=\"history.go(-1);\" id=\"goHistory\" url=\"goHistory\"\n" +
-    "       class=\"fa fa-angle-left linkMouse  mui-pull-left mui-btn icon-btn\"></i>\n" +
-    "    <i ng-show=\"url == '/home'\" id=\"hrefArea\" url=\"area\"\n" +
-    "       class=\"fa fa-location-arrow  mui-pull-left mui-btn icon-btn linkMouse\"></i>\n" +
-    "    <i ng-show=\"(url != '/login') && (url != '/memberIndex') && (url != '/setting')\" id=\"hrefSearch\" url=\"search\"\n" +
-    "       class=\"fa fa-search fa-1  mui-pull-right mui-icon icon-btn\"\n" +
-    "       style=\"padding-right: 17px;padding-top: 13px;\"></i>\n" +
-    "    <i ng-show=\"(url == '/memberIndex')\" id=\"editMemberInfo\" url=\"editMemberInfo\"\n" +
-    "       class=\"fa fa-pencil-square-o fa-1x  mui-pull-right mui-icon icon-btn\"\n" +
+    "<header class=\"mui-bar mui-bar-nav\" style=\"border-bottom: 1px solid #f4f4f4\" ng-show=\"headerShow\" id=\"allHeader\">\n" +
+    "    <i ng-show=\"url !== '/login' && url !== '/need'\" ng-if=\"url !== '/home'\" onclick=\"history.go(-1);\"\n" +
+    "       id=\"goHistoryBack\"\n" +
+    "       url=\"goHistory\"\n" +
+    "       class=\"fa fa-angle-left linkMouse  mui-pull-left mui-btn icon-btn qiaokeli\"></i>\n" +
+    "    <div ng-show=\"url == '/home'\" id=\"homeSearch\" url=\"area\"\n" +
+    "         class=\"\">\n" +
+    "        <!--<div class=\"left linkMouse\" id=\"topSearchLeft\" ng-show=\"topSearch\">-->\n" +
+    "        <!--<i class=\"fa fa-search qiaokeli\" ng-show=\"searchIcon\"></i>-->\n" +
+    "        <!--<div search-area></div>-->\n" +
+    "        <!--</div>-->\n" +
+    "        <div class=\"left\" id=\"topSearchCenter\" ng-show=\"topSearch\">\n" +
+    "            <input type=\"text\" id=\"searchTop\" placeholder=\"{{searchPlace}}\" ng-model=\"search\" ng-focus=\"focusSearch()\"\n" +
+    "                   ng-blur=\"blurSearch()\">\n" +
+    "        </div>\n" +
+    "        <div class=\"left\" id=\"topSearchRight\" ng-show=\"topSearch\">\n" +
+    "            <i class=\"fa linkMouse  mui-pull-left  icon-btn fa-times-circle hui\"\n" +
+    "               style=\"margin-top: 5px;margin-left: 2px;font-size: 1.5rem\" ng-show=\"delSearch\" id=\"delSearch\"></i>\n" +
+    "        </div>\n" +
+    "        <div class=\"right linkMouse mui-btn \" id=\"cancel\" style=\"border: none;background: none;font-size: 1rem\"\n" +
+    "             ng-show=\"showCancel\">\n" +
+    "            取消\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <!--<i ng-show=\"(url == '/home') && (url != '/memberIndex') && (url != '/setting')\" id=\"hrefSearch\" url=\"search\"-->\n" +
+    "    <!--class=\"fa fa-search fa-1  mui-pull-right mui-icon icon-btn\"-->\n" +
+    "    <!--style=\"padding-right: 17px;padding-top: 13px;\"></i>-->\n" +
+    "    <i ng-show=\"(url == '/memberIndex')\" id=\"hrefEditMemberInfo\" url=\"editMemberInfo\"\n" +
+    "       class=\"fa fa-pencil-square-o fa-1x  mui-pull-right mui-icon  qiaokeli\"\n" +
     "       style=\"padding-right: 17px;padding-top: 13px;\"></i>\n" +
     "\n" +
-    "    <h1 class=\"mui-title\" ng-bind-html=\"title\"></h1>\n" +
+    "    <!--技能详情返回首页 -->\n" +
+    "    <i ng-if=\"(url == '/killContent')\" id=\"killContentHrefHome\" url=\"home\"\n" +
+    "       class=\"fa fa-home fa-1x  mui-pull-right mui-icon  qiaokeli\"\n" +
+    "       style=\"padding-right: 17px;padding-top: 13px;\"></i>\n" +
+    "\n" +
+    "    <!--需求详情返回首页 -->\n" +
+    "    <i ng-if=\"(url == '/orderFromContent')\" id=\"orderFromContentHrefHome\" url=\"need\"\n" +
+    "       class=\"fa fa-home fa-1x  mui-pull-right mui-icon  qiaokeli\"\n" +
+    "       style=\"padding-right: 17px;padding-top: 13px;\"></i>\n" +
+    "\n" +
+    "    <h1 class=\"mui-title\">\n" +
+    "        <span>{{titleText}}</span>\n" +
+    "        <span ng-bind-html=\"title\"></span>\n" +
+    "    </h1>\n" +
     "</header>\n"
   );
 
 
+  $templateCache.put('directive/from/commend.from.commend.directive.html',
+    "<div id=\"commend\" ng-show=\"commendShow\">\n" +
+    "    <div class=\"clear lan\" style=\"text-align: center\">\n" +
+    "        <div style=\"height: 150px;overflow: hidden;\">\n" +
+    "            <div class=\"listItem\" bindonce bo-id=\"'comList_' + vo._id\" ng-repeat=\"vo in list\">\n" +
+    "                <div class=\"mui-btn left\"\n" +
+    "                     style=\"font-size: 12px;color:#777;border: none;background-color: #fff;margin-top: 1px;margin-left: 1px\"\n" +
+    "                     bo-text=\"vo.title\"></div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "        <div class=\"clear\"></div>\n" +
+    "        <div class=\"clear\">\n" +
+    "            <div class=\"mui-btn\" style=\"position: absolute;top:160px;left: 50%;margin-left: -30px;\" id=\"changOneChange\">\n" +
+    "                换一换\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>"
+  );
+
+
+  $templateCache.put('directive/from/editUserHeaderUp.from.editUserHeaderUp.directive.html',
+    "<div class=\"left \" id=\"editImgUpDate\" style=\"margin-left: 3px\">\n" +
+    "    <div class=\"left linkMouse\" style=\"width: 70px;height: 70px;margin-left: 0px\" id=\"editUpImgClick1\">\n" +
+    "        <div ng-show=\"img1\" class=\"left\" style=\"width: 69px;height: 69px;border: 1px solid #f4f4f4\">\n" +
+    "            <img ng-src=\"{{img1}}\" style=\"width: 67px;height: 67px\"\n" +
+    "                 alt=\"\">\n" +
+    "        </div>\n" +
+    "        <div class=\"fa fa-pencil-square-o\"\n" +
+    "             style=\"border-color: #fff;margin-top: 55px;font-size: 12px;position: absolute;left:58px\"\n" +
+    "             id=\"editHeaderBtn\">\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('directive/from/imgUp.from.imgUp.directive.html',
+    "<div class=\"left \" id=\"imgUpDate\" style=\"margin-left: 3px\">\n" +
+    "    <div class=\"left linkMouse\" style=\"width: 50px;height: 50px;margin-left: 0px\" id=\"upImgClick1\">\n" +
+    "        <div class=\"fa fa-plus-square-o fa-3x\" style=\"color: #f4f4f4\" ng-show=\"!img1\"></div>\n" +
+    "        <div ng-show=\"img1\" style=\"width: 49px;height: 49px;border: 1px solid #f4f4f4\">\n" +
+    "            <img ng-src=\"{{img1}}\" style=\"width: 47px;height: 47px\"\n" +
+    "                 alt=\"\">\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <div class=\"left linkMouse\" style=\"width: 50px;height: 50px;margin-left: 0px\" id=\"upImgClick2\">\n" +
+    "        <div class=\"fa fa-plus-square-o fa-3x\" style=\"color: #f4f4f4\" ng-show=\"!img2\"></div>\n" +
+    "        <div ng-show=\"img2\" style=\"width: 49px;height: 49px;border: 1px solid #f4f4f4\">\n" +
+    "            <img ng-src=\"{{img2}}\" style=\"width: 47px;height: 47px\"\n" +
+    "                 alt=\"\">\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <div class=\"left linkMouse\" style=\"width: 50px;height: 50px;margin-left: 0px\" id=\"upImgClick3\">\n" +
+    "        <div class=\"fa fa-plus-square-o fa-3x\" style=\"color: #f4f4f4\" ng-show=\"!img3\"></div>\n" +
+    "        <div ng-show=\"img3\" style=\"width: 49px;height: 49px;border: 1px solid #f4f4f4\">\n" +
+    "            <img ng-src=\"{{img3}}\" style=\"width: 47px;height: 47px\"\n" +
+    "                 alt=\"\">\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "\n"
+  );
+
+
+  $templateCache.put('directive/from/need.from.needFrom.directive.html',
+    "<div style=\"margin-top: -50px;padding: 1rem;color: #777\" id=\"need\">\n" +
+    "    <div class=\"mui-table-view mui-table-view-chevron clear\" style=\"margin-top: 40px\">\n" +
+    "        <form novalidate>\n" +
+    "            <!--需求-->\n" +
+    "            <div class=\"itemFrom\" style=\"margin-top: 7px\">\n" +
+    "                <input type=\"text\" name=\"title\" class=\"subill thinner-border\" ng-model=\"from.title\" id=\"fromTitleNeed\"\n" +
+    "                       ng-focus=\"titleFocus()\"\n" +
+    "                       ng-blur=\"titleBlur()\"\n" +
+    "                       placeholder=\"我的需求\"\n" +
+    "                       autocomplete=\"off\"\n" +
+    "                />\n" +
+    "                <!--推荐技能-->\n" +
+    "                <div commend></div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--价格-->\n" +
+    "            <div class=\"clear itemFrom\" style=\"margin-top: 5px\">\n" +
+    "                <input type=\"number\" name=\"title\" class=\"left subill\" style=\"width: 30%\" ng-model=\"from.price\"\n" +
+    "                       placeholder=\"预算 (元)\" autocomplete=\"off\" ng-disabled=\"priceDisabled\"/>\n" +
+    "                <div style=\"margin-top: 3px\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff;\" id=\"needRadio1_0\">1小时</div>\n" +
+    "                    <div class=\"left mui-btn\"\n" +
+    "                         style=\"margin-left: 3px;\" id=\"needRadio1_1\">1次\n" +
+    "                    </div>\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff\" id=\"needRadio1_2\">1单</div>\n" +
+    "                    <div class=\"left mui-btn\" style=\"color:#dadada;margin-left: 3px;border-color:#fff\"\n" +
+    "                         id=\"needRadio1_3\">面议\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--介绍-->\n" +
+    "            <div class=\"clear itemFrom\" style=\"margin-top: 5px\">\n" +
+    "            <textarea ng-model=\"from.content\" class=\"subill\" placeholder=\"补充说明(选填)\" cols=\"30\" rows=\"2\"\n" +
+    "                      style=\"margin-bottom: 0px\"></textarea>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--服务方式-->\n" +
+    "            <div class=\"clear itemFrom\" style=\"margin-top: 1rem\">\n" +
+    "                <div class=\"left\" style=\"margin-top: 5px;width: 60px;font-size: 12px;\">服务方式:</div>\n" +
+    "                <div class=\"left\">\n" +
+    "\n" +
+    "                    <div class=\"left mui-btn\"\n" +
+    "                         style=\"margin-left: 3px;\" id=\"needRadio3_0\">不限\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                </div>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff;\" id=\"needRadio3_1\">线上</div>\n" +
+    "                </div>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff;\" id=\"needRadio3_2\">线下</div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--有效期-->\n" +
+    "            <div class=\"clear itemFrom\" style=\"margin-top: 1rem\">\n" +
+    "                <div class=\"left\" style=\"margin-top: 5px;width: 60px;font-size: 12px;\">有效期:</div>\n" +
+    "                <div class=\"left\">\n" +
+    "\n" +
+    "                    <div class=\"left mui-btn\"\n" +
+    "                         style=\"margin-left: 3px;\" id=\"needRadio2_0\">3天\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                </div>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff;\" id=\"needRadio2_1\">1周</div>\n" +
+    "                </div>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff;\" id=\"needRadio2_2\">1个月</div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--图片-->\n" +
+    "            <!--<div class=\"clear itemFrom \" style=\"margin-top: 1rem\" ng-if=\"showImgUp\">-->\n" +
+    "            <!--<div class=\"left\" style=\"margin-top: 5px;width: 60px;font-size: 12px;\">图片靓照:</div>-->\n" +
+    "            <!--<div img-up-date></div>-->\n" +
+    "            <!--</div>-->\n" +
+    "\n" +
+    "\n" +
+    "            <!--<div class=\"line\" style=\"margin-top: 4px\"></div>-->\n" +
+    "            <!--性别-->\n" +
+    "            <!--<div class=\"clear itemFrom\" style=\"margin-top: 1rem\" ng-show=\"!isUser\">-->\n" +
+    "            <!--<div class=\"left\" style=\"margin-top: 7px;width: 60px;font-size: 12px;\">性别:</div>-->\n" +
+    "            <!--<div class=\"left\">-->\n" +
+    "            <!--<div class=\"left mui-btn\" style=\"margin-left: 3px;\" id=\"radio3_0\">女</div>-->\n" +
+    "            <!--</div>-->\n" +
+    "            <!--<div class=\"left\">-->\n" +
+    "            <!--<div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff\" id=\"radio3_1\">男</div>-->\n" +
+    "            <!--</div>-->\n" +
+    "            <!--</div>-->\n" +
+    "            <!--&lt;!&ndash;年龄&ndash;&gt;-->\n" +
+    "            <!--<div class=\"clear itemFrom\" style=\"margin-top: 1rem\" ng-show=\"!isUser\">-->\n" +
+    "            <!--<div class=\"left\" style=\"margin-top: 7px;width: 60px;font-size: 12px\">年龄:</div>-->\n" +
+    "            <!--<div class=\"left\">-->\n" +
+    "            <!--<div class=\"left mui-btn\" style=\"margin-left: 3px;\" id=\"radio4_0\">16~24</div>-->\n" +
+    "            <!--</div>-->\n" +
+    "            <!--<div class=\"left\">-->\n" +
+    "            <!--<div class=\"left mui-btn\"-->\n" +
+    "            <!--style=\"margin-left: 3px;border-color:#fff;\" id=\"radio4_1\">25~35-->\n" +
+    "            <!--</div>-->\n" +
+    "            <!--</div>-->\n" +
+    "            <!--<div class=\"left\">-->\n" +
+    "            <!--<div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff;\" id=\"radio4_2\">35+</div>-->\n" +
+    "            <!--</div>-->\n" +
+    "            <!--</div>-->\n" +
+    "\n" +
+    "            <!--城市-->\n" +
+    "            <div class=\"clear itemFrom\" style=\"margin-top: 1rem\">\n" +
+    "                <div class=\"left\" style=\"margin-top: 7px;width: 60px;font-size: 12px\">城市:</div>\n" +
+    "                <div class=\"left mui-btn qiaokeli\" style=\"margin-left: 3px\" id=\"fromCityClickNeed\">\n" +
+    "                    {{city}}\n" +
+    "                </div>\n" +
+    "                <div class=\"left mui-btn qiaokeli\" style=\"margin-left: 3px;border-color:#fff\" id=\"needBuXian\">\n" +
+    "                    不限\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "\n" +
+    "            <div class=\"line\" style=\"margin-top: 1rem\" ng-show=\"!isUser\"></div>\n" +
+    "            <div class=\"clear\"></div>\n" +
+    "            <div class=\"clear\" style=\"text-align: center;margin-top: 2rem\">\n" +
+    "                <div class=\"mui-btn\"\n" +
+    "                     style=\"width: 90%;background-color: #30a080;color: #fff;font-size: 1rem;border: none\"\n" +
+    "                     id=\"subNeed\">发&nbsp;&nbsp;布\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "\n" +
+    "            <!--<div class=\"form-group \">-->\n" +
+    "            <!--<input type=\"text\" name=\"title\" required ng-model=\"form.title\"-->\n" +
+    "            <!--class=\"form-control\"-->\n" +
+    "            <!--placeholder=\"标题\">-->\n" +
+    "            <!--</div>-->\n" +
+    "            <!--<div class=\"form-group \">-->\n" +
+    "            <!--<textarea type=\"text\" name=\"content\" required ng-model=\"form.content\"-->\n" +
+    "            <!--class=\"form-control\"-->\n" +
+    "            <!--placeholder=\"内容\"></textarea>-->\n" +
+    "            <!--</div>-->\n" +
+    "            <!--<div class=\"clearThis\"></div>-->\n" +
+    "            <!--<div class=\"clear\"></div>-->\n" +
+    "            <!--<button style=\"width:100%;font-size: 17px;font-weight: bold\" ng-click=\"formSub()\"-->\n" +
+    "            <!--class=\"btn btn-danger btn-block btn-lg\">-->\n" +
+    "            <!--提交-->\n" +
+    "            <!--</button>-->\n" +
+    "\n" +
+    "        </form>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <!--地区选择 directive-->\n" +
+    "    <div area></div>\n" +
+    "</div>"
+  );
+
+
+  $templateCache.put('directive/from/subkill.from.subkill.directive.html',
+    "<div style=\"margin-top: -50px;padding: 1rem;color: #777\" id=\"subill\">\n" +
+    "    <div class=\"mui-table-view mui-table-view-chevron clear\" style=\"margin-top: 40px\">\n" +
+    "        <form novalidate>\n" +
+    "            <!--技能-->\n" +
+    "            <div class=\"itemFrom\" style=\"margin-top: 7px\">\n" +
+    "                <input type=\"text\" name=\"title\" class=\"subill thinner-border\" ng-model=\"from.title\" id=\"fromTitle\"\n" +
+    "                       ng-focus=\"titleFocus()\"\n" +
+    "                       ng-blur=\"titleBlur()\"\n" +
+    "                       autocomplete=\"off\"\n" +
+    "                       placeholder=\"我的技能 / 服务\"/>\n" +
+    "                <!--推荐技能-->\n" +
+    "                <div commend></div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--价格-->\n" +
+    "            <div class=\"clear itemFrom\" style=\"margin-top: 5px\">\n" +
+    "                <input type=\"number\" name=\"title\" class=\"left subill\" style=\"width: 30%\" ng-model=\"from.price\"\n" +
+    "                       placeholder=\"价格 (元)\" autocomplete=\"off\" ng-disabled=\"priceDisabled\"/>\n" +
+    "                <div style=\"margin-top: 3px\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff;\" id=\"radio1_0\">1小时</div>\n" +
+    "                    <div class=\"left mui-btn\"\n" +
+    "                         style=\"margin-left: 3px;\" id=\"radio1_1\">1次\n" +
+    "                    </div>\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff\" id=\"radio1_2\">1单</div>\n" +
+    "                    <div class=\"left mui-btn\" style=\"color:#dadada;margin-left: 3px;border-color:#fff\" id=\"radio1_3\">面议\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--介绍-->\n" +
+    "            <div class=\"clear itemFrom \" style=\"margin-top: 5px\">\n" +
+    "                <textarea ng-model=\"from.content\" class=\"subill\" placeholder=\"用一句话夸夸我自己\" cols=\"30\" rows=\"2\"\n" +
+    "                          style=\"margin-bottom: 0px\"></textarea>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--服务方式-->\n" +
+    "            <div class=\"clear itemFrom\" style=\"margin-top: 1rem\">\n" +
+    "                <div class=\"left\" style=\"margin-top: 5px;width: 60px;font-size: 12px;\">服务方式:</div>\n" +
+    "                <div class=\"left\">\n" +
+    "\n" +
+    "                    <div class=\"left mui-btn\"\n" +
+    "                         style=\"margin-left: 3px;\" id=\"radio2_0\">不限\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                </div>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff;\" id=\"radio2_1\">线上</div>\n" +
+    "                </div>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff;\" id=\"radio2_2\">线下</div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--图片-->\n" +
+    "            <div class=\"clear itemFrom \" style=\"margin-top: 1rem\" ng-if=\"showImgUp\">\n" +
+    "                <div class=\"left\" style=\"margin-top: 5px;width: 60px;font-size: 12px;\">图片靓照:</div>\n" +
+    "                <div img-up></div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "\n" +
+    "            <div class=\"line\" style=\"margin-top: 4px\"></div>\n" +
+    "            <!--性别-->\n" +
+    "            <div class=\"clear itemFrom\" style=\"margin-top: 1rem\" ng-show=\"!isUser\">\n" +
+    "                <div class=\"left\" style=\"margin-top: 7px;width: 60px;font-size: 12px;\">性别:</div>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;\" id=\"radio3_0\">女</div>\n" +
+    "                </div>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff\" id=\"radio3_1\">男</div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "            <!--年龄-->\n" +
+    "            <div class=\"clear itemFrom\" style=\"margin-top: 1rem\" ng-show=\"!isUser\">\n" +
+    "                <div class=\"left\" style=\"margin-top: 7px;width: 60px;font-size: 12px\">年龄:</div>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;\" id=\"radio4_0\">16~24</div>\n" +
+    "                </div>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\"\n" +
+    "                         style=\"margin-left: 3px;border-color:#fff;\" id=\"radio4_1\">25~35\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff;\" id=\"radio4_2\">35+</div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--城市-->\n" +
+    "            <div class=\"clear itemFrom\" style=\"margin-top: 1rem\" ng-show=\"!isUser\">\n" +
+    "                <div class=\"left\" style=\"margin-top: 7px;width: 60px;font-size: 12px\">城市:</div>\n" +
+    "                <div class=\"left mui-btn qiaokeli\" style=\"margin-left: 3px\" id=\"fromCityClick\">\n" +
+    "                    {{city}}\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "\n" +
+    "            <div class=\"line\" style=\"margin-top: 1rem\" ng-show=\"!isUser\"></div>\n" +
+    "            <div class=\"clear\"></div>\n" +
+    "            <div class=\"clear\" style=\"text-align: center;margin-top: 2rem\">\n" +
+    "                <div class=\"mui-btn\"\n" +
+    "                     style=\"width: 90%;background-color: #30a080;color: #fff;font-size: 1rem;border: none\"\n" +
+    "                     id=\"subJiNeng\">发&nbsp;&nbsp;布\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "\n" +
+    "            <!--<div class=\"form-group \">-->\n" +
+    "            <!--<input type=\"text\" name=\"title\" required ng-model=\"form.title\"-->\n" +
+    "            <!--class=\"form-control\"-->\n" +
+    "            <!--placeholder=\"标题\">-->\n" +
+    "            <!--</div>-->\n" +
+    "            <!--<div class=\"form-group \">-->\n" +
+    "            <!--<textarea type=\"text\" name=\"content\" required ng-model=\"form.content\"-->\n" +
+    "            <!--class=\"form-control\"-->\n" +
+    "            <!--placeholder=\"内容\"></textarea>-->\n" +
+    "            <!--</div>-->\n" +
+    "            <!--<div class=\"clearThis\"></div>-->\n" +
+    "            <!--<div class=\"clear\"></div>-->\n" +
+    "            <!--<button style=\"width:100%;font-size: 17px;font-weight: bold\" ng-click=\"formSub()\"-->\n" +
+    "            <!--class=\"btn btn-danger btn-block btn-lg\">-->\n" +
+    "            <!--提交-->\n" +
+    "            <!--</button>-->\n" +
+    "\n" +
+    "        </form>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <!--地区选择 directive-->\n" +
+    "    <div area></div>\n" +
+    "</div>"
+  );
+
+
   $templateCache.put('directive/home.dipan.home.directive.html',
-    "<div class=\"clear viewContent\" style=\"background-color: #777;margin-top: 44px\">\n" +
+    "<div class=\"clear viewContent\" id=\"viewContent\" style=\"background-color: #f9f9f9;margin-top: 44px\">\n" +
     "    <style>\n" +
     "        .mui-navigate-right:after, .mui-push-right:after {\n" +
     "            right: 0px;\n" +
@@ -7630,23 +13010,111 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "        }\n" +
     "\n" +
     "    </style>\n" +
-    "    <div class=\"titleInfo clear\" ng-show=\"false\">\n" +
-    "        <div id=\"titleInfo\">\n" +
-    "            <i class=\"fa fa-user\"></i>\n" +
-    "            刚刚有{{peopleNum}}3人访问了你\n" +
+    "\n" +
+    "\n" +
+    "    <div id=\"list\" class=\"mui-table-view mui-table-view-chevron clear\"\n" +
+    "         style=\"background-color:#f9f9f9;min-height: 100px\" ng-style=\"listTop\">\n" +
+    "\n" +
+    "        <div class=\"titleInfo clear\" id=\"titleInfo\" ng-if=\"urlName == 'home'\" ng-show=\"titleInfo\">\n" +
+    "            <span>{{titleInfo}}</span>\n" +
+    "            <span class=\" fa fa-times-circle\"></span>\n" +
     "        </div>\n" +
-    "    </div>\n" +
+    "\n" +
+    "        <!--home-->\n" +
+    "        <li ng-if=\"urlName == 'home'\" class=\" item homeListItem thinner-border\" bindonce='list'\n" +
+    "            ng-repeat=\"vo in list track by vo._id\" bo-attr\n" +
+    "            bo-attr-url=\"vo.type + 'Content'\" bo-attr-type=\"vo.type\" bo-attr-subid=\"vo._id\" bo-id='\"homeList_\" + vo._id'\n" +
+    "            style=\"background-color: #fff;\">\n" +
+    "            <div class=\"clear contentItem\">\n" +
+    "                <div class=\"contentItemTitle clear\" bo-text=\"vo.title\"></div>\n" +
+    "                <div class=\"contentItemTitleCounent clear\">\n" +
+    "                    <div class=\"left\">\n" +
+    "                        <span class='' style='color:#db5140' bo-text='\"￥\" + vo.price'></span>\n" +
+    "                        <span class=''>&nbsp;|&nbsp;</span>\n" +
+    "                        <span class='' bo-text='vo.danWei'></span>\n" +
+    "                        <span class='fa fa-map-marker' style='margin-left: 1rem'></span>\n" +
+    "                        <span class='' style='margin-left: 3px' bo-text='vo.far + \"km\"'></span>\n" +
+    "                    </div>\n" +
+    "                    <div class='right' bo-text='\"(\"+vo.sex+\")\"'></div>\n" +
+    "                    <div class='right' bo-text='vo.uid.name'></div>\n" +
+    "                </div>\n" +
+    "                <div class=\"line clear marginLine\"></div>\n" +
+    "                <div class=\"clear\">\n" +
+    "                    <div class='headerLeft left'>\n" +
+    "                        <img bo-if='vo.listHeader' bo-src='vo.listHeader'\n" +
+    "                             style='width: 30px;height: 30px;border-radius:30px;'/>\n" +
+    "                        <img bo-if='!vo.listHeader' bo-src='defaultHeader'\n" +
+    "                             style='width: 30px;height: 30px;border-radius:30px;'/>\n" +
+    "                    </div>\n" +
+    "                    <div class=' left imagesArr'>\n" +
+    "                        <div class='left imagesItem' bo-if='vo.imgs[0]'>\n" +
+    "                            <img bo-src='vo.imgs[0]'/>\n" +
+    "                        </div>\n" +
+    "                        <div class='left imagesItem' bo-if='vo.imgs[1]'>\n" +
+    "                            <img bo-src='vo.imgs[1]'/>\n" +
+    "                        </div>\n" +
+    "                        <div class='left imagesItem' bo-if='vo.imgs[2]'>\n" +
+    "                            <img bo-src='vo.imgs[2]'/>\n" +
+    "                        </div>\n" +
+    "                        <div class='clear'></div>\n" +
+    "                        <div class='des' bo-text='vo.des'></div>\n" +
+    "                    </div>\n" +
+    "                    <div class='clear'></div>\n" +
+    "                    <div class='moreKill lan' style='font-size: 0.8rem;margin-top: 10px' bo-if='vo.killListTitle'\n" +
+    "                         bo-text='\"更多技能: \"+ vo.killListTitle'></div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </li>\n" +
+    "\n" +
+    "        <!--need-->\n" +
+    "        <li ng-if=\"urlName == 'need'\" class=\" item homeListItem thinner-border\" bindonce='list'\n" +
+    "            ng-repeat=\"vo in list track by vo._id\" bo-attr\n" +
+    "            bo-attr-url=\"vo.type + 'Content'\" bo-attr-type=\"vo.type\" bo-attr-subid=\"vo._id\" bo-id='\"homeList_\" + vo._id'\n" +
+    "            style=\"background-color: #fff;\">\n" +
+    "            <div class=\"clear contentItem\">\n" +
+    "                <div class=\"contentItemTitle clear\" bo-text=\"vo.title\"></div>\n" +
+    "                <div class=\"contentItemTitleCounent clear\">\n" +
+    "                    <div class=\"left\">\n" +
+    "                        <span class='' style='color:#db5140' bo-text='\"￥\" + vo.price'></span>\n" +
+    "                        <span class=''>&nbsp;|&nbsp;</span>\n" +
+    "                        <span class='' bo-text='vo.danWei'></span>\n" +
+    "\n" +
+    "                        <span class=''>&nbsp;&nbsp;</span>\n" +
+    "                        <span class=\"\" bo-text=\"vo.serviceStr\"></span>\n" +
     "\n" +
     "\n" +
-    "    <div id=\"list\" class=\"mui-table-view mui-table-view-chevron clear\" style=\"background-color:#777;margin-top: 10px\">\n" +
+    "                        <span class='fa fa-map-marker' style='margin-left: 1rem'></span>\n" +
+    "                        <span class='' style='margin-left: 3px' bo-text='vo.far + \"km\"'></span>\n" +
+    "                    </div>\n" +
+    "                    <div class='right' style=\"color: red\" bo-text='vo.city'></div>\n" +
+    "                </div>\n" +
+    "                <div class=\"line clear marginLine\"></div>\n" +
+    "                <div class=\"clear\">\n" +
+    "                    <div class='headerLeft left'>\n" +
+    "                        <img bo-if='vo.listHeader' bo-src='vo.listHeader'\n" +
+    "                             style='width: 30px;height: 30px;border-radius:30px;'/>\n" +
+    "                        <img bo-if='!vo.listHeader' bo-src='defaultHeader'\n" +
+    "                             style='width: 30px;height: 30px;border-radius:30px;'/>\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                    <div class=' left imagesArr' style=\"margin-left: 0px\">\n" +
+    "                        <div class='left hui' bo-text='vo.uid.name' style=\"font-size: 0.8rem\"></div>\n" +
+    "                        <div class='left hui' bo-text='\"(\"+vo.uid.sex+\")\"' style=\"font-size: 0.8rem\"></div>\n" +
+    "                        <div class='clear'></div>\n" +
+    "                        <div class='des' bo-text='vo.des'></div>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </li>\n" +
+    "\n" +
     "    </div>\n" +
-    "    <div class=\"mui-btn\" ng-show=\"urlName != 'star'\" id=\"isWeb\"\n" +
-    "         style=\"width:140px;left: 50%;margin-left: -70px;margin-top: 20px;margin-bottom: 20px\">加载更多...\n" +
+    "    <div class=\"mui-btn\" id=\"isWeb\"\n" +
+    "         style=\"width:140px;left: 50%;margin-left: -70px;margin-top: 20px;margin-bottom: 20px\">\n" +
+    "        {{moreInfo}}\n" +
     "    </div>\n" +
-    "    <div class=\"mui-btn\" ng-show=\"urlName == 'star'\" id=\"isStar\"\n" +
-    "         style=\"width:140px;left: 50%;margin-left: -70px;margin-top: 20px;margin-bottom: 20px;background-color: #bd0000\">\n" +
-    "        清空标记\n" +
-    "    </div>\n" +
+    "\n" +
+    "    <!--地区选择 directive-->\n" +
+    "    <div area></div>\n" +
     "</div>\n" +
     "\n" +
     "\n" +
@@ -7668,53 +13136,79 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('directive/login.dipan.login.directive.html',
-    "<div class=\"scrollable-content section viewContent\">\n" +
+    "<div class=\"scrollable-content section viewContent\" style=\"margin-top: 10px\">\n" +
     "    <style>\n" +
     "        .btn-danger {\n" +
-    "            background-color: #bd0000;\n" +
-    "            border-color: #bd0000;\n" +
+    "            background-color: #30a080;\n" +
+    "            border-color: #30a080;\n" +
     "        }\n" +
     "\n" +
     "        .has-success .form-control:focus {\n" +
-    "            border-color: #000000;\n" +
-    "            -ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #aeafb1;\n" +
-    "            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #a8a6b1;\n" +
+    "            border-color: #30a080;\n" +
+    "            /*-ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #30a080;*/\n" +
+    "            /*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #30a080;*/\n" +
     "        }\n" +
     "\n" +
     "        .has-success .form-control {\n" +
-    "            border-color: #000000;\n" +
-    "            -ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n" +
-    "            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n" +
+    "            border-color: #DBE5DB;\n" +
+    "            font-size: 1rem;\n" +
+    "            /*-ms-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/\n" +
+    "            /*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/\n" +
     "        }\n" +
     "\n" +
     "        fieldset {\n" +
     "            border: 0px;\n" +
     "        }\n" +
+    "\n" +
+    "        header {\n" +
+    "            display: none;\n" +
+    "        }\n" +
+    "\n" +
+    "        .mui-bar-tab ~ .mui-content {\n" +
+    "            padding-top: 1px;\n" +
+    "        }\n" +
+    "\n" +
+    "        input [placeholder] {\n" +
+    "            color: #777;\n" +
+    "        }\n" +
+    "\n" +
     "    </style>\n" +
     "\n" +
     "\n" +
-    "    <div id=\"loginLogo\"></div>\n" +
+    "    <div id=\"loginLogo\" class=\"clear\">\n" +
+    "        <img class=\"left\" style=\"margin-left: 10px;width: 40px;height: 40px;margin-top: 16px\" ng-src=\"{{loginImg}}\"/>\n" +
+    "        <div style=\"margin-left: 10px;margin-top: 35px;color: #f7c58e;font-size: 1rem;letter-spacing: 3px;\n" +
+    "\" class=\"left\">\n" +
+    "            <span style=\"color:#369a45;\">偷</span><span style=\"color: #f7c58e\">油</span>\n" +
+    "            <span style=\"color: #2496cd;font-size: 1rem;\">•</span>\n" +
+    "            <span style=\"color:#369a45;\">从</span><span style=\"color: #2496cd\">此</span><span\n" +
+    "                style=\"color: #f7c58e\">简单</span>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
     "\n" +
+    "    <div class=\"clear\" style=\"margin-top: 6px\"></div>\n" +
     "\n" +
     "    <form name=\"myForm\" id=\"myForm\" novalidate>\n" +
     "        <fieldset>\n" +
     "            <div class=\"form-group has-success has-feedback \">\n" +
     "                <input type=\"number\" name=\"tel\" required ng-model=\"tel\"\n" +
     "                       class=\"form-control\"\n" +
-    "                       placeholder=\"手机号\">\n" +
+    "                       placeholder=\"手机号\" style=\"background-color: #fff\">\n" +
     "            </div>\n" +
     "            <div class=\"clearThis\"></div>\n" +
     "            <div class=\"form-group has-success has-feedback left\" style=\"width:60%\">\n" +
-    "                <input type=\"number\" ng-model=\"code\" class=\"form-control \" placeholder=\"验证码\">\n" +
+    "                <input type=\"number\" ng-model=\"code\" class=\"form-control\" placeholder=\"验证码\"\n" +
+    "                       style=\"background-color: #fff\">\n" +
     "            </div>\n" +
     "            <div class=\"mui-btn right\" ng-class=\"codeClass\" ng-click=\"getCode()\"\n" +
-    "                 style=\"width:38%;background-color: #f4f4f4;border-color:#000;color:#000;font-size: 17px \">\n" +
+    "                 style=\"width:38%; height:40px;background-color: #fff;border-color:#30a080;color:#30a080;font-size: 0.8rem;line-height: 27px \">\n" +
     "                {{codeText}}\n" +
     "            </div>\n" +
     "            <div class=\"clear\"></div>\n" +
-    "            <button style=\"width:100%;color:#fff;font-size: 17px;font-weight: bold\" ng-click=\"formSub()\"\n" +
+    "            <button style=\"width:100%;color:#fff;font-size: 1.2rem;line-height:27px;\"\n" +
+    "                    ng-click=\"formSub()\"\n" +
     "                    class=\"btn btn-danger btn-block btn-lg\">\n" +
-    "                登录\n" +
+    "                登&nbsp;&nbsp;录\n" +
     "            </button>\n" +
     "        </fieldset>\n" +
     "    </form>\n" +
@@ -7722,60 +13216,1475 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   );
 
 
-  $templateCache.put('directive/master/master.dipan.masterIndex.directive.html',
-    "masterDireicet"
-  );
-
-
-  $templateCache.put('directive/member/add.dipan.addFrom.directive.html',
-    "<div class=\"clear viewContent\" style=\"margin-top: 44px\">\n" +
-    "    <div class=\"mui-table-view mui-table-view-chevron clear\" style=\"margin-top: 10px\">\n" +
-    "        <form name=\"addFrom\" id=\"myAddForm\" novalidate>\n" +
-    "            <fieldset>\n" +
-    "                <div class=\"form-group \">\n" +
-    "                    <input type=\"text\" name=\"title\" required ng-model=\"form.title\"\n" +
-    "                           class=\"form-control\"\n" +
-    "                           placeholder=\"标题\">\n" +
+  $templateCache.put('directive/member/editMemberInfo.dipan.editMemberInfo.html',
+    "<div style=\"color: #777;padding: 1rem\" id=\"editMemberInfo\">\n" +
+    "    <div class=\"mui-table-view mui-table-view-chevron clear\" style=\"margin-top: 40px\">\n" +
+    "        <form novalidate>\n" +
+    "            <!--头像-->\n" +
+    "            <div class=\"clear itemFrom \" style=\"margin-top: 1rem\">\n" +
+    "                <div edit-user-header-up></div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--昵称-->\n" +
+    "            <div class=\"itemFrom clear\" style=\"margin-top: 20px\">\n" +
+    "                <input type=\"text\" name=\"name\" class=\"subill thinner-border\" ng-model=\"from.name\" id=\"editFromTitle\"\n" +
+    "                       autocomplete=\"off\"\n" +
+    "                       placeholder=\"昵称\"/>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--性别-->\n" +
+    "            <div class=\"clear itemFrom\" style=\"margin-top: 1rem\">\n" +
+    "                <div class=\"left\" style=\"margin-top: 7px;width: 60px;font-size: 12px;\">性别:</div>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;\" id=\"editRadio3_0\">女</div>\n" +
     "                </div>\n" +
-    "                <div class=\"form-group \">\n" +
-    "                    <textarea type=\"text\" name=\"content\" required ng-model=\"form.content\"\n" +
-    "                              class=\"form-control\"\n" +
-    "                              placeholder=\"内容\"></textarea>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff\" id=\"editRadio3_1\">男</div>\n" +
     "                </div>\n" +
-    "                <div class=\"clearThis\"></div>\n" +
-    "                <div class=\"clear\"></div>\n" +
-    "                <button style=\"width:100%;font-size: 17px;font-weight: bold\" ng-click=\"formSub()\"\n" +
-    "                        class=\"btn btn-danger btn-block btn-lg\">\n" +
-    "                    提交\n" +
-    "                </button>\n" +
-    "            </fieldset>\n" +
+    "            </div>\n" +
+    "            <!--年龄-->\n" +
+    "            <div class=\"clear itemFrom\" style=\"margin-top: 1rem\">\n" +
+    "                <div class=\"left\" style=\"margin-top: 7px;width: 60px;font-size: 12px\">年龄:</div>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;\" id=\"editRadio4_0\">16~24</div>\n" +
+    "                </div>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\"\n" +
+    "                         style=\"margin-left: 3px;border-color:#fff;\" id=\"editRadio4_1\">25~35\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"left\">\n" +
+    "                    <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff;\" id=\"editRadio4_2\">35+</div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--城市-->\n" +
+    "            <div class=\"clear itemFrom\" style=\"margin-top: 1rem\">\n" +
+    "                <div class=\"left\" style=\"margin-top: 7px;width: 60px;font-size: 12px\">城市:</div>\n" +
+    "                <div class=\"left mui-btn qiaokeli\" style=\"margin-left: 3px\" id=\"editFromCityClick\">\n" +
+    "                    {{city}}\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "\n" +
+    "            <div class=\"clear\" style=\"text-align: center;margin-top: 2rem\">\n" +
+    "                <div class=\"mui-btn\"\n" +
+    "                     style=\"width: 90%;background-color: #30a080;color: #fff;font-size: 1rem;border: none\"\n" +
+    "                     id=\"editMemberSub\">修&nbsp;&nbsp;改\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
     "\n" +
     "        </form>\n" +
     "    </div>\n" +
-    "</div>\n"
+    "\n" +
+    "    <!--地区选择 directive-->\n" +
+    "    <div area></div>\n" +
+    "</div>\n" +
+    "\n"
+  );
+
+
+  $templateCache.put('directive/member/killContent.dipan.killContent.directive.html',
+    "<div style=\"color: #777;padding: 1rem\" id=\"killContent\">\n" +
+    "    <div class=\"mui-table-view mui-table-view-chevron clear\" id=\"killContentSoller\"\n" +
+    "         style=\"margin-top: 40px;margin-bottom: 60px\">\n" +
+    "        <!--头像-->\n" +
+    "        <div class=\"clear itemFrom \" style=\"margin-top: 1rem\">\n" +
+    "            <div class=\"left\" style=\"width: 71px;height: 71px;overflow: hidden;border: 1px solid #f4f4f4\">\n" +
+    "                <img bindonce=\"data.doc.userData.headerImg\" bo-src=\"data.doc.userData.headerImg\" alt=\"\"\n" +
+    "                     style=\"width: 70px;height: auto\">\n" +
+    "            </div>\n" +
+    "            <div class=\"left\" style=\"font-size: 0.8rem ;margin-left: 1rem;color: #777\">\n" +
+    "                <span class=\"clear lan\" style=\"font-size: 1rem\" bindonce=\"data.doc.userData.name\"\n" +
+    "                      bo-text=\"data.doc.userData.name\"></span>\n" +
+    "                <span class=\"clear\" bindonce=\"data.doc.userData.sex\" bo-text=\"data.doc.userData.sex\"></span>\n" +
+    "                <span class=\"clear\" bindonce=\"data.doc.userData.age\" bo-text=\"data.doc.userData.age\"></span>\n" +
+    "            </div>\n" +
+    "            <div class=\"right\" style=\"font-size: 0.8rem ;margin-left: 1rem;color: #777;text-align: right\">\n" +
+    "                <span class=\"clear lan\" style=\"\" bindonce=\"data.doc.userData.city\"\n" +
+    "                      bo-text=\"data.doc.userData.city\"></span>\n" +
+    "                <span class='fa fa-map-marker' style='margin-left: 1rem'></span>\n" +
+    "                <span class='' style='margin-left: 3px' bindonce=\"data.doc.userData\"\n" +
+    "                      bo-text='data.doc.userData.far + \"km\"'></span>\n" +
+    "                <span class=\"clear\" bindonce=\"data.doc.userData.mt\" bo-text=\"data.doc.userData.mt\"></span>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "        <div class=\"line\" style=\"margin-top: 1rem\"></div>\n" +
+    "\n" +
+    "\n" +
+    "        <!--技能-->\n" +
+    "        <div class=\"clear\"></div>\n" +
+    "        <div class=\"clear\" style=\"margin-top: 1.5rem;width: 100%\">\n" +
+    "            <div class=\"clear\" style=\"font-size: 1.2rem; width: 100%\">\n" +
+    "                <span class=\"clear lan\" bindonce=\"data.doc.thisJiNeng.title\" bo-text=\"data.doc.thisJiNeng.title\"></span>\n" +
+    "                <i class=\"left\" style=\"color: red;font-size: 0.9rem;\" bindonce=\"data.doc.thisJiNeng.priceStr\"\n" +
+    "                   bo-text=\"data.doc.thisJiNeng.priceStr\"></i>\n" +
+    "                <i class=\"left hui\" style=\"font-size: 0.8rem;margin-left: 1rem\"\n" +
+    "                   bindonce=\"data.doc.thisJiNeng.serviceStr\"\n" +
+    "                   bo-text=\"data.doc.thisJiNeng.serviceStr\"></i>\n" +
+    "                <div class=\"clear\" style=\"font-size: 1rem;margin-top: 2rem;color: #777;width: 100%\"\n" +
+    "                     bindonce=\"data.doc.thisJiNeng.content\"\n" +
+    "                     bo-text=\"data.doc.thisJiNeng.content\"></div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "        <div class=\"line\" style=\"margin-top: 0.8rem\"></div>\n" +
+    "        <!--图片-->\n" +
+    "        <img class=\"clear\" bindonce=\"data.doc.thisJiNeng.imgs\" bo-src=\"vo\" ng-repeat=\"vo in data.doc.thisJiNeng.imgs\"\n" +
+    "             style=\"width: 100%;max-width: 25rem;\"/>\n" +
+    "\n" +
+    "        <div class=\"line\" style=\"margin-top: 1rem\" ng-if=\"data.doc.thisJiNeng.imgs[0]\"></div>\n" +
+    "\n" +
+    "        <!--评价-->\n" +
+    "        <div class=\"clear\">\n" +
+    "\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <!--其他技能-->\n" +
+    "        <div class=\"clear\"></div>\n" +
+    "        <div class=\"clear\" style=\"margin-top: 1.5rem;width: 100%\">\n" +
+    "            <div class=\"clear\" style=\"font-size: 0.8rem; width: 100%\">\n" +
+    "                <span class=\"clear lan\">此用户其他技能 / 服务</span>\n" +
+    "            </div>\n" +
+    "            <div class=\"clear mui-btn\"\n" +
+    "                 style=\"font-size: 1rem; width: 100%;text-align: left;border-color: #e9e9e9;margin-top: 0.8rem;color: #777\"\n" +
+    "                 bindonce=\"data.doc.jiNengList\"\n" +
+    "                 bo-id=\"'jiNengList_' + vo._id\"\n" +
+    "                 bo-attr\n" +
+    "                 bo-attr-subid=\"vo._id\"\n" +
+    "                 ng-repeat=\"vo in data.doc.jiNengList\"\n" +
+    "                 bo-html=\"vo.title +'&nbsp;&nbsp;&nbsp;<i>' + vo.priceStr + '</i>'\">\n" +
+    "            </div>\n" +
+    "\n" +
+    "        </div>\n" +
+    "\n" +
+    "    </div>\n" +
+    "    <style>\n" +
+    "        #bottomNav {\n" +
+    "            display: none;\n" +
+    "        }\n" +
+    "    </style>\n" +
+    "</div>\n" +
+    "\n"
   );
 
 
   $templateCache.put('directive/member/my.dipan.myIndexNav.html',
-    "<div class=\"clear viewContent\" style=\"text-align: center ;margin-top: 130px\">\n" +
+    "<div class=\"clear viewContent\" style=\"margin-top: 0px\">\n" +
     "\n" +
-    "    <div id=\"myArea\">\n" +
-    "        <img src=\"http://pic.qqtn.com/up/2016-9/2016091415331175622.jpg\" data-preview-src=\"http://pic.qqtn.com/up/2016-9/2016091415331175622.jpg\" data-preview-group=\"1\"/>\n" +
-    "        <img src=\"http://pic.qqtn.com/up/2016-9/2016091415331175622.jpg\" data-preview-src=\"http://pic.qqtn.com/up/2016-9/2016091415331175622.jpg\" data-preview-group=\"1\"/>\n" +
+    "\n" +
+    "    <!--订单-->\n" +
+    "    <div class=\"clear listItemPublic linkHref\" url=\"orderFrom\" id=\"hrefOrederFrom\" style=\"margin-top: 2rem\">\n" +
+    "        <span class=\"left lan\">订单</span>\n" +
+    "        <span class=\"left\">\n" +
+    "        <i class=\"fa fa-ellipsis-h fa-2x\"\n" +
+    "           style=\"width: 7px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;\"\n" +
+    "           ng-show=\"showNoReadFromCount\"></i>\n" +
+    "        </span>\n" +
     "    </div>\n" +
+    "    <div class=\"line\"></div>\n" +
     "\n" +
-    "\n" +
-    "    <ul id=\"{{vo.hrefId}}\" url=\"{{vo.url}}\" class=\"mui-table-view mui-table-view-chevron\" style=\"text-align: left\"\n" +
-    "        bindonce ng-repeat=\"vo in listNav\">\n" +
-    "        <div class=\"mui-table-view-cell linkMouse clear\"\n" +
-    "             style=\"padding-right: 26px;height: 50px;padding-top: 16px;\">\n" +
-    "            <i class=\"{{vo.icon}} pull-left\" style=\"color:#888;margin-top: 3px\"></i>\n" +
-    "            <i class=\"fa fa-chevron-right pull-right\"></i>\n" +
-    "            <span style=\"font-size: 1.4em;margin-left: 20px\">{{vo.name}}</span>\n" +
+    "    <!--联系-->\n" +
+    "    <div class=\"clear listItemPublic linkHref\" url=\"myNews\" id=\"hrefMyNews\">\n" +
+    "        <span class=\"left lan\">联系</span>\n" +
+    "        <!--<span class=\"left hui\" style=\"font-size: 0.8rem;\" bindonce=\"noReadNewsCount\"-->\n" +
+    "        <!--bo-text=\"'('+noReadNewsCount+')'\"></span>-->\n" +
+    "        <span class=\"left\">\n" +
+    "        <i class=\"fa fa-ellipsis-h fa-2x\"\n" +
+    "           style=\"width: 7px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;\"\n" +
+    "           ng-show=\"showNewsHistory\"></i>\n" +
+    "        </span>\n" +
+    "        <!--<span class=\"left hui\" style=\"font-size: 0.8rem;margin-left: 1rem\" bindonce=\"getNoReadNewsEnd\"-->\n" +
+    "        <!--bo-text=\"''+getNoReadNewsEnd+''\"></span>-->\n" +
+    "    </div>\n" +
+    "    <div class=\"line\"></div>\n" +
+    "    <!--技能-->\n" +
+    "    <div class=\"clear listItemPublic linkHref\" style=\"margin-top: 2rem\" url=\"myKill\" id=\"hrefMyJiNeng\">\n" +
+    "        <div class=\"left\">\n" +
+    "            <span>我的技能</span>\n" +
     "        </div>\n" +
-    "    </ul>\n" +
-    "    <div class=\"clear\" style=\"margin-top: 40px\"></div>\n" +
+    "        <span class=\"left\">\n" +
+    "        </span>\n" +
+    "    </div>\n" +
+    "    <div class=\"line\"></div>\n" +
+    "\n" +
+    "    <!--需求-->\n" +
+    "    <div class=\"clear listItemPublic linkHref\" url=\"myNeed\" id=\"hrefMyNeed\">\n" +
+    "        <div class=\"left\">\n" +
+    "            <span>我的需求</span>\n" +
+    "        </div>\n" +
+    "        <span class=\"left\">\n" +
+    "        </span>\n" +
+    "    </div>\n" +
+    "    <div class=\"line\"></div>\n" +
+    "\n" +
+    "    <!--电话咨询-->\n" +
+    "    <div class=\"clear listItemPublic\" style=\"margin-top: 2rem\" id=\"myTelCall\">\n" +
+    "        <div class=\"left\">电话咨询</div>\n" +
+    "        <div class=\"left\" style=\"margin-left: 20px;margin-top: -7px\">\n" +
+    "            <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#ccc;\" id=\"myRadio1_0\">允许</div>\n" +
+    "            <div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff\" id=\"myRadio1_1\">禁止</div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <div class=\"line\"></div>\n" +
+    "\n" +
+    "    <!--退出登录-->\n" +
+    "    <div class=\"clear listItemPublic linkHref\" url=\"loginOut\" id=\"hrefMyLoginOut\">\n" +
+    "        <span class=\"left\">退出</span>\n" +
+    "    </div>\n" +
+    "    <div class=\"line\"></div>\n" +
+    "\n" +
+    "    <!--版本-->\n" +
+    "    <div class=\"clear listItemPublic\" id=\"myVersion\">\n" +
+    "        <span style=\"font-size: 12px;margin-right: 20px\" class=\"hui right\" bindonce bo-text=\"'版本:v '+version\"></span>\n" +
+    "    </div>\n" +
+    "    <!--<div style=\"text-align: left;width: 100%;\">-->\n" +
+    "    <!--<div class=\" linkMouse clear\"-->\n" +
+    "    <!--style=\"height: 50px;padding-top: 16px;\">-->\n" +
+    "    <!--<div class=\"left\" style=\"font-size: 1rem;margin-left: 20px\">我的技能</div>-->\n" +
+    "    <!--<div style=\"margin-top: 3px\">-->\n" +
+    "    <!--<div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff;\" id=\"radio1_0\">1小时</div>-->\n" +
+    "    <!--<div class=\"left mui-btn\"-->\n" +
+    "    <!--style=\"margin-left: 3px;\" id=\"radio1_1\">1次-->\n" +
+    "    <!--</div>-->\n" +
+    "    <!--<div class=\"left mui-btn\" style=\"margin-left: 3px;border-color:#fff\" id=\"radio1_2\">1单</div>-->\n" +
+    "    <!--<div class=\"left mui-btn\" style=\"color:#dadada;margin-left: 3px;border-color:#fff\" id=\"radio1_3\">面议-->\n" +
+    "    <!--</div>-->\n" +
+    "    <!--</div>-->\n" +
+    "    <!--</div>-->\n" +
+    "    <!--<div class=\"line\"></div>-->\n" +
+    "    <!--</div>-->\n" +
+    "\n" +
     "</div>\n"
+  );
+
+
+  $templateCache.put('directive/member/myKill.dipan.myKill.directive.html',
+    "<div id=\"myKill\">\n" +
+    "    <div class=\"clear\" style=\"margin-top: 1.5rem;width: 100%;text-align: center\">\n" +
+    "        <h5 style=\"margin:0 auto;margin-top: 200px\" ng-show=\"errMsg\">{{errMsg}}</h5>\n" +
+    "        <div class=\"clear \"\n" +
+    "             style=\"width: 100%;text-align: left;font-size: 1rem;\"\n" +
+    "             bindonce=\"list\" ng-repeat=\"vo in list\">\n" +
+    "            <div class=\"clear\" style=\"margin-top: 1rem\">\n" +
+    "                <div class=\"left  mui-btn\" style=\"padding-left: 10px;padding-right: 10px;color: #777;border: none\"\n" +
+    "                     bo-id=\"'myKillList_'+vo._id\"\n" +
+    "                     bo-attr\n" +
+    "                     bo-attr-killid=\"vo._id\"\n" +
+    "                     bo-text=\"vo.title\"></div>\n" +
+    "                <div class=\"right\">\n" +
+    "                    <!--修改技能按钮-->\n" +
+    "                    <!--<div class=\"left hui mui-btn fa fa-pencil-square-o\" bo-id=\"'myKillListEdit_'+vo._id\"-->\n" +
+    "                    <!--style=\"border: none\"></div>-->\n" +
+    "\n" +
+    "                    <!--删除技能-->\n" +
+    "                    <div class=\"left hui mui-btn fa fa-times\"\n" +
+    "                         bindonce=\"vo.master\"\n" +
+    "                         bo-id=\"'myKillListDel_'+vo._id\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-killid=\"vo._id\"\n" +
+    "                         bo-if=\"!vo.master\"\n" +
+    "                         style=\"margin-left: 0rem;border: none\"></div>\n" +
+    "                    <div class=\"left mui-btn fa fa-toggle-on\" bindonce=\"vo.master\" bo-if=\"vo.master\"\n" +
+    "                         style=\"border: none\"></div>\n" +
+    "                    <div class=\"left hui mui-btn fa fa-toggle-off\" bindonce=\"vo.master\" bo-if=\"!vo.master\"\n" +
+    "                         bo-id=\"'setMaster_'+vo._id\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-killid=\"vo._id\"\n" +
+    "                         style=\"border: none\"></div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "            <div class=\"clear line\"></div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('directive/member/myNeed.dipan.myNeed.directive.html',
+    "<div id=\"myNeed\">\n" +
+    "    <div class=\"clear\" style=\"margin-top: 1.5rem;width: 100%;text-align: center\">\n" +
+    "        <h5 style=\"margin:0 auto;color: red\" ng-show=\"errMsg\">{{errMsg}}</h5>\n" +
+    "\n" +
+    "        <div class=\"lan\" style=\"text-align: left;margin-left: 10px\">有效</div>\n" +
+    "        <div class=\"hui\" style=\"text-align: left;margin-left: 10px;font-size: 0.8rem\"\n" +
+    "             ng-if=\"!listTypeOne[0]\">暂无数据\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"clear\"\n" +
+    "             style=\"width: 100%;text-align: left;font-size: 1rem;\"\n" +
+    "             bindonce=\"listTypeOne\"\n" +
+    "             ng-repeat=\"vo in listTypeOne\">\n" +
+    "            <div class=\"clear\" style=\"margin-top: 1rem\">\n" +
+    "                <div class=\"left mui-btn \"\n" +
+    "                     style=\"padding-left: 10px;padding-right: 10px;color: #777;min-width: 70%;text-align: left;border: none\"\n" +
+    "                     bo-text=\"vo.title\"\n" +
+    "                     bo-id=\"'myNeedListClick_'+vo._id\"\n" +
+    "                     bo-attr\n" +
+    "                     bo-attr-needid=\"vo._id\"\n" +
+    "                ></div>\n" +
+    "                <div class=\"right\">\n" +
+    "                    <div class=\"left hui mui-btn fa fa-times\"\n" +
+    "                         bindonce=\"vo.state\"\n" +
+    "                         bo-if=\"vo.state != 2\"\n" +
+    "                         bo-id=\"'myNeedListDel_'+vo._id\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-needid=\"vo._id\"\n" +
+    "                         style=\"margin-left: 0rem;border: none\"></div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "            <div class=\"clear line\"></div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "\n" +
+    "        <div class=\"clear\" style=\"margin-top: 40px\"></div>\n" +
+    "        <div class=\"lan\" style=\"text-align: left;margin-left: 10px\">失效</div>\n" +
+    "\n" +
+    "        <div class=\"hui\" style=\"text-align: left;margin-left: 10px;font-size: 0.8rem\"\n" +
+    "             ng-if=\"!listTypeTwo[0]\">暂无数据\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"clear\"\n" +
+    "             style=\"width: 100%;text-align: left;font-size: 1rem;\"\n" +
+    "             bindonce=\"listTypeTwo\" ng-repeat=\"vo in listTypeTwo\"\n" +
+    "        >\n" +
+    "            <div class=\"clear\" style=\"margin-top: 1rem\">\n" +
+    "                <div class=\"left\" style=\"color: red;font-size: 0.8rem;margin-top: 5px\" bindonce=\"vo.state\"\n" +
+    "                     bo-if=\"vo.state == 3\">[成交]\n" +
+    "                </div>\n" +
+    "                <div class=\"left\" style=\"color: red;font-size: 0.8rem;margin-top: 5px\" bindonce=\"vo.state\"\n" +
+    "                     bo-if=\"vo.state == 4\">[过期]\n" +
+    "                </div>\n" +
+    "                <div class=\"left mui-btn \"\n" +
+    "                     style=\"padding-left: 10px;padding-right: 10px;color: #777;min-width: 70%;text-align: left;border: none\"\n" +
+    "                     bo-text=\"vo.title\"\n" +
+    "                     bo-id=\"'myNeedListClick_'+vo._id\"\n" +
+    "                     bo-attr\n" +
+    "                     bo-attr-needid=\"vo._id\"\n" +
+    "                ></div>\n" +
+    "                <div class=\"right\">\n" +
+    "                    <div class=\"left hui mui-btn fa fa-times\"\n" +
+    "                         bo-id=\"'myNeedListDel_'+vo._id\"\n" +
+    "                         bo-if=\"(vo.pingJiaState ==3 && vo.state==3) || (vo.state==4)\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-needid=\"vo._id\"\n" +
+    "                         style=\"margin-left: 0rem;border: none;height: 25px\"></div>\n" +
+    "                    <div class=\"left hui mui-btn \"\n" +
+    "                         bo-id=\"'myNeedListGo_'+vo._id\"\n" +
+    "                         bo-if=\"vo.pingJiaState !=3 &&  vo.state==3\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-needid=\"vo._id\"\n" +
+    "                         style=\"margin-left: 0rem;border: none;height: 25px\">等待互评\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "            <div class=\"clear line\"></div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "\n"
+  );
+
+
+  $templateCache.put('directive/member/myNews.dipan.myNews.directive.html',
+    "<div id=\"myNews\">\n" +
+    "    <div class=\"clear\" style=\"margin-top: 1.5rem;width: 100%\">\n" +
+    "        <div class=\"clear mui-btn\"\n" +
+    "             style=\"width: 100%;text-align: left;border-color: #fff;font-size: 1rem;\"\n" +
+    "             bindonce=\"list\" ng-repeat=\"vo in list\"\n" +
+    "             bo-attr\n" +
+    "             bo-attr-gHeader='vo.gUserId.gHeader || defaultHeader'\n" +
+    "             bo-attr-gUId='vo.gUserId._id'\n" +
+    "             bo-attr-gName='vo.gUserId.name || vo.gUserId.mt'\n" +
+    "             bo-id=\"vo._id\">\n" +
+    "            <div class=\"left\" style=\"width: 30px;height: 30px;overflow: hidden\">\n" +
+    "                <img bo-src=\"vo.gUserId.headerImg || defaultHeader\" alt=\"\" style=\"width: 20px;height: auto;\"/>\n" +
+    "            </div>\n" +
+    "            <div class=\"left\" style=\"color: #777;margin-left: 1rem\" bo-text=\"vo.gUserId.name || vo.gUserId.mt\"></div>\n" +
+    "            <div class=\"left\">\n" +
+    "                <i class=\"fa fa-ellipsis-h fa-2x\"\n" +
+    "                   style=\"width: 7px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;\"\n" +
+    "                   bo-if=\"vo.noReadCount\"></i>\n" +
+    "            </div>\n" +
+    "            <div class=\"clear\"></div>\n" +
+    "            <div class=\"clear line\" style=\"margin-top: 1rem\"></div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('directive/member/orderFrom.dipan.orderFromList.directive.html',
+    "<div id=\"orderFrom\">\n" +
+    "    <div class=\"clear\" style=\"margin-top: 1.5rem;width: 100%\">\n" +
+    "        <div class=\"lan clear\" style=\"font-size: 1rem;margin-left: 1rem;margin-bottom: 2rem\"\n" +
+    "             ng-show=\"!isHaveJinengOrderFrom && !isHaveNeedOrderFrom && !isHaveSelectOrderFrom && !isHaveLoseOrderFrom\">\n" +
+    "            暂无订单!\n" +
+    "        </div>\n" +
+    "        <div id=\"jinengOrderFrom\" ng-show=\"isHaveJinengOrderFrom\">\n" +
+    "            <div class=\"lan clear\" style=\"font-size: 1rem;margin-left: 1rem;margin-bottom: 2rem\">技能订单</div>\n" +
+    "\n" +
+    "            <div class=\"clear\" style=\"margin-top: 1rem\" bindonce=\"list.jiNengOrderList\"\n" +
+    "                 ng-repeat=\"vo in list.jiNengOrderList\" bo-id=\"'jinengOreder_'+vo.orderId._id\">\n" +
+    "                <div class=\"clear\"\n" +
+    "                     style=\"width: 100%;padding:10px;text-align: left;font-size: 1rem;color:#777;border-color: #fff;background-color: #e3f5f9\">\n" +
+    "                    <div class=\"left \" style=\"font-size: 0.8rem;color: red;\" bindonce=\"vo.bindUidType\"\n" +
+    "                         bo-if=\"vo.bindUidType == 1\">[抢]\n" +
+    "                    </div>\n" +
+    "                    <div class=\"left \" style=\"font-size: 0.8rem;color:#30a080 ;\" bindonce=\"vo.bindUidType\"\n" +
+    "                         bo-if=\"vo.bindUidType == 2\">[接]\n" +
+    "                    </div>\n" +
+    "                    <div class=\"left lan\" style=\"margin-left: 1rem\" bo-text=\"vo.orderId.title\"></div>\n" +
+    "                    <div class=\"left\" style=\"margin-left: 1rem\">\n" +
+    "                        <span class=\"left\" style=\"color: #777;font-size: 0.8rem\" bindonce=\"vo.orderUid\"\n" +
+    "                              bo-if=\"vo.orderUid.name\" bo-text=\"vo.orderUid.name\"></span>\n" +
+    "                        <span class=\"left\" style=\"color: #777;font-size: 0.8rem\" bindonce=\"vo.orderUid\"\n" +
+    "                              bo-if=\"!vo.orderUid.name\" bo-text=\"vo.orderUid.mt\"></span>\n" +
+    "                        <span class=\"left\">\n" +
+    "                        <i class=\"fa fa-ellipsis-h fa-2x\"\n" +
+    "                           style=\"width: 7px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;height: 25px\"\n" +
+    "                           bo-if=\"!vo.bindUidIsReadMark\"></i>\n" +
+    "                        </span>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"right  fa fa-angle-right\" style=\"margin-top: 3px\"></div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div id=\"needOrderFrom\" style=\"margin-top: 2.5rem\" ng-show=\"isHaveNeedOrderFrom\">\n" +
+    "            <div class=\"lan\" style=\"font-size: 1rem;margin-left: 1rem;margin-bottom: 2rem\">需求订单</div>\n" +
+    "            <div class=\"clear\" style=\"margin-top: 1rem\" bindonce=\"list.needOrderList\"\n" +
+    "                 ng-repeat=\"vo2 in list.needOrderList\" bo-id=\"'needOrder_'+vo2.orderId\">\n" +
+    "                <div class=\"clear\"\n" +
+    "                     style=\"width: 100%;padding:10px;text-align: left;font-size: 1rem;color:#777;border-color: #fff;background-color: #eff7ef\">\n" +
+    "                    <div class=\"left lan\" style=\"margin-left: 1rem;\" bo-text=\"vo2.title\"></div>\n" +
+    "                    <div class=\"left\" style=\"margin-left: 1rem\">\n" +
+    "                        <span class=\"left\"\n" +
+    "                              style=\"font-size: 0.8rem\"\n" +
+    "                              bo-if=\"vo2.beiDongJieDan[0] && vo2.beiDongJieDan[0].name\"\n" +
+    "                        >等</span>\n" +
+    "                        <span class=\"left\" style=\"color: red;font-size: 0.8rem\"\n" +
+    "                              bindonce=\"vo2\"\n" +
+    "                              bo-if=\"vo2.beiDongJieDan[0] && vo2.beiDongJieDan[0].name\"\n" +
+    "                              bo-text=\"vo2.beiDongJieDan[0].name\"></span>\n" +
+    "                        <span class=\"left\" style=\"color: red;font-size: 0.8rem\"\n" +
+    "                              bindonce=\"vo2\"\n" +
+    "                              bo-if=\"vo2.beiDongJieDan[0] && !vo2.beiDongJieDan[0].name\"\n" +
+    "                              bo-text=\"vo2.beiDongJieDan[0].mt\"></span>\n" +
+    "                        <span class=\"left\"\n" +
+    "                              style=\"font-size: 0.8rem\"\n" +
+    "                              bo-if=\"vo2.beiDongJieDan[0] && vo2.beiDongJieDan[0].name\"\n" +
+    "                        >接单</span>\n" +
+    "                        <span class=\"left\" style=\"font-size: 0.8rem;margin-left: 3px\"\n" +
+    "                              bindonce=\"vo2\"\n" +
+    "                              bo-if=\"vo2.beiDongJieDan[0] && vo2.jieDanCount > 0\"\n" +
+    "                        >还有</span>\n" +
+    "                        <span class=\"left\" style=\"color: red;font-weight: bolder;font-size: 0.8rem\"\n" +
+    "                              bindonce=\"vo2\"\n" +
+    "                              bo-if=\"vo2.jieDanCount > 0\"\n" +
+    "                              bo-text=\"vo2.jieDanCount\"\n" +
+    "                        ></span>\n" +
+    "                        <span class=\"left\" style=\"font-size: 0.8rem;margin-left: 3px\"\n" +
+    "                              bindonce=\"vo2\"\n" +
+    "                              bo-if=\"vo2.jieDanCount > 0\"\n" +
+    "                        >人抢单</span>\n" +
+    "                        <span class=\"left\">\n" +
+    "                        <i class=\"fa fa-ellipsis-h fa-2x\"\n" +
+    "                           style=\"width: 7px;height:25px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;\"\n" +
+    "                           bo-if=\"vo2.isNoRead\"></i>\n" +
+    "                        </span>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"right  fa fa-angle-right\" style=\"margin-top: 3px\"></div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div id=\"selectOrderFrom\" style=\"margin-top: 2.5rem\" ng-show=\"isHaveSelectOrderFrom\">\n" +
+    "            <div class=\"lan\" style=\"font-size: 1rem;margin-left: 1rem;margin-bottom: 2rem\">成交订单</div>\n" +
+    "\n" +
+    "            <!--作为orderId成功的订单-->\n" +
+    "            <div class=\"clear\" style=\"margin-top: 1rem\" bindonce=\"list.selectOrderList\"\n" +
+    "                 ng-repeat=\"vo3 in list.selectOrderList\" bo-id=\"'selectOrder_'+vo3.orderId\">\n" +
+    "                <div class=\"clear\"\n" +
+    "                     style=\"width: 100%;padding:10px;text-align: left;font-size: 1rem;color:#777;border-color: #fff;background-color: #f7e2e1\">\n" +
+    "\n" +
+    "                    <div class=\"left\" bo-id=\"'selectListGo_'+vo3.orderId\" bo-attr bo-attr-orderid=\"vo3.orderId\">\n" +
+    "                        <div class=\"left lan\" style=\"margin-left: 1rem;\" bo-text=\"vo3.orderTitle\"></div>\n" +
+    "                        <div class=\"left\" style=\"margin-left: 1rem\">\n" +
+    "                        <span style=\"font-size: 0.8rem\" bindonce=\"vo3.bindUid\"\n" +
+    "                              bo-text=\"vo3.bindUid.name || vo3.bindUid.mt\"></span>\n" +
+    "                        </div>\n" +
+    "\n" +
+    "\n" +
+    "                        <!--未读标记-->\n" +
+    "                        <span class=\"left\">\n" +
+    "                        <i class=\"fa fa-ellipsis-h fa-2x\"\n" +
+    "                           style=\"width: 7px;height:25px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;\"\n" +
+    "                           bo-if=\"vo3.selectReadMark_orderUidIsReady===false\"></i>\n" +
+    "                        </span>\n" +
+    "\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                    <div class=\"right  fa fa-times mui-btn\" bo-id=\"'delSelect_'+vo3.orderId\"\n" +
+    "                         bo-if=\"vo3.pingJiaState == 3\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-orderid=\"vo3.orderId\"\n" +
+    "                         style=\"margin-top: -2px;border: none;background:none\"></div>\n" +
+    "                    <div class=\"right  mui-btn\" bo-id=\"'pingJiaGo_'+vo3.orderId\"\n" +
+    "                         bo-if=\"vo3.pingJiaState != 3\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-orderid=\"vo3.orderId\"\n" +
+    "                         style=\"margin-top: -2px;border: none;background:none;font-size: 12px\">等待互评\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--作为bindUid成功的订单-->\n" +
+    "            <div class=\"clear\" style=\"margin-top: 1rem\" bindonce=\"list.selectBindUidOrderList\"\n" +
+    "                 ng-repeat=\"vo31 in list.selectBindUidOrderList\" bo-id=\"'selectOrder_'+vo31.orderId._id\">\n" +
+    "                <div class=\"clear\"\n" +
+    "                     style=\"width: 100%;padding:10px;text-align: left;font-size: 1rem;color:#777;border-color: #fff;background-color: #f7e2e1\">\n" +
+    "\n" +
+    "                    <div class=\"left\" bo-id=\"'selectListGo_'+vo31.orderId._id\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-orderid=\"vo31.orderId._id\">\n" +
+    "                        <div class=\"left lan\" style=\"margin-left: 1rem;\" bo-text=\"vo31.orderId.title\"></div>\n" +
+    "                        <div class=\"left\" style=\"margin-left: 1rem\">\n" +
+    "                        <span class=\"left\" style=\"font-size: 0.8rem\" bindonce=\"vo31.orderUid\"\n" +
+    "                              bo-text=\"vo31.orderUid.name || vo31.orderUid.mt\"></span>\n" +
+    "\n" +
+    "                            <!--未读标记-->\n" +
+    "                            <span class=\"left\">\n" +
+    "                                <i class=\"fa fa-ellipsis-h fa-2x\"\n" +
+    "                                   style=\"width: 7px;height:25px;overflow-x: hidden;color: #db5140;margin-left: 5px;margin-top: -7px;\"\n" +
+    "                                   bo-if=\"vo31.selectReadMark_bindUidIsReady===false\"></i>\n" +
+    "                            </span>\n" +
+    "\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                    <div class=\"right fa fa-times mui-btn\" bo-id=\"'delLose_'+vo31.orderId._id\"\n" +
+    "                         bo-if=\"vo31.orderId.pingJiaState == 3\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-orderid=\"vo31.orderId._id\"\n" +
+    "                         style=\"margin-top: -2px;border: none;background:none\"></div>\n" +
+    "                    <div class=\"right  mui-btn\" bo-id=\"'pingJiaGo_'+vo31.orderId._id\"\n" +
+    "                         bo-if=\"vo31.orderId.pingJiaState != 3\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-orderid=\"vo31.orderId._id\"\n" +
+    "                         style=\"margin-top: -2px;border: none;background:none;font-size: 12px\">等待互评\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div id=\"loseOrderFrom\" style=\"margin-top: 2.5rem\" ng-show=\"isHaveLoseOrderFrom\">\n" +
+    "            <div class=\"lan\" style=\"font-size: 1rem;margin-left: 1rem;margin-bottom: 2rem\">失效订单</div>\n" +
+    "            <!--当前uid 作为 bindUser 失效 时间失效,和选别人了-->\n" +
+    "            <div class=\"clear\" style=\"margin-top: 1rem\" bindonce=\"list.loseOrderList\"\n" +
+    "                 ng-repeat=\"vo4 in list.loseOrderList\" bo-id=\"'loseOrder_'+vo4.orderId\">\n" +
+    "                <div class=\"clear\"\n" +
+    "                     style=\"width: 100%;padding:10px;text-align: left;font-size: 1rem;color:#777;border-color: #fff;background-color: #e9e9e9\">\n" +
+    "\n" +
+    "                    <div class=\"left\" bo-id=\"'loseOrderGo_'+vo4.orderId._id\" bo-attr bo-attr-orderid=\"vo4.orderId._id\">\n" +
+    "\n" +
+    "                        <!--过期-->\n" +
+    "                        <div class=\"left\" style=\"margin-left: 1rem\" bindonce=\"vo4.bindUidType\"\n" +
+    "                             bo-if=\"vo4.bindUidType==4\">\n" +
+    "                            <span style=\"font-size: 0.8rem\">[过期了]</span>\n" +
+    "                        </div>\n" +
+    "\n" +
+    "                        <!--选别人-->\n" +
+    "                        <div class=\"left\" style=\"margin-left: 1rem\" bindonce=\"vo4.bindUidType\"\n" +
+    "                             bo-if=\"vo4.bindUidType==5\">\n" +
+    "                            <span style=\"font-size: 0.8rem\">[选</span>\n" +
+    "                            <img style=\"width: 15px;height: 15px;border-radius: 15px;\"\n" +
+    "                                 bindonce=\"vo4.selectBindUser.bindUid\"\n" +
+    "                                 bo-src=\"vo4.selectBindUser.bindUid.headerImg || defaultHeader\" alt=\"\">\n" +
+    "                            <span style=\"font-size: 0.8rem;color: red\" bindonce=\"vo4.selectBindUser.bindUid\"\n" +
+    "                                  bo-text=\"vo4.selectBindUser.bindUid.name || vo4.selectBindUser.bindUid.mt\"></span>\n" +
+    "                            <span bindonce=\"vo4.bindUidType\" bo-if=\"vo4.bindUidType==5\"\n" +
+    "                                  style=\"font-size: 0.8rem\">了]</span>\n" +
+    "                        </div>\n" +
+    "\n" +
+    "                        <div class=\"left lan\" style=\"margin-left: 1rem;\" bo-text=\"vo4.orderId.title\"></div>\n" +
+    "\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                    <!--删除 改关系表状态 -->\n" +
+    "                    <div class=\"right fa fa-times mui-btn\" bo-id=\"'delLose_'+vo4.orderId._id\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-orderid=\"vo4.orderId._id\"\n" +
+    "                         style=\"margin-top: -2px;border: none;background:none\"></div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--当前uid 作为 orderUid 失效 时间失效-->\n" +
+    "            <div class=\"clear\" style=\"margin-top: 1rem\" bindonce=\"list.loseOrderNeedList\"\n" +
+    "                 ng-repeat=\"vo5 in list.loseOrderNeedList\" bo-id=\"'loseNeedOrder_'+vo5.orderId\">\n" +
+    "                <div class=\"clear\"\n" +
+    "                     style=\"width: 100%;padding:10px;text-align: left;font-size: 1rem;color:#777;border-color: #fff;background-color: #e9e9e9\">\n" +
+    "\n" +
+    "                    <div class=\"left\" bo-id=\"'loseNeedOrderGo_'+vo5._id\" bo-attr bo-attr-orderid=\"vo5._id\">\n" +
+    "                        <div class=\"left\" style=\"margin-left: 1rem;font-size: 0.8rem\">\n" +
+    "                            [过期了]\n" +
+    "                        </div>\n" +
+    "                        <div class=\"left lan\" style=\"margin-left: 1rem;\" bo-text=\"vo5.title\"></div>\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                    <div class=\"right  fa fa-times mui-btn\" bo-id=\"'delLoseNeed_'+vo5._id\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-orderid=\"vo5._id\"\n" +
+    "                         style=\"margin-top: -2px;border: none;background:none\"></div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('directive/member/orderFromContent.dipan.orderFromContent.directive.html',
+    "<div style=\"color: #777;padding: 1rem\" id=\"orderFromContent\">\n" +
+    "    <div class=\"mui-table-view mui-table-view-chevron clear\"\n" +
+    "         style=\"margin-top: 40px;margin-bottom: 60px\">\n" +
+    "\n" +
+    "        <!--如果不是需求方就显示头像和公共评价-->\n" +
+    "        <div class=\"left\" ng-if=\"userType !== 3\">\n" +
+    "            <div class=\"mui-btn\" id=\"showUserDataFromBtn\" style=\"background-color: #f4f4f4\">\n" +
+    "                <img bindonce=\"data.userData\" bo-src=\"data.userData.headerImg\"\n" +
+    "                     style=\"width: 20px;height: 20px;border-radius: 20px;\" alt=\"\">\n" +
+    "                <span bindonce=\"data.userPingJia\" style=\"color:red;margin-top: -10px;font-size: 0.5rem\" class=\"hui\"\n" +
+    "                      bo-text=\"data.userPingJia.length +'评'\"></span>\n" +
+    "                <span class=\"clear\"></span>\n" +
+    "                <span style=\"margin-left: 5px;margin-top: -5px\" class=\"lan\" bindonce=\"data.userData\"\n" +
+    "                      bo-text=\"data.userData.name || data.userData.mt \"></span>\n" +
+    "                <span class=\"\" style=\"color: red;font-size: 0.5rem\">详细</span>\n" +
+    "                <span class=\"fa fa-chevron-down\" style=\"color: red;font-size: 0.5rem\"></span>\n" +
+    "            </div>\n" +
+    "            <div id=\"userDataFromePage\" ng-show=\"showUserData\">\n" +
+    "                <div id=\"closeUserDataFromePage\" class=\"fa fa-2x  fa-times\"></div>\n" +
+    "                <!--头像-->\n" +
+    "                <div class=\"line\" style=\"margin-top: 2.5rem\"></div>\n" +
+    "                <div class=\"clear\"></div>\n" +
+    "                <div class=\"lan clear\" style=\"margin-top: 1rem;font-size: 0.8rem\">用户资料:</div>\n" +
+    "                <div class=\"clear itemFrom \" style=\"margin-top: 1rem\">\n" +
+    "                    <div class=\"left\"\n" +
+    "                         style=\"width: 71px;height: 71px;border-radius:71px;overflow: hidden;border: 1px solid #f4f4f4\">\n" +
+    "                        <img bindonce=\"data.userData.headerImg\" bo-src=\"data.userData.headerImg\" alt=\"\"\n" +
+    "                             style=\"width: 70px;height: auto\">\n" +
+    "                    </div>\n" +
+    "                    <div class=\"left\" style=\"font-size: 0.8rem ;margin-left: 1rem;color: #777\">\n" +
+    "                    <span class=\"clear lan\" style=\"font-size: 1rem\" bindonce=\"data.userData.name\"\n" +
+    "                          bo-text=\"data.userData.name\"></span>\n" +
+    "                        <span class=\"clear\" bindonce=\"data.userData.sex\" bo-text=\"data.userData.sex\"></span>\n" +
+    "                        <span class=\"clear\" bindonce=\"data.userData.age\" bo-text=\"data.userData.age\"></span>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"right\" style=\"font-size: 0.8rem ;margin-left: 1rem;color: #777;text-align: right\">\n" +
+    "                    <span class=\"clear lan\" style=\"\" bindonce=\"data.userData.city\"\n" +
+    "                          bo-text=\"data.userData.city\"></span>\n" +
+    "                        <span class=\"clear\" bindonce=\"data.userData.mt\" bo-text=\"data.userData.mt\"></span>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <div class=\"clear \" style=\"margin-top: 1rem\"></div>\n" +
+    "                <div class=\"lan clear \" style=\"margin-top: 1rem;font-size: 0.8rem\" ng-show=\"data.userPingJia[0]\">评价:\n" +
+    "                </div>\n" +
+    "                <div class=\"clear itemFrom\" style=\"margin-top:3px\" ng-show=\"data.userPingJia[0]\">\n" +
+    "                    <div class=\"clear\" style=\"font-size: 1rem; width: 100%;\">\n" +
+    "                        <!--评价-->\n" +
+    "                        <div class=\"clear\" style=\"margin-top: 5px\"\n" +
+    "                             bindonce=\"data.userPingJia\"\n" +
+    "                             ng-repeat=\"voUping in data.userPingJia\" ng-if=\"data.userPingJia[0]\">\n" +
+    "                            <div class=\"left\">\n" +
+    "                                <img bindonce=\"voUping.uid.headerImg\" bo-if=\"voUping.uid.headerImg\"\n" +
+    "                                     bo-src=\"voUping.uid.headerImg\"\n" +
+    "                                     style=\"width: 20px;height: 20px;border-radius:20px;\"\n" +
+    "                                     alt=\"\">\n" +
+    "                            </div>\n" +
+    "                            <div class=\"left hui\" style=\"font-size: 0.8rem;margin-left: 3px\" bindonce=\"voUping\"\n" +
+    "                                 bo-if=\"voUping.uid.name\"\n" +
+    "                                 bo-text=\"voUping.uid.name\"></div>\n" +
+    "                            <div class=\"left hui\" style=\"font-size: 0.8rem;margin-left: 3px\" bindonce=\"voUping\"\n" +
+    "                                 bo-if=\"!voUping && !voUping.uid &&!voUping.uid.name\"\n" +
+    "                                 bo-text=\"voUping.uid.mt\"></div>\n" +
+    "                            <div class=\"left\" style=\"font-size: 0.8rem;margin-left: 10px;\"\n" +
+    "                                 bindonce=\"voUping.content\" bo-text=\"voUping.content\"></div>\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <!--订单状态-->\n" +
+    "        <div class=\"right\" style=\"margin-right: 1rem\">\n" +
+    "            <!--删除 公共-->\n" +
+    "            <div ng-show=\"data.thisNeed.state == 5\">\n" +
+    "                <div class=\"clear lan \" style=\"margin-top: 1rem\">【订单已被需求方删除】</div>\n" +
+    "            </div>\n" +
+    "            <!--过期 公共-->\n" +
+    "            <div ng-show=\"data.thisNeed.state == 4\">\n" +
+    "                <div class=\"clear lan \" style=\"margin-top: 1rem\">【订单已过期】</div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--选单 公共-->\n" +
+    "            <div ng-show=\"data.thisNeed.state == 2\">\n" +
+    "                <div class=\"clear lan \" style=\"margin-top: 1rem\">【订单选单中】</div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--选单 公共-->\n" +
+    "            <div ng-show=\"data.thisNeed.state == 3\">\n" +
+    "                <div class=\"clear lan \" style=\"margin-top: 1rem\">【订单已成交】</div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <!--需求详情 公共-->\n" +
+    "        <div class=\"clear\">\n" +
+    "            <!--需求详情 公共-->\n" +
+    "            <div class=\"clear\"></div>\n" +
+    "            <div class=\"clear\" style=\"margin-top: 1.5rem;width: 100%\">\n" +
+    "                <div class=\"clear\" style=\"font-size: 1.2rem; width: 100%\">\n" +
+    "                    <div class=\"left lan\" bindonce=\"data.thisNeed.title\" bo-text=\"data.thisNeed.title\"></div>\n" +
+    "                    <div class=\"left hui\" style=\"margin-top:3px;margin-left:3px;font-size: 0.8rem\">\n" +
+    "                        <span class=\"clear\"\n" +
+    "                              bindonce=\"data.thisNeed.date\"\n" +
+    "                              bo-text=\"data.thisNeed.date\"></span>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"clear\"></div>\n" +
+    "                    <div class=\"clear\" style=\"margin-top:10px\">\n" +
+    "                    <span class=\"left\" style=\"color: red;font-size: 1.2rem;margin-left: 0px\"\n" +
+    "                          bindonce=\"data.thisNeed.priceStr\"\n" +
+    "                          bo-text=\"data.thisNeed.priceStr\"></span>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"clear\" style=\"margin-top:10px;font-size: 0.8rem\">\n" +
+    "                        <span class=\"left\">地区要求:</span>\n" +
+    "                        <span class=\"left\"\n" +
+    "                              bindonce=\"data.thisNeed.city\"\n" +
+    "                              bo-text=\"data.thisNeed.city\"></span>\n" +
+    "                        <span ng-if=\"userShow\" class='fa fa-map-marker right' style=''></span>\n" +
+    "                        <span ng-if=\"userShow\" class='right' style='' bindonce=\"data.userData\"\n" +
+    "                              bo-text='data.userData.far + \"km\"'></span>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"clear\"\n" +
+    "                         style=\"font-size: 1rem;margin-top: 2rem;color: #777;width: 100%\"\n" +
+    "                         bindonce=\"data.thisNeed.content\"\n" +
+    "                         bo-text=\"data.thisNeed.content\"></div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <!--公共展示选单和接单情况-->\n" +
+    "        <div class=\"clear\" ng-show=\"userType == 1\">\n" +
+    "            <div class=\"clear\" ng-show=\"(data.thisNeed.state != 1) && (data.thisNeed.state !=2)\">\n" +
+    "                <!--已经选好-->\n" +
+    "                <div class=\"clear\" style=\"margin-top: 2rem\" ng-show=\"data.thisNeed.state == 3\">\n" +
+    "                    <div class=\"clear line\" style=\"font-size: 1rem; width: 100%;\">\n" +
+    "                        <div class=\"clear\"></div>\n" +
+    "                        <div class=\"clear lan\" style=\"margin-top: 1.5rem\">已选单</div>\n" +
+    "                        <div class=\"clear\">\n" +
+    "                            <div class=\"clear item\"\n" +
+    "                                 style=\"margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px\"\n" +
+    "                                 bindonce=\"data.thisNeed.bidUser\"\n" +
+    "                                 bo-attr\n" +
+    "                                 bo-attr-uid=\"data.thisNeed.bidUser.uid\"\n" +
+    "                            >\n" +
+    "                                <div class=\"left\">\n" +
+    "                                    <!--头像-->\n" +
+    "                                    <div class=\"left\"\n" +
+    "                                         style=\"width: 30px;height: 30px;overflow: hidden;\">\n" +
+    "                                        <img bindonce=\"data.thisNeed.bidUser.bindUid.headerImg\"\n" +
+    "                                             bo-src=\"data.thisNeed.bidUser.bindUid.headerImg\" alt=\"\"\n" +
+    "                                             style=\"width: 30px;height: auto\">\n" +
+    "                                    </div>\n" +
+    "                                    <!--姓名显示-->\n" +
+    "                                    <div class=\"left lan\"\n" +
+    "                                         style=\"font-size: 14px;margin-left: 3px;line-height: 14px\">\n" +
+    "                                        <span class=\"clear\" bindonce=\"data.thisNeed.bidUser.bindUid.name\"\n" +
+    "                                              bo-text=\"data.thisNeed.bidUser.bindUid.name\"></span>\n" +
+    "                                        <!--城市显示-->\n" +
+    "                                        <span class=\"left hui\"\n" +
+    "                                              style=\"font-size:12px;\" bindonce=\"data.thisNeed.bidUser.bindUid.city\"\n" +
+    "                                              bo-text=\"data.thisNeed.bidUser.bindUid.city\">\n" +
+    "\n" +
+    "                                    </span>\n" +
+    "                                        <!--性别-->\n" +
+    "                                        <span class=\"left hui\"\n" +
+    "                                              style=\"font-size: 12px;\" bindonce=\"data.thisNeed.bidUser.bindUid.sex\"\n" +
+    "                                              bo-text=\"'&nbsp;'+data.thisNeed.bidUser.bindUid.sex\">\n" +
+    "                                    </span>\n" +
+    "                                        <!--年龄-->\n" +
+    "                                        <span class=\"left hui\"\n" +
+    "                                              style=\"font-size: 12px;\" bindonce=\"data.thisNeed.bidUser.bindUid.age\"\n" +
+    "                                              bo-text=\"'&nbsp;'+data.thisNeed.bidUser.bindUid.age\">\n" +
+    "                                    </span>\n" +
+    "                                    </div>\n" +
+    "\n" +
+    "                                </div>\n" +
+    "\n" +
+    "                                <div class=\"right mui-btn\"\n" +
+    "                                     style=\"margin-left: 1rem;color: red;border-color: #fff\"\n" +
+    "                                >\n" +
+    "                                    <i class=\"fa fa-1x fa-check\"></i>\n" +
+    "                                </div>\n" +
+    "\n" +
+    "                            </div>\n" +
+    "                            <div class=\"clear\"></div>\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--有人接单 没有选好-->\n" +
+    "            <div class=\"clear\" ng-show=\"data.thisNeed.state !=1\">\n" +
+    "                <div class=\"clear \" style=\"font-size: 1rem; width: 100%;\">\n" +
+    "                    <div class=\"clear\"></div>\n" +
+    "                    <div class=\"clear lan\" style=\"margin-top: 1.5rem\">接单列表:</div>\n" +
+    "                    <div class=\"clear\">\n" +
+    "                        <div class=\"clear item\" style=\"margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px\"\n" +
+    "                             bindonce=\"data.thisNeed.bidUserArr\"\n" +
+    "                             ng-repeat=\"vo in data.thisNeed.bidUserArr\"\n" +
+    "                             bo-attr\n" +
+    "                             bo-attr-uid=\"vo.uid\"\n" +
+    "                        >\n" +
+    "                            <div class=\"left\">\n" +
+    "                                <!--头像-->\n" +
+    "                                <div class=\"left\"\n" +
+    "                                     style=\"width: 30px;height: 30px;overflow: hidden;\">\n" +
+    "                                    <img bindonce=\"vo.bindUid.headerImg\"\n" +
+    "                                         bo-src=\"vo.bindUid.headerImg\" alt=\"\"\n" +
+    "                                         style=\"width: 30px;height: auto\">\n" +
+    "                                </div>\n" +
+    "                                <!--姓名显示-->\n" +
+    "                                <div class=\"left lan\" style=\"font-size: 14px;margin-left: 3px;line-height: 14px\">\n" +
+    "                                    <div class=\"clear\">\n" +
+    "                                        <div class=\"left\" bindonce=\"vo.bindUid.name\"\n" +
+    "                                             bo-text=\"vo.bindUid.name\"></div>\n" +
+    "\n" +
+    "                                        <!--需求方主动接单-->\n" +
+    "                                        <div class=\"left\" style=\"font-size: 12px;color: red;margin-left: 3px\"\n" +
+    "                                             bindonce=\"vo.bindUidType\"\n" +
+    "                                             bo-if=\"vo.bindUidType==2\"\n" +
+    "                                        >\n" +
+    "                                    <span bindonce=\"data.userData\" bo-if=\"data.userData.name\"\n" +
+    "                                          bo-text=\"'('+data.userData.name + ' 主动下单)'\"></span>\n" +
+    "                                            <span bindonce=\"data.userData\" bo-if=\"!data.userData.name\"\n" +
+    "                                                  bo-text=\"'('+data.userData.mt + ' 主动下单)'\"></span>\n" +
+    "                                        </div>\n" +
+    "                                    </div>\n" +
+    "                                    <!--城市显示-->\n" +
+    "                                    <span class=\"left hui\"\n" +
+    "                                          style=\"font-size:12px;\" bindonce=\"vo.bindUid.city\"\n" +
+    "                                          bo-text=\"vo.bindUid.city\">\n" +
+    "\n" +
+    "                                    </span>\n" +
+    "                                    <!--性别-->\n" +
+    "                                    <span class=\"left hui\"\n" +
+    "                                          style=\"font-size: 12px;\" bindonce=\"vo.bindUid.sex\"\n" +
+    "                                          bo-text=\"'&nbsp;'+vo.bindUid.sex\">\n" +
+    "                                    </span>\n" +
+    "                                    <!--年龄-->\n" +
+    "                                    <span class=\"left hui\"\n" +
+    "                                          style=\"font-size: 12px;\" bindonce=\"vo.bindUid.age\"\n" +
+    "                                          bo-text=\"'&nbsp;'+vo.bindUid.age\">\n" +
+    "                                    </span>\n" +
+    "\n" +
+    "                                </div>\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <!--未成交 接单方显示 -->\n" +
+    "        <div class=\"clear\" ng-show=\"userType == 2 && data.thisNeed.state == 2\">\n" +
+    "            <!--有人接单 没有选好-->\n" +
+    "            <div class=\"clear\" ng-show=\"data.thisNeed.state !=1\">\n" +
+    "                <div class=\"clear \" style=\"font-size: 1rem; width: 100%;\">\n" +
+    "                    <div class=\"clear\"></div>\n" +
+    "                    <div class=\"clear lan\" style=\"margin-top: 1.5rem\">接单列表:</div>\n" +
+    "                    <div class=\"clear\">\n" +
+    "                        <div class=\"clear item\" style=\"margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px\"\n" +
+    "                             bindonce=\"data.thisNeed.bidUserArr\"\n" +
+    "                             ng-repeat=\"vo in data.thisNeed.bidUserArr\"\n" +
+    "                             bo-attr\n" +
+    "                             bo-attr-uid=\"vo.uid\"\n" +
+    "                        >\n" +
+    "                            <div class=\"left\">\n" +
+    "                                <!--头像-->\n" +
+    "                                <div class=\"left\"\n" +
+    "                                     style=\"width: 30px;height: 30px;overflow: hidden;\">\n" +
+    "                                    <img bindonce=\"vo.bindUid.headerImg\"\n" +
+    "                                         bo-src=\"vo.bindUid.headerImg\" alt=\"\"\n" +
+    "                                         style=\"width: 30px;height: auto\">\n" +
+    "                                </div>\n" +
+    "                                <!--姓名显示-->\n" +
+    "                                <div class=\"left lan\" style=\"font-size: 14px;margin-left: 3px;line-height: 14px\">\n" +
+    "                                    <div class=\"clear\">\n" +
+    "                                        <div class=\"left\" bindonce=\"vo.bindUid.name\"\n" +
+    "                                             bo-text=\"vo.bindUid.name\"></div>\n" +
+    "\n" +
+    "                                        <!--需求方主动接单-->\n" +
+    "                                        <div class=\"left\" style=\"font-size: 12px;color: red;margin-left: 5px\"\n" +
+    "                                             bindonce=\"vo.bindUidType\"\n" +
+    "                                             bo-if=\"vo.bindUidType==2\"\n" +
+    "                                        >\n" +
+    "                                    <span bindonce=\"data.userData\" bo-if=\"data.userData.name\"\n" +
+    "                                          bo-text=\"'('+data.userData.name + ' 主动下单)'\"></span>\n" +
+    "                                            <span bindonce=\"data.userData\" bo-if=\"!data.userData.name\"\n" +
+    "                                                  bo-text=\"'('+data.userData.mt + ' 主动下单)'\"></span>\n" +
+    "                                        </div>\n" +
+    "                                    </div>\n" +
+    "                                    <!--城市显示-->\n" +
+    "                                    <span class=\"left hui\"\n" +
+    "                                          style=\"font-size:12px;\" bindonce=\"vo.bindUid.city\"\n" +
+    "                                          bo-text=\"vo.bindUid.city\">\n" +
+    "\n" +
+    "                                    </span>\n" +
+    "                                    <!--性别-->\n" +
+    "                                    <span class=\"left hui\"\n" +
+    "                                          style=\"font-size: 12px;\" bindonce=\"vo.bindUid.sex\"\n" +
+    "                                          bo-text=\"'&nbsp;'+vo.bindUid.sex\">\n" +
+    "                                    </span>\n" +
+    "                                    <!--年龄-->\n" +
+    "                                    <span class=\"left hui\"\n" +
+    "                                          style=\"font-size: 12px;\" bindonce=\"vo.bindUid.age\"\n" +
+    "                                          bo-text=\"'&nbsp;'+vo.bindUid.age\">\n" +
+    "                                    </span>\n" +
+    "\n" +
+    "                                </div>\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <!--如果不是需求方 或接单放 就显示其他需求-->\n" +
+    "        <div class=\"clear\" ng-if=\"userType ==1\">\n" +
+    "            <!--其他需求-->\n" +
+    "            <div class=\"\" style=\"margin-top: 2.5rem\"></div>\n" +
+    "            <div class=\"clear\"></div>\n" +
+    "            <div class=\"clear\" style=\"margin-top: 1.5rem;width: 100%\" ng-if=\"data.needList[0]\">\n" +
+    "                <div class=\"clear\" style=\"font-size: 0.8rem; width: 100%\">\n" +
+    "                    <span class=\"clear lan\">更多需求:</span>\n" +
+    "                </div>\n" +
+    "                <div class=\"clear mui-btn\"\n" +
+    "                     style=\"font-size: 0.8rem; width: 100%;text-align: left;border-color: #e9e9e9;margin-top: 0.8rem;color: #777\"\n" +
+    "                     bindonce=\"data.needList\"\n" +
+    "                     bo-id=\"'needlist_' + vo._id\"\n" +
+    "                     bo-attr\n" +
+    "                     bo-attr-subid=\"vo._id\"\n" +
+    "                     ng-repeat=\"vo in data.needList\"\n" +
+    "                     bo-html=\"vo.title +'&nbsp;&nbsp;&nbsp;<i>' + vo.priceStr + '</i>'\">\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <!--等技能方接单 技能方显示-->\n" +
+    "        <div class=\"clear\" style=\"margin-top: 1rem;width: 100%\" ng-if=\"bindUserShow\">\n" +
+    "            <div class=\"clear\" style=\"text-align: center;width: 100%\">\n" +
+    "                <div style=\"color: #30a080\">{{bindUserShowName}} 等您接单</div>\n" +
+    "            </div>\n" +
+    "            <div id=\"bindJieDan\" class=\"mui-btn clear\"\n" +
+    "                 style=\"width: 100%;margin-top: 1rem; background-color: #30a080;color: #fff;font-size: 1rem\"\n" +
+    "                 binduid=\"{{bindUserShowData.bindUid}}\"\n" +
+    "                 orderuid=\"{{bindUserShowData.orderUid}}\"\n" +
+    "                 orderid=\"{{bindUserShowData.orderId}}\"\n" +
+    "            >接 单\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <!--已成交 技能方(当前uid接的单)显示评价-->\n" +
+    "        <div class=\"clear\" style=\"margin-top: 2rem\" ng-show=\"(data.thisNeed.state == 3)  && userType == 2 \">\n" +
+    "            <div class=\"clear line\" style=\"font-size: 1rem; width: 100%;\">\n" +
+    "\n" +
+    "                <div class=\"clear lan\" ng-if=\"data.thisNeed.bindUserArr\"\n" +
+    "                     style=\"margin-top: 1.5rem\">接单列表\n" +
+    "                </div>\n" +
+    "                <div class=\"clear\">\n" +
+    "                    <div class=\"clear item\" style=\"margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px\"\n" +
+    "                         bindonce=\"data.thisNeed.bidUserArr\"\n" +
+    "                         ng-repeat=\"vo in data.thisNeed.bidUserArr\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-uid=\"vo.uid\"\n" +
+    "                    >\n" +
+    "                        <div class=\"left\">\n" +
+    "                            <!--头像-->\n" +
+    "                            <div class=\"left\"\n" +
+    "                                 style=\"width: 30px;height: 30px;border-radius:30px;overflow: hidden;\">\n" +
+    "                                <img bindonce=\"vo.bindUid.headerImg\"\n" +
+    "                                     bo-src=\"vo.bindUid.headerImg\" alt=\"\"\n" +
+    "                                     style=\"width: 30px;height: auto\">\n" +
+    "                            </div>\n" +
+    "                            <!--姓名显示-->\n" +
+    "                            <div class=\"left \" style=\"font-size: 12px;margin-left: 3px;line-height: 14px;color: #777\">\n" +
+    "                                        <span class=\"clear\" bindonce=\"vo.bindUid.name\"\n" +
+    "                                              bo-text=\"vo.bindUid.name\"></span>\n" +
+    "                                <!--城市显示-->\n" +
+    "                                <span class=\"left hui\"\n" +
+    "                                      style=\"font-size:12px;\" bindonce=\"vo.bindUid.city\"\n" +
+    "                                      bo-text=\"vo.bindUid.city\">\n" +
+    "\n" +
+    "                                    </span>\n" +
+    "                                <!--性别-->\n" +
+    "                                <span class=\"left hui\"\n" +
+    "                                      style=\"font-size: 12px;\" bindonce=\"vo.bindUid.sex\"\n" +
+    "                                      bo-text=\"'&nbsp;'+vo.bindUid.sex\">\n" +
+    "                                    </span>\n" +
+    "                                <!--年龄-->\n" +
+    "                                <span class=\"left hui\"\n" +
+    "                                      style=\"font-size: 12px;\" bindonce=\"vo.bindUid.age\"\n" +
+    "                                      bo-text=\"'&nbsp;'+vo.bindUid.age\">\n" +
+    "                                    </span>\n" +
+    "                                <!--需求方主动接单-->\n" +
+    "                                <div class=\"left\" style=\"font-size: 12px;color: red;margin-left: 5px\"\n" +
+    "                                     bindonce=\"vo.bindUidType\"\n" +
+    "                                     bo-if=\"vo.bindUidType==2\"\n" +
+    "                                >\n" +
+    "                                    <span bindonce=\"data.userData\" bo-if=\"data.userData.name\"\n" +
+    "                                          bo-text=\"data.userData.name + '主动下单'\"></span>\n" +
+    "                                    <span bindonce=\"data.userData\" bo-if=\"!data.userData.name\"\n" +
+    "                                          bo-text=\"data.userData.mt + '主动下单'\"></span>\n" +
+    "                                </div>\n" +
+    "                            </div>\n" +
+    "\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "\n" +
+    "\n" +
+    "                <div class=\"clear\"></div>\n" +
+    "                <div class=\"clear lan\" style=\"margin-top: 1.5rem\">已选单</div>\n" +
+    "                <div class=\"clear\">\n" +
+    "                    <div class=\"clear item\"\n" +
+    "                         style=\"margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px\"\n" +
+    "                         bindonce=\"data.thisNeed.bidUser\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-uid=\"data.thisNeed.bidUser.uid\"\n" +
+    "                    >\n" +
+    "                        <div class=\"left\">\n" +
+    "                            <!--头像-->\n" +
+    "                            <div class=\"left\"\n" +
+    "                                 style=\"width: 30px;height: 30px;overflow: hidden;border-radius:30px\">\n" +
+    "                                <img bindonce=\"data.thisNeed.bidUser.bindUid.headerImg\"\n" +
+    "                                     bo-src=\"data.thisNeed.bidUser.bindUid.headerImg\" alt=\"\"\n" +
+    "                                     style=\"width: 30px;height: auto;\">\n" +
+    "                            </div>\n" +
+    "                            <!--姓名显示-->\n" +
+    "                            <div class=\"left lan\"\n" +
+    "                                 style=\"font-size: 14px;margin-left: 3px;line-height: 14px\">\n" +
+    "                                        <span class=\"clear\" bindonce=\"data.thisNeed.bidUser.bindUid.name\"\n" +
+    "                                              bo-text=\"data.thisNeed.bidUser.bindUid.name\"></span>\n" +
+    "                                <!--城市显示-->\n" +
+    "                                <span class=\"left hui\"\n" +
+    "                                      style=\"font-size:12px;\" bindonce=\"data.thisNeed.bidUser.bindUid.city\"\n" +
+    "                                      bo-text=\"data.thisNeed.bidUser.bindUid.city\">\n" +
+    "\n" +
+    "                                    </span>\n" +
+    "                                <!--性别-->\n" +
+    "                                <span class=\"left hui\"\n" +
+    "                                      style=\"font-size: 12px;\" bindonce=\"data.thisNeed.bidUser.bindUid.sex\"\n" +
+    "                                      bo-text=\"'&nbsp;'+data.thisNeed.bidUser.bindUid.sex\">\n" +
+    "                                    </span>\n" +
+    "                                <!--年龄-->\n" +
+    "                                <span class=\"left hui\"\n" +
+    "                                      style=\"font-size: 12px;\" bindonce=\"data.thisNeed.bidUser.bindUid.age\"\n" +
+    "                                      bo-text=\"'&nbsp;'+data.thisNeed.bidUser.bindUid.age\">\n" +
+    "                                    </span>\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "\n" +
+    "                        <div class=\"right mui-btn\"\n" +
+    "                             style=\"margin-left: 1rem;color: red;border-color: #fff\"\n" +
+    "                        >\n" +
+    "                            <i class=\"fa fa-1x fa-check\"></i>\n" +
+    "                        </div>\n" +
+    "\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <div class=\"clear\"></div>\n" +
+    "\n" +
+    "                <!--评价 双方已评价-->\n" +
+    "                <div class=\"clear\" style=\"margin-top: 5px\"\n" +
+    "                     bindonce=\"data.pingJia\" ng-if=\"data.thisNeed.pingJiaState == 3\"\n" +
+    "                     ng-repeat=\"voPj in data.pingJia\">\n" +
+    "                    <div class=\"left\">\n" +
+    "                        <img bindonce=\"voPj.uid.headerImg\" bo-if=\"voPj.uid.headerImg\"\n" +
+    "                             bo-src=\"voPj.uid.headerImg\"\n" +
+    "                             style=\"width: 20px;height: 20px;border-radius:20px;\"\n" +
+    "                             alt=\"\">\n" +
+    "                    </div>\n" +
+    "                    <div class=\"left\" style=\"font-size: 0.8rem;margin-left: 3px\" bindonce=\"voPj\"\n" +
+    "                         bo-if=\"voPj.uid.name\"\n" +
+    "                         bo-text=\"voPj.uid.name\"></div>\n" +
+    "                    <div class=\"left\" style=\"font-size: 0.8rem;margin-left: 3px\" bindonce=\"voPj\"\n" +
+    "                         bo-if=\"!voPj.uid.name\"\n" +
+    "                         bo-text=\"voPj.uid.mt\"></div>\n" +
+    "                    <div class=\"left\" style=\"font-size: 0.8rem;margin-left: 10px;\"\n" +
+    "                         bindonce=\"voPj.content\" bo-text=\"voPj.content\"></div>\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <!--评价 需求方已评价-->\n" +
+    "                <div class=\"clear\" style=\"margin-top: 25px;width: 100%;text-align: center;font-size: 0.8rem;color: red\"\n" +
+    "                     ng-if=\"data.thisNeed.pingJiaState == 1\">\n" +
+    "                    需求方已评价,双方互评之后显示\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <!--评价  技能方已评价-->\n" +
+    "                <div class=\"clear\" style=\"margin-top: 25px;width: 100%;text-align: center;font-size: 0.8rem;color: red\"\n" +
+    "                     ng-if=\"data.thisNeed.pingJiaState == 2\">\n" +
+    "                    技能方已评价,双方互评之后显示\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <div class=\"clear\" style=\"margin-top: 1rem\">\n" +
+    "                        <textarea ng-if=\"!data.pingJiaTrue\" name=\"\"\n" +
+    "                                  style=\"width: 100%;height: 100px;\"\n" +
+    "                                  placeholder=\"给个评价吧...\" id=\"pingJiaNeed\"></textarea>\n" +
+    "                </div>\n" +
+    "                <div class=\"clear\" ng-if=\"!data.pingJiaTrue\" style=\"margin-top: 0rem;width: 100%\">\n" +
+    "                    <div class=\"mui-btn\" id=\"givePingJiaBtnNeed\"\n" +
+    "                         style=\"width: 100%;background-color: #30a080;color: #fff\">提&nbsp;交\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <!--已成交,并删除,对技能方(被选单,和未被选单都显示接单列表 与 被选技能方) -->\n" +
+    "\n" +
+    "        <div class=\"clear\" style=\"margin-top: 2rem\" ng-show=\"(data.thisNeed.state == 5)  && userType == 2 \">\n" +
+    "            <div class=\"clear line\" style=\"font-size: 1rem; width: 100%;\">\n" +
+    "\n" +
+    "                <div class=\"clear lan\" ng-if=\"data.thisNeed.bindUserArr\" style=\"margin-top: 1.5rem\">接单列表</div>\n" +
+    "                <div class=\"clear\">\n" +
+    "                    <div class=\"clear item\" style=\"margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px\"\n" +
+    "                         bindonce=\"data.thisNeed.bidUserArr\"\n" +
+    "                         ng-repeat=\"vo in data.thisNeed.bidUserArr\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-uid=\"vo.uid\"\n" +
+    "                    >\n" +
+    "                        <div class=\"left\">\n" +
+    "                            <!--头像-->\n" +
+    "                            <div class=\"left\"\n" +
+    "                                 style=\"width: 30px;height: 30px;border-radius:30px;overflow: hidden;\">\n" +
+    "                                <img bindonce=\"vo.bindUid.headerImg\"\n" +
+    "                                     bo-src=\"vo.bindUid.headerImg\" alt=\"\"\n" +
+    "                                     style=\"width: 30px;height: auto\">\n" +
+    "                            </div>\n" +
+    "                            <!--姓名显示-->\n" +
+    "                            <div class=\"left \" style=\"font-size: 12px;margin-left: 3px;line-height: 14px;color: #777\">\n" +
+    "                                        <span class=\"clear\" bindonce=\"vo.bindUid.name\"\n" +
+    "                                              bo-text=\"vo.bindUid.name\"></span>\n" +
+    "                                <!--城市显示-->\n" +
+    "                                <span class=\"left hui\"\n" +
+    "                                      style=\"font-size:12px;\" bindonce=\"vo.bindUid.city\"\n" +
+    "                                      bo-text=\"vo.bindUid.city\">\n" +
+    "\n" +
+    "                                    </span>\n" +
+    "                                <!--性别-->\n" +
+    "                                <span class=\"left hui\"\n" +
+    "                                      style=\"font-size: 12px;\" bindonce=\"vo.bindUid.sex\"\n" +
+    "                                      bo-text=\"'&nbsp;'+vo.bindUid.sex\">\n" +
+    "                                    </span>\n" +
+    "                                <!--年龄-->\n" +
+    "                                <span class=\"left hui\"\n" +
+    "                                      style=\"font-size: 12px;\" bindonce=\"vo.bindUid.age\"\n" +
+    "                                      bo-text=\"'&nbsp;'+vo.bindUid.age\">\n" +
+    "                                    </span>\n" +
+    "                                <!--需求方主动接单-->\n" +
+    "                                <div class=\"left\" style=\"font-size: 12px;color: red;margin-left: 5px\"\n" +
+    "                                     bindonce=\"vo.bindUidType\"\n" +
+    "                                     bo-if=\"vo.bindUidType==2\"\n" +
+    "                                >\n" +
+    "                                    <span bindonce=\"data.userData\" bo-if=\"data.userData.name\"\n" +
+    "                                          bo-text=\"data.userData.name + '主动下单'\"></span>\n" +
+    "                                    <span bindonce=\"data.userData\" bo-if=\"!data.userData.name\"\n" +
+    "                                          bo-text=\"data.userData.mt + '主动下单'\"></span>\n" +
+    "                                </div>\n" +
+    "                            </div>\n" +
+    "\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "\n" +
+    "\n" +
+    "                <div class=\"clear\"></div>\n" +
+    "                <div class=\"clear lan\" style=\"margin-top: 1.5rem\">已选单</div>\n" +
+    "                <div class=\"clear\">\n" +
+    "                    <div class=\"clear item\"\n" +
+    "                         style=\"margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px\"\n" +
+    "                         bindonce=\"data.thisNeed.bidUser\"\n" +
+    "                         bo-attr\n" +
+    "                         bo-attr-uid=\"data.thisNeed.bidUser.uid\"\n" +
+    "                    >\n" +
+    "                        <div class=\"left\">\n" +
+    "                            <!--头像-->\n" +
+    "                            <div class=\"left\"\n" +
+    "                                 style=\"width: 30px;height: 30px;overflow: hidden;border-radius:30px\">\n" +
+    "                                <img bindonce=\"data.thisNeed.bidUser.bindUid.headerImg\"\n" +
+    "                                     bo-src=\"data.thisNeed.bidUser.bindUid.headerImg\" alt=\"\"\n" +
+    "                                     style=\"width: 30px;height: auto;\">\n" +
+    "                            </div>\n" +
+    "                            <!--姓名显示-->\n" +
+    "                            <div class=\"left lan\"\n" +
+    "                                 style=\"font-size: 14px;margin-left: 3px;line-height: 14px\">\n" +
+    "                                        <span class=\"clear\" bindonce=\"data.thisNeed.bidUser.bindUid.name\"\n" +
+    "                                              bo-text=\"data.thisNeed.bidUser.bindUid.name\"></span>\n" +
+    "                                <!--城市显示-->\n" +
+    "                                <span class=\"left hui\"\n" +
+    "                                      style=\"font-size:12px;\" bindonce=\"data.thisNeed.bidUser.bindUid.city\"\n" +
+    "                                      bo-text=\"data.thisNeed.bidUser.bindUid.city\">\n" +
+    "\n" +
+    "                                    </span>\n" +
+    "                                <!--性别-->\n" +
+    "                                <span class=\"left hui\"\n" +
+    "                                      style=\"font-size: 12px;\" bindonce=\"data.thisNeed.bidUser.bindUid.sex\"\n" +
+    "                                      bo-text=\"'&nbsp;'+data.thisNeed.bidUser.bindUid.sex\">\n" +
+    "                                    </span>\n" +
+    "                                <!--年龄-->\n" +
+    "                                <span class=\"left hui\"\n" +
+    "                                      style=\"font-size: 12px;\" bindonce=\"data.thisNeed.bidUser.bindUid.age\"\n" +
+    "                                      bo-text=\"'&nbsp;'+data.thisNeed.bidUser.bindUid.age\">\n" +
+    "                                    </span>\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "\n" +
+    "                        <div class=\"right mui-btn\"\n" +
+    "                             style=\"margin-left: 1rem;color: red;border-color: #fff\"\n" +
+    "                        >\n" +
+    "                            <i class=\"fa fa-1x fa-check\"></i>\n" +
+    "                        </div>\n" +
+    "\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <div class=\"clear\"></div>\n" +
+    "\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "\n" +
+    "        <!--选单 需求方显示-->\n" +
+    "        <div class=\"clear\" ng-show=\"userType == 3\">\n" +
+    "            <div class=\"clear\" ng-show=\"(data.thisNeed.state != 1) && (data.thisNeed.state !=2)\">\n" +
+    "                <!--已经选好-->\n" +
+    "                <div class=\"clear\" style=\"margin-top: 2rem\" ng-show=\"data.thisNeed.state == 3\">\n" +
+    "                    <div class=\"clear line\" style=\"font-size: 1rem; width: 100%;\">\n" +
+    "                        <div class=\"clear\"></div>\n" +
+    "                        <div class=\"clear lan\" style=\"margin-top: 1.5rem\">已选单</div>\n" +
+    "                        <div class=\"clear\">\n" +
+    "                            <div class=\"clear item\"\n" +
+    "                                 style=\"margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px\"\n" +
+    "                                 bindonce=\"data.thisNeed.bidUser\"\n" +
+    "                                 bo-attr\n" +
+    "                                 bo-attr-uid=\"data.thisNeed.bidUser.uid\"\n" +
+    "                            >\n" +
+    "                                <div class=\"left\">\n" +
+    "                                    <!--头像-->\n" +
+    "                                    <div class=\"left\"\n" +
+    "                                         style=\"width: 30px;height: 30px;overflow: hidden;\">\n" +
+    "                                        <img bindonce=\"data.thisNeed.bidUser.bindUid.headerImg\"\n" +
+    "                                             bo-src=\"data.thisNeed.bidUser.bindUid.headerImg\" alt=\"\"\n" +
+    "                                             style=\"width: 30px;height: auto\">\n" +
+    "                                    </div>\n" +
+    "                                    <!--姓名显示-->\n" +
+    "                                    <div class=\"left lan\"\n" +
+    "                                         style=\"font-size: 14px;margin-left: 3px;line-height: 14px\">\n" +
+    "                                        <span class=\"clear\" bindonce=\"data.thisNeed.bidUser.bindUid.name\"\n" +
+    "                                              bo-text=\"data.thisNeed.bidUser.bindUid.name\"></span>\n" +
+    "                                        <!--城市显示-->\n" +
+    "                                        <span class=\"left hui\"\n" +
+    "                                              style=\"font-size:12px;\" bindonce=\"data.thisNeed.bidUser.bindUid.city\"\n" +
+    "                                              bo-text=\"data.thisNeed.bidUser.bindUid.city\">\n" +
+    "\n" +
+    "                                    </span>\n" +
+    "                                        <!--性别-->\n" +
+    "                                        <span class=\"left hui\"\n" +
+    "                                              style=\"font-size: 12px;\" bindonce=\"data.thisNeed.bidUser.bindUid.sex\"\n" +
+    "                                              bo-text=\"'&nbsp;'+data.thisNeed.bidUser.bindUid.sex\">\n" +
+    "                                    </span>\n" +
+    "                                        <!--年龄-->\n" +
+    "                                        <span class=\"left hui\"\n" +
+    "                                              style=\"font-size: 12px;\" bindonce=\"data.thisNeed.bidUser.bindUid.age\"\n" +
+    "                                              bo-text=\"'&nbsp;'+data.thisNeed.bidUser.bindUid.age\">\n" +
+    "                                    </span>\n" +
+    "                                    </div>\n" +
+    "\n" +
+    "                                </div>\n" +
+    "                                <div class=\"left mui-btn \" style=\"margin-left: 1rem;border-color: #fff;color: #777\"\n" +
+    "                                     bindonce=\"data.thisNeed.bidUser.uid\" bo-attr\n" +
+    "                                     bo-attr-uid=\"data.thisNeed.bidUser.uid\"\n" +
+    "                                     bo-id=\"'telCallSelect_' + data.thisNeed.bidUser.uid\"\n" +
+    "                                     ng-show=\"data.thisNeed.bidUser.bindUid.telType == 'yunXun'\">\n" +
+    "                                    <i class=\"fa fa-phone fa-1x\"></i>\n" +
+    "                                </div>\n" +
+    "                                <div class=\"left mui-btn\" style=\"margin-left: 1rem;border-color: #fff;color: #777\"\n" +
+    "                                     bindonce=\"data.thisNeed.bidUser.uid\"\n" +
+    "                                     bo-attr\n" +
+    "                                     bo-attr-uid=\"data.thisNeed.bidUser.uid\"\n" +
+    "                                     bo-attr-headerimg=\"data.thisNeed.bidUser.bindUid.headerImg\"\n" +
+    "                                     bo-attr-gname=\"data.thisNeed.bidUser.bindUid.name\"\n" +
+    "                                     bo-id=\"'imCallSelect_' + data.thisNeed.bidUser.uid\">\n" +
+    "                                    <i class=\"fa fa-comments fa-1x\"></i>\n" +
+    "                                </div>\n" +
+    "\n" +
+    "                                <div class=\"right mui-btn\"\n" +
+    "                                     style=\"margin-left: 1rem;color: red;border-color: #fff\"\n" +
+    "                                >\n" +
+    "                                    <i class=\"fa fa-1x fa-check\"></i>\n" +
+    "                                </div>\n" +
+    "\n" +
+    "                            </div>\n" +
+    "\n" +
+    "                            <div class=\"clear\"></div>\n" +
+    "\n" +
+    "                            <!--评价 双方已评价-->\n" +
+    "                            <div class=\"clear\" style=\"margin-top: 5px\"\n" +
+    "                                 bindonce=\"data.pingJia\" ng-if=\"data.thisNeed.pingJiaState == 3\"\n" +
+    "                                 ng-repeat=\"voPj in data.pingJia\">\n" +
+    "                                <div class=\"left\">\n" +
+    "                                    <img bindonce=\"voPj.uid.headerImg\" bo-if=\"voPj.uid.headerImg\"\n" +
+    "                                         bo-src=\"voPj.uid.headerImg\"\n" +
+    "                                         style=\"width: 20px;height: 20px;border-radius:20px;\"\n" +
+    "                                         alt=\"\">\n" +
+    "                                </div>\n" +
+    "                                <div class=\"left\" style=\"font-size: 0.8rem;margin-left: 3px\" bindonce=\"voPj\"\n" +
+    "                                     bo-if=\"voPj.uid.name\"\n" +
+    "                                     bo-text=\"voPj.uid.name\"></div>\n" +
+    "                                <div class=\"left\" style=\"font-size: 0.8rem;margin-left: 3px\" bindonce=\"voPj\"\n" +
+    "                                     bo-if=\"!voPj.uid.name\"\n" +
+    "                                     bo-text=\"voPj.uid.mt\"></div>\n" +
+    "                                <div class=\"left\" style=\"font-size: 0.8rem;margin-left: 10px;\"\n" +
+    "                                     bindonce=\"voPj.content\" bo-text=\"voPj.content\"></div>\n" +
+    "                            </div>\n" +
+    "\n" +
+    "                            <!--评价 需求方已评价-->\n" +
+    "                            <div class=\"clear\"\n" +
+    "                                 style=\"margin-top: 25px;width: 100%;text-align: center;font-size: 0.8rem;color: red\"\n" +
+    "                                 ng-if=\"data.thisNeed.pingJiaState == 1\">\n" +
+    "                                需求方已评价,双方互评之后显示\n" +
+    "                            </div>\n" +
+    "\n" +
+    "                            <!--评价 技能方已评价-->\n" +
+    "                            <div class=\"clear\"\n" +
+    "                                 style=\"margin-top: 25px;width: 100%;text-align: center;font-size: 0.8rem;color: red\"\n" +
+    "                                 ng-if=\"data.thisNeed.pingJiaState == 2\">\n" +
+    "                                技能方已评价,双方互评之后显示\n" +
+    "                            </div>\n" +
+    "\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"clear\" style=\"margin-top: 2rem\">\n" +
+    "                        <textarea ng-if=\"!data.pingJiaTrue\" name=\"\"\n" +
+    "                                  style=\"width: 100%;height: 100px;\"\n" +
+    "                                  placeholder=\"给个评价吧...\" id=\"pingJiaKill\"></textarea>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"clear\" ng-if=\"!data.pingJiaTrue\" style=\"margin-top: 0rem;width: 100%\">\n" +
+    "                        <div class=\"mui-btn\" id=\"givePingJiaBtnKill\"\n" +
+    "                             style=\"width: 100%;background-color: #30a080;color: #fff\">提&nbsp;交\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <!--发起-->\n" +
+    "            <div ng-show=\"data.thisNeed.state == 1\">\n" +
+    "                <div class=\"clear lan mui-btn\" style=\"margin-top: 1.5rem\" id=\"noOrderGoHome\">\n" +
+    "                    {{seeOtherKillInfo}}\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "            <!--选单-->\n" +
+    "            <div class=\"clear\" ng-show=\"data.thisNeed.state == 2\">\n" +
+    "                <div class=\"clear \" style=\"font-size: 1rem; width: 100%;\">\n" +
+    "                    <div class=\"clear\"></div>\n" +
+    "                    <div class=\"clear lan\" style=\"margin-top: 1.5rem\">接单列表:</div>\n" +
+    "                    <div class=\"clear\">\n" +
+    "                        <div class=\"clear item\" style=\"margin-top: 0.8rem;border: 1px solid #f4f4f4;padding: 5px\"\n" +
+    "                             bindonce=\"data.thisNeed.bidUserArr\"\n" +
+    "                             ng-repeat=\"vo in data.thisNeed.bidUserArr\"\n" +
+    "                             bo-attr\n" +
+    "                             bo-attr-uid=\"vo.uid\"\n" +
+    "                        >\n" +
+    "                            <div class=\"left\">\n" +
+    "                                <!--头像-->\n" +
+    "                                <div class=\"left\"\n" +
+    "                                     style=\"width: 30px;height: 30px;border-radius:30px;overflow: hidden;\">\n" +
+    "                                    <img bindonce=\"vo.bindUid.headerImg\"\n" +
+    "                                         bo-src=\"vo.bindUid.headerImg\" alt=\"\"\n" +
+    "                                         style=\"width: 30px;height: auto\">\n" +
+    "                                </div>\n" +
+    "                                <!--姓名显示-->\n" +
+    "                                <div class=\"left lan\" style=\"font-size: 14px;margin-left: 3px;line-height: 14px\">\n" +
+    "                                        <span class=\"clear\" bindonce=\"vo.bindUid\"\n" +
+    "                                              bo-text=\"vo.bindUid.name || vo.bindUid.mt\"></span>\n" +
+    "                                    <!--城市显示-->\n" +
+    "                                    <span class=\"left hui\"\n" +
+    "                                          style=\"font-size:12px;\" bindonce=\"vo.bindUid.city\"\n" +
+    "                                          bo-text=\"vo.bindUid.city\">\n" +
+    "\n" +
+    "                                    </span>\n" +
+    "                                    <!--性别-->\n" +
+    "                                    <span class=\"left hui\"\n" +
+    "                                          style=\"font-size: 12px;\" bindonce=\"vo.bindUid.sex\"\n" +
+    "                                          bo-text=\"'&nbsp;'+vo.bindUid.sex\">\n" +
+    "                                    </span>\n" +
+    "                                    <!--年龄-->\n" +
+    "                                    <span class=\"left hui\"\n" +
+    "                                          style=\"font-size: 12px;\" bindonce=\"vo.bindUid.age\"\n" +
+    "                                          bo-text=\"'&nbsp;'+vo.bindUid.age\">\n" +
+    "                                    </span>\n" +
+    "                                </div>\n" +
+    "\n" +
+    "                            </div>\n" +
+    "                            <div class=\"left mui-btn \" style=\"margin-left: 1rem;border-color: #fff;color: #777\"\n" +
+    "                                 bindonce=\"vo.uid\" bo-attr bo-attr-uid=\"vo.uid\" bo-id=\"'telCall_' + vo.uid\"\n" +
+    "                                 ng-show=\"vo.isCanCallTel\">\n" +
+    "                                <i class=\"fa fa-phone fa-1x\"></i>\n" +
+    "                            </div>\n" +
+    "                            <div class=\"left mui-btn\" style=\"margin-left: 1rem;border-color: #fff;color: #777\"\n" +
+    "                                 bindonce=\"vo.uid\"\n" +
+    "                                 bo-attr\n" +
+    "                                 bo-attr-uid=\"vo.uid\"\n" +
+    "                                 bo-attr-headerimg=\"vo.headerImg\"\n" +
+    "                                 bo-attr-gname=\"vo.bindUid.name\"\n" +
+    "                                 bo-id=\"'imCall_' + vo.uid\">\n" +
+    "                                <i class=\"fa fa-comments fa-1x\"></i>\n" +
+    "                            </div>\n" +
+    "\n" +
+    "                            <div class=\"right mui-btn\" style=\"margin-left: 1rem;color: #dadada\"\n" +
+    "                                 bindonce=\"vo\"\n" +
+    "                                 bo-if=\"vo.bindUidType == 1\"\n" +
+    "                                 bo-attr bo-attr-gname=\"vo.bindUid.name\" bo-attr-uid=\"vo.uid\"\n" +
+    "                                 bo-id=\"'selectUser_' + vo.uid\">\n" +
+    "                                选\n" +
+    "                            </div>\n" +
+    "                            <div class=\"right \" style=\"margin-left: 1rem;color: red;font-size: 0.8rem\"\n" +
+    "                                 bindonce=\"vo\"\n" +
+    "                                 bo-if=\"vo.bindUidType == 2\"\n" +
+    "                                 bo-attr bo-attr-gname=\"vo.bindUid.name\" bo-attr-uid=\"vo.uid\"\n" +
+    "                                 bo-id=\"'waitJieDan_' + vo.uid\">\n" +
+    "                                <span style=\"color: #777\">等待</span><span bindonce=\"vo.bindUid\"\n" +
+    "                                                                         bo-text=\"vo.bindUid.name || vo.bindUid.mt\"></span><span\n" +
+    "                                    style=\"color: #777\">接单</span>\n" +
+    "                            </div>\n" +
+    "\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "\n"
   );
 
 
@@ -7801,7 +14710,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "<html>\n" +
     "<head>\n" +
     "    <meta charset=\"utf-8\"/>\n" +
-    "    <title>地盘 dipan.so</title>\n" +
+    "    <title>兼职鼠</title>\n" +
     "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no\">\n" +
     "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n" +
     "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\">\n" +
@@ -7825,6 +14734,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "            } else {\n" +
     "                //app 端\n" +
     "                document.write('<script src=\"../../dist/js/init.js\"><\\/script>');\n" +
+    "\n" +
     "            }\n" +
     "        })(window);\n" +
     "\n" +
@@ -7835,40 +14745,89 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "\n" +
     "<!--顶部-->\n" +
     "<div top></div>\n" +
-    "\n" +
+    "<!--搜素下拉-->\n" +
+    "<div lian-xiang></div>\n" +
     "<!--<div tab ng-if=\"showTab\"></div>-->\n" +
     "\n" +
     "<!--底部-->\n" +
-    "<nav class=\"mui-bar mui-bar-tab\" style=\"padding-top: 0px;\" ng-show=\"url != '/login'\">\n" +
+    "<nav class=\"mui-bar mui-bar-tab\" id=\"bottomNav\" style=\"padding-top: 0px;\"\n" +
+    "     ng-show=\"(url != '/login') && (url != '/killContent') && (url !='/myNews') && (url !='/orderFrom') && (url !='/orderFromContent')\">\n" +
     "    <div id=\"hrefHome\" url=\"home\" class=\"bottomBar mui-btn  icon-btn\">\n" +
-    "        <span class=\"mui-icon fa fa-home fa-navbar\"></span>\n" +
+    "        <span class=\"mui-icon fa fa-home fa-navbar qiaokeli\"></span>\n" +
     "    </div>\n" +
-    "    <div id=\"hrefMaster\" url=\"master\" class=\"bottomBar  mui-btn icon-btn\">\n" +
-    "        <span class=\"mui-icon fa fa-map-marker fa-navbar\"></span>\n" +
+    "\n" +
+    "\n" +
+    "    <div id=\"addFromBtn\" class=\"bottomBar  mui-btn icon-btn\">\n" +
+    "        <span class=\"mui-icon fa fa-navbar\"\n" +
+    "              style=\"color: #db5140;font-size: 38px;margin-top: -8px\" ng-class=\"push\"></span>\n" +
     "    </div>\n" +
+    "\n" +
+    "\n" +
     "    <div id=\"hrefMember\" url=\"memberIndex\" class=\"bottomBar mui-btn icon-btn\">\n" +
-    "        <span class=\"mui-icon fa fa-user fa-navbar \">\n" +
+    "        <span class=\"mui-icon fa fa-user fa-navbar qiaokeli\">\n" +
     "        </span>\n" +
-    "        <i class=\"fa fa-ellipsis-h fa-2x\" style=\"\n" +
+    "        <i ng-show=\"showNews\" class=\"fa fa-ellipsis-h fa-2x \" style=\"\n" +
     "width: 7px;\n" +
     "overflow-x: hidden;\n" +
-    "color: #bd0000;\n" +
+    "color: #db5140;\n" +
     "position: absolute;\n" +
     "bottom:13px;\n" +
     "margin-left: -2px;\n" +
     "\"></i>\n" +
     "    </div>\n" +
+    "\n" +
+    "\n" +
     "    <div id=\"beian\"><a href=\"http://www.miitbeian.gov.cn/\">津ICP备14005697号</a></div>\n" +
+    "    <div sub-from></div>\n" +
     "</nav>\n" +
     "\n" +
+    "<!--打电话和联系后期下单-->\n" +
+    "<nav class=\"mui-bar mui-bar-tab\" id=\"bottomNavCall\" style=\"padding-top: 0px;\"\n" +
+    "     ng-if=\"(url == '/killContent')\">\n" +
+    "    <div class=\"bottomBar  icon-btn\" style=\"width: 100%;text-align: center\" id=\"xiaDan\" ng-show=\"!xiaDan\">\n" +
+    "        <div class=\"mui-btn qiaokeli\"\n" +
+    "             style=\"width: 80%;background-color:#30a080;top:5px;font-size: 1rem;margin: 0 auto;color: #fff;\">下 单\n" +
+    "            <span style=\"font-size: 12px;margin-left: 1rem\">(免费 在线咨询 打电话)</span>\n" +
+    "        </div>\n" +
+    "\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"bottomBar mui-btn  icon-btn\" style=\"width: 50%\" id=\"callTel\" ng-show=\"xiaDan\">\n" +
+    "        <span class=\"mui-icon  qiaokeli\">打电话</span>\n" +
+    "    </div>\n" +
+    "    <div class=\"bottomBar mui-btn icon-btn\" style=\"width:50%\" id=\"callIm\" ng-show=\"xiaDan\">\n" +
+    "        <span class=\"mui-icon  qiaokeli\">聊一聊</span>\n" +
+    "    </div>\n" +
+    "</nav>\n" +
+    "\n" +
+    "<!--打电话和联系后期下单-->\n" +
+    "<nav class=\"mui-bar mui-bar-tab\" id=\"bottomNavCall\" style=\"padding-top: 0px;\"\n" +
+    "     ng-if=\"(url == '/orderFromContent')\">\n" +
+    "    <div class=\"bottomBar  icon-btn\" style=\"width: 100%;text-align: center\" id=\"xiaDan\" ng-show=\"!xiaDan\">\n" +
+    "        <div class=\"mui-btn qiaokeli\"\n" +
+    "             style=\"width: 80%;background-color:#30a080;top:5px;font-size: 1rem;margin: 0 auto;color: #fff;\">抢 单\n" +
+    "            <span style=\"font-size: 12px;margin-left: 1rem\">(免费 在线咨询 打电话)</span>\n" +
+    "        </div>\n" +
+    "\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"bottomBar mui-btn  icon-btn\" style=\"width: 50%\" id=\"callTel\" ng-show=\"xiaDan\">\n" +
+    "        <span class=\"mui-icon  qiaokeli\">打电话</span>\n" +
+    "    </div>\n" +
+    "    <div class=\"bottomBar mui-btn icon-btn\" style=\"width:50%\" id=\"callIm\" ng-show=\"xiaDan\">\n" +
+    "        <span class=\"mui-icon  qiaokeli\">聊一聊</span>\n" +
+    "    </div>\n" +
+    "</nav>\n" +
     "\n" +
     "<!--内容-->\n" +
     "<div class=\"mui-content\">\n" +
     "    <div loading></div>\n" +
     "    <div alert></div>\n" +
-    "    <div tab ng-if=\"showTab\"></div>\n" +
+    "    <div tab ng-show=\"showTab\"></div>\n" +
     "    <ui-view></ui-view>\n" +
     "</div>\n" +
+    "\n" +
+    "\n" +
     "<!--<div class=\"app\">-->\n" +
     "<!--&lt;!&ndash; topNavbars &ndash;&gt;-->\n" +
     "<!--<div top></div>-->\n" +
@@ -7900,7 +14859,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "<script>\n" +
     "    if (trueWeb()) {\n" +
     "        document.getElementById('beian').style.display = 'block';\n" +
-    "        document.write ('<script language=\"javascript\" type=\"text/javascript\" src=\"http://js.users.51.la/17648708.js\">\\<\\/script>');\n" +
+    "//        document.write('<script language=\"javascript\" type=\"text/javascript\" src=\"http://js.users.51.la/17648708.js\">\\<\\/script>');\n" +
     "    }\n" +
     "</script>\n" +
     "</body>\n" +
@@ -7980,15 +14939,14 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   );
 
 
-  $templateCache.put('route/block/area.html',
-    "<div area>\n" +
-    "\n" +
+  $templateCache.put('route/from/subkill.html',
+    "<div subkill>\n" +
     "</div>"
   );
 
 
-  $templateCache.put('route/block/search.html',
-    "<div search>\n" +
+  $templateCache.put('route/from/subneed.html',
+    "<div need>\n" +
     "</div>"
   );
 
@@ -8011,8 +14969,8 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
   );
 
 
-  $templateCache.put('route/member/addArticle.html',
-    "<div add></div>"
+  $templateCache.put('route/member/killContent.html',
+    "<div kill-content></div>"
   );
 
 
@@ -8028,12 +14986,37 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('route/member/memberInfo.html',
-    "memberINfo"
+    "<div edit-member-info=\"\"></div>"
   );
 
 
-  $templateCache.put('route/member/setting.html',
-    "<div setting></div>"
+  $templateCache.put('route/member/myKill.html',
+    "<div my-kill></div>"
+  );
+
+
+  $templateCache.put('route/member/myNeed.html',
+    "<div my-need></div>"
+  );
+
+
+  $templateCache.put('route/member/myNews.html',
+    "<div my-news></div>"
+  );
+
+
+  $templateCache.put('route/member/needContent.html',
+    "<div>needContent</div>"
+  );
+
+
+  $templateCache.put('route/member/orderFrom.html',
+    "<div order-from></div>"
+  );
+
+
+  $templateCache.put('route/member/orderFromContent.html',
+    "<div order-from-content></div>"
   );
 
 
@@ -8066,6 +15049,130 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    upData\n" +
     "</h1>\n" +
     "</body>\n" +
+    "</html>"
+  );
+
+
+  $templateCache.put('webIndex.html',
+    "<!DOCTYPE html>\n" +
+    "<html lang=\"en\">\n" +
+    "<head>\n" +
+    "    <meta charset=\"UTF-8\">\n" +
+    "    <title>兼职鼠</title>\n" +
+    "</head>\n" +
+    "<body style=\"text-align: center;padding-top: 200px\">\n" +
+    "<h1 style=\"margin: 0 auto\">\n" +
+    "    兼职鼠\n" +
+    "</h1>\n" +
+    "<h5 style=\"margin: 0 auto;color: #777\">\n" +
+    "    偷油从此简单 !\n" +
+    "</h5>\n" +
+    "<h6 style=\"margin: 0 auto;color: #777;font-size: 12px\">\n" +
+    "    <div id=\"beian\"><a href=\"http://www.miitbeian.gov.cn/\">津ICP备14005697号</a></div>\n" +
+    "</h6>\n" +
+    "</body>\n" +
+    "</html>"
+  );
+
+
+  $templateCache.put('wilddog.html',
+    "<!DOCTYPE html>\n" +
+    "<html lang=\"en\">\n" +
+    "<head>\n" +
+    "    <meta charset=\"UTF-8\">\n" +
+    "    <title>Title</title>\n" +
+    "    <script src=\"../../node_modules/leancloud-realtime/dist/realtime.browser.js\"></script>\n" +
+    "\n" +
+    "</head>\n" +
+    "<body>\n" +
+    "\n" +
+    "<button onclick=\"send()\">send</button>\n" +
+    "</body>\n" +
+    "<script>\n" +
+    "    // 应用 ID，用来识别应用\n" +
+    "    var APP_ID = 'jFnAKF8oIWzB7INn2GpNyPAt-gzGzoHsz';\n" +
+    "\n" +
+    "    // 应用 Key，用来校验权限（Web 端可以配置安全域名来保护数据安全）\n" +
+    "    var APP_KEY = 'OvRQhBzP5fW4Uer1gLfPbpzl';\n" +
+    "\n" +
+    "    var Realtime = AV.Realtime;\n" +
+    "    var TextMessage = AV.TextMessage;\n" +
+    "\n" +
+    "    var realtime = new Realtime({\n" +
+    "        appId: APP_ID,\n" +
+    "        region: 'cn', //美国节点为 \"us\"\n" +
+    "    });\n" +
+    "\n" +
+    "\n" +
+    "    function send() {\n" +
+    "        // Tom 用自己的名字作为 clientId，获取 IMClient 对象实例\n" +
+    "        realtime.createIMClient('Tom').then(function (tom) {\n" +
+    "            // 创建与Jerry之间的对话\n" +
+    "            return tom.createConversation({\n" +
+    "                members: ['Jerry2'],\n" +
+    "                name: 'Tom & Jerry',\n" +
+    "            });\n" +
+    "        }).then(function (conversation) {\n" +
+    "            // 发送消息\n" +
+    "            return conversation.send(new TextMessage('耗子，起床！' + count));\n" +
+    "        }).then(function (message) {\n" +
+    "            console.log('Tom & Jerry', '发送成功！');\n" +
+    "        }).catch(console.error);\n" +
+    "    }\n" +
+    "\n" +
+    "\n" +
+    "</script>\n" +
+    "</html>"
+  );
+
+
+  $templateCache.put('wilddog2.html',
+    "<!DOCTYPE html>\n" +
+    "<html lang=\"en\">\n" +
+    "<head>\n" +
+    "    <meta charset=\"UTF-8\">\n" +
+    "    <title>Title</title>\n" +
+    "    <script src=\"../../node_modules/leancloud-realtime/dist/realtime.browser.js\"></script>\n" +
+    "\n" +
+    "</head>\n" +
+    "<body>\n" +
+    "\n" +
+    "</body>\n" +
+    "<script>\n" +
+    "    // 应用 ID，用来识别应用\n" +
+    "    var APP_ID = 'jFnAKF8oIWzB7INn2GpNyPAt-gzGzoHsz';\n" +
+    "\n" +
+    "    // 应用 Key，用来校验权限（Web 端可以配置安全域名来保护数据安全）\n" +
+    "    var APP_KEY = 'OvRQhBzP5fW4Uer1gLfPbpzl';\n" +
+    "\n" +
+    "    var Realtime = AV.Realtime;\n" +
+    "    var TextMessage = AV.TextMessage;\n" +
+    "\n" +
+    "    var realtime = new Realtime({\n" +
+    "        appId: APP_ID,\n" +
+    "        pushOfflineMessages: true,\n" +
+    "        region: 'cn', //美国节点为 \"us\"\n" +
+    "    });\n" +
+    "\n" +
+    "\n" +
+    "    // Jerry 登录\n" +
+    "    realtime.createIMClient('Jerry2').then(function (jerry) {\n" +
+    "//        jerry.on('unreadmessages', function (payload, conversation) {\n" +
+    "//            conversation.queryMessages({\n" +
+    "//                limit: 10, // limit 取值范围 1~1000，默认 20\n" +
+    "//            }).then(function (messages) {\n" +
+    "//                console.log('messageHistory', messages);\n" +
+    "//                // 最新的十条消息，按时间增序排列\n" +
+    "//            }).catch(console.error.bind(console));\n" +
+    "//        })\n" +
+    "\n" +
+    "        jerry.on('message', function (message, conversation) {\n" +
+    "            console.log('Message : ', message);\n" +
+    "            console.log('Message received: ' + message.text);\n" +
+    "        });\n" +
+    "    }).catch(console.error);\n" +
+    "\n" +
+    "</script>\n" +
     "</html>"
   );
 

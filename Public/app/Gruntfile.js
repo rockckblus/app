@@ -33,9 +33,9 @@ module.exports = function (grunt) {
                     '../resCreate/api/db/**/*.js',
                     '../resCreate/api/routes/*.js',
                 ],
-                // tasks: ['jshint', 'ngtemplates', 'concat', 'uglify', 'cssmin', 'clean'],//dist 配置
+                tasks: ['jshint', 'ngtemplates', 'concat', 'uglify', 'cssmin', 'clean'],//dist 配置
                 // tasks: ['jshint', 'ngtemplates', 'concat', 'cssmin', 'clean'],//dist 配置
-                tasks: ['jshint'],//dev 配置
+                // tasks: ['jshint'],//dev 配置
                 options: {
                     spawn: false,
                     livereload: true
