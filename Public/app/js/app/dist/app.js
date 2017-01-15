@@ -15067,7 +15067,7 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "<h5 style=\"margin: 0 auto;color: #777\">\n" +
     "    偷油从此简单 !\n" +
     "</h5>\n" +
-    "<h6 style=\"margin: 0 auto;color: #777;font-size: 12px\">\n" +
+    "<h6 style=\"margin: 0 auto;color: #777;font-size: 12px;margin-top: 10px\">\n" +
     "    <div id=\"beian\"><a href=\"http://www.miitbeian.gov.cn/\">津ICP备14005697号</a></div>\n" +
     "</h6>\n" +
     "</body>\n" +
