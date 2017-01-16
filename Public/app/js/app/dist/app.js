@@ -644,7 +644,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
             //版本号默认设置
             version: {
-                default: '3.0',//当前默认版本号,第一次安装,写入local用
+                default: '3.2',//当前默认版本号,第一次安装,写入local用
             },
 
             //host 配置
