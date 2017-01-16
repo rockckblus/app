@@ -10,6 +10,7 @@ var pingJiaCtrl = require('../db/controller/pingJia.g.controller');//评价ctrl
 var lunXunCtrl = require('../db/controller/lunXun.g.controller');//轮询ctrl
 var imApi = require('../db/controller/imApi.imApi.controller');//请求及时通讯api接口
 var imCtrl = require('../db/controller/im.g.controller');//imCtrl 消息列表
+var versionCtrl = require('../db/controller/version.g.controller');//版本表
 
 
 var RateLimit = require('express-rate-limit');
@@ -192,6 +193,28 @@ router.post('/key/:fun', function (req, res) {
 router.get('/', function (req, res) {
     res.json(11123);
 });
+
+//获取版本号
+router.post('/version', function (req, res) {
+    versionCtrl.findThisVersion(req.body, function (re) {
+        res.json(re);
+    })
+});
+
+//更新一个版本 号
+router.post('/upDateVersion', function (req, res) {
+    versionCtrl.upDateVersion(req.body, function (re) {
+        res.json(re);
+    })
+});
+
+//添加第一条数据
+router.post('/creatFirst', function (req, res) {
+    versionCtrl.creatFirst(req.body, function (re) {
+        res.json(re);
+    })
+});
+
 
 /**
  * function 详情 ****************************************************
