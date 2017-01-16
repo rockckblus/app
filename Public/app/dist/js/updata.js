@@ -160,6 +160,7 @@
         function _closeThisWebView() {
             var ws = plus.webview.currentWebview();
             plus.webview.close(ws);
+
         }
 
         //获取当前页面传来的最新版本号

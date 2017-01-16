@@ -644,7 +644,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
 
             //版本号默认设置
             version: {
-                default: '2.0',//当前默认版本号,第一次安装,写入local用
+                default: '3.0',//当前默认版本号,第一次安装,写入local用
             },
 
             //host 配置
@@ -655,7 +655,7 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
                 phpHost: returnIp() + ':8080',//php host
                 phpHostTest: returnIp() + ':8889',//php host模拟Api
 
-                appPath: returnIp() + ':8080/Public/App/',//app 静态路径
+                appPath: returnIp() + ':8080/Public/app/',//app 静态路径
 
             },
 

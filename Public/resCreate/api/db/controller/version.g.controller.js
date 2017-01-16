@@ -35,7 +35,7 @@ function upDateVersion(postObj, callBack) {
     if (postObj.passWord == 'HDZrockblus8') {
         versionModel.update({}, {version: postObj.version}, {mluti: false}, function (err, row) {
             callBack(row);
-        })
+        });
     } else {
         callBack('权限验证失败');
     }
@@ -50,7 +50,7 @@ function creatFirst(postObj, callBack) {
                     version: '1.0'
                 }, function (err, doc) {
                     callBack(err || doc);
-                })
+                });
             } else {
                 callBack('权限验证失败');
             }

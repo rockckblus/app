@@ -198,21 +198,21 @@ router.get('/', function (req, res) {
 router.post('/version', function (req, res) {
     versionCtrl.findThisVersion(req.body, function (re) {
         res.json(re);
-    })
+    });
 });
 
 //更新一个版本 号
 router.post('/upDateVersion', function (req, res) {
     versionCtrl.upDateVersion(req.body, function (re) {
         res.json(re);
-    })
+    });
 });
 
 //添加第一条数据
 router.post('/creatFirst', function (req, res) {
     versionCtrl.creatFirst(req.body, function (re) {
         res.json(re);
-    })
+    });
 });
 
 
