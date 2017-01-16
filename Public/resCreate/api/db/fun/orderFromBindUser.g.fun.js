@@ -31,6 +31,7 @@ var fun = {
     editSelectOrderUidOrderIsReadyFun: editSelectOrderUidOrderIsReadyFun,//修改orderId 的   selectReadMark.orderUidIsRead 为以 读 传postObj 返回postObj
     editSelectBindUidOrderIsReadyFun: editSelectBindUidOrderIsReadyFun,//修改orderId 的 selectReadMark.bindUidIsReady  为已读 传postObj 返回postObj
     noReadOrderFromCountFunm: noReadOrderFromCountFun,//判断有未读订单消息
+
 };
 
 /**
@@ -506,7 +507,6 @@ function changeSelectOrderFromFun(postObj) {
     return defer.promise;
 }
 
-
 /**
  * 根据orderid 修改对应关系为4 超时
  */
@@ -530,7 +530,6 @@ function changeOrderTimeOutFun(postObj) {
 
     return defer.promise;
 }
-
 
 /**
  *修改对应关系, 根据orderid 当前uid 对应关系改为 3选单

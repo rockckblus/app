@@ -14776,8 +14776,6 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "\"></i>\n" +
     "    </div>\n" +
     "\n" +
-    "\n" +
-    "    <div id=\"beian\"><a href=\"http://www.miitbeian.gov.cn/\">津ICP备14005697号</a></div>\n" +
     "    <div sub-from></div>\n" +
     "</nav>\n" +
     "\n" +
@@ -14827,41 +14825,6 @@ angular.module('dipan').run(['$templateCache', function($templateCache) {
     "    <ui-view></ui-view>\n" +
     "</div>\n" +
     "\n" +
-    "\n" +
-    "<!--<div class=\"app\">-->\n" +
-    "<!--&lt;!&ndash; topNavbars &ndash;&gt;-->\n" +
-    "<!--<div top></div>-->\n" +
-    "\n" +
-    "<!--<div class=\"navbar navbar-app navbar-absolute-bottom\">-->\n" +
-    "<!--<div class=\"btn-group justified\">-->\n" +
-    "<!--&lt;!&ndash;底部连接&ndash;&gt;-->\n" +
-    "<!--<a ui-sref=\"home\" class=\"btn btn-navbar\"><i class=\"fa fa-home fa-navbar fa-lg\"></i> </a>-->\n" +
-    "<!--<a href=\"#\" class=\"btn btn-navbar\"><i-->\n" +
-    "<!--class=\"fa fa-map-marker fa-navbar fa-lg\"></i> </a>-->\n" +
-    "<!--<a ui-sref=\"memberIndex\" class=\"btn btn-navbar\"><i-->\n" +
-    "<!--class=\"fa fa-user fa-navbar fa-lg\"></i> </a>-->\n" +
-    "<!--</div>-->\n" +
-    "<!--</div>-->\n" +
-    "\n" +
-    "<!--&lt;!&ndash; App Body &ndash;&gt;-->\n" +
-    "<!--<div class=\"app-body\">-->\n" +
-    "<!--&lt;!&ndash;loading directive&ndash;&gt;-->\n" +
-    "<!--<div loading></div>-->\n" +
-    "<!--<div alert></div>-->\n" +
-    "<!--<ui-view></ui-view>-->\n" +
-    "<!--</div>-->\n" +
-    "\n" +
-    "<!--</div>&lt;!&ndash; ~ .app &ndash;&gt;-->\n" +
-    "\n" +
-    "<!--数据div-->\n" +
-    "<!--<div url-parse={{$indexAllRe}}></div>-->\n" +
-    "\n" +
-    "<script>\n" +
-    "    if (trueWeb()) {\n" +
-    "        document.getElementById('beian').style.display = 'block';\n" +
-    "//        document.write('<script language=\"javascript\" type=\"text/javascript\" src=\"http://js.users.51.la/17648708.js\">\\<\\/script>');\n" +
-    "    }\n" +
-    "</script>\n" +
     "</body>\n" +
     "</html>\n"
   );

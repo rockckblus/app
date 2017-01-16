@@ -89,10 +89,11 @@ module.exports = function (grunt) {
         /** 删除app.templates.js  */
         clean: {
 //            js: ['js/app/dist/app.templates.js'],
-            css: ['css/dit/*.min.css'],
+            css: ['css/dist/*.min.css'],
 
             //js: ['js/app/dist/app.js']
         },
+
 
         /**
          * 压缩css
@@ -113,11 +114,11 @@ module.exports = function (grunt) {
                 shorthandCompacting: false,
                 roundingPrecision: -1
             },
-            target2: {
-                files: {
-                    'css/dist/app.css': ['css/dist/*.min.css']
-                }
-            }
+            // target2: {
+            //     files: [{
+            //         'css/dist/app.css': ['css/dist/*.min.css']
+            //     }]
+            // }
         }
     });
 
