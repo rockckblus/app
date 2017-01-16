@@ -43,6 +43,7 @@ var g = {
         phpApi: 'http://dipan.so',//phpApi 15Pro
         imageHost: 'http://dipan.so:7788/',//图片服务器
         // imageHost: 'http://192.168.0.25:7788/',//图片服务器
+        hostApiPath:'/home/wwwroot/default/app/Public/resCreate/api/',//apiPath
     },
 
     /**
