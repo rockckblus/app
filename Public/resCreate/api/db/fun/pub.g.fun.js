@@ -67,7 +67,7 @@ function baseToImgUrl(imgData) {
     var defer = q.defer();
     var base64Data = imgData.replace(/^data:image\/\w+;base64,/, "");
     var dataBuffer = new Buffer(base64Data, 'base64');
-    var path = 'imagesUpData/' + moment().format("YYYY_MM_DD");
+    var path = '../../imagesUpData/' + moment().format("YYYY_MM_DD");
     var imgName = moment().format("YYYYMMDDhhmmss") + '.jpg';
     fs.exists(path, function (re) {//判断文件夹存在
         if (re) {
